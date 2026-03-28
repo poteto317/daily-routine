@@ -65,8 +65,36 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
+    // ユーザーデータ: 認証済みユーザーは自分のデータのみ読み書き可能
     match /users/{userId} {
       allow read, write: if request.auth != null && request.auth.uid == userId;
+
+      match /syncSnapshots/{snapshotId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+    }
+
+    // ルーティンデータ: 認証済みユーザーは自分のデータのみ読み書き可能
+    match /routines/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+
+      match /{document=**} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+    }
+
+    // アカウント管理: 自分のレコードは読み取り可能、管理者は全レコードの読み書き可能
+    match /accounts/{accountId} {
+      allow read: if request.auth != null && request.auth.uid == accountId;
+      allow create: if request.auth != null && request.auth.uid == accountId;
+      allow read, write: if request.auth != null
+        && exists(/databases/$(database)/documents/accounts/$(request.auth.uid))
+        && get(/databases/$(database)/documents/accounts/$(request.auth.uid)).data.isAdmin == true;
+    }
+
+    // その他のドキュメントはデフォルトで拒否
+    match /{document=**} {
+      allow read, write: if false;
     }
   }
 }

@@ -11,9 +11,39 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // ユーザーは自分のドキュメントのみ読み書き可能
+    // ユーザーデータ: 認証済みユーザーは自分のデータのみ読み書き可能
     match /users/{userId} {
       allow read, write: if request.auth != null && request.auth.uid == userId;
+
+      match /syncSnapshots/{snapshotId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+    }
+
+    // ルーティンデータ: 認証済みユーザーは自分のデータのみ読み書き可能
+    match /routines/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+
+      match /{document=**} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+    }
+
+    // アカウント管理: 自分のレコードは読み取り可能、管理者は全レコードの読み書き可能
+    match /accounts/{accountId} {
+      // 自分のアカウント情報は読み取り可能（管理者チェック用）
+      allow read: if request.auth != null && request.auth.uid == accountId;
+      // 自分のアカウント情報の作成（初回ログイン時）
+      allow create: if request.auth != null && request.auth.uid == accountId;
+      // 管理者は全アカウントの読み書き可能
+      allow read, write: if request.auth != null
+        && exists(/databases/$(database)/documents/accounts/$(request.auth.uid))
+        && get(/databases/$(database)/documents/accounts/$(request.auth.uid)).data.isAdmin == true;
+    }
+
+    // その他のドキュメントはデフォルトで拒否
+    match /{document=**} {
+      allow read, write: if false;
     }
   }
 }
@@ -104,6 +134,12 @@ Firestoreに保存されるデータ：
 - ネットワーク接続を確認してください
 - Firebase Consoleでプロジェクトの状態を確認してください
 
+#### 通知が表示されない
+
+- ブラウザの通知権限を確認してください
+- 設定画面の通知テストを実行してください
+- Firebaseの設定（API Key等）を確認してください
+
 ---
 
 ## 📖 関連ドキュメント
@@ -114,61 +150,3 @@ Firestoreに保存されるデータ：
 ---
 
 [📖 ドキュメントトップに戻る](../)
-
----
-
-**最終更新日**: 2026年2月17日
-
-- ページをリロードしてください
-- Firebaseの設定（API Key等）を確認してください
-
-#### 通知が表示されない
-
-- ブラウザの通知権限を確認してください
-- 設定画面の通知テストを実行してください
-
-## プロジェクト情報
-
-### 現在のFirebaseプロジェクト
-
-- **プロジェクトID**: `your-project-id`
-- **プロジェクト番号**: `your-project-number`
-- **リージョン**: asia-northeast1（東京）推奨
-
-### 必要な Firebase サービス
-
-1. **Firebase Authentication**
-   - 匿名認証を有効化
-   - Firebase Console → Authentication → Sign-in method → 匿名
-
-2. **Firestore Database**
-   - 本番モードで作成
-   - セキュリティルールを上記のように設定
-   - Firebase Console → Firestore Database
-
-3. **Firebase Cloud Messaging (FCM)**
-   - Webプッシュ通知用
-   - VAPIDキーを生成して`.env.local`に設定
-   - Firebase Console → Project Settings → Cloud Messaging
-
-4. **Cloud Functions**
-   - Blazeプラン（従量課金）が必要
-   - Firebase Console → Functions
-
-### 環境変数の確認
-
-`.env.local`ファイルに以下が設定されているか確認：
-
-```env
-NEXT_PUBLIC_FIREBASE_API_KEY=your-api-key
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your-project-id.firebaseapp.com
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=your-project-id
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your-project-id.firebasestorage.app
-NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your-messaging-sender-id
-NEXT_PUBLIC_FIREBASE_APP_ID=your-app-id
-NEXT_PUBLIC_FIREBASE_VAPID_KEY=（生成したVAPIDキー）
-NEXT_PUBLIC_FIREBASE_FUNCTIONS_URL=https://asia-northeast1-your-project-id.cloudfunctions.net
-```
-
-`public/firebase-messaging-sw.js` は tracked file ではなく、`npm run dev` / `npm run build` / `npm start` の実行時に `.env.local` から自動生成されます。
-通知機能を使う場合は、上記の Firebase 環境変数を事前に設定してください。

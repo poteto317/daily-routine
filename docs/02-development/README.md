@@ -26,12 +26,15 @@
 
 ```
 src/
-├── app/           # Next.js App Router
-├── features/      # 機能別フォルダ（ドメイン単位）
-├── components/    # 共通UIコンポーネント
-├── hooks/         # 共通カスタムフック
-├── lib/           # ユーティリティ
-└── types/         # 型定義
+├── app/            # Next.js App Router
+├── components/     # 共通UIコンポーネント
+├── config/         # アプリ設定
+├── features/       # 機能別フォルダ（ドメイン単位）
+├── hooks/          # 共通カスタムフック
+├── layouts/        # レイアウト・ヘッダーコンポーネント
+├── lib/            # ユーティリティ
+├── services/       # 認証などのサービス
+└── types/          # 型定義
 ```
 
 ### 2. 依存関係の原則
