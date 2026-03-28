@@ -2,6 +2,7 @@
 
 - コードの修正や提案を行った後は、必ずターミナルで `npm run verify` を実行して動作確認を行うようにしてください。
 - 修正内容に自信がある場合でも、検証ステップを省略しないでください。
+- **`git commit` や `git push` は絶対に自動実行しないでください。** コミット・プッシュは必ずユーザーが確認・承認した上で行います。ユーザーから明示的に指示がある場合のみ実行してください。
 
 # Daily Routine App - 開発ガイドライン
 
@@ -15,6 +16,7 @@
 - **スタイリング**: Tailwind CSS v4
 - **バックエンド**: Firebase (Firestore, Authentication, Cloud Functions, Cloud Messaging)
 - **デプロイ**: Vercel (フロントエンド), Firebase (Cloud Functions)
+- **デモ URL**: https://daily-routine-murex.vercel.app/
 
 ### 主な機能
 
@@ -27,9 +29,10 @@
 7. **勤務記録**: 労働時間の記録
 8. **天気情報**: 天気情報の表示
 9. **日記**: 日々の記録
-10. **PWA対応**: オフライン動作、ホーム画面追加
-11. **プリセット管理**: ルーティンプリセットの管理
-12. **アカウント管理**: ユーザーアカウント管理（管理者向け）
+10. **Todoリスト**: 複数のTodoリストを管理
+11. **PWA対応**: オフライン動作、ホーム画面追加
+12. **プリセット管理**: ルーティンプリセットの管理
+13. **アカウント管理**: ユーザーアカウント管理（管理者向け）
 
 ---
 
@@ -81,7 +84,7 @@ const shouldShow = shouldShowRoutineToday(routine);
 
 ルーティンの追加・更新・削除時は自動的にFirebaseに同期される。
 
-`features/routine/hooks/useRoutines.ts` フック内の `saveAndSync()` 関数が以下を行う:
+`features/routine/hooks/routinePersistenceSync.ts` の `saveAndSyncRoutines()` 関数が以下を行う:
 
 1. LocalStorageに保存（`saveRoutines()`）
 2. Firebaseに非同期で同期（`syncRoutinesToFirebase()`）
@@ -98,7 +101,7 @@ const shouldShow = shouldShowRoutineToday(routine);
 通知はService Workerで一元管理（Cloud Functionsの`checkNotifications`は無効化済み）。
 
 ```typescript
-import { scheduleNotifications } from "@/features/notification/notification-scheduler";
+import { scheduleNotifications } from "@/features/notification";
 
 await scheduleNotifications(schedules);
 ```
@@ -108,7 +111,7 @@ await scheduleNotifications(schedules);
 Firebase匿名認証を使用してユーザーを識別する。
 
 ```typescript
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/features/auth";
 
 const { user, loading, error, logout } = useAuth();
 
@@ -263,6 +266,7 @@ saveSettings({ ...settings, theme: "dark" });
 3. **重複した型定義** - types/routine/ に集約
 4. **Cloud Functionsでの通知送信** - Service Workerで処理（checkNotificationsは無効化済み）
 5. **isCompletedの永続化** - 一時的な状態なのでルーティンデータには保存しない
+6. **`git commit` / `git push` の自動実行** - ユーザーの明示的な指示なしにコミット・プッシュを行わない
 
 ---
 
@@ -285,3 +289,4 @@ firebase deploy --only functions
 - **匿名認証**: ユーザーはFirebase匿名認証で識別され、デバイス間でルーティンを同期可能
 - **Feature-based Architecture**: 新機能を追加する場合は `features/` 配下に新しいディレクトリを作成
 - **ダークモード**: `dark:bg-slate-100` や `dark:text-black` などを使用してダークモード対応を維持
+- **Firebase Messaging SW**: `public/firebase-messaging-sw.js` はビルド時に自動生成されるため直接編集しない。テンプレートは `public/firebase-messaging-sw.template.js` を編集する
