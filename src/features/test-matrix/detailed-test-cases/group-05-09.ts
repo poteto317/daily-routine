@@ -1,0 +1,616 @@
+import type { DetailTestCaseMap } from "./types";
+
+export const DETAILED_TEST_CASES_GROUP_05_09: DetailTestCaseMap = {
+  "5-1": [
+    {
+      "id": "5-1-1",
+      "scenario": "集中タイマーを開始",
+      "expected": "25分のカウントダウンが始まる",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "5-1-2",
+      "scenario": "集中タイマーが0になる",
+      "expected": "タイマー終了、休憩に切り替え",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ],
+  "5-2": [
+    {
+      "id": "5-2-1",
+      "scenario": "休憩タイマーを開始",
+      "expected": "5分のカウントダウンが始まる",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "5-2-2",
+      "scenario": "休憩タイマーが0になる",
+      "expected": "タイマー終了、次の集中に切り替え",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ],
+  "5-3": [
+    {
+      "id": "5-3-1",
+      "scenario": "集中完了→休憩→集中のサイクル",
+      "expected": "自動的に切り替わる",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ],
+  "5-4": [
+    {
+      "id": "5-4-1",
+      "scenario": "スタートボタン押下",
+      "expected": "タイマーが開始される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "5-4-2",
+      "scenario": "一時停止ボタン押下",
+      "expected": "タイマーが一時停止される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "5-4-3",
+      "scenario": "一時停止からの再開",
+      "expected": "停止時点の時間から再開",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "5-4-4",
+      "scenario": "リセットボタン押下",
+      "expected": "タイマーが初期状態に戻る",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ],
+  "5-5": [
+    {
+      "id": "5-5-1",
+      "scenario": "集中タイマーを1回完了",
+      "expected": "今日の完了数が1と表示される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "5-5-2",
+      "scenario": "複数回完了",
+      "expected": "完了数がインクリメントされる",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "5-5-3",
+      "scenario": "日付が変わった場合",
+      "expected": "カウントがリセットされる",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ],
+  "5-6": [
+    {
+      "id": "5-6-1",
+      "scenario": "タイマー完了時",
+      "expected": "サウンドが再生される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ],
+  "5-7": [
+    {
+      "id": "5-7-1",
+      "scenario": "通知許可済みでタイマー完了",
+      "expected": "ブラウザ通知が表示される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "5-7-2",
+      "scenario": "通知未許可でタイマー完了",
+      "expected": "通知なし（エラーなし）",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ],
+  "5-8": [
+    {
+      "id": "5-8-1",
+      "scenario": "設定で集中時間を45分に変更",
+      "expected": "次回タイマーが45分で開始",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "5-8-2",
+      "scenario": "設定で休憩時間を10分に変更",
+      "expected": "次回休憩が10分で開始",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ],
+  "6-1": [
+    {
+      "id": "6-1-1",
+      "scenario": "ストップウォッチを開始",
+      "expected": "カウントアップが始まる",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "6-1-2",
+      "scenario": "ストップウォッチを停止",
+      "expected": "経過時間が確定される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ],
+  "6-2": [
+    {
+      "id": "6-2-1",
+      "scenario": "作業名を入力してセッション記録",
+      "expected": "作業名と時間が保存される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "6-2-2",
+      "scenario": "作業名なしで記録を試行",
+      "expected": "保存できない or デフォルト名が付与",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ],
+  "6-3": [
+    {
+      "id": "6-3-1",
+      "scenario": "気分を5段階で記録",
+      "expected": "選択した気分が保存される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ],
+  "6-4": [
+    {
+      "id": "6-4-1",
+      "scenario": "新しい作業名でセッション記録",
+      "expected": "テンプレートが自動作成される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "6-4-2",
+      "scenario": "既存テンプレートの作業名で記録",
+      "expected": "テンプレートが再利用される（lastUsed更新）",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ],
+  "6-5": [
+    {
+      "id": "6-5-1",
+      "scenario": "テンプレート一覧から作業を選択",
+      "expected": "作業名が自動入力される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ],
+  "6-6": [
+    {
+      "id": "6-6-1",
+      "scenario": "テンプレート別の合計時間を確認",
+      "expected": "正しい合計が表示される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "6-6-2",
+      "scenario": "テンプレート別のセッション数を確認",
+      "expected": "正しい件数が表示される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ],
+  "6-7": [
+    {
+      "id": "6-7-1",
+      "scenario": "メモを入力してセッション保存",
+      "expected": "メモが保存される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "6-7-2",
+      "scenario": "メモなしでセッション保存",
+      "expected": "正常に保存",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ],
+  "6-8": [
+    {
+      "id": "6-8-1",
+      "scenario": "今日のセッション一覧表示",
+      "expected": "当日のセッションが時系列で表示",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ],
+  "6-9": [
+    {
+      "id": "6-9-1",
+      "scenario": "セッションを削除",
+      "expected": "確認後に削除される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ],
+  "7-1": [
+    {
+      "id": "7-1-1",
+      "scenario": "「朝食」を選択",
+      "expected": "朝食として記録される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "7-1-2",
+      "scenario": "「昼食」を選択",
+      "expected": "昼食として記録される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "7-1-3",
+      "scenario": "「夕食」を選択",
+      "expected": "夕食として記録される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "7-1-4",
+      "scenario": "「間食」を選択",
+      "expected": "間食として記録される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ],
+  "7-2": [
+    {
+      "id": "7-2-1",
+      "scenario": "時間と説明を入力して記録",
+      "expected": "食事記録が保存される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ],
+  "7-3": [
+    {
+      "id": "7-3-1",
+      "scenario": "写真フィールドを確認",
+      "expected": "写真入力欄が存在する",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ],
+  "7-4": [
+    {
+      "id": "7-4-1",
+      "scenario": "カロリーを入力",
+      "expected": "数値として保存される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "7-4-2",
+      "scenario": "カロリー未入力で保存",
+      "expected": "正常に保存（任意項目）",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ],
+  "7-5": [
+    {
+      "id": "7-5-1",
+      "scenario": "今日の食事一覧を確認",
+      "expected": "当日の記録が時系列で表示",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ],
+  "7-6": [
+    {
+      "id": "7-6-1",
+      "scenario": "履歴一覧を表示",
+      "expected": "直近20件が表示される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ],
+  "7-7": [
+    {
+      "id": "7-7-1",
+      "scenario": "食事記録を削除",
+      "expected": "確認後に削除される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ],
+  "8-1": [
+    {
+      "id": "8-1-1",
+      "scenario": "月間予算を入力して保存",
+      "expected": "予算額が設定される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "8-1-2",
+      "scenario": "予算を変更して保存",
+      "expected": "残高表示が更新される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ],
+  "8-2": [
+    {
+      "id": "8-2-1",
+      "scenario": "金額・日付・説明・カテゴリを入力して記録",
+      "expected": "支出が保存される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "8-2-2",
+      "scenario": "金額のみ入力して記録",
+      "expected": "最低限の入力で保存可能",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "8-2-3",
+      "scenario": "金額0で記録を試行",
+      "expected": "バリデーションエラー",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ],
+  "8-3": [
+    {
+      "id": "8-3-1",
+      "scenario": "支出を削除",
+      "expected": "確認ダイアログ→確認後に削除",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "8-3-2",
+      "scenario": "削除後の残高確認",
+      "expected": "残高が再計算される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ],
+  "8-4": [
+    {
+      "id": "8-4-1",
+      "scenario": "前月ボタンを押下",
+      "expected": "前月のデータが表示される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "8-4-2",
+      "scenario": "次月ボタンを押下",
+      "expected": "次月のデータが表示される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "8-4-3",
+      "scenario": "当月ボタンを押下",
+      "expected": "当月に戻る",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ],
+  "8-5": [
+    {
+      "id": "8-5-1",
+      "scenario": "予算10万、支出合計3万の場合",
+      "expected": "残高7万と表示される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "8-5-2",
+      "scenario": "支出が予算を超過した場合",
+      "expected": "マイナス表示（赤色など）",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ],
+  "8-6": [
+    {
+      "id": "8-6-1",
+      "scenario": "月間予算÷残日数を確認",
+      "expected": "1日あたりの使用可能額が表示される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ],
+  "8-7": [
+    {
+      "id": "8-7-1",
+      "scenario": "月間支出一覧を確認",
+      "expected": "当月の全支出が日付順で表示",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ],
+  "9-1": [
+    {
+      "id": "9-1-1",
+      "scenario": "天気予報ページを開く",
+      "expected": "7日間の天気予報が表示される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "9-1-2",
+      "scenario": "各日の天気アイコン・気温を確認",
+      "expected": "正しく表示される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ],
+  "9-2": [
+    {
+      "id": "9-2-1",
+      "scenario": "24時間ごとの詳細を確認",
+      "expected": "時間帯別の気温・天気が表示",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ],
+  "9-3": [
+    {
+      "id": "9-3-1",
+      "scenario": "位置情報を許可した場合",
+      "expected": "現在地の天気が表示される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "9-3-2",
+      "scenario": "位置情報を拒否した場合",
+      "expected": "東京の天気がフォールバック表示",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ],
+  "9-4": [
+    {
+      "id": "9-4-1",
+      "scenario": "位置情報から地名表示",
+      "expected": "市区町村レベルの地名が表示",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ],
+  "9-5": [
+    {
+      "id": "9-5-1",
+      "scenario": "天気ページを開いて30分以内に再アクセス",
+      "expected": "キャッシュからデータ表示（API呼出なし）",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "9-5-2",
+      "scenario": "30分以上経過後にアクセス",
+      "expected": "APIから新しいデータを取得",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ],
+  "9-6": [
+    {
+      "id": "9-6-1",
+      "scenario": "天気ページ以外からプリロード確認",
+      "expected": "バックグラウンドでデータが取得される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ],
+  "9-7": [
+    {
+      "id": "9-7-1",
+      "scenario": "天気アイコンの表示を確認",
+      "expected": "WMOコードに対応したアイコンが表示",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "9-7-2",
+      "scenario": "天気説明文が日本語であること",
+      "expected": "「晴れ」「曇り」「雨」等の日本語表示",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ]
+};

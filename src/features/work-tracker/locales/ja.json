@@ -1,0 +1,72 @@
+{
+  "header": {
+    "title": "⏱️ 作業記録タイマー",
+    "beta": "BETA",
+    "description": "作業時間を計測して記録しよう"
+  },
+  "timerPanel": {
+    "running": "⏱️ 作業中...",
+    "stopped": "⏸️ 停止中",
+    "start": "▶️ スタート",
+    "stop": "⏹️ ストップ"
+  },
+  "templateInput": {
+    "label": "作業名",
+    "requiredMark": "*",
+    "placeholder": "例: プロジェクト資料作成",
+    "recentlyUsedLabel": "最近使用",
+    "newWorkHint": "新しい作業として記録されます",
+    "bestPrefix": "ベスト:",
+    "countSuffix": "回"
+  },
+  "moodSelector": {
+    "label": "その時の気分や状態"
+  },
+  "notesField": {
+    "label": "メモ・理由（任意）",
+    "placeholder": "例: 新しい方法を試した、集中できた、途中で中断があった など",
+    "helperText": "改善や変化の理由を記録すると、次回に活かせます"
+  },
+  "sessionForm": {
+    "title": "📝 作業内容を記録",
+    "saveLabel": "💾 記録を保存",
+    "cancelLabel": "キャンセル"
+  },
+  "sessionHistory": {
+    "title": "📋 今日の作業履歴",
+    "empty": "まだ作業記録がありません",
+    "deleteAriaLabel": "削除"
+  },
+  "sessionHistoryItem": {
+    "newRecordLabel": "🎉 新記録",
+    "improvementLabel": "📈 改善",
+    "timerPrefix": "⏱️",
+    "bestLabel": "ベスト",
+    "averageLabel": "平均",
+    "countLabel": "回数",
+    "countSuffix": "回",
+    "notePrefix": "💭"
+  },
+  "todaySummary": {
+    "totalLabel": "今日の合計作業時間",
+    "sessionUnit": "セッション"
+  },
+  "templateInsights": {
+    "historyPrefix": "📊 「",
+    "historySuffix": "」の過去の記録",
+    "currentTimeLabel": "今回の時間",
+    "recentSessionsLabel": "最近の記録:",
+    "improving": {
+      "icon": "📈",
+      "message": "改善傾向！ベスト記録に近づいています"
+    },
+    "declining": {
+      "icon": "📉",
+      "message": "平均より時間がかかっています"
+    },
+    "newRecord": {
+      "icon": "🎉",
+      "message": "新記録達成！"
+    }
+  }
+}

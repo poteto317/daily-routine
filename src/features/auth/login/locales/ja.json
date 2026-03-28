@@ -1,0 +1,35 @@
+{
+  "loginPage": {
+    "title": "📅 Daily Routine",
+    "signUpModeLabel": "新規アカウント作成",
+    "loginModeLabel": "ログイン",
+    "testAccountHint": "※ テストアカウント: test@example.com / test123456",
+    "anonymousHint": "※ 匿名ログインではデータの永続的な保存はできません"
+  },
+  "loginAlternativeActions": {
+    "signUpToggle": "新規アカウントを作成",
+    "loginToggle": "既にアカウントをお持ちの方はこちら",
+    "separator": "または",
+    "testAccountLabel": "テストアカウントでログイン",
+    "anonymousLabel": "匿名でログイン"
+  },
+  "loginCredentialForm": {
+    "emailLabel": "メールアドレス",
+    "emailPlaceholder": "your@email.com",
+    "passwordLabel": "パスワード",
+    "passwordPlaceholder": "••••••••",
+    "submitLoadingLabel": "処理中...",
+    "signUpLabel": "アカウント作成",
+    "signInLabel": "ログイン"
+  },
+  "authErrors": {
+    "invalidEmail": "メールアドレスの形式が正しくありません",
+    "invalidCredential": "メールアドレスまたはパスワードが正しくありません",
+    "emailAlreadyInUse": "このメールアドレスは既に使用されています",
+    "weakPassword": "パスワードは6文字以上で設定してください",
+    "networkError": "通信エラーが発生しました。電波の良い場所で再度お試しください",
+    "authFailed": "認証に失敗しました。時間をおいて再度お試しください",
+    "testLoginFailed": "テストログインに失敗しました。時間をおいて再度お試しください",
+    "anonymousLoginFailed": "匿名ログインに失敗しました。時間をおいて再度お試しください"
+  }
+}

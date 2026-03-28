@@ -1,0 +1,50 @@
+{
+  "page": {
+    "title": "💰 家計簿",
+    "betaLabel": "BETA",
+    "addExpenseLabel": "➕",
+    "confirmDeleteExpense": "この支出を削除しますか？"
+  },
+  "monthNavigation": {
+    "previousMonth": "← 前月",
+    "nextMonth": "次月 →",
+    "goToCurrentMonth": "今月に戻る",
+    "yearSuffix": "年",
+    "monthSuffix": "月"
+  },
+  "expenseForm": {
+    "title": "支出を記録",
+    "dateLabel": "日付",
+    "amountLabel": "金額",
+    "descriptionLabel": "メモ（任意）",
+    "requiredMark": "*",
+    "amountPlaceholder": "例: 1500",
+    "descriptionPlaceholder": "例: ランチ、交通費など",
+    "addLabel": "追加",
+    "cancelLabel": "キャンセル"
+  },
+  "expenseList": {
+    "title": "📋 支出一覧",
+    "empty": "まだ支出の記録がありません",
+    "delete": "🗑️"
+  },
+  "summary": {
+    "monthlyLabel": "月の予算",
+    "changeLabel": "変更",
+    "setLabel": "設定",
+    "dailyLabel": "1日あたり",
+    "usedLabel": "使った金額",
+    "remainingLabel": "残り",
+    "overLabel": "予算オーバー",
+    "dailyRemainingLabel": "1日あたり使える金額",
+    "expenseCountSuffix": "件の支出",
+    "daysRemainingPrefix": "残り",
+    "daysRemainingSuffix": "日"
+  },
+  "budgetInputForm": {
+    "title": "月の予算を設定",
+    "placeholder": "例: 50000",
+    "save": "保存",
+    "cancel": "キャンセル"
+  }
+}

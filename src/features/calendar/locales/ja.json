@@ -1,0 +1,35 @@
+{
+  "page": {
+    "title": "🗓️ 達成カレンダー"
+  },
+  "weekHeader": {
+    "weekDays": ["日", "月", "火", "水", "木", "金", "土"]
+  },
+  "legend": {
+    "items": [
+      {
+        "colorClassName": "w-3 h-3 rounded-full bg-green-500",
+        "label": "全て達成"
+      },
+      {
+        "colorClassName": "w-3 h-3 rounded-full bg-yellow-500",
+        "label": "一部達成"
+      },
+      {
+        "colorClassName": "w-3 h-3 rounded-full border-2 border-gray-300",
+        "label": "未達成"
+      }
+    ]
+  },
+  "detailPanel": {
+    "emptyHistorySuffix": "の記録はありません",
+    "titleSuffix": "の達成記録",
+    "noRoutineLabel": "この日のルーティンはありませんでした",
+    "rateLabel": "達成率:"
+  },
+  "monthNavigation": {
+    "goToToday": "今月",
+    "yearSuffix": "年",
+    "monthSuffix": "月"
+  }
+}

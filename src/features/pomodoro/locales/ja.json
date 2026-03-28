@@ -1,0 +1,29 @@
+{
+  "page": {
+    "title": "🍅 ポモドーロタイマー",
+    "betaLabel": "BETA",
+    "todayCompletedLabel": "今日の完了ポモドーロ",
+    "countUnit": "回",
+    "focusTimeLabel": "集中時間",
+    "breakTimeLabel": "休憩時間",
+    "minutesUnit": "分",
+    "hint": "💡 設定画面で集中時間と休憩時間を変更できます"
+  },
+  "timerPanel": {
+    "startLabel": "▶️ スタート",
+    "pauseLabel": "⏸️ 一時停止",
+    "resetLabel": "🔄 リセット",
+    "skipBreakLabel": "⏭️ 休憩へ"
+  },
+  "display": {
+    "focusStateText": "🔥 集中タイム",
+    "breakStateText": "☕ 休憩タイム",
+    "idleStateText": "⏱️ 準備完了"
+  },
+  "notifications": {
+    "focusCompleteTitle": "🎉 集中タイム終了！",
+    "focusCompleteBody": "お疲れ様でした！休憩しましょう。",
+    "breakCompleteTitle": "💪 休憩終了！",
+    "breakCompleteBody": "次の集中タイムを始めましょう！"
+  }
+}

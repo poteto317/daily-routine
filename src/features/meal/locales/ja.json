@@ -1,0 +1,41 @@
+{
+  "page": {
+    "alertMissingContent": "食事内容を入力してください",
+    "confirmDeleteMealTemplate": "{date}の食事記録を削除しますか？"
+  },
+  "header": {
+    "title": "🍽️ 食事記録",
+    "badge": "開発予定",
+    "info": "ℹ️ 簡易版です。今後、写真撮影・カロリー計算などの機能を追加予定です。"
+  },
+  "todaySection": {
+    "titleLabel": "今日の食事",
+    "addLabel": "➕",
+    "notesPrefix": "メモ:",
+    "deleteLabel": "🗑️",
+    "emptyLabel": "まだ今日の食事記録はありません"
+  },
+  "inputForm": {
+    "typeLabel": "食事の種類 *",
+    "timeLabel": "時刻 *",
+    "descriptionLabel": "食事内容 *",
+    "notesLabel": "メモ（任意）",
+    "descriptionPlaceholder": "例: ご飯、味噌汁、焼き魚、サラダ",
+    "notesPlaceholder": "例: 外食、自炊など",
+    "saveLabel": "保存",
+    "cancelLabel": "キャンセル",
+    "typeOptions": [
+      { "value": "breakfast", "label": "🌅 朝食" },
+      { "value": "lunch", "label": "🌞 昼食" },
+      { "value": "dinner", "label": "🌙 夕食" },
+      { "value": "snack", "label": "🍪 間食" }
+    ]
+  },
+  "recentSection": {
+    "title": "📖 最近の記録",
+    "emptyLabel": "記録がありません",
+    "todayBadge": "今日",
+    "deleteLabel": "🗑️ 削除",
+    "memoPrefix": "メモ:"
+  }
+}

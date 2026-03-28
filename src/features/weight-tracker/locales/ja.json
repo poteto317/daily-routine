@@ -1,0 +1,32 @@
+{
+  "page": {
+    "title": "⚖️ 体重記録",
+    "alertInvalidWeight": "正しい体重を入力してください",
+    "confirmDeleteTemplate": "{date}の記録を削除しますか？"
+  },
+  "form": {
+    "weightLabel": "体重 (kg) *",
+    "weightPlaceholder": "例: 65.5",
+    "notesLabel": "メモ（任意）",
+    "notesPlaceholder": "体調やメモなど",
+    "saveLabel": "保存",
+    "cancelLabel": "キャンセル"
+  },
+  "todayCard": {
+    "title": "今日の記録",
+    "addLabel": "➕",
+    "editLabel": "✏️ 編集",
+    "notePrefix": "💭",
+    "updatedAtLabel": "記録時刻:",
+    "emptyLabel": "まだ今日の体重を記録していません"
+  },
+  "historyItem": {
+    "todayBadge": "今日",
+    "notePrefix": "💭",
+    "deleteAriaLabel": "削除"
+  },
+  "historyList": {
+    "title": "📊 記録履歴",
+    "empty": "まだ記録がありません"
+  }
+}

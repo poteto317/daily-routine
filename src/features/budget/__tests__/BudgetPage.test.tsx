@@ -1,0 +1,152 @@
+import { fireEvent, render, screen } from "@testing-library/react";
+import { BudgetPage } from "../BudgetPage";
+
+jest.mock("../useBudgetPageState", () => ({
+  useBudgetPageState: jest.fn(),
+}));
+
+import { useBudgetPageState } from "../useBudgetPageState";
+
+const mockUseBudgetPageState =
+  useBudgetPageState as jest.MockedFunction<typeof useBudgetPageState>;
+
+const createState = (overrides: Record<string, unknown> = {}) => ({
+  budgetInputValue: "30000",
+  closeBudgetInput: jest.fn(),
+  closeExpenseForm: jest.fn(),
+  currentDate: new Date("2026-03-07T00:00:00+09:00"),
+  dailyBudget: 1000,
+  dailyRemainingBudget: 1200,
+  daysRemaining: 26,
+  expenseAmount: "1500",
+  expenseDate: "2026-03-07",
+  expenseDescription: "ランチ",
+  expenses: [
+    {
+      id: "e1",
+      date: "2026-03-06",
+      amount: 1500,
+      description: "ランチ",
+      createdAt: "2026-03-06T00:00:00.000Z",
+    },
+  ],
+  goToCurrentMonth: jest.fn(),
+  goToNextMonth: jest.fn(),
+  goToPreviousMonth: jest.fn(),
+  handleAddExpense: jest.fn(),
+  handleBudgetInputChange: jest.fn(),
+  handleDeleteExpense: jest.fn(),
+  handleExpenseAmountChange: jest.fn(),
+  handleExpenseDateChange: jest.fn(),
+  handleExpenseDescriptionChange: jest.fn(),
+  handleSaveBudget: jest.fn(),
+  isCurrentMonth: true,
+  monthBudget: 30000,
+  openBudgetInput: jest.fn(),
+  openExpenseForm: jest.fn(),
+  remaining: 12000,
+  showBudgetInput: false,
+  showExpenseForm: false,
+  totalExpense: 18000,
+  ...overrides,
+});
+
+describe("BudgetPage", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("通常表示でサマリーと支出一覧を表示する", () => {
+    const state = createState();
+    mockUseBudgetPageState.mockReturnValue(state as never);
+
+    render(<BudgetPage />);
+
+    expect(screen.getByText("💰 家計簿")).toBeInTheDocument();
+    expect(screen.getByText("2026年 3月")).toBeInTheDocument();
+    expect(screen.getByText("￥30,000")).toBeInTheDocument();
+    expect(screen.getByText("￥18,000")).toBeInTheDocument();
+    expect(screen.getByText("￥12,000")).toBeInTheDocument();
+    expect(screen.getByText("￥1,500")).toBeInTheDocument();
+    expect(screen.getByText("ランチ")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByText("← 前月"));
+    fireEvent.click(screen.getByText("次月 →"));
+    fireEvent.click(screen.getByText("変更"));
+    fireEvent.click(screen.getByText("➕"));
+
+    expect(state.goToPreviousMonth).toHaveBeenCalled();
+    expect(state.goToNextMonth).toHaveBeenCalled();
+    expect(state.openBudgetInput).toHaveBeenCalled();
+    expect(state.openExpenseForm).toHaveBeenCalled();
+  });
+
+  it("フォーム表示時に入力イベントを委譲する", () => {
+    const state = createState({
+      isCurrentMonth: false,
+      showBudgetInput: true,
+      showExpenseForm: true,
+    });
+    mockUseBudgetPageState.mockReturnValue(state as never);
+
+    render(<BudgetPage />);
+
+    fireEvent.click(screen.getByText("今月に戻る"));
+    fireEvent.change(screen.getByPlaceholderText("例: 50000"), {
+      target: { value: "40000" },
+    });
+    fireEvent.click(screen.getByText("保存"));
+    fireEvent.click(screen.getAllByText("キャンセル")[0]);
+
+    fireEvent.change(screen.getByDisplayValue("2026-03-07"), {
+      target: { value: "2026-03-08" },
+    });
+    fireEvent.change(screen.getByPlaceholderText("例: 1500"), {
+      target: { value: "2000" },
+    });
+    fireEvent.change(screen.getByPlaceholderText("例: ランチ、交通費など"), {
+      target: { value: "交通費" },
+    });
+    fireEvent.click(screen.getByText("追加"));
+    fireEvent.click(screen.getAllByText("キャンセル")[1]);
+
+    expect(state.goToCurrentMonth).toHaveBeenCalled();
+    expect(state.handleBudgetInputChange).toHaveBeenCalledWith("40000");
+    expect(state.handleSaveBudget).toHaveBeenCalled();
+    expect(state.closeBudgetInput).toHaveBeenCalled();
+    expect(state.handleExpenseDateChange).toHaveBeenCalledWith("2026-03-08");
+    expect(state.handleExpenseAmountChange).toHaveBeenCalledWith("2000");
+    expect(state.handleExpenseDescriptionChange).toHaveBeenCalledWith("交通費");
+    expect(state.handleAddExpense).toHaveBeenCalled();
+    expect(state.closeExpenseForm).toHaveBeenCalled();
+  });
+
+  it("削除確認の結果に応じて削除する", () => {
+    const state = createState();
+    mockUseBudgetPageState.mockReturnValue(state as never);
+    jest.spyOn(window, "confirm").mockReturnValueOnce(false).mockReturnValueOnce(true);
+
+    render(<BudgetPage />);
+
+    fireEvent.click(screen.getByText("🗑️"));
+    fireEvent.click(screen.getByText("🗑️"));
+
+    expect(window.confirm).toHaveBeenCalledTimes(2);
+    expect(state.handleDeleteExpense).toHaveBeenCalledTimes(1);
+    expect(state.handleDeleteExpense).toHaveBeenCalledWith("e1");
+
+    (window.confirm as jest.Mock).mockRestore();
+  });
+
+  it("支出が空なら空状態を表示する", () => {
+    mockUseBudgetPageState.mockReturnValue(
+      createState({ expenses: [], monthBudget: 0, remaining: -500 }) as never,
+    );
+
+    render(<BudgetPage />);
+
+    expect(screen.getByText("まだ支出の記録がありません")).toBeInTheDocument();
+    expect(screen.getByText("設定")).toBeInTheDocument();
+    expect(screen.getByText("予算オーバー")).toBeInTheDocument();
+  });
+});

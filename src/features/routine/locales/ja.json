@@ -1,0 +1,85 @@
+{
+  "notification": {
+    "title": "ルーティンのリマインダー",
+    "bodyTemplate": "\"{routineTitle}\" の時間が過ぎています"
+  },
+  "homePage": {
+    "loading": "読み込み中..."
+  },
+  "homeToolbar": {
+    "holiday": "🎌 祝日",
+    "addRoutineAriaLabel": "ルーティンを追加"
+  },
+  "emptyState": {
+    "noRoutines": "まだルーティンが登録されていません",
+    "noHolidayRoutines": "祝日にはルーティンがありません",
+    "noDayRoutines": "この曜日にはルーティンがありません",
+    "addFirst": "最初のルーティンを追加",
+    "addMore": "ルーティンを追加",
+    "noCategoryRoutines": "このカテゴリのルーティンはありません"
+  },
+  "categoryFilter": {
+    "all": "すべて"
+  },
+  "daySelector": {
+    "days": [
+      { "value": 0, "label": "日曜日" },
+      { "value": 1, "label": "月曜日" },
+      { "value": 2, "label": "火曜日" },
+      { "value": 3, "label": "水曜日" },
+      { "value": 4, "label": "木曜日" },
+      { "value": 5, "label": "金曜日" },
+      { "value": 6, "label": "土曜日" }
+    ],
+    "holiday": "🎌 祝日"
+  },
+  "routineCard": {
+    "durationEmoji": "⏱️",
+    "durationUnit": "分",
+    "notificationEmoji": "🔔",
+    "notificationSuffix": "分後に通知"
+  },
+  "routineItemActions": {
+    "editAriaLabel": "編集",
+    "deleteAriaLabel": "削除",
+    "editLabel": "編集",
+    "deleteLabel": "削除"
+  },
+  "routineFormHeader": {
+    "editTitle": "ルーティンを編集",
+    "newTitle": "新しいルーティン",
+    "closeAriaLabel": "閉じる"
+  },
+  "routineFormCore": {
+    "titleLabel": "タイトル *",
+    "titlePlaceholder": "例: 朝のストレッチ",
+    "daysLabel": "曜日・祝日 *",
+    "categoryLabel": "カテゴリ *",
+    "daysWarningLabel": "⚠️ 曜日を1つ以上選択してください",
+    "daysEditHint": "曜日を変更すると、同じグループのすべてのルーティンが更新されます",
+    "daysCreateHint": "複数選択すると、曜日ごとに独立したルーティンが作成されます"
+  },
+  "routineFormTime": {
+    "startTimeLabel": "開始時間 *",
+    "durationLabel": "所要時間（分）*",
+    "conflictTitle": "⚠️ この時間は以下のルーティンと重複しています：",
+    "durationConflictLabel": "⚠️ この所要時間では他のルーティンと重複します",
+    "durationHintPrefix": "このルーティンにかかる時間（デフォルト:",
+    "durationHintSuffix": "分）",
+    "dayNames": ["日", "月", "火", "水", "木", "金", "土"]
+  },
+  "routineFormOptional": {
+    "descriptionLabel": "説明",
+    "descriptionPlaceholder": "ルーティンの詳細を入力",
+    "notificationLabel": "通知（分後）",
+    "notificationBeta": "Beta",
+    "notificationHintPrefix": "開始時間を過ぎて何分後に通知するか（デフォルト:",
+    "notificationHintSuffix": "分）",
+    "notificationPermissionHint": "※ ブラウザ通知権限が必要です"
+  },
+  "routineFormFooter": {
+    "cancel": "キャンセル",
+    "update": "更新",
+    "add": "追加"
+  }
+}

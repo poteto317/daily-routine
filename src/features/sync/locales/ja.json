@@ -1,0 +1,30 @@
+{
+  "syncNotification": {
+    "title": "データの変更を検出",
+    "body": "他の端末でデータが更新されました。設定画面から同期してください。"
+  },
+  "syncError": {
+    "noRemoteData": "リモートデータが見つかりません",
+    "downloadFailed": "ダウンロードに失敗しました",
+    "uploadFailed": "アップロードに失敗しました",
+    "syncLatestFailed": "同期に失敗しました",
+    "watchFailed": "同期監視に失敗しました"
+  },
+  "snapshotManager": {
+    "title": "☁️ 同期履歴管理",
+    "description": "アップロード済みの履歴から、任意のデータを適用または削除できます。",
+    "refreshButton": "再読み込み",
+    "loading": "同期履歴を読み込み中...",
+    "empty": "保存されている同期履歴はありません",
+    "loadFailed": "同期履歴の取得に失敗しました",
+    "applyButton": "適用",
+    "deleteButton": "削除",
+    "deleteConfirm": "この同期履歴を削除しますか？",
+    "deleteFailed": "同期履歴の削除に失敗しました",
+    "applySuccess": "同期履歴を適用します。画面を再読み込みします。",
+    "applyFailed": "同期履歴の適用に失敗しました",
+    "snapshotLabel": "履歴 {index}",
+    "uploadedAtLabel": "アップロード日時: {datetime}",
+    "deviceLabel": "デバイスID: {deviceId}"
+  }
+}

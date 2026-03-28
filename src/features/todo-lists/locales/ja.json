@@ -1,0 +1,36 @@
+{
+  "page": {
+    "emptyMessage": "Todoリストが選択されていません",
+    "emptyHint": "ハンバーガーメニューからTodoリストを選択してください"
+  },
+  "management": {
+    "title": "📝 Todoリスト管理",
+    "description": "ハンバーガーメニューに表示するTodoリストを管理します。各リストの表示・非表示を切り替えられます。",
+    "addButton": "＋ 新しいリストを追加",
+    "createTitle": "新しいリストを作成",
+    "titlePlaceholder": "リストのタイトル",
+    "createButton": "作成",
+    "cancelButton": "キャンセル",
+    "emptyMessage": "Todoリストはまだありません",
+    "emptyDescription": "「＋ 新しいリストを追加」からリストを作成してください",
+    "visibleLabel": "表示",
+    "hiddenLabel": "非表示",
+    "deleteConfirm": "「{title}」を削除しますか？この操作は元に戻せません。",
+    "editLabel": "編集",
+    "editTitlePlaceholder": "リスト名を入力"
+  },
+  "list": {
+    "deleteListButton": "リストを削除",
+    "editListTitleLabel": "リスト名を編集",
+    "deleteListConfirm": "「{title}」を削除しますか？この操作は元に戻せません。",
+    "itemPlaceholder": "Todoを追加...",
+    "addButton": "追加",
+    "emptyMessage": "まだTodoがありません",
+    "emptyDescription": "下のフォームからTodoを追加しましょう",
+    "completedCount": "{completed}/{total} 完了",
+    "hideCompleted": "完了済みを非表示",
+    "showCompleted": "完了済みを表示",
+    "deleteItemConfirm": "「{title}」を削除しますか？",
+    "editItemLabel": "編集"
+  }
+}

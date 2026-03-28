@@ -1,0 +1,64 @@
+@import "tailwindcss";
+
+@variant dark (&:is(.dark *));
+
+@theme {
+  --color-background: #ffffff;
+  --color-foreground: #171717;
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+/* Light mode (default) */
+:root {
+  --background: var(--color-background);
+  --foreground: var(--color-foreground);
+}
+
+/* Dark mode */
+:root.dark {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not(.light) {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* 長押しによるテキスト選択を全画面で無効化 */
+* {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* 入力系要素は選択・編集を許可 */
+input,
+textarea,
+select,
+[contenteditable] {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  10%, 30%, 50%, 70%, 90% {
+    transform: translateX(-2px);
+  }
+  20%, 40%, 60%, 80% {
+    transform: translateX(2px);
+  }
+}
+
+.animate-shake {
+  animation: shake 0.5s ease-in-out;
+}

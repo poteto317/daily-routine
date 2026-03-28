@@ -1,0 +1,81 @@
+{
+  "header": {
+    "title": "👥 アカウント管理",
+    "description": "ユーザーアカウントの作成・編集・削除を行います",
+    "loading": "読み込み中..."
+  },
+  "accessDenied": {
+    "icon": "🔒",
+    "title": "アクセス権限がありません",
+    "description": "このページは管理者のみアクセスできます。"
+  },
+  "errorAlert": {
+    "close": "閉じる"
+  },
+  "toolbar": {
+    "createAccount": "➕ 新規アカウント作成",
+    "refresh": "🔄 更新"
+  },
+  "legend": {
+    "title": "注意事項",
+    "items": [
+      "新規アカウント作成後はセッション切替のため再ログインが必要です",
+      "自分自身のアカウントは削除できません",
+      "自分自身の管理者権限は変更できません",
+      "アカウント削除はデータベース記録のみ削除します"
+    ]
+  },
+  "messages": {
+    "confirmDeleteAccountTemplate": "アカウント \"{email}\" を削除してもよろしいですか？\n\nこの操作は取り消せません。",
+    "alertAccountCreated": "✅ アカウントが作成されました。\n\nセキュリティ上の理由により、新しいアカウントでログインし直してください。"
+  },
+  "table": {
+    "titlePrefix": "登録済みアカウント（",
+    "titleSuffix": "件）",
+    "emptyLabel": "アカウントが登録されていません",
+    "editLabel": "✏️",
+    "deleteLabel": "🗑️",
+    "emailEmptyLabel": "（メールなし）",
+    "commonEmptyLabel": "—"
+  },
+  "editForm": {
+    "titlePrefix": "アカウント編集:",
+    "namePlaceholder": "ユーザー名",
+    "adminLabel": "管理者権限",
+    "selfDisabledLabel": "（自分自身の権限は変更できません）",
+    "submitLabel": "更新",
+    "submitLoadingLabel": "更新中...",
+    "cancelLabel": "キャンセル"
+  },
+  "createForm": {
+    "title": "新規アカウント作成",
+    "emailPlaceholder": "user@example.com",
+    "passwordPlaceholder": "6文字以上",
+    "namePlaceholder": "ユーザー名",
+    "adminCheckboxLabel": "管理者権限を付与",
+    "submitLabel": "作成",
+    "submitLoadingLabel": "作成中...",
+    "cancelLabel": "キャンセル"
+  },
+  "displayLabels": {
+    "roleAdmin": "管理者",
+    "roleUser": "一般",
+    "typeAnonymous": "匿名",
+    "typeTest": "テスト",
+    "typeNormal": "通常"
+  },
+  "errors": {
+    "loadAccountsFailed": "アカウント一覧の取得に失敗しました",
+    "createAccountFailed": "アカウントの作成に失敗しました",
+    "updateAccountFailed": "アカウントの更新に失敗しました",
+    "deleteAccountFailed": "アカウントの削除に失敗しました",
+    "deleteSelfForbidden": "自分自身のアカウントは削除できません",
+    "firebase": {
+      "emailAlreadyInUse": "このメールアドレスは既に使用されています",
+      "weakPassword": "パスワードは6文字以上で入力してください",
+      "invalidEmail": "メールアドレスの形式が正しくありません",
+      "networkError": "通信エラーが発生しました。電波の良い場所で再度お試しください",
+      "createAccountGeneric": "アカウントの作成に失敗しました。時間をおいて再度お試しください"
+    }
+  }
+}

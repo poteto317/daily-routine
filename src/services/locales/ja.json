@@ -1,0 +1,6 @@
+{
+  "authService": {
+    "firebaseNotConfigured": "Firebase未設定: .env.localファイルにFirebase認証情報を設定してください。\n詳細は.env.local.exampleを参照してください。",
+    "cloudNotConfigured": "クラウド機能が未設定です。.env.localファイルに認証情報を設定してください。\n詳細は.env.local.exampleを参照してください。"
+  }
+}

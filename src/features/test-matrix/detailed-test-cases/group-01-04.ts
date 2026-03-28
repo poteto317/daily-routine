@@ -1,0 +1,1344 @@
+import type { DetailTestCaseMap } from "./types";
+
+export const DETAILED_TEST_CASES_GROUP_01_04: DetailTestCaseMap = {
+  "1-1": [
+    {
+      "id": "1-1-1",
+      "scenario": "正しいメール/パスワードでログイン",
+      "expected": "ログイン成功、ホーム画面に遷移",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "1-1-2",
+      "scenario": "存在しないメールアドレスでログイン",
+      "expected": "エラーメッセージが表示される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "1-1-3",
+      "scenario": "正しいメール＋間違ったパスワード",
+      "expected": "エラーメッセージが表示される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "1-1-4",
+      "scenario": "メール欄を空のまま送信",
+      "expected": "送信できない／バリデーションエラー",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "1-1-5",
+      "scenario": "パスワード欄を空のまま送信",
+      "expected": "送信できない／バリデーションエラー",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ],
+  "1-2": [
+    {
+      "id": "1-2-1",
+      "scenario": "新規メール/パスワードで登録",
+      "expected": "アカウント作成成功、自動ログイン",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "1-2-2",
+      "scenario": "既に登録済みのメールで登録",
+      "expected": "エラーメッセージが表示される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "1-2-3",
+      "scenario": "弱いパスワード（6文字未満）で登録",
+      "expected": "パスワード要件エラーが表示される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "1-2-4",
+      "scenario": "不正な形式のメールアドレスで登録",
+      "expected": "メール形式エラーが表示される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ],
+  "1-3": [
+    {
+      "id": "1-3-1",
+      "scenario": "匿名ログインボタンを押下",
+      "expected": "匿名ユーザーとしてログイン、ホーム画面に遷移",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "1-3-2",
+      "scenario": "匿名ログイン中にデータを作成",
+      "expected": "ローカルに一時的に保存される（クラウド同期なし）",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "1-3-3",
+      "scenario": "匿名ログアウト後に再度匿名ログイン",
+      "expected": "前回のデータは引き継がれない（新しいセッション）",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ],
+  "1-4": [
+    {
+      "id": "1-4-1",
+      "scenario": "テストアカウントボタンを押下（初回）",
+      "expected": "テストアカウント自動作成＋ログイン",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "1-4-2",
+      "scenario": "テストアカウントボタンを押下（2回目以降）",
+      "expected": "既存テストアカウントでログイン",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "1-4-3",
+      "scenario": "テストアカウントでデータを作成",
+      "expected": "クラウドに同期され、永続的に保存される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "1-4-4",
+      "scenario": "テストアカウントでログアウト後、再ログイン",
+      "expected": "以前のデータが保持されている",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ],
+  "1-5": [
+    {
+      "id": "1-5-1",
+      "scenario": "不正な認証情報でログイン試行",
+      "expected": "日本語のエラーメッセージが表示される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "1-5-2",
+      "scenario": "ネットワーク切断状態でログイン試行",
+      "expected": "接続エラーメッセージが表示される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ],
+  "1-6": [
+    {
+      "id": "1-6-1",
+      "scenario": "ログインボタン押下直後",
+      "expected": "ローディングスピナーが表示される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "1-6-2",
+      "scenario": "認証処理中にボタン押下",
+      "expected": "二重送信されない（ボタン無効化）",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ],
+  "1-7": [
+    {
+      "id": "1-7-1",
+      "scenario": "未ログインでホーム画面にアクセス",
+      "expected": "ログイン画面にリダイレクトされる",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "1-7-2",
+      "scenario": "ログイン後にログアウトし、ブラウザ戻る",
+      "expected": "ログイン画面に戻る（ホームに行かない）",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ],
+  "2-1": [
+    {
+      "id": "2-1-1",
+      "scenario": "全フィールド入力して作成",
+      "expected": "ルーティンが作成され一覧に表示される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-1-2",
+      "scenario": "最低限のフィールド（タイトル＋カテゴリ）のみで作成",
+      "expected": "デフォルト値が補完され作成成功",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-1-3",
+      "scenario": "タイトル未入力で作成を試行",
+      "expected": "バリデーションエラーで作成できない",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-1-4",
+      "scenario": "作成したルーティンが登録した曜日に表示される",
+      "expected": "対応する曜日タブで表示確認",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-1-5",
+      "scenario": "作成したルーティンが未登録の曜日に表示されない",
+      "expected": "非対応の曜日タブで非表示確認",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ],
+  "2-2": [
+    {
+      "id": "2-2-1",
+      "scenario": "ルーティンの編集画面を開く",
+      "expected": "現在の値がフォームに反映されている",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-2-2",
+      "scenario": "タイトルを変更して保存",
+      "expected": "変更が反映される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-2-3",
+      "scenario": "開始時間を変更して保存",
+      "expected": "変更が反映される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-2-4",
+      "scenario": "曜日を変更して保存",
+      "expected": "新しい曜日に表示、旧曜日で非表示",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-2-5",
+      "scenario": "編集をキャンセル",
+      "expected": "変更が保存されない",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ],
+  "2-3": [
+    {
+      "id": "2-3-1",
+      "scenario": "ルーティン削除ボタンを押下",
+      "expected": "確認ダイアログが表示される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-3-2",
+      "scenario": "確認ダイアログで「はい」を選択",
+      "expected": "ルーティンが削除され一覧から消える",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-3-3",
+      "scenario": "確認ダイアログで「いいえ」を選択",
+      "expected": "削除されず元の画面に戻る",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ],
+  "2-4": [
+    {
+      "id": "2-4-1",
+      "scenario": "月〜金の5曜日を選択して一括登録",
+      "expected": "5つのルーティンが各曜日に作成される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-4-2",
+      "scenario": "土日の2曜日を選択して一括登録",
+      "expected": "2つのルーティンが作成される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-4-3",
+      "scenario": "全曜日を選択して一括登録",
+      "expected": "7つのルーティンが各曜日に作成される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ],
+  "2-5": [
+    {
+      "id": "2-5-1",
+      "scenario": "グループルーティンの1つを編集",
+      "expected": "グループ全体に変更が反映される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-5-2",
+      "scenario": "グループルーティンを削除",
+      "expected": "確認後、グループ全体が削除される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ],
+  "2-6": [
+    {
+      "id": "2-6-1",
+      "scenario": "タイトルを入力",
+      "expected": "入力値がそのまま保存される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-6-2",
+      "scenario": "タイトルを空にして保存を試行",
+      "expected": "保存できない（必須バリデーション）",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-6-3",
+      "scenario": "長いタイトル（50文字以上）を入力",
+      "expected": "正常に入力・保存される（表示が切り詰められるか確認）",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ],
+  "2-7": [
+    {
+      "id": "2-7-1",
+      "scenario": "「朝の準備」カテゴリを選択",
+      "expected": "カテゴリアイコンと共に保存される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-7-2",
+      "scenario": "「仕事」カテゴリを選択",
+      "expected": "カテゴリアイコンと共に保存される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-7-3",
+      "scenario": "「健康」カテゴリを選択",
+      "expected": "カテゴリアイコンと共に保存される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-7-4",
+      "scenario": "「家事」カテゴリを選択",
+      "expected": "カテゴリアイコンと共に保存される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-7-5",
+      "scenario": "「趣味」カテゴリを選択",
+      "expected": "カテゴリアイコンと共に保存される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-7-6",
+      "scenario": "「その他」カテゴリを選択",
+      "expected": "カテゴリアイコンと共に保存される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ],
+  "2-8": [
+    {
+      "id": "2-8-1",
+      "scenario": "月曜のみ選択して作成",
+      "expected": "月曜タブにのみ表示される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-8-2",
+      "scenario": "土日を選択して作成",
+      "expected": "土曜・日曜タブにのみ表示される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-8-3",
+      "scenario": "月〜金（平日全て）を選択して作成",
+      "expected": "平日すべてのタブで表示、土日は非表示",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-8-4",
+      "scenario": "全曜日（日〜土）を選択して作成",
+      "expected": "すべての曜日タブで表示される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-8-5",
+      "scenario": "水曜のみ選択 → 火曜タブで確認",
+      "expected": "火曜タブでは非表示",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-8-6",
+      "scenario": "曜日未選択で保存を試行",
+      "expected": "バリデーションエラー／デフォルト値が適用される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ],
+  "2-9": [
+    {
+      "id": "2-9-1",
+      "scenario": "祝日モード「除外」で登録、祝日にホーム表示",
+      "expected": "祝日ビューで非表示",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-9-2",
+      "scenario": "祝日モード「除外」で登録、平日にホーム表示",
+      "expected": "通常通り表示される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-9-3",
+      "scenario": "祝日モード「含む」で登録、祝日にホーム表示",
+      "expected": "祝日ビューで表示される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-9-4",
+      "scenario": "祝日モード「含む」で登録、平日にホーム表示",
+      "expected": "通常通り表示される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-9-5",
+      "scenario": "祝日モード「祝日のみ」で登録、祝日にホーム表示",
+      "expected": "祝日ビューで表示される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-9-6",
+      "scenario": "祝日モード「祝日のみ」で登録、平日にホーム表示",
+      "expected": "非表示（祝日以外では出ない）",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ],
+  "2-10": [
+    {
+      "id": "2-10-1",
+      "scenario": "開始時間を07:00に設定",
+      "expected": "保存後、一覧で07:00と表示される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-10-2",
+      "scenario": "開始時間を23:30に設定",
+      "expected": "保存後、一覧で23:30と表示される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-10-3",
+      "scenario": "開始時間を変更して保存",
+      "expected": "新しい時間がソート順に反映される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ],
+  "2-11": [
+    {
+      "id": "2-11-1",
+      "scenario": "所要時間を15分に設定",
+      "expected": "15分として保存される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-11-2",
+      "scenario": "所要時間を120分（2時間）に設定",
+      "expected": "120分として保存される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-11-3",
+      "scenario": "所要時間を未入力のまま保存",
+      "expected": "設定画面のデフォルト値が適用される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ],
+  "2-12": [
+    {
+      "id": "2-12-1",
+      "scenario": "説明を入力して保存",
+      "expected": "説明が保存される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-12-2",
+      "scenario": "説明を空のまま保存",
+      "expected": "保存成功（任意項目）",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ],
+  "2-13": [
+    {
+      "id": "2-13-1",
+      "scenario": "通知時間が初期状態で空白",
+      "expected": "空白（通知なし）がデフォルト",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-13-2",
+      "scenario": "通知時間を10分前に設定",
+      "expected": "開始10分前に通知が設定される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-13-3",
+      "scenario": "通知時間を空白にクリア",
+      "expected": "通知なしとして保存される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-13-4",
+      "scenario": "通知時間を0分に設定",
+      "expected": "開始時刻ちょうどに通知",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ],
+  "2-14": [
+    {
+      "id": "2-14-1",
+      "scenario": "同じ曜日・同じ時間帯に2つ目を登録",
+      "expected": "時間重複の警告が表示される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-14-2",
+      "scenario": "同じ時間帯だが異なる曜日に登録",
+      "expected": "重複なしで正常に登録",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-14-3",
+      "scenario": "「除外」ルーティンと「祝日のみ」ルーティンで同時間",
+      "expected": "重複なし（実行日が重ならないため）",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-14-4",
+      "scenario": "「含む」ルーティン同士で同時間",
+      "expected": "重複警告が表示される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-14-5",
+      "scenario": "時間が隣接（前ルーティン終了=次の開始）",
+      "expected": "重複なしで正常に登録",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-14-6",
+      "scenario": "時間が一部重複（前ルーティン終了前に次が開始）",
+      "expected": "重複警告が表示される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ],
+  "2-15": [
+    {
+      "id": "2-15-1",
+      "scenario": "重複検出時に空き時間の提案を確認",
+      "expected": "次の空き時間が提案される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-15-2",
+      "scenario": "ルーティンが0件の曜日で空き時間確認",
+      "expected": "最も早い時間が提案される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ],
+  "2-16": [
+    {
+      "id": "2-16-1",
+      "scenario": "月曜タブを選択",
+      "expected": "月曜に登録されたルーティンのみ表示",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-16-2",
+      "scenario": "火曜タブを選択",
+      "expected": "火曜に登録されたルーティンのみ表示",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-16-3",
+      "scenario": "水曜タブを選択",
+      "expected": "水曜に登録されたルーティンのみ表示",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-16-4",
+      "scenario": "木曜タブを選択",
+      "expected": "木曜に登録されたルーティンのみ表示",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-16-5",
+      "scenario": "金曜タブを選択",
+      "expected": "金曜に登録されたルーティンのみ表示",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-16-6",
+      "scenario": "土曜タブを選択",
+      "expected": "土曜に登録されたルーティンのみ表示",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-16-7",
+      "scenario": "日曜タブを選択",
+      "expected": "日曜に登録されたルーティンのみ表示",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-16-8",
+      "scenario": "祝日タブを選択",
+      "expected": "祝日モード「含む」「祝日のみ」のルーティンが表示、「除外」は非表示",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-16-9",
+      "scenario": "月曜のみ登録のルーティン → 火曜タブで確認",
+      "expected": "非表示であること",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-16-10",
+      "scenario": "全曜日登録のルーティン → 任意の曜日タブで確認",
+      "expected": "すべてのタブで表示される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ],
+  "2-17": [
+    {
+      "id": "2-17-1",
+      "scenario": "当日が祝日の場合、ページ読込",
+      "expected": "自動的に祝日ビューが選択される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-17-2",
+      "scenario": "祝日ビューで祝日モード「除外」ルーティン",
+      "expected": "非表示",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-17-3",
+      "scenario": "祝日ビューで祝日モード「含む」ルーティン",
+      "expected": "表示される（対応曜日のもの）",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-17-4",
+      "scenario": "祝日ビューで祝日モード「祝日のみ」ルーティン",
+      "expected": "表示される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-17-5",
+      "scenario": "平日ビューで祝日モード「祝日のみ」ルーティン",
+      "expected": "非表示",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-17-6",
+      "scenario": "祝日ビューから曜日ビューに手動切替",
+      "expected": "正常に切り替わる",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ],
+  "2-18": [
+    {
+      "id": "2-18-1",
+      "scenario": "フィルター「すべて」を選択",
+      "expected": "全カテゴリのルーティンが表示される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-18-2",
+      "scenario": "フィルター「朝の準備」を選択",
+      "expected": "朝の準備カテゴリのみ表示",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-18-3",
+      "scenario": "フィルター「仕事」を選択",
+      "expected": "仕事カテゴリのみ表示",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-18-4",
+      "scenario": "フィルター「健康」を選択",
+      "expected": "健康カテゴリのみ表示",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-18-5",
+      "scenario": "フィルター「家事」を選択",
+      "expected": "家事カテゴリのみ表示",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-18-6",
+      "scenario": "フィルター「趣味」を選択",
+      "expected": "趣味カテゴリのみ表示",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-18-7",
+      "scenario": "フィルター「その他」を選択",
+      "expected": "その他カテゴリのみ表示",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-18-8",
+      "scenario": "該当ルーティンが0件のカテゴリを選択",
+      "expected": "空状態メッセージが表示される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ],
+  "2-19": [
+    {
+      "id": "2-19-1",
+      "scenario": "月曜タブを選択してページリロード",
+      "expected": "リロード後も月曜タブが選択されている",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-19-2",
+      "scenario": "土曜タブを選択してページリロード",
+      "expected": "リロード後も土曜タブが選択されている",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-19-3",
+      "scenario": "「仕事」カテゴリフィルターを選択してリロード",
+      "expected": "リロード後も「仕事」フィルターが維持",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-19-4",
+      "scenario": "曜日とカテゴリの両方を変更してリロード",
+      "expected": "両方の選択が維持される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-19-5",
+      "scenario": "祝日当日に別の曜日を選択してリロード",
+      "expected": "選択した曜日が維持される（祝日優先上書きされない）",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ],
+  "2-20": [
+    {
+      "id": "2-20-1",
+      "scenario": "未完了ルーティンのチェックをONにする",
+      "expected": "完了マーク＋プログレスバー更新",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-20-2",
+      "scenario": "完了済みルーティンのチェックをOFFにする",
+      "expected": "未完了に戻る＋プログレスバー更新",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-20-3",
+      "scenario": "全ルーティンを完了にする",
+      "expected": "プログレスバーが100%表示",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ],
+  "2-21": [
+    {
+      "id": "2-21-1",
+      "scenario": "ルーティンをドラッグして順序を変更",
+      "expected": "新しい順序で表示される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-21-2",
+      "scenario": "順序変更後にページリロード",
+      "expected": "変更した順序が維持されている",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-21-3",
+      "scenario": "編集モードでドラッグ&ドロップ",
+      "expected": "正常に動作する",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ],
+  "2-22": [
+    {
+      "id": "2-22-1",
+      "scenario": "ルーティンを左にスワイプ",
+      "expected": "削除オプションが表示される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-22-2",
+      "scenario": "ルーティンを右にスワイプ",
+      "expected": "編集オプションが表示される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-22-3",
+      "scenario": "設定でスワイプ無効にした場合",
+      "expected": "スワイプ操作が無効になる",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-22-4",
+      "scenario": "スワイプ後に削除を確定",
+      "expected": "ルーティンが削除される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ],
+  "2-23": [
+    {
+      "id": "2-23-1",
+      "scenario": "編集モードに切り替え",
+      "expected": "編集/削除ボタンが各行に表示される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-23-2",
+      "scenario": "閲覧モードに切り替え",
+      "expected": "編集/削除ボタンが非表示になる",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-23-3",
+      "scenario": "編集モード状態でリロード",
+      "expected": "編集モードが維持される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ],
+  "2-24": [
+    {
+      "id": "2-24-1",
+      "scenario": "完了済みルーティン",
+      "expected": "完了カラー（緑系）で表示",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-24-2",
+      "scenario": "開始時間を過ぎた未完了ルーティン",
+      "expected": "超過カラー（赤/警告系）で表示",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-24-3",
+      "scenario": "未開始のルーティン",
+      "expected": "デフォルトカラーで表示",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ],
+  "2-25": [
+    {
+      "id": "2-25-1",
+      "scenario": "ルーティンが0件の曜日を選択",
+      "expected": "空状態メッセージが表示される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-25-2",
+      "scenario": "カテゴリフィルターで該当なし",
+      "expected": "空状態メッセージが表示される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ],
+  "2-26": [
+    {
+      "id": "2-26-1",
+      "scenario": "0件完了時のプログレスバー",
+      "expected": "0%と表示される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-26-2",
+      "scenario": "一部完了時のプログレスバー",
+      "expected": "正確な割合が表示される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-26-3",
+      "scenario": "全件完了時のプログレスバー",
+      "expected": "100%と表示される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ],
+  "2-27": [
+    {
+      "id": "2-27-1",
+      "scenario": "チェックを付けて日次履歴確認",
+      "expected": "当日の履歴にルーティンスナップショットが保存される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-27-2",
+      "scenario": "日付をまたいで確認",
+      "expected": "前日の履歴が残り、新しい日の進捗がリセットされる",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ],
+  "2-28": [
+    {
+      "id": "2-28-1",
+      "scenario": "旧形式データ（sets等）がある場合",
+      "expected": "自動的に新形式にマイグレーションされる",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "2-28-2",
+      "scenario": "holidayMode旧形式からdaysOfWeek祝日(7)への変換",
+      "expected": "正しく変換される（include→7追加, only→[7], exclude→変更なし）",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ],
+  "3-1": [
+    {
+      "id": "3-1-1",
+      "scenario": "タイトルと本文を入力して保存",
+      "expected": "日記エントリが作成される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "3-1-2",
+      "scenario": "本文のみ入力して保存",
+      "expected": "タイトル空でも保存できる",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "3-1-3",
+      "scenario": "長文の本文を入力",
+      "expected": "正常に保存・表示される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ],
+  "3-2": [
+    {
+      "id": "3-2-1",
+      "scenario": "既存の今日の日記を開く",
+      "expected": "保存済みの内容がフォームに表示",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "3-2-2",
+      "scenario": "今日の日記を編集して保存",
+      "expected": "上書き保存される（1日1エントリ）",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ],
+  "3-3": [
+    {
+      "id": "3-3-1",
+      "scenario": "履歴一覧を表示",
+      "expected": "最新順に直近30件が表示",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "3-3-2",
+      "scenario": "31件以上の場合",
+      "expected": "最新30件のみ表示",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ],
+  "3-4": [
+    {
+      "id": "3-4-1",
+      "scenario": "日記を削除",
+      "expected": "確認ダイアログ→確認後に削除",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "3-4-2",
+      "scenario": "削除キャンセル",
+      "expected": "日記が残る",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ],
+  "3-5": [
+    {
+      "id": "3-5-1",
+      "scenario": "日付の表示を確認",
+      "expected": "「2026年2月12日(木)」のような日本語形式",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ],
+  "4-1": [
+    {
+      "id": "4-1-1",
+      "scenario": "体重を入力して記録",
+      "expected": "kg単位で保存される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "4-1-2",
+      "scenario": "小数点以下を含む体重（例: 65.5）",
+      "expected": "小数OK",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "4-1-3",
+      "scenario": "0や負の値を入力",
+      "expected": "バリデーションエラーまたは保存されない",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ],
+  "4-2": [
+    {
+      "id": "4-2-1",
+      "scenario": "今日の記録が既にある場合",
+      "expected": "上書き更新される（1日1記録）",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ],
+  "4-3": [
+    {
+      "id": "4-3-1",
+      "scenario": "メモを入力して記録",
+      "expected": "メモが保存される",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "4-3-2",
+      "scenario": "メモなしで記録",
+      "expected": "正常に保存（任意）",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ],
+  "4-4": [
+    {
+      "id": "4-4-1",
+      "scenario": "前回より増加した場合",
+      "expected": "増加分が表示される（例: +0.5kg）",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "4-4-2",
+      "scenario": "前回より減少した場合",
+      "expected": "減少分が表示される（例: -0.3kg）",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    },
+    {
+      "id": "4-4-3",
+      "scenario": "初回記録（前回なし）",
+      "expected": "増減表示なし",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ],
+  "4-5": [
+    {
+      "id": "4-5-1",
+      "scenario": "履歴一覧を表示",
+      "expected": "最新順に直近30件が表示",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ],
+  "4-6": [
+    {
+      "id": "4-6-1",
+      "scenario": "体重記録を削除",
+      "expected": "確認ダイアログ→確認後に削除",
+      "pc": "unchecked",
+      "sp": "unchecked",
+      "note": ""
+    }
+  ]
+};

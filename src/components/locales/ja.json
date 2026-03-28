@@ -1,0 +1,17 @@
+{
+  "authGuard": {
+    "loading": "読み込み中..."
+  },
+  "progressBar": {
+    "title": "今日の進捗",
+    "completedSuffix": "完了"
+  },
+  "trainDelay": {
+    "mockHint": "⚠️ これはモックデータです。今後API連携予定",
+    "delayMinutesTemplate": "約{minutes}分の遅れ",
+    "delayReasonTemplate": "原因: {reason}"
+  },
+  "rootErrorBoundary": {
+    "message": "アプリの初期化中にエラーが発生しました。ページを再読み込みしてください。"
+  }
+}

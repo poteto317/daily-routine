@@ -1,0 +1,186 @@
+{
+  "page": {
+    "title": "⚙️ 設定"
+  },
+  "featureVisibility": {
+    "title": "🎯 機能の表示設定",
+    "description": "メニューに表示する機能を選択できます。使わない機能を非表示にしてメニューをシンプルに保てます。"
+  },
+  "menuOrder": {
+    "title": "🔀 メニューの並び順",
+    "description": "ハンバーガーメニューに表示される機能の並び順をドラッグ＆ドロップで変更できます。「ルーティン」と「設定」は常に固定位置に表示されます。",
+    "resetButton": "デフォルトに戻す"
+  },
+  "todoListManagement": {
+    "title": "📝 Todoリスト管理",
+    "description": "ハンバーガーメニューに表示するTodoリストを管理します。各リストの表示・非表示を切り替えられます。",
+    "addButton": "＋ 新しいリストを追加",
+    "createTitle": "新しいリストを作成",
+    "titlePlaceholder": "リストのタイトル",
+    "createButton": "作成",
+    "cancelButton": "キャンセル",
+    "emptyMessage": "Todoリストはまだありません",
+    "emptyDescription": "「＋ 新しいリストを追加」からリストを作成してください",
+    "visibleLabel": "表示",
+    "hiddenLabel": "非表示",
+    "deleteConfirm": "「{title}」を削除しますか？この操作は元に戻せません。"
+  },
+  "dataOption": {
+    "items": [
+      { "key": "routines", "label": "ルーティン登録データ" },
+      { "key": "progress", "label": "今日の進捗データ" },
+      { "key": "history", "label": "達成カレンダー・統計データ（全履歴）" },
+      { "key": "settings", "label": "アプリ設定" }
+    ],
+    "selectAll": "✓ すべて選択",
+    "deselectAll": "✕ すべて解除"
+  },
+  "trainDelay": {
+    "title": "🚃 電車遅延通知",
+    "description": "設定した路線の遅延情報をホーム画面に表示します。（今後API連携予定）",
+    "toggleLabel": "遅延通知を有効にする",
+    "addLineLabel": "監視する路線を追加",
+    "selectPlaceholder": "路線を選択...",
+    "addButtonLabel": "追加",
+    "alertDuplicateLine": "この路線は既に追加されています"
+  },
+  "monitoredLines": {
+    "emptyMessage": "監視する路線を追加してください",
+    "listLabelPrefix": "監視中の路線",
+    "removeLabel": "削除"
+  },
+  "cloudSync": {
+    "title": "☁️ クラウド同期",
+    "warningMessage": "⚠️ この機能は現在開発途中です。動作しない可能性があります。",
+    "description": "複数の端末でデータを共有できます。変更は手動で同期してください。",
+    "statusLabel": "同期ステータス",
+    "remoteChangesMessage": "⚠️ 他の端末でデータが更新されています。同期してください。",
+    "localChangesMessage": "✅ この端末のデータがクラウドより新しい状態です。アップロードできます。",
+    "hint": "💡 ヒント: 新しい端末では「ダウンロード」、既存の端末では「アップロード」を使用してください。",
+    "lastSyncPrefix": "最終同期:",
+    "errorPrefix": "❌ エラー:",
+    "actions": [
+      { "kind": "upload", "label": "⬆️ クラウドにアップロード" },
+      { "kind": "download", "label": "⬇️ クラウドからダウンロード" }
+    ],
+    "messages": {
+      "confirmUpload": "ローカルのデータをクラウドにアップロードします。クラウドのデータは上書きされます。\n\n続行しますか？",
+      "uploadSuccess": "✅ クラウドへのアップロードが完了しました",
+      "uploadError": "❌ アップロードに失敗しました。通信環境を確認して再度お試しください",
+      "confirmDownload": "クラウドのデータをダウンロードします。ローカルのデータは上書きされます。\n\n続行しますか？",
+      "downloadError": "❌ ダウンロードに失敗しました。通信環境を確認して再度お試しください"
+    }
+  },
+  "defaultAndPomodoro": {
+    "notificationBetaLabel": "Beta",
+    "pomodoroSectionTitle": "🍅 ポモドーロタイマー設定",
+    "defaultDuration": {
+      "label": "デフォルト所要時間（分）",
+      "description": "新しいルーティンを追加する際のデフォルト値です。1つのルーティンにかかる時間を設定します。",
+      "errorText": "1～1440分の範囲で入力してください",
+      "hint": "推奨: 15〜60分"
+    },
+    "defaultNotification": {
+      "label": "デフォルト通知時間（分後）",
+      "description": "新しいルーティンを追加する際のデフォルト値です。開始時間を過ぎてから何分後に通知するかを設定します。",
+      "errorText": "1～120分の範囲で入力してください",
+      "hint": "推奨: 10〜30分"
+    },
+    "pomodoroFields": [
+      {
+        "label": "集中時間（分）",
+        "description": "1回の集中時間の長さを設定します。",
+        "errorText": "1～90分の範囲で入力してください",
+        "hint": "標準: 25分"
+      },
+      {
+        "label": "休憩時間（分）",
+        "description": "集中時間の後の休憩時間を設定します。",
+        "errorText": "1～30分の範囲で入力してください",
+        "hint": "標準: 5分"
+      }
+    ]
+  },
+  "notificationTest": {
+    "label": "通知テスト",
+    "description": "通知が正常に動作するかテストします。初回は通知の許可を求められます。",
+    "errorHint": "ブラウザの設定から通知を許可してください",
+    "routineCountLabel": "現在のルーティン数",
+    "activeCountLabel": "アクティブな通知設定",
+    "swLogTitle": "Service Workerログ",
+    "clearLogLabel": "クリア",
+    "counterSuffix": "件",
+    "buttonLabels": {
+      "testing": "🔔 テスト中...",
+      "success": "✓ 通知が送信されました！",
+      "error": "✗ 通知の許可が必要です",
+      "idle": "🔔 通知をテスト"
+    }
+  },
+  "dataManagement": {
+    "title": "📦 データ管理",
+    "exportTitle": "💾 エクスポート（データのバックアップ）",
+    "importTitle": "📥 インポート（データの復元）",
+    "importWarningMessage": "⚠️ インポートすると選択した項目の現在のデータは上書きされます",
+    "hintTitle": "💡 使い方のヒント",
+    "hintItems": [
+      "• すべてを選択：フルバックアップ・完全復元",
+      "• ルーティンのみ：別のデバイスにルーティンをコピー",
+      "• 履歴のみ：達成記録だけをバックアップ",
+      "• 設定のみ：アプリの設定を共有"
+    ],
+    "messages": {
+      "alertNoSelection": "インポートする項目を選択してください",
+      "confirmImportTemplate": "以下のデータをインポートします（現在のデータは上書きされます）：\n\n{types}\n\n続行しますか？"
+    }
+  },
+  "saveButton": {
+    "saved": "✓ 保存しました",
+    "save": "保存"
+  },
+  "appearance": {
+    "themeLabel": "テーマ",
+    "betaLabel": "Beta",
+    "themeDescription": "アプリの表示テーマを選択できます。選択した瞬間に表示が変わり、保存ボタンを押すと永続化されます。",
+    "swipeActionLabel": "スワイプアクション",
+    "swipeActionDescription": "ルーティンを右から左へスワイプしたときの動作を選択します",
+    "themeOptions": [
+      {
+        "value": "light",
+        "title": "ライトモード",
+        "description": "常に明るいテーマ"
+      },
+      {
+        "value": "dark",
+        "title": "ダークモード",
+        "description": "常に暗いテーマ"
+      },
+      {
+        "value": "auto",
+        "title": "自動",
+        "description": "システムの設定に従う"
+      }
+    ],
+    "swipeActionOptions": [
+      {
+        "value": "delete",
+        "title": "🗑️ 削除",
+        "description": "スワイプでルーティンを削除"
+      },
+      {
+        "value": "edit",
+        "title": "✏️ 編集",
+        "description": "スワイプで編集画面を開く"
+      }
+    ]
+  },
+  "privacyNote": {
+    "title": "データについて",
+    "items": [
+      "• すべてのデータはブラウザのローカルストレージに保存されます",
+      "• サーバーには送信されず、完全にプライベートです",
+      "• ブラウザのキャッシュをクリアするとデータが消える可能性があります"
+    ],
+    "hint": "💡 定期的にエクスポートしてバックアップすることをお勧めします"
+  }
+}

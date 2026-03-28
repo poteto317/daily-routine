@@ -1,0 +1,330 @@
+{
+  "appConfig": {
+    "app": {
+      "name": "デイリールーティン",
+      "title": "デイリールーティン - 習慣管理アプリ",
+      "description": "日々のルーティンを管理し、習慣化をサポートするアプリ",
+      "shortTitle": "ルーティン"
+    },
+    "defaults": {
+      "durationMinutes": 30,
+      "notificationMinutes": 10,
+      "pomodoroFocusMinutes": 25,
+      "pomodoroBreakMinutes": 5
+    },
+    "validation": {
+      "durationMinutes": {
+        "min": 1,
+        "max": 1440,
+        "recommended": "15〜60分"
+      },
+      "notificationMinutes": {
+        "min": 1,
+        "max": 120,
+        "recommended": "10〜30分"
+      },
+      "pomodoroFocusMinutes": {
+        "min": 1,
+        "max": 90,
+        "recommended": "25分"
+      },
+      "pomodoroBreakMinutes": {
+        "min": 1,
+        "max": 30,
+        "recommended": "5分"
+      }
+    },
+    "export": {
+      "filenamePrefix": "daily-routine",
+      "dateFormat": "YYYY-MM-DD"
+    },
+    "notification": {
+      "testTimeout": 3000
+    },
+    "auth": {
+      "testAccount": {
+        "email": "test@example.com",
+        "password": "test123456"
+      }
+    }
+  },
+  "menuConfig": {
+    "menuItems": [
+      {
+        "id": "home",
+        "label": "ルーティン",
+        "icon": "✅",
+        "route": "home"
+      },
+      {
+        "id": "journal",
+        "label": "ジャーナル",
+        "icon": "📔",
+        "route": "journal",
+        "badge": {
+          "text": "BETA",
+          "color": "bg-orange-500"
+        }
+      },
+      {
+        "id": "weight-tracker",
+        "label": "体重記録",
+        "icon": "⚖️",
+        "route": "weight-tracker",
+        "badge": {
+          "text": "BETA",
+          "color": "bg-orange-500"
+        }
+      },
+      {
+        "id": "pomodoro",
+        "label": "ポモドーロ",
+        "icon": "🍅",
+        "route": "pomodoro",
+        "badge": {
+          "text": "BETA",
+          "color": "bg-orange-500"
+        }
+      },
+      {
+        "id": "worktracker",
+        "label": "作業記録",
+        "icon": "💼",
+        "route": "worktracker",
+        "badge": {
+          "text": "BETA",
+          "color": "bg-orange-500"
+        }
+      },
+      {
+        "id": "meal",
+        "label": "食事記録",
+        "icon": "🍽️",
+        "route": "meal",
+        "badge": {
+          "text": "開発予定",
+          "color": "bg-purple-500"
+        }
+      },
+      {
+        "id": "budget",
+        "label": "家計簿",
+        "icon": "💰",
+        "route": "budget",
+        "badge": {
+          "text": "BETA",
+          "color": "bg-orange-500"
+        }
+      },
+      {
+        "id": "weather",
+        "label": "天気予報",
+        "icon": "🌤️",
+        "route": "weather"
+      },
+      {
+        "id": "calendar",
+        "label": "達成カレンダー",
+        "icon": "�️",
+        "route": "calendar",
+        "badge": {
+          "text": "BETA",
+          "color": "bg-orange-500"
+        }
+      },
+      {
+        "id": "statistics",
+        "label": "統計・レポート",
+        "icon": "📊",
+        "route": "statistics",
+        "badge": {
+          "text": "BETA",
+          "color": "bg-orange-500"
+        }
+      },
+      {
+        "id": "preset",
+        "label": "プリセット管理",
+        "icon": "📋",
+        "route": "preset"
+      },
+      {
+        "id": "todo-lists",
+        "label": "Todoリスト",
+        "icon": "✅",
+        "route": "todo-lists"
+      },
+      {
+        "id": "todo-list-management",
+        "label": "Todoリスト管理",
+        "icon": "📝",
+        "route": "todo-list-management"
+      },
+      {
+        "id": "sync-management",
+        "label": "同期履歴管理",
+        "icon": "☁️",
+        "route": "sync-management"
+      },
+      {
+        "id": "settings",
+        "label": "設定",
+        "icon": "⚙️",
+        "route": "settings"
+      },
+      {
+        "id": "test-matrix",
+        "label": "テストマトリクス",
+        "icon": "📋",
+        "route": "test-matrix",
+        "badge": {
+          "text": "DEV",
+          "color": "bg-gray-500"
+        }
+      },
+      {
+        "id": "account-admin",
+        "label": "アカウント管理",
+        "icon": "👥",
+        "route": "account-admin",
+        "badge": {
+          "text": "管理者",
+          "color": "bg-purple-500"
+        }
+      }
+    ],
+    "header": {
+      "logo": "📅",
+      "title": "デイリールーティン"
+    }
+  },
+  "uiTextConfig": {
+    "auth": {
+      "logout": {
+        "button": "ログアウト",
+        "confirm": "ログアウトしますか？",
+        "success": "ログアウトしました",
+        "error": "ログアウトに失敗しました"
+      },
+      "anonymousUser": "匿名",
+      "anonymousUserFull": "匿名ユーザー",
+      "user": "ユーザー"
+    },
+    "editMode": {
+      "toggle": {
+        "enable": "編集モードに切り替え",
+        "disable": "表示モードに切り替え"
+      }
+    },
+    "menu": {
+      "label": "メニュー"
+    },
+    "settings": {
+      "title": "⚙️ 設定",
+      "save": "保存",
+      "saved": "✓ 保存しました",
+      "sections": {
+        "defaultDuration": {
+          "label": "デフォルト所要時間（分）",
+          "description": "新しいルーティンを追加する際のデフォルト値です。1つのルーティンにかかる時間を設定します。"
+        },
+        "defaultNotification": {
+          "label": "デフォルト通知時刻（分前）",
+          "description": "通知を受け取りたい時刻を、ルーティン開始時刻の何分前かで設定します。"
+        },
+        "pomodoroFocus": {
+          "label": "集中時間（分）",
+          "description": "1回の集中時間の長さを設定します。"
+        },
+        "pomodoroBreak": {
+          "label": "休憩時間（分）",
+          "description": "集中時間の後の休憩時間を設定します。"
+        },
+        "theme": {
+          "label": "テーマ",
+          "light": {
+            "label": "ライトモード",
+            "description": "常に明るいテーマ"
+          },
+          "dark": {
+            "label": "ダークモード",
+            "description": "常に暗いテーマ"
+          },
+          "auto": {
+            "label": "自動",
+            "description": "システムの設定に従う"
+          }
+        },
+        "swipeAction": {
+          "label": "スワイプアクション",
+          "description": "ルーティンを右から左へスワイプしたときの動作を選択します",
+          "delete": {
+            "label": "🗑️ 削除",
+            "description": "リストから削除"
+          },
+          "disable": {
+            "label": "❌ 無効化",
+            "description": "無効にする"
+          }
+        },
+        "notificationTest": {
+          "label": "通知テスト",
+          "badge": "Beta",
+          "description": "通知が正常に動作するかテストします。初回は通知の許可を求められます。",
+          "button": "🔔 通知テスト実行"
+        }
+      },
+      "dataManagement": {
+        "title": "📦 データ管理",
+        "export": {
+          "title": "💾 エクスポート（データのバックアップ）",
+          "button": {
+            "idle": "💾 選択したデータをエクスポート",
+            "success": "✓ エクスポート完了！",
+            "error": "✗ エクスポート失敗"
+          },
+          "options": {
+            "routines": "ルーティン登録データ",
+            "progress": "今日の進捗データ",
+            "history": "達成カレンダー・統計データ（全履歴）",
+            "settings": "アプリ設定"
+          },
+          "selectAll": "✓ すべて選択",
+          "deselectAll": "✕ すべて解除"
+        },
+        "import": {
+          "title": "📥 インポート（データの復元）",
+          "button": {
+            "idle": "📁 ファイルを選択してインポート",
+            "success": "✓ インポート完了！",
+            "error": "✗ インポート失敗"
+          },
+          "warning": "⚠️ インポートすると選択した項目の現在のデータは上書きされます",
+          "hints": {
+            "title": "💡 使い方のヒント",
+            "all": "• すべてを選択：フルバックアップ・完全復元",
+            "routines": "• ルーティンのみ：別のデバイスにルーティンをコピー",
+            "history": "• 履歴のみ：達成記録だけをバックアップ"
+          }
+        }
+      },
+      "errors": {
+        "durationRange": "1～1440分の範囲で入力してください",
+        "notificationRange": "1～120分の範囲で入力してください",
+        "pomodoroFocusRange": "1～90分の範囲で入力してください",
+        "pomodoroBreakRange": "1～30分の範囲で入力してください",
+        "selectImportItems": "インポートする項目を選択してください"
+      }
+    },
+    "days": [
+      { "value": 0, "label": "日", "fullLabel": "日曜日" },
+      { "value": 1, "label": "月", "fullLabel": "月曜日" },
+      { "value": 2, "label": "火", "fullLabel": "火曜日" },
+      { "value": 3, "label": "水", "fullLabel": "水曜日" },
+      { "value": 4, "label": "木", "fullLabel": "木曜日" },
+      { "value": 5, "label": "金", "fullLabel": "金曜日" },
+      { "value": 6, "label": "土", "fullLabel": "土曜日" },
+      { "value": 7, "label": "祝", "fullLabel": "祝日" }
+    ]
+  }
+}

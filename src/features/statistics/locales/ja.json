@@ -1,0 +1,38 @@
+{
+  "page": {
+    "title": "📊 統計・レポート",
+    "description": "あなたの達成記録を分析します"
+  },
+  "summaryCards": {
+    "noDataLabel": "データなし",
+    "weekly": {
+      "averageTitle": "週平均達成率",
+      "completedTitle": "完了したルーティン",
+      "totalTitle": "総ルーティン数"
+    },
+    "monthly": {
+      "averageTitle": "月平均達成率",
+      "bestDayTitle": "最高達成日",
+      "worstDayTitle": "最低達成日"
+    },
+    "category": {
+      "summaryLabel": "{year}年{month}月のカテゴリ別達成状況",
+      "countSuffix": "カテゴリ"
+    }
+  },
+  "chartPanel": {
+    "noCategoryData": "カテゴリ別のデータがありません",
+    "completedSuffix": "完了"
+  },
+  "modeSelector": {
+    "options": [
+      { "mode": "week", "label": "📅 週次" },
+      { "mode": "month", "label": "📆 月次" },
+      { "mode": "category", "label": "🏷️ カテゴリ別" }
+    ],
+    "periodControls": {
+      "currentWeek": "今週",
+      "currentMonth": "今月"
+    }
+  }
+}

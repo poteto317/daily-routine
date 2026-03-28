@@ -1,0 +1,26 @@
+{
+  "page": {
+    "title": "📔 ジャーナル",
+    "confirmDeleteEntryTemplate": "{date}の記録を削除しますか？",
+    "alertMissingContent": "タイトルまたは本文を入力してください",
+    "defaultTitle": "無題"
+  },
+  "todayCard": {
+    "titleLabel": "今日の記録",
+    "titleInputLabel": "タイトル",
+    "contentInputLabel": "本文",
+    "titlePlaceholder": "例: 今日の出来事",
+    "contentPlaceholder": "今日感じたこと、考えたことを自由に書いてください...",
+    "saveLabel": "保存",
+    "cancelLabel": "キャンセル",
+    "emptyLabel": "まだ今日の記録はありません",
+    "editButtonLabel": "✏️ 編集",
+    "addButtonLabel": "➕"
+  },
+  "recentEntries": {
+    "title": "📖 過去の記録",
+    "empty": "記録がありません",
+    "delete": "🗑️ 削除",
+    "updatedPrefix": "最終更新:"
+  }
+}

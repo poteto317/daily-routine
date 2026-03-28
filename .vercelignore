@@ -1,0 +1,15 @@
+# Cloud Functions (not needed for Next.js build)
+functions/
+
+# Firebase config
+.firebaserc
+firebase.json
+
+# Local environment
+.env.local
+
+# Debug files
+debug.html
+manual-sync.html
+cleanup.html
+debug-firestore.js

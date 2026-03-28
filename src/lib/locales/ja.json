@@ -1,0 +1,17 @@
+{
+  "firebaseAuth": {
+    "configIncomplete": "クラウド設定が不完全です",
+    "notInitialized": "認証機能が初期化されていません",
+    "serverSideNotAvailable": "認証機能はサーバー側では使用できません"
+  },
+  "firebaseFirestore": {
+    "notInitialized": "データベースが初期化されていません"
+  },
+  "firebaseMessaging": {
+    "notInitialized": "通知機能が初期化されていません",
+    "tokenFailed": "通知トークンの取得に失敗しました",
+    "unknownError": "不明なエラー",
+    "permissionDeniedTemplate": "通知権限が拒否されました({permission})",
+    "tokenRetrievalFailedTemplate": "通知トークンの取得に失敗しました: {errorMessage}"
+  }
+}

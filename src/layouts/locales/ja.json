@@ -1,0 +1,13 @@
+{
+  "headerSyncButton": {
+    "syncingTitle": "同期中...",
+    "uploadAriaLabel": "クラウドへアップロード",
+    "downloadAriaLabel": "クラウドからダウンロード",
+    "uploadTitle": "現在のローカルデータをクラウドへアップロード",
+    "uploadAvailableTitle": "ローカルに新しい更新があります。アップロードできます。",
+    "downloadTitle": "最後にアップロードされたクラウドデータをダウンロード",
+    "downloadAvailableTitle": "クラウドに新しい更新があります。ダウンロードできます。",
+    "cloudUpdatedPrefix": "クラウド更新:",
+    "localUpdatedPrefix": "ローカル更新:"
+  }
+}

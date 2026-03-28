@@ -1,0 +1,51 @@
+{
+  "page": {
+    "storageKeys": {
+      "matrix": "test-matrix-data",
+      "detail": "test-matrix-detail-data"
+    },
+    "resetConfirmMessage": "全てのチェック結果をリセットしますか？（詳細テストケースも含む）",
+    "loading": "読み込み中...",
+    "title": "📋 機能テストマトリクス",
+    "subtitle": "各セルをクリックしてステータスを切り替え（⬜→✅→❌→➖）",
+    "progressLabel": "進捗:",
+    "totalItemsSuffix": "項目",
+    "expandAll": "📂 すべて展開",
+    "collapseAll": "📁 すべて折りたたみ",
+    "reset": "🗑️ リセット",
+    "statusLabel": "ステータス:",
+    "statusOk": "✅ OK",
+    "statusNg": "❌ NG",
+    "statusNa": "➖ 対象外",
+    "statusUnchecked": "⬜ 未確認",
+    "filterOptions": [
+      { "value": "all", "label": "🔍 全て表示" },
+      { "value": "unchecked", "label": "⬜ 未確認のみ" },
+      { "value": "ng", "label": "❌ NGのみ" },
+      { "value": "ok", "label": "✅ OKのみ" },
+      { "value": "na", "label": "➖ 対象外のみ" }
+    ]
+  },
+  "categoryCard": {
+    "featureHeader": "機能",
+    "noteHeader": "備考",
+    "notePlaceholder": "メモ...",
+    "deviceHeaders": {
+      "pc": "PC",
+      "sp": "SP"
+    }
+  },
+  "detailPanel": {
+    "closeTitle": "閉じる",
+    "scenarioHeader": "テストシナリオ",
+    "expectedHeader": "期待結果",
+    "noteHeader": "備考",
+    "notePlaceholder": "メモ...",
+    "totalCasesSuffix": "ケース",
+    "emptyCases": "詳細テストケースが未定義です",
+    "deviceHeaders": {
+      "pc": "PC",
+      "sp": "SP"
+    }
+  }
+}

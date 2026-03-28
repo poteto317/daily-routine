@@ -1,0 +1,78 @@
+{
+  "weatherCode": {
+    "sunny": "快晴です。お出かけ日和ですね！",
+    "partlyCloudy": "晴れたり曇ったりです。",
+    "cloudy": "曇りです。傘は不要でしょう。",
+    "rainy": "雨が降ります。傘をお忘れなく。",
+    "snowy": "雪が降ります。暖かい服装で。"
+  },
+  "weatherLabels": {
+    "sunny": "晴れ",
+    "partlyCloudy": "晴れ時々曇り",
+    "cloudy": "曇り",
+    "rainy": "雨",
+    "snowy": "雪"
+  },
+  "todayWeatherCard": {
+    "title": "今日の天気",
+    "precipitationPrefix": "💧"
+  },
+  "weatherFooter": {
+    "provider": "データ提供: Open-Meteo",
+    "lastUpdatedPrefix": "最終更新:"
+  },
+  "weatherStatus": {
+    "header": {
+      "title": "🌤️ 天気予報",
+      "locationLoading": "現在地を取得中...",
+      "useCurrentLocation": "現在地を使用",
+      "resetLocation": "現在地をリセット",
+      "locationPrefix": "📍"
+    },
+    "errorState": {
+      "icon": "⚠️",
+      "title": "エラーが発生しました",
+      "reload": "再読み込み"
+    },
+    "loadingState": {
+      "loading": "天気データを読み込み中..."
+    },
+    "messages": {
+      "currentLocation": "現在地の天気を表示中",
+      "locationReset": "保存済み現在地をリセットしました",
+      "locationError": "現在地を取得できませんでした。位置情報の設定をご確認ください。",
+      "tokyoLocation": "東京の天気を表示中",
+      "fetchError": "天気データの取得に失敗しました",
+      "fetchErrorPrefix": "天気データの取得に失敗しました",
+      "cacheLoaded": "キャッシュから天気データを読み込みました"
+    }
+  },
+  "geolocation": {
+    "notSupported": "位置情報がサポートされていません",
+    "loading": "位置情報を取得中...",
+    "consoleFailed": "位置情報の取得に失敗:"
+  },
+  "dayNames": ["日", "月", "火", "水", "木", "金", "土"],
+  "consoleMessages": {
+    "locationFetchFailed": "地名の取得に失敗:",
+    "preloadSuccess": "天気データを事前ロードしました（時間別予報を含む）",
+    "preloadFailed": "天気データの事前ロードに失敗:",
+    "cacheSaveFailed": "天気データのキャッシュに失敗:",
+    "cacheLoadFailed": "キャッシュの読み込みに失敗:",
+    "cacheClearFailed": "キャッシュのクリアに失敗:",
+    "preferredLocationSaveFailed": "優先天気地点の保存に失敗:",
+    "preferredLocationLoadFailed": "優先天気地点の読み込みに失敗:",
+    "preferredLocationClearFailed": "優先天気地点のクリアに失敗:"
+  },
+  "hourlyForecast": {
+    "title": "⏰ 24時間予報",
+    "precipitationPrefix": "💧",
+    "windPrefix": "💨",
+    "windUnit": "km/h"
+  },
+  "weeklyForecast": {
+    "title": "📅 週間天気予報",
+    "todayBadge": "今日",
+    "precipitationPrefix": "💧"
+  }
+}
