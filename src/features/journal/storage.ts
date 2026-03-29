@@ -4,6 +4,7 @@ export {
   getJournalEntry,
   getTodayJournalEntry,
   saveJournalEntry,
+  updateJournalEntry,
   deleteJournalEntry,
 } from "./storageEntries";
 export {

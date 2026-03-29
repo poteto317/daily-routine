@@ -46,6 +46,27 @@ export const saveJournalEntry = (
   saveJournalHistory(history);
 };
 
+export const updateJournalEntry = (
+  entryId: string,
+  title: string,
+  content: string,
+): void => {
+  const history = getJournalHistory();
+  const now = new Date().toISOString();
+  const nextHistory = Object.fromEntries(
+    Object.entries(history).map(([date, entries]) => [
+      date,
+      entries.map((entry) =>
+        entry.id === entryId
+          ? { ...entry, title, content, updatedAt: now }
+          : entry,
+      ),
+    ]),
+  );
+
+  saveJournalHistory(nextHistory);
+};
+
 export const deleteJournalEntry = (entryId: string): void => {
   const history = getJournalHistory();
   const nextHistory = Object.fromEntries(

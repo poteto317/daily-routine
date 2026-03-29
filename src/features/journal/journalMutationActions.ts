@@ -58,3 +58,44 @@ export const deleteJournalEntryAndReload = ({
   reloadData();
   return true;
 };
+
+type UpdateJournalEntryArgs = {
+  entryId: string;
+  titleInput: string;
+  contentInput: string;
+  defaultTitle: string;
+  alertMessage: string;
+  updateEntry: (entryId: string, title: string, content: string) => void;
+  reloadData: () => void;
+  closeForm: () => void;
+  alertFn?: (message?: string) => void;
+};
+
+export const updateJournalEntryAndReload = ({
+  entryId,
+  titleInput,
+  contentInput,
+  defaultTitle,
+  alertMessage,
+  updateEntry,
+  reloadData,
+  closeForm,
+  alertFn = window.alert,
+}: UpdateJournalEntryArgs): boolean => {
+  if (!entryId) {
+    throw new Error("updateJournalEntryAndReload: entryId is required");
+  }
+
+  const trimmedTitle = titleInput.trim();
+  const trimmedContent = contentInput.trim();
+
+  if (!trimmedTitle && !trimmedContent) {
+    alertFn(alertMessage);
+    return false;
+  }
+
+  updateEntry(entryId, trimmedTitle || defaultTitle, trimmedContent);
+  reloadData();
+  closeForm();
+  return true;
+};

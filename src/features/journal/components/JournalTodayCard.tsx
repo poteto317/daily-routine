@@ -5,29 +5,36 @@ import { getJournalFormOpenButtonLabel } from "../helpers";
 
 type JournalTodayCardProps = {
   contentInput: string;
+  editingEntry: JournalEntry | null;
   showForm: boolean;
   titleInput: string;
   today: string;
   todayEntry: JournalEntry | null;
   onCancel: () => void;
   onContentChange: (value: string) => void;
+  onEditEntry: (entry: JournalEntry) => void;
   onOpenForm: () => void;
   onSave: () => void;
+  onUpdate: () => void;
   onTitleChange: (value: string) => void;
 };
 
 export const JournalTodayCard = ({
   contentInput,
+  editingEntry,
   showForm,
   titleInput,
   today,
   todayEntry,
   onCancel,
   onContentChange,
+  onEditEntry,
   onOpenForm,
   onSave,
+  onUpdate,
   onTitleChange,
 }: JournalTodayCardProps) => {
+  const isEditing = editingEntry !== null;
   return (
     <div className="mb-6 p-4 bg-purple-50 dark:bg-purple-100 rounded-lg">
       <div className="flex items-center justify-between mb-2">
@@ -74,10 +81,12 @@ export const JournalTodayCard = ({
 
           <div className="flex gap-3">
             <button
-              onClick={onSave}
+              onClick={isEditing ? onUpdate : onSave}
               className="flex-1 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium"
             >
-              {journalTexts.todayCard.saveLabel}
+              {isEditing
+                ? journalTexts.todayCard.updateLabel
+                : journalTexts.todayCard.saveLabel}
             </button>
             <button
               onClick={onCancel}
@@ -89,9 +98,17 @@ export const JournalTodayCard = ({
         </div>
       ) : todayEntry ? (
         <div className="mt-4">
-          <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-900 mb-2">
-            {todayEntry.title}
-          </h3>
+          <div className="flex items-start justify-between">
+            <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-900 mb-2">
+              {todayEntry.title}
+            </h3>
+            <button
+              onClick={() => onEditEntry(todayEntry)}
+              className="text-purple-600 hover:text-purple-700 dark:text-purple-700 dark:hover:text-purple-800 text-sm font-medium ml-2"
+            >
+              {journalTexts.todayCard.editButtonLabel}
+            </button>
+          </div>
           <p className="text-gray-700 dark:text-gray-800 whitespace-pre-wrap">
             {todayEntry.content}
           </p>

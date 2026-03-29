@@ -1,3 +1,4 @@
+import type { JournalEntry } from "@/types/routine";
 import { resetJournalFormInputs } from "./journalPageDataActions";
 
 export const createCanceledJournalFormState = () => {
@@ -9,6 +10,15 @@ export const createCanceledJournalFormState = () => {
 
 export const createOpenedJournalFormState = () => {
   return {
+    showForm: true,
+  };
+};
+
+export const createEditingJournalFormState = (entry: JournalEntry) => {
+  return {
+    titleInput: entry.title,
+    contentInput: entry.content,
+    editingEntry: entry,
     showForm: true,
   };
 };

@@ -1,6 +1,7 @@
 import {
   deleteJournalEntryAndReload,
   saveJournalEntryAndReload,
+  updateJournalEntryAndReload,
 } from "../journalMutationActions";
 
 describe("journalMutationActions", () => {
@@ -80,5 +81,66 @@ describe("journalMutationActions", () => {
     ).toBe(false);
     expect(deleteEntry).not.toHaveBeenCalled();
     expect(reloadData).not.toHaveBeenCalled();
+  });
+
+  it("updateJournalEntryAndReload: entryId が空なら Error を投げる", () => {
+    const updateEntry = jest.fn();
+
+    expect(() =>
+      updateJournalEntryAndReload({
+        entryId: "",
+        titleInput: "タイトル",
+        contentInput: "本文",
+        defaultTitle: "無題",
+        alertMessage: "内容を入力してください",
+        updateEntry,
+        reloadData: jest.fn(),
+        closeForm: jest.fn(),
+      }),
+    ).toThrow("updateJournalEntryAndReload: entryId is required");
+    expect(updateEntry).not.toHaveBeenCalled();
+  });
+
+  it("updateJournalEntryAndReload: 空入力なら更新せず alert する", () => {
+    const alertFn = jest.fn();
+    const updateEntry = jest.fn();
+
+    const result = updateJournalEntryAndReload({
+      entryId: "entry-1",
+      titleInput: "  ",
+      contentInput: "  ",
+      defaultTitle: "無題",
+      alertMessage: "内容を入力してください",
+      updateEntry,
+      reloadData: jest.fn(),
+      closeForm: jest.fn(),
+      alertFn,
+    });
+
+    expect(result).toBe(false);
+    expect(alertFn).toHaveBeenCalledWith("内容を入力してください");
+    expect(updateEntry).not.toHaveBeenCalled();
+  });
+
+  it("updateJournalEntryAndReload: 入力があれば指定IDで更新して再読込しフォームを閉じる", () => {
+    const updateEntry = jest.fn();
+    const reloadData = jest.fn();
+    const closeForm = jest.fn();
+
+    const result = updateJournalEntryAndReload({
+      entryId: "entry-1",
+      titleInput: "  ",
+      contentInput: " 更新内容 ",
+      defaultTitle: "無題",
+      alertMessage: "内容を入力してください",
+      updateEntry,
+      reloadData,
+      closeForm,
+    });
+
+    expect(result).toBe(true);
+    expect(updateEntry).toHaveBeenCalledWith("entry-1", "無題", "更新内容");
+    expect(reloadData).toHaveBeenCalled();
+    expect(closeForm).toHaveBeenCalled();
   });
 });

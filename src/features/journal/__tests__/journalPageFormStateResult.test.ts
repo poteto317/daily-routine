@@ -14,20 +14,29 @@ describe("createJournalPageFormStateResult", () => {
     };
     const handleCancelForm = jest.fn();
     const openForm = jest.fn();
+    const openEditForm = jest.fn();
+    const setEditingEntry = jest.fn();
+    const editingEntry = null;
 
     const result = createJournalPageFormStateResult({
       inputState,
       visibilityState,
+      editingEntry,
+      setEditingEntry,
       handleCancelForm,
       openForm,
+      openEditForm,
     });
 
     expect(result).toEqual({
       contentInput: "Today was good",
       showForm: true,
       titleInput: "Diary",
+      editingEntry,
+      setEditingEntry,
       handleCancelForm,
       openForm,
+      openEditForm,
       setContentInput: inputState.setContentInput,
       setShowForm: visibilityState.setShowForm,
       setTitleInput: inputState.setTitleInput,

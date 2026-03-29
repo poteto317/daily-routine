@@ -6,11 +6,13 @@ import journalTexts from "../locales/ja.json";
 type JournalRecentEntriesProps = {
   entries: JournalEntry[];
   onDeleteEntry: (entry: JournalEntry) => void;
+  onEditEntry: (entry: JournalEntry) => void;
 };
 
 export const JournalRecentEntries = ({
   entries,
   onDeleteEntry,
+  onEditEntry,
 }: JournalRecentEntriesProps) => {
   return (
     <CardPanel className="mb-0!">
@@ -40,12 +42,20 @@ export const JournalRecentEntries = ({
                     {entry.title}
                   </h3>
                 </div>
-                <button
-                  onClick={() => onDeleteEntry(entry)}
-                  className="text-red-600 hover:text-red-700 dark:text-red-700 dark:hover:text-red-800 text-sm font-medium"
-                >
-                  {journalTexts.recentEntries.delete}
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => onEditEntry(entry)}
+                    className="text-purple-600 hover:text-purple-700 dark:text-purple-700 dark:hover:text-purple-800 text-sm font-medium"
+                  >
+                    {journalTexts.recentEntries.edit}
+                  </button>
+                  <button
+                    onClick={() => onDeleteEntry(entry)}
+                    className="text-red-600 hover:text-red-700 dark:text-red-700 dark:hover:text-red-800 text-sm font-medium"
+                  >
+                    {journalTexts.recentEntries.delete}
+                  </button>
+                </div>
               </div>
               <p className="text-gray-700 dark:text-gray-800 whitespace-pre-wrap line-clamp-3">
                 {entry.content}

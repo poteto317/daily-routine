@@ -16,6 +16,9 @@ export const useJournalPageState = () => {
   } = useJournalPageDataState();
   const {
     contentInput,
+    editingEntry,
+    openEditForm,
+    setEditingEntry,
     showForm,
     titleInput,
     handleCancelForm,
@@ -25,20 +28,25 @@ export const useJournalPageState = () => {
     setTitleInput,
   } = useJournalPageFormState(initialState);
 
-  const { handleDeleteEntry, handleSaveEntry } = useJournalPageActions(
-    createJournalPageActionBindings({
-      titleInput,
-      contentInput,
-      setTodayEntry,
-      setTitleInput,
-      setContentInput,
-      setRecentEntries,
-      setShowForm,
-    }),
-  );
+  const { handleDeleteEntry, handleSaveEntry, handleUpdateEntry } =
+    useJournalPageActions(
+      createJournalPageActionBindings({
+        titleInput,
+        contentInput,
+        editingEntry,
+        handleCancelForm,
+        setTodayEntry,
+        setTitleInput,
+        setContentInput,
+        setRecentEntries,
+        setShowForm,
+      }),
+    );
 
   return createJournalPageStateResult({
     contentInput,
+    editingEntry,
+    openEditForm,
     recentEntries,
     showForm,
     titleInput,
@@ -47,8 +55,10 @@ export const useJournalPageState = () => {
     handleCancelForm,
     handleDeleteEntry,
     handleSaveEntry,
+    handleUpdateEntry,
     openForm,
     setContentInput,
     setTitleInput,
+    setEditingEntry,
   });
 };

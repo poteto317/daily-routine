@@ -5,6 +5,7 @@ jest.mock("../journalPageDataActions", () => ({
 import { resetJournalFormInputs } from "../journalPageDataActions";
 import {
   createCanceledJournalFormState,
+  createEditingJournalFormState,
   createOpenedJournalFormState,
 } from "../journalFormViewState";
 
@@ -28,6 +29,23 @@ describe("journalFormViewState", () => {
 
   it("open 時の form state を生成する", () => {
     expect(createOpenedJournalFormState()).toEqual({
+      showForm: true,
+    });
+  });
+
+  it("editing 時の form state をエントリで初期化する", () => {
+    const entry = {
+      id: "j1",
+      date: "2026-01-01",
+      title: "My Title",
+      content: "My Content",
+      createdAt: "2026-01-01T00:00:00.000Z",
+      updatedAt: "2026-01-01T00:00:00.000Z",
+    };
+    expect(createEditingJournalFormState(entry)).toEqual({
+      titleInput: "My Title",
+      contentInput: "My Content",
+      editingEntry: entry,
       showForm: true,
     });
   });
