@@ -290,3 +290,4 @@ firebase deploy --only functions
 - **Feature-based Architecture**: 新機能を追加する場合は `features/` 配下に新しいディレクトリを作成
 - **ダークモード**: `dark:bg-slate-100` や `dark:text-black` などを使用してダークモード対応を維持
 - **Firebase Messaging SW**: `public/firebase-messaging-sw.js` はビルド時に自動生成されるため直接編集しない。テンプレートは `public/firebase-messaging-sw.template.js` を編集する
+- **ドキュメント更新の PR 方針**: 機能追加・修正と同じ PR にドキュメント更新（`docs/` 配下）を含めてよい。その場合、PR 説明にドキュメント変更の目的（例: 「仕様追記」「ストレージキー修正」など）を明記すること。ドキュメントのみの変更は専用の PR に分割することが望ましい。
