@@ -2,13 +2,19 @@ import journalTexts from "../locales/ja.json";
 import {
   createDeleteJournalEntryHandler,
   createSaveJournalEntryHandler,
+  createUpdateJournalEntryHandler,
 } from "../journalPageMutationHandlers";
 import { confirmDeleteEntry } from "../helpers";
 import {
   deleteJournalEntryAndReload,
   saveJournalEntryAndReload,
+  updateJournalEntryAndReload,
 } from "../journalMutationActions";
-import { deleteJournalEntry, saveJournalEntry } from "../storage";
+import {
+  deleteJournalEntry,
+  saveJournalEntry,
+  updateJournalEntry,
+} from "../storage";
 
 jest.mock("../helpers", () => ({
   confirmDeleteEntry: jest.fn(),
@@ -17,11 +23,13 @@ jest.mock("../helpers", () => ({
 jest.mock("../journalMutationActions", () => ({
   deleteJournalEntryAndReload: jest.fn(),
   saveJournalEntryAndReload: jest.fn(),
+  updateJournalEntryAndReload: jest.fn(),
 }));
 
 jest.mock("../storage", () => ({
   deleteJournalEntry: jest.fn(),
   saveJournalEntry: jest.fn(),
+  updateJournalEntry: jest.fn(),
 }));
 
 describe("journalPageMutationHandlers", () => {
@@ -80,6 +88,33 @@ describe("journalPageMutationHandlers", () => {
       defaultTitle: journalTexts.page.defaultTitle,
       alertMessage: journalTexts.page.alertMissingContent,
       saveEntry: saveJournalEntry,
+      reloadData,
+      closeForm,
+    });
+  });
+
+  it("update handler が既定文言と更新処理を組み立てる", () => {
+    const reloadData = jest.fn();
+    const closeForm = jest.fn();
+
+    (updateJournalEntryAndReload as jest.Mock).mockReturnValue(true);
+
+    const result = createUpdateJournalEntryHandler({
+      entryId: "entry-1",
+      titleInput: " タイトル ",
+      contentInput: " 本文 ",
+      reloadData,
+      closeForm,
+    })();
+
+    expect(result).toBe(true);
+    expect(updateJournalEntryAndReload).toHaveBeenCalledWith({
+      entryId: "entry-1",
+      titleInput: " タイトル ",
+      contentInput: " 本文 ",
+      defaultTitle: journalTexts.page.defaultTitle,
+      alertMessage: journalTexts.page.alertMissingContent,
+      updateEntry: updateJournalEntry,
       reloadData,
       closeForm,
     });

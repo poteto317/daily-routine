@@ -3,6 +3,7 @@ import {
   saveJournalHistory,
   getJournalEntry,
   saveJournalEntry,
+  updateJournalEntry,
 } from "../storage";
 import * as coreStorage from "@/lib/storage/core";
 
@@ -164,5 +165,75 @@ describe("journal storage", () => {
         },
       ],
     });
+  });
+
+  it("updateJournalEntryは指定IDのtitle・contentとupdatedAtを更新する", () => {
+    mockGetStorageItem.mockReturnValue({
+      "2026-02-12": [
+        {
+          id: "journal-1",
+          date: "2026-02-12",
+          title: "old title",
+          content: "old content",
+          createdAt: "2026-02-12T08:00:00.000Z",
+          updatedAt: "2026-02-12T08:00:00.000Z",
+        },
+      ],
+    } as never);
+    jest
+      .spyOn(Date.prototype, "toISOString")
+      .mockReturnValue("2026-02-12T10:00:00.000Z");
+
+    updateJournalEntry("journal-1", "new title", "new content");
+
+    expect(mockSetStorageItem).toHaveBeenCalledWith("journal-history", {
+      "2026-02-12": [
+        {
+          id: "journal-1",
+          date: "2026-02-12",
+          title: "new title",
+          content: "new content",
+          createdAt: "2026-02-12T08:00:00.000Z",
+          updatedAt: "2026-02-12T10:00:00.000Z",
+        },
+      ],
+    });
+  });
+
+  it("updateJournalEntryは対象外のエントリを変更しない", () => {
+    const entry2 = {
+      id: "journal-2",
+      date: "2026-02-12",
+      title: "title 2",
+      content: "content 2",
+      createdAt: "2026-02-12T09:00:00.000Z",
+      updatedAt: "2026-02-12T09:00:00.000Z",
+    };
+    mockGetStorageItem.mockReturnValue({
+      "2026-02-12": [
+        {
+          id: "journal-1",
+          date: "2026-02-12",
+          title: "title 1",
+          content: "content 1",
+          createdAt: "2026-02-12T08:00:00.000Z",
+          updatedAt: "2026-02-12T08:00:00.000Z",
+        },
+        entry2,
+      ],
+    } as never);
+    jest
+      .spyOn(Date.prototype, "toISOString")
+      .mockReturnValue("2026-02-12T10:00:00.000Z");
+
+    updateJournalEntry("journal-1", "updated", "updated content");
+
+    const saved = mockSetStorageItem.mock.calls[0][1] as Record<
+      string,
+      (typeof entry2)[]
+    >;
+    expect(saved["2026-02-12"].find((e) => e.id === "journal-2")).toEqual(
+      entry2,
+    );
   });
 });
