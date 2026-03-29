@@ -25,6 +25,10 @@ describe("journal storage", () => {
     mockGetStorageItem.mockReturnValue({} as never);
   });
 
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   it("getJournalHistoryは履歴を取得する", () => {
     const history = {
       "2026-02-12": [
