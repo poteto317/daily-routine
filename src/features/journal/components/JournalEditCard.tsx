@@ -32,10 +32,14 @@ export const JournalEditCard = ({
 
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-800 mb-1">
+            <label
+              htmlFor="edit-journal-title"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-800 mb-1"
+            >
               {journalTexts.editCard.titleInputLabel}
             </label>
             <input
+              id="edit-journal-title"
               type="text"
               value={titleInput}
               onChange={(e) => onTitleChange(e.target.value)}
@@ -45,10 +49,14 @@ export const JournalEditCard = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-800 mb-1">
+            <label
+              htmlFor="edit-journal-content"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-800 mb-1"
+            >
               {journalTexts.editCard.contentInputLabel}
             </label>
             <textarea
+              id="edit-journal-content"
               value={contentInput}
               onChange={(e) => onContentChange(e.target.value)}
               rows={8}
