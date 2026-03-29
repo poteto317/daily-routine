@@ -82,6 +82,11 @@ export const updateJournalEntryAndReload = ({
   closeForm,
   alertFn = window.alert,
 }: UpdateJournalEntryArgs): boolean => {
+  if (!entryId) {
+    alertFn(alertMessage);
+    return false;
+  }
+
   const trimmedTitle = titleInput.trim();
   const trimmedContent = contentInput.trim();
 
