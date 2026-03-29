@@ -12,6 +12,7 @@
     "titlePlaceholder": "例: 今日の出来事",
     "contentPlaceholder": "今日感じたこと、考えたことを自由に書いてください...",
     "saveLabel": "保存",
+    "updateLabel": "更新",
     "cancelLabel": "キャンセル",
     "emptyLabel": "まだ今日の記録はありません",
     "editButtonLabel": "✏️ 編集",
@@ -20,6 +21,7 @@
   "recentEntries": {
     "title": "📖 過去の記録",
     "empty": "記録がありません",
+    "edit": "✏️ 編集",
     "delete": "🗑️ 削除",
     "updatedPrefix": "最終更新:"
   }

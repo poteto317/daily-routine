@@ -19,19 +19,23 @@ export const JournalPage = () => {
           <JournalTodayCard
             today={state.today}
             todayEntry={state.todayEntry}
+            editingEntry={state.editingEntry}
             showForm={state.showForm}
             titleInput={state.titleInput}
             contentInput={state.contentInput}
             onOpenForm={state.openForm}
+            onEditEntry={state.openEditForm}
             onTitleChange={state.setTitleInput}
             onContentChange={state.setContentInput}
             onSave={state.handleSaveEntry}
+            onUpdate={state.handleUpdateEntry}
             onCancel={state.handleCancelForm}
           />
         </CardPanel>
 
         <JournalRecentEntries
           entries={state.recentEntries}
+          onEditEntry={state.openEditForm}
           onDeleteEntry={state.handleDeleteEntry}
         />
       </main>
