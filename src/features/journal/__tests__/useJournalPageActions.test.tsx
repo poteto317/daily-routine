@@ -22,10 +22,11 @@ describe("useJournalPageActions", () => {
     jest.clearAllMocks();
   });
 
-  it("load/save/delete handler を組み立てて委譲する", () => {
+  it("load/save/delete/update handler を組み立てて委譲する", () => {
     const loadAction = jest.fn();
     const saveAction = jest.fn();
     const deleteAction = jest.fn();
+    const updateAction = jest.fn();
     const resultShape = { composed: true };
     (useJournalPageReloadAction as jest.Mock).mockReturnValue({
       loadData: loadAction,
@@ -33,12 +34,14 @@ describe("useJournalPageActions", () => {
     (useJournalPageMutationActions as jest.Mock).mockReturnValue({
       handleSaveEntry: saveAction,
       handleDeleteEntry: deleteAction,
+      handleUpdateEntry: updateAction,
     });
     (createJournalPageActionsResult as jest.Mock).mockReturnValue(resultShape);
 
     const params = {
       titleInput: "タイトル",
       contentInput: "本文",
+      editingEntry: null,
       setTodayEntry: jest.fn(),
       setTitleInput: jest.fn(),
       setContentInput: jest.fn(),
@@ -58,6 +61,7 @@ describe("useJournalPageActions", () => {
       expect.objectContaining({
         titleInput: "タイトル",
         contentInput: "本文",
+        editingEntry: null,
         loadData: loadAction,
         setShowForm: params.setShowForm,
       }),
@@ -65,6 +69,7 @@ describe("useJournalPageActions", () => {
     expect(createJournalPageActionsResult).toHaveBeenCalledWith({
       handleDeleteEntry: deleteAction,
       handleSaveEntry: saveAction,
+      handleUpdateEntry: updateAction,
       loadData: loadAction,
     });
     expect(result.current).toBe(resultShape);

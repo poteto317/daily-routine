@@ -5,6 +5,7 @@ describe("journalPageActionBindings", () => {
     const bindings = createJournalPageActionBindings({
       titleInput: "title",
       contentInput: "content",
+      editingEntry: null,
       setTodayEntry: jest.fn(),
       setTitleInput: jest.fn(),
       setContentInput: jest.fn(),
@@ -16,6 +17,7 @@ describe("journalPageActionBindings", () => {
       expect.objectContaining({
         titleInput: "title",
         contentInput: "content",
+        editingEntry: null,
       }),
     );
   });

@@ -4,9 +4,12 @@ describe("journalPageStateResult", () => {
   it("journal page の result を組み立てる", () => {
     const setContentInput = jest.fn();
     const setTitleInput = jest.fn();
+    const setEditingEntry = jest.fn();
     const handleCancelForm = jest.fn();
     const handleDeleteEntry = jest.fn();
     const handleSaveEntry = jest.fn();
+    const handleUpdateEntry = jest.fn();
+    const openEditForm = jest.fn();
     const openForm = jest.fn();
     const entry = {
       id: "saved",
@@ -20,6 +23,7 @@ describe("journalPageStateResult", () => {
     expect(
       createJournalPageStateResult({
         contentInput: "本文",
+        editingEntry: null,
         recentEntries: [entry],
         showForm: true,
         titleInput: "保存済み",
@@ -28,12 +32,16 @@ describe("journalPageStateResult", () => {
         handleCancelForm,
         handleDeleteEntry,
         handleSaveEntry,
+        handleUpdateEntry,
+        openEditForm,
         openForm,
         setContentInput,
+        setEditingEntry,
         setTitleInput,
       }),
     ).toEqual({
       contentInput: "本文",
+      editingEntry: null,
       recentEntries: [entry],
       showForm: true,
       titleInput: "保存済み",
@@ -42,8 +50,11 @@ describe("journalPageStateResult", () => {
       handleCancelForm,
       handleDeleteEntry,
       handleSaveEntry,
+      handleUpdateEntry,
+      openEditForm,
       openForm,
       setContentInput,
+      setEditingEntry,
       setTitleInput,
     });
   });

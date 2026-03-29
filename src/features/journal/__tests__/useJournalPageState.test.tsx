@@ -50,6 +50,9 @@ describe("useJournalPageState", () => {
       contentInput: "",
       showForm: false,
       titleInput: "",
+      editingEntry: null,
+      openEditForm: jest.fn(),
+      setEditingEntry: jest.fn(),
       handleCancelForm: jest.fn(),
       openForm: jest.fn(),
       setContentInput: jest.fn(),
@@ -62,6 +65,7 @@ describe("useJournalPageState", () => {
     (useJournalPageActions as jest.Mock).mockReturnValue({
       handleDeleteEntry: jest.fn(),
       handleSaveEntry: jest.fn(),
+      handleUpdateEntry: jest.fn(),
     });
     (createJournalPageStateResult as jest.Mock).mockReturnValue({
       composed: true,

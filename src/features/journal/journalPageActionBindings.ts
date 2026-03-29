@@ -6,6 +6,7 @@ type SetValue<T> = Dispatch<SetStateAction<T>>;
 type JournalPageActionBindingsArgs = {
   titleInput: string;
   contentInput: string;
+  editingEntry: JournalEntry | null;
   setTodayEntry: SetValue<JournalEntry | null>;
   setTitleInput: SetValue<string>;
   setContentInput: SetValue<string>;
@@ -16,6 +17,7 @@ type JournalPageActionBindingsArgs = {
 export const createJournalPageActionBindings = ({
   titleInput,
   contentInput,
+  editingEntry,
   setTodayEntry,
   setTitleInput,
   setContentInput,
@@ -25,6 +27,7 @@ export const createJournalPageActionBindings = ({
   return {
     titleInput,
     contentInput,
+    editingEntry,
     setTodayEntry,
     setTitleInput,
     setContentInput,

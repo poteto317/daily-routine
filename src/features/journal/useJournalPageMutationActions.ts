@@ -1,13 +1,16 @@
 import type { Dispatch, SetStateAction } from "react";
+import type { JournalEntry } from "@/types/routine";
 import { createJournalPageMutationActionsResult } from "./journalPageMutationActionsResult";
 import { useJournalDeleteEntryAction } from "./useJournalDeleteEntryAction";
 import { useJournalSaveEntryAction } from "./useJournalSaveEntryAction";
+import { useJournalUpdateEntryAction } from "./useJournalUpdateEntryAction";
 
 type SetValue<T> = Dispatch<SetStateAction<T>>;
 
 type UseJournalPageMutationActionsParams = {
   titleInput: string;
   contentInput: string;
+  editingEntry: JournalEntry | null;
   setShowForm: SetValue<boolean>;
   loadData: () => void;
 };
@@ -15,6 +18,7 @@ type UseJournalPageMutationActionsParams = {
 export const useJournalPageMutationActions = ({
   titleInput,
   contentInput,
+  editingEntry,
   setShowForm,
   loadData,
 }: UseJournalPageMutationActionsParams) => {
@@ -27,9 +31,17 @@ export const useJournalPageMutationActions = ({
     loadData,
     setShowForm,
   });
+  const handleUpdateEntry = useJournalUpdateEntryAction({
+    entryId: editingEntry?.id ?? "",
+    titleInput,
+    contentInput,
+    loadData,
+    setShowForm,
+  });
 
   return createJournalPageMutationActionsResult({
     handleDeleteEntry,
     handleSaveEntry,
+    handleUpdateEntry,
   });
 };
