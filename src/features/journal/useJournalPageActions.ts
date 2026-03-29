@@ -10,6 +10,7 @@ type UseJournalPageActionsParams = {
   titleInput: string;
   contentInput: string;
   editingEntry: JournalEntry | null;
+  handleCancelForm: () => void;
   setTodayEntry: SetValue<JournalEntry | null>;
   setTitleInput: SetValue<string>;
   setContentInput: SetValue<string>;
@@ -21,6 +22,7 @@ export const useJournalPageActions = ({
   titleInput,
   contentInput,
   editingEntry,
+  handleCancelForm,
   setTodayEntry,
   setTitleInput,
   setContentInput,
@@ -39,6 +41,7 @@ export const useJournalPageActions = ({
       contentInput,
       editingEntry,
       setShowForm,
+      closeForm: handleCancelForm,
       loadData,
     });
 

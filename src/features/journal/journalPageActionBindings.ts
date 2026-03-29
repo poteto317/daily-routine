@@ -7,6 +7,7 @@ type JournalPageActionBindingsArgs = {
   titleInput: string;
   contentInput: string;
   editingEntry: JournalEntry | null;
+  handleCancelForm: () => void;
   setTodayEntry: SetValue<JournalEntry | null>;
   setTitleInput: SetValue<string>;
   setContentInput: SetValue<string>;
@@ -18,6 +19,7 @@ export const createJournalPageActionBindings = ({
   titleInput,
   contentInput,
   editingEntry,
+  handleCancelForm,
   setTodayEntry,
   setTitleInput,
   setContentInput,
@@ -28,6 +30,7 @@ export const createJournalPageActionBindings = ({
     titleInput,
     contentInput,
     editingEntry,
+    handleCancelForm,
     setTodayEntry,
     setTitleInput,
     setContentInput,

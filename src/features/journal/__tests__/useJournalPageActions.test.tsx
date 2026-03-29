@@ -42,6 +42,7 @@ describe("useJournalPageActions", () => {
       titleInput: "タイトル",
       contentInput: "本文",
       editingEntry: null,
+      handleCancelForm: jest.fn(),
       setTodayEntry: jest.fn(),
       setTitleInput: jest.fn(),
       setContentInput: jest.fn(),
@@ -64,6 +65,7 @@ describe("useJournalPageActions", () => {
         editingEntry: null,
         loadData: loadAction,
         setShowForm: params.setShowForm,
+        closeForm: params.handleCancelForm,
       }),
     );
     expect(createJournalPageActionsResult).toHaveBeenCalledWith({

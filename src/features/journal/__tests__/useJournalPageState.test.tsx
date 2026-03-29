@@ -87,6 +87,7 @@ describe("useJournalPageState", () => {
       expect.objectContaining({
         titleInput: "",
         contentInput: "",
+        handleCancelForm: expect.any(Function),
       }),
     );
     expect(useJournalPageActions).toHaveBeenCalledWith({ bound: true });

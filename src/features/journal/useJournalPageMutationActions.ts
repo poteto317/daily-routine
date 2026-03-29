@@ -12,6 +12,7 @@ type UseJournalPageMutationActionsParams = {
   contentInput: string;
   editingEntry: JournalEntry | null;
   setShowForm: SetValue<boolean>;
+  closeForm: () => void;
   loadData: () => void;
 };
 
@@ -20,6 +21,7 @@ export const useJournalPageMutationActions = ({
   contentInput,
   editingEntry,
   setShowForm,
+  closeForm,
   loadData,
 }: UseJournalPageMutationActionsParams) => {
   const handleDeleteEntry = useJournalDeleteEntryAction({
@@ -36,7 +38,7 @@ export const useJournalPageMutationActions = ({
     titleInput,
     contentInput,
     loadData,
-    setShowForm,
+    closeForm,
   });
 
   return createJournalPageMutationActionsResult({

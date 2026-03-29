@@ -1,5 +1,4 @@
 import { useCallback } from "react";
-import type { Dispatch, SetStateAction } from "react";
 import { createUpdateJournalEntryHandler } from "./journalPageMutationHandlers";
 
 type UseJournalUpdateEntryActionParams = {
@@ -7,7 +6,7 @@ type UseJournalUpdateEntryActionParams = {
   titleInput: string;
   contentInput: string;
   loadData: () => void;
-  setShowForm: Dispatch<SetStateAction<boolean>>;
+  closeForm: () => void;
 };
 
 export const useJournalUpdateEntryAction = ({
@@ -15,7 +14,7 @@ export const useJournalUpdateEntryAction = ({
   titleInput,
   contentInput,
   loadData,
-  setShowForm,
+  closeForm,
 }: UseJournalUpdateEntryActionParams) => {
   return useCallback(() => {
     return createUpdateJournalEntryHandler({
@@ -23,7 +22,7 @@ export const useJournalUpdateEntryAction = ({
       titleInput,
       contentInput,
       reloadData: loadData,
-      closeForm: () => setShowForm(false),
+      closeForm,
     })();
-  }, [entryId, titleInput, contentInput, loadData, setShowForm]);
+  }, [entryId, titleInput, contentInput, loadData, closeForm]);
 };

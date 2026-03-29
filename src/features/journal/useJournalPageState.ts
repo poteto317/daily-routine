@@ -34,6 +34,7 @@ export const useJournalPageState = () => {
         titleInput,
         contentInput,
         editingEntry,
+        handleCancelForm,
         setTodayEntry,
         setTitleInput,
         setContentInput,

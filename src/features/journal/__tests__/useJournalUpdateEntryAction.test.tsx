@@ -14,7 +14,7 @@ describe("useJournalUpdateEntryAction", () => {
       updateAction,
     );
     const loadData = jest.fn();
-    const setShowForm = jest.fn();
+    const closeForm = jest.fn();
 
     const { result } = renderHook(() =>
       useJournalUpdateEntryAction({
@@ -22,7 +22,7 @@ describe("useJournalUpdateEntryAction", () => {
         titleInput: "タイトル",
         contentInput: "本文",
         loadData,
-        setShowForm,
+        closeForm,
       }),
     );
 

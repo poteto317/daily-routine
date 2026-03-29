@@ -48,6 +48,7 @@ describe("useJournalPageMutationActions", () => {
 
     const loadData = jest.fn();
     const setShowForm = jest.fn();
+    const closeForm = jest.fn();
     const editingEntry = null;
     const { result } = renderHook(() =>
       useJournalPageMutationActions({
@@ -55,6 +56,7 @@ describe("useJournalPageMutationActions", () => {
         contentInput: "本文",
         editingEntry,
         setShowForm,
+        closeForm,
         loadData,
       }),
     );
@@ -72,7 +74,7 @@ describe("useJournalPageMutationActions", () => {
       titleInput: "タイトル",
       contentInput: "本文",
       loadData,
-      setShowForm,
+      closeForm,
     });
     expect(createJournalPageMutationActionsResult).toHaveBeenCalledWith({
       handleDeleteEntry: expect.any(Function),
