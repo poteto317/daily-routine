@@ -27,11 +27,19 @@ export const createCancelJournalFormHandler = (params: {
 };
 
 export const createOpenJournalFormAction = (params: {
+  setTitleInput: SetValue<string>;
+  setContentInput: SetValue<string>;
   setShowForm: SetValue<boolean>;
+  setEditingEntry: SetValue<JournalEntry | null>;
 }) => {
-  const { setShowForm } = params;
+  const { setTitleInput, setContentInput, setShowForm, setEditingEntry } =
+    params;
 
   return () => {
+    const resetState = createCanceledJournalFormState();
+    setTitleInput(resetState.titleInput);
+    setContentInput(resetState.contentInput);
+    setEditingEntry(null);
     setShowForm(createOpenedJournalFormState().showForm);
   };
 };

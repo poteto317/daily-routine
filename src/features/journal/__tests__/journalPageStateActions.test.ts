@@ -176,16 +176,36 @@ describe("journalPageStateActions", () => {
     });
   });
 
-  it("open action が showForm を開く", () => {
+  it("open action がフォームを開き入力と editingEntry をリセットする", () => {
+    const canceledState = {
+      titleInput: "",
+      contentInput: "",
+      showForm: false,
+    };
+    const setTitleInput = jest.fn();
+    const setContentInput = jest.fn();
     const setShowForm = jest.fn();
+    const setEditingEntry = jest.fn();
 
+    (createCanceledJournalFormState as jest.Mock).mockReturnValue(
+      canceledState,
+    );
     (createOpenedJournalFormState as jest.Mock).mockReturnValue({
       showForm: true,
     });
 
-    createOpenJournalFormAction({ setShowForm })();
+    createOpenJournalFormAction({
+      setTitleInput,
+      setContentInput,
+      setShowForm,
+      setEditingEntry,
+    })();
 
+    expect(createCanceledJournalFormState).toHaveBeenCalled();
     expect(createOpenedJournalFormState).toHaveBeenCalled();
+    expect(setTitleInput).toHaveBeenCalledWith("");
+    expect(setContentInput).toHaveBeenCalledWith("");
+    expect(setEditingEntry).toHaveBeenCalledWith(null);
     expect(setShowForm).toHaveBeenCalledWith(true);
   });
 });

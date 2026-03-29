@@ -46,7 +46,10 @@ describe("useJournalPageFormActions", () => {
       setEditingEntry: params.setEditingEntry,
     });
     expect(createOpenJournalFormAction).toHaveBeenCalledWith({
+      setTitleInput: params.setTitleInput,
+      setContentInput: params.setContentInput,
       setShowForm: params.setShowForm,
+      setEditingEntry: params.setEditingEntry,
     });
     expect(createOpenEditJournalFormAction).toHaveBeenCalledWith({
       setTitleInput: params.setTitleInput,

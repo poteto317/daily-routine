@@ -26,7 +26,12 @@ export const useJournalPageFormActions = ({
       setShowForm,
       setEditingEntry,
     }),
-    openForm: createOpenJournalFormAction({ setShowForm }),
+    openForm: createOpenJournalFormAction({
+      setTitleInput,
+      setContentInput,
+      setShowForm,
+      setEditingEntry,
+    }),
     openEditForm: createOpenEditJournalFormAction({
       setTitleInput,
       setContentInput,
