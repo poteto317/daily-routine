@@ -188,7 +188,7 @@
 **技術仕様**
 
 - ファイル: `src/features/journal/`
-- データ保存: LocalStorage（キー: "journalEntries"）
+- データ保存: LocalStorage（キー: "journal-history"）
 
 ---
 
@@ -601,7 +601,7 @@ Firestoreを使用した複数端末間のデータ同期機能です。
 | `routinePresets`          | プリセット情報                             | プリセット管理   |
 | `expenses`                | 支出記録                                   | 家計簿           |
 | `monthlyBudget`           | 月次予算                                   | 家計簿           |
-| `journalEntries`          | ジャーナル記録                             | ジャーナル       |
+| `journal-history`         | ジャーナル記録                             | ジャーナル       |
 | `mealRecords`             | 食事記録                                   | 食事記録         |
 | `weightRecords`           | 体重記録                                   | 体重記録         |
 | `workSessions`            | 作業記録                                   | 作業トラッカー   |
