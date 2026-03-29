@@ -112,6 +112,7 @@ describe("useJournalPageMutationActions", () => {
 
     expect(deleteAction).toHaveBeenCalledWith(entry);
     expect(saveAction).toHaveBeenCalled();
-    expect(updateAction).toHaveBeenCalled();
+    // editingEntry が null のため updateEntryBase は no-op にラップされており呼ばれない
+    expect(updateAction).not.toHaveBeenCalled();
   });
 });

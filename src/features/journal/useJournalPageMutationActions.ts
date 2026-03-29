@@ -33,13 +33,14 @@ export const useJournalPageMutationActions = ({
     loadData,
     setShowForm,
   });
-  const handleUpdateEntry = useJournalUpdateEntryAction({
+  const updateEntryBase = useJournalUpdateEntryAction({
     entryId: editingEntry?.id ?? "",
     titleInput,
     contentInput,
     loadData,
     closeForm,
   });
+  const handleUpdateEntry = editingEntry ? updateEntryBase : () => {};
 
   return createJournalPageMutationActionsResult({
     handleDeleteEntry,
