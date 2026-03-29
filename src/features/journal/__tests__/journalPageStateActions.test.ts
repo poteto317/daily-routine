@@ -101,6 +101,7 @@ describe("journalPageStateActions", () => {
     const setTitleInput = jest.fn();
     const setContentInput = jest.fn();
     const setShowForm = jest.fn();
+    const setEditingEntry = jest.fn();
 
     (createCanceledJournalFormState as jest.Mock).mockReturnValue(
       canceledState,
@@ -110,6 +111,7 @@ describe("journalPageStateActions", () => {
       setTitleInput,
       setContentInput,
       setShowForm,
+      setEditingEntry,
     })();
 
     expect(createCanceledJournalFormState).toHaveBeenCalledWith();

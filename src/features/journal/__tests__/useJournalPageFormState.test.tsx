@@ -41,6 +41,7 @@ describe("useJournalPageFormState", () => {
     const actions = {
       handleCancelForm: jest.fn(),
       openForm: jest.fn(),
+      openEditForm: jest.fn(),
     };
     (useJournalPageInputState as jest.Mock).mockReturnValue(inputState);
     (useJournalPageFormVisibilityState as jest.Mock).mockReturnValue(
@@ -51,8 +52,11 @@ describe("useJournalPageFormState", () => {
       contentInput: "",
       showForm: false,
       titleInput: "",
+      editingEntry: null,
+      setEditingEntry: jest.fn(),
       handleCancelForm: actions.handleCancelForm,
       openForm: actions.openForm,
+      openEditForm: actions.openEditForm,
       setContentInput: inputState.setContentInput,
       setShowForm: visibilityState.setShowForm,
       setTitleInput: inputState.setTitleInput,
@@ -83,12 +87,16 @@ describe("useJournalPageFormState", () => {
       setTitleInput: inputState.setTitleInput,
       setContentInput: inputState.setContentInput,
       setShowForm: visibilityState.setShowForm,
+      setEditingEntry: expect.any(Function),
     });
     expect(createJournalPageFormStateResult).toHaveBeenCalledWith({
       inputState,
       visibilityState,
+      editingEntry: null,
+      setEditingEntry: expect.any(Function),
       handleCancelForm: actions.handleCancelForm,
       openForm: actions.openForm,
+      openEditForm: actions.openEditForm,
     });
     expect(result.current).toBe(resultState);
   });
