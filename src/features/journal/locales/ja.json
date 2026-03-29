@@ -24,5 +24,14 @@
     "edit": "✏️ 編集",
     "delete": "🗑️ 削除",
     "updatedPrefix": "最終更新:"
+  },
+  "editCard": {
+    "editingLabel": " の記録を編集",
+    "titleInputLabel": "タイトル",
+    "contentInputLabel": "本文",
+    "titlePlaceholder": "例: 今日の出来事",
+    "contentPlaceholder": "今日感じたこと、考えたことを自由に書いてください...",
+    "updateLabel": "更新",
+    "cancelLabel": "キャンセル"
   }
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { CardPanel } from "@/components";
+import { JournalEditCard } from "./components/JournalEditCard";
 import { JournalRecentEntries } from "./components/JournalRecentEntries";
 import { JournalTodayCard } from "./components/JournalTodayCard";
 import { useJournalPageState } from "./useJournalPageState";
@@ -8,6 +9,8 @@ import journalTexts from "./locales/ja.json";
 
 export const JournalPage = () => {
   const state = useJournalPageState();
+  const isPastEditing =
+    state.editingEntry !== null && state.editingEntry.date !== state.today;
 
   return (
     <div className="min-h-screen bg-linear-to-br from-purple-50 to-pink-100 dark:from-slate-400 dark:to-slate-300">
@@ -19,8 +22,8 @@ export const JournalPage = () => {
           <JournalTodayCard
             today={state.today}
             todayEntry={state.todayEntry}
-            editingEntry={state.editingEntry}
-            showForm={state.showForm}
+            editingEntry={isPastEditing ? null : state.editingEntry}
+            showForm={state.showForm && !isPastEditing}
             titleInput={state.titleInput}
             contentInput={state.contentInput}
             onOpenForm={state.openForm}
@@ -32,6 +35,18 @@ export const JournalPage = () => {
             onCancel={state.handleCancelForm}
           />
         </CardPanel>
+
+        {state.showForm && state.editingEntry && isPastEditing && (
+          <JournalEditCard
+            editingEntry={state.editingEntry}
+            titleInput={state.titleInput}
+            contentInput={state.contentInput}
+            onTitleChange={state.setTitleInput}
+            onContentChange={state.setContentInput}
+            onUpdate={state.handleUpdateEntry}
+            onCancel={state.handleCancelForm}
+          />
+        )}
 
         <JournalRecentEntries
           entries={state.recentEntries}
