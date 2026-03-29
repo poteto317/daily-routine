@@ -83,8 +83,7 @@ export const updateJournalEntryAndReload = ({
   alertFn = window.alert,
 }: UpdateJournalEntryArgs): boolean => {
   if (!entryId) {
-    alertFn(alertMessage);
-    return false;
+    throw new Error("updateJournalEntryAndReload: entryId is required");
   }
 
   const trimmedTitle = titleInput.trim();

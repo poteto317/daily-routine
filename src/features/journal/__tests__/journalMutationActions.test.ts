@@ -83,24 +83,21 @@ describe("journalMutationActions", () => {
     expect(reloadData).not.toHaveBeenCalled();
   });
 
-  it("updateJournalEntryAndReload: entryId が空なら更新せず alert する", () => {
-    const alertFn = jest.fn();
+  it("updateJournalEntryAndReload: entryId が空なら Error を投げる", () => {
     const updateEntry = jest.fn();
 
-    const result = updateJournalEntryAndReload({
-      entryId: "",
-      titleInput: "タイトル",
-      contentInput: "本文",
-      defaultTitle: "無題",
-      alertMessage: "内容を入力してください",
-      updateEntry,
-      reloadData: jest.fn(),
-      closeForm: jest.fn(),
-      alertFn,
-    });
-
-    expect(result).toBe(false);
-    expect(alertFn).toHaveBeenCalledWith("内容を入力してください");
+    expect(() =>
+      updateJournalEntryAndReload({
+        entryId: "",
+        titleInput: "タイトル",
+        contentInput: "本文",
+        defaultTitle: "無題",
+        alertMessage: "内容を入力してください",
+        updateEntry,
+        reloadData: jest.fn(),
+        closeForm: jest.fn(),
+      }),
+    ).toThrow("updateJournalEntryAndReload: entryId is required");
     expect(updateEntry).not.toHaveBeenCalled();
   });
 
