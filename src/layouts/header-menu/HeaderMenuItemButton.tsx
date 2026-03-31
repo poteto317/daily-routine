@@ -22,7 +22,9 @@ export const HeaderMenuItemButton = ({
   onMenuItemKeyDown,
 }: Props) => {
   const isActiveItem =
-    item.isActive !== undefined ? item.isActive : currentPage === item.route;
+    item.isActive !== undefined
+      ? item.isActive && currentPage === item.route
+      : currentPage === item.route;
 
   return (
     <button
