@@ -135,6 +135,24 @@ vercel
 vercel --prod
 ```
 
+Vercel で本番運用する場合は、`.env.local` に設定した Firebase 関連の環境変数を Vercel プロジェクト側にも設定してください。
+
+対象例:
+
+- `NEXT_PUBLIC_FIREBASE_API_KEY`
+- `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN`
+- `NEXT_PUBLIC_FIREBASE_PROJECT_ID`
+- `NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET`
+- `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID`
+- `NEXT_PUBLIC_FIREBASE_APP_ID`
+- `NEXT_PUBLIC_FIREBASE_VAPID_KEY`
+- `NEXT_PUBLIC_FIREBASE_FUNCTIONS_URL`
+
+設定方法:
+
+- Vercel Dashboard: Project Settings → Environment Variables から追加
+- Vercel CLI: `vercel env add <環境変数名>` で追加
+
 ---
 
 ## 📖 関連ドキュメント
@@ -150,4 +168,4 @@ vercel --prod
 
 ---
 
-**最終更新日**: 2026年2月17日
+**最終更新日**: 2026年4月1日
