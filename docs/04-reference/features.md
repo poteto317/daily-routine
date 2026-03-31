@@ -650,16 +650,18 @@ src/
 │  ├─ settings/               # 設定
 │  ├─ sync/                   # クラウド同期
 │  ├─ notification/           # 通知機能
+│  ├─ todo-lists/             # Todoリスト
 │  ├─ auth/                   # 認証
 │  ├─ account-admin/          # アカウント管理
 │  └─ test-matrix/            # テストマトリクス
 ├─ components/                 # 共通コンポーネント
-├─ contexts/                   # Reactコンテキスト
+├─ config/                     # 設定ファイル
 ├─ hooks/                      # カスタムフック
+├─ layouts/                    # レイアウト・ヘッダーコンポーネント
 ├─ lib/                        # ユーティリティ
+├─ service-worker/             # Service Worker 関連コード
 ├─ services/                   # サービス層
-├─ types/                      # 型定義
-└─ config/                     # 設定ファイル
+└─ types/                      # 型定義
 
 各機能フォルダの構造例：
 feature/

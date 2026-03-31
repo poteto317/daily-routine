@@ -135,6 +135,24 @@ vercel
 vercel --prod
 ```
 
+Vercel で本番運用する場合は、`.env.local` に設定した Firebase 関連の環境変数を Vercel プロジェクト側にも設定してください。
+
+対象例:
+
+- `NEXT_PUBLIC_FIREBASE_API_KEY`
+- `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN`
+- `NEXT_PUBLIC_FIREBASE_PROJECT_ID`
+- `NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET`
+- `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID`
+- `NEXT_PUBLIC_FIREBASE_APP_ID`
+- `NEXT_PUBLIC_FIREBASE_VAPID_KEY`
+- `NEXT_PUBLIC_FIREBASE_FUNCTIONS_URL`
+
+設定方法:
+
+- Vercel Dashboard: Project Settings → Environment Variables から追加
+- Vercel CLI: `vercel env add <環境変数名>` で追加
+
 ---
 
 ## 📖 関連ドキュメント
@@ -150,50 +168,4 @@ vercel --prod
 
 ---
 
-**最終更新日**: 2026年2月17日
-
-Vercel にも環境変数を設定する必要があります：
-
-```bash
-vercel env add NEXT_PUBLIC_FIREBASE_API_KEY
-vercel env add NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
-# ... その他の環境変数も追加
-```
-
-## 📝 プロジェクト情報
-
-- **プロジェクトID**: your-project-id
-- **プロジェクト番号**: your-project-number
-- **Firebase Console**: https://console.firebase.google.com/project/your-project-id
-- **ログインアカウント**: your-account@example.com
-
-## 🔧 便利なコマンド
-
-```bash
-# Firebase プロジェクト確認
-firebase projects:list
-firebase use
-
-# Firebase 設定取得
-firebase apps:sdkconfig web
-
-# 開発サーバー起動
-npm run dev
-
-# テスト実行
-npm test
-
-# ビルド
-npm run build
-
-# Functions のみデプロイ
-firebase deploy --only functions
-
-# Vercel デプロイ
-vercel --prod
-```
-
-## 📚 ドキュメント
-
-- [README.md](README.md) - プロジェクト全体の説明
-- [SYNC_SETUP.md](SYNC_SETUP.md) - Firebase 同期の詳細設定
+**最終更新日**: 2026年4月1日
