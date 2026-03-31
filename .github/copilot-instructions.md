@@ -255,7 +255,6 @@ saveSettings({ ...settings, theme: "dark" });
 - **config/**: アプリ設定
 - **services/**: 認証サービスなど
 - **lib/**: Firebase初期化や祝日判定など、グローバルなユーティリティ
-- **contexts/**: Reactコンテキスト（AuthContext等）
 
 ---
 
