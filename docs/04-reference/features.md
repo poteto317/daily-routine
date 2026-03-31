@@ -650,6 +650,7 @@ src/
 │  ├─ settings/               # 設定
 │  ├─ sync/                   # クラウド同期
 │  ├─ notification/           # 通知機能
+│  ├─ todo-lists/             # Todoリスト
 │  ├─ auth/                   # 認証
 │  ├─ account-admin/          # アカウント管理
 │  └─ test-matrix/            # テストマトリクス
