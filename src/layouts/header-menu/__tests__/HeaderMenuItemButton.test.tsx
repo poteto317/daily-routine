@@ -106,7 +106,9 @@ describe("HeaderMenuItemButton", () => {
           callOrder.push("before");
         },
       };
-      mockOnNavigateClick.mockImplementation(() => callOrder.push("navigate"));
+      mockOnNavigateClick.mockImplementationOnce(() =>
+        callOrder.push("navigate"),
+      );
 
       renderButton(itemWithBefore, "home");
       await userEvent.click(screen.getByRole("menuitem"));
