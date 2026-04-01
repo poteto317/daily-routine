@@ -3,7 +3,7 @@
 
 import { precacheAndRoute } from "workbox-precaching";
 import { registerRoute } from "workbox-routing";
-import { StaleWhileRevalidate } from "workbox-strategies";
+import { NetworkFirst, StaleWhileRevalidate } from "workbox-strategies";
 import { logToClient } from "./custom-sw/logToClient";
 import { handleSchedulerMessage } from "./custom-sw/schedulerControl";
 import { handleNotificationClick } from "./custom-sw/notificationClickHandler";
@@ -11,12 +11,18 @@ import { handleNotificationClick } from "./custom-sw/notificationClickHandler";
 // Workboxの事前キャッシュ（ビルド時に__WB_MANIFESTが注入される）
 precacheAndRoute(self.__WB_MANIFEST || []);
 
-// 動的なコンテンツのキャッシング戦略
+// HTMLドキュメントはNetworkFirstで常に最新を取得（キャッシュは古いチャンクURLを参照するリスクがある）
+registerRoute(
+  ({ request }) => request.destination === "document",
+  new NetworkFirst({
+    cacheName: "document-cache",
+  }),
+);
+
+// スクリプト・スタイルはStaleWhileRevalidate（コンテンツハッシュ付きURLで安全）
 registerRoute(
   ({ request }) =>
-    request.destination === "document" ||
-    request.destination === "script" ||
-    request.destination === "style",
+    request.destination === "script" || request.destination === "style",
   new StaleWhileRevalidate({
     cacheName: "dynamic-cache",
   }),
