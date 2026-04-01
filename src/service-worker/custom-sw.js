@@ -2,6 +2,7 @@
 /// <reference lib="webworker" />
 
 import { precacheAndRoute } from "workbox-precaching";
+import { ExpirationPlugin } from "workbox-expiration";
 import { registerRoute } from "workbox-routing";
 import { NetworkFirst, StaleWhileRevalidate } from "workbox-strategies";
 import { logToClient } from "./custom-sw/logToClient";
@@ -11,11 +12,17 @@ import { handleNotificationClick } from "./custom-sw/notificationClickHandler";
 // Workboxの事前キャッシュ（ビルド時に__WB_MANIFESTが注入される）
 precacheAndRoute(self.__WB_MANIFEST || []);
 
-// HTMLドキュメントはNetworkFirstで常に最新を取得（キャッシュは古いチャンクURLを参照するリスクがある）
+// HTMLドキュメントはNetworkFirstで通常はネットワーク優先、失敗時のみキャッシュへフォールバックする
 registerRoute(
   ({ request }) => request.destination === "document",
   new NetworkFirst({
     cacheName: "document-cache",
+    plugins: [
+      new ExpirationPlugin({
+        maxEntries: 10,
+        maxAgeSeconds: 60 * 60,
+      }),
+    ],
   }),
 );
 
