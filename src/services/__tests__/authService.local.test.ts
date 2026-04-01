@@ -1,4 +1,5 @@
 import type { User } from "firebase/auth";
+import { setCurrentUserId } from "@/lib/storage/core";
 
 let mockIsFirebaseConfigured = false;
 const previousLocalAuthEnv = process.env.NEXT_PUBLIC_ENABLE_LOCAL_AUTH;
@@ -63,9 +64,11 @@ describe("authService local fallback", () => {
     const mod = await import("../authService");
 
     await mod.signInWithEmail("local@example.com", "password123");
+    setCurrentUserId("local-user-local-example-com");
     await mod.signOutUser();
 
     expect(mod.getLocalAuthUser()).toBeNull();
+    expect(localStorage.getItem("local-dev-auth-user")).toBeNull();
   });
 
   it("ローカル認証が無効なら Firebase 未設定時のメールログインは失敗する", async () => {

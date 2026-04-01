@@ -1,8 +1,8 @@
 import type { User } from "firebase/auth";
 import {
-  getStorageItem,
-  removeStorageItem,
-  setStorageItem,
+  getUnscopedStorageItem,
+  removeUnscopedStorageItem,
+  setUnscopedStorageItem,
 } from "@/lib/storage/core";
 
 const LOCAL_AUTH_STORAGE_KEY = "local-dev-auth-user";
@@ -19,7 +19,10 @@ export const isLocalAuthEnabled =
   process.env.NEXT_PUBLIC_ENABLE_LOCAL_AUTH === "true";
 
 export const readLocalAuthSnapshot = (): LocalAuthSnapshot | null => {
-  return getStorageItem<LocalAuthSnapshot | null>(LOCAL_AUTH_STORAGE_KEY, null);
+  return getUnscopedStorageItem<LocalAuthSnapshot | null>(
+    LOCAL_AUTH_STORAGE_KEY,
+    null,
+  );
 };
 
 export const writeLocalAuthSnapshot = (
@@ -29,11 +32,11 @@ export const writeLocalAuthSnapshot = (
 
   try {
     if (snapshot) {
-      setStorageItem(LOCAL_AUTH_STORAGE_KEY, snapshot, {
+      setUnscopedStorageItem(LOCAL_AUTH_STORAGE_KEY, snapshot, {
         skipLocalDataUpdatedAt: true,
       });
     } else {
-      removeStorageItem(LOCAL_AUTH_STORAGE_KEY, {
+      removeUnscopedStorageItem(LOCAL_AUTH_STORAGE_KEY, {
         skipLocalDataUpdatedAt: true,
       });
     }

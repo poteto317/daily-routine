@@ -9,9 +9,12 @@ export {
   LOCAL_DATA_UPDATED_AT_EVENT,
   getLocalDataUpdatedAt,
   getStorageItem,
+  getUnscopedStorageItem,
   removeStorageItem,
+  removeUnscopedStorageItem,
   setLocalDataUpdatedAt,
   setStorageItem,
+  setUnscopedStorageItem,
 } from "./core-modules/storageIO";
 
 export {
