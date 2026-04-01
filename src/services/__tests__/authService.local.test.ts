@@ -1,6 +1,7 @@
 import type { User } from "firebase/auth";
 
 let mockIsFirebaseConfigured = false;
+const previousLocalAuthEnv = process.env.NEXT_PUBLIC_ENABLE_LOCAL_AUTH;
 
 jest.mock("@/lib/firebase", () => ({
   getAuthInstance: jest.fn(),
@@ -14,6 +15,16 @@ describe("authService local fallback", () => {
     jest.resetModules();
     localStorage.clear();
     mockIsFirebaseConfigured = false;
+    process.env.NEXT_PUBLIC_ENABLE_LOCAL_AUTH = "true";
+  });
+
+  afterAll(() => {
+    if (previousLocalAuthEnv === undefined) {
+      delete process.env.NEXT_PUBLIC_ENABLE_LOCAL_AUTH;
+      return;
+    }
+
+    process.env.NEXT_PUBLIC_ENABLE_LOCAL_AUTH = previousLocalAuthEnv;
   });
 
   it("Firebase 未設定時でもメールログインでローカルユーザーを作れる", async () => {
@@ -55,5 +66,14 @@ describe("authService local fallback", () => {
     await mod.signOutUser();
 
     expect(mod.getLocalAuthUser()).toBeNull();
+  });
+
+  it("ローカル認証が無効なら Firebase 未設定時のメールログインは失敗する", async () => {
+    process.env.NEXT_PUBLIC_ENABLE_LOCAL_AUTH = "false";
+    const mod = await import("../authService");
+
+    await expect(
+      mod.signInWithEmail("local@example.com", "password123"),
+    ).rejects.toThrow();
   });
 });

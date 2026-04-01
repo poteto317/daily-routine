@@ -4,6 +4,13 @@ import { subscribeLocalAuthUser } from "@/services/authService";
 import { onAuthStateChanged, type Auth, type User } from "firebase/auth";
 
 let mockIsFirebaseConfigured = true;
+let mockIsLocalAuthEnabled = false;
+
+jest.mock("@/features/auth/storage", () => ({
+  get isLocalAuthEnabled() {
+    return mockIsLocalAuthEnabled;
+  },
+}));
 
 jest.mock("@/lib/firebase", () => ({
   getAuthInstance: jest.fn(),
@@ -36,6 +43,7 @@ describe("useAuthSyncSubscription", () => {
     jest.clearAllMocks();
     jest.useFakeTimers();
     mockIsFirebaseConfigured = true;
+    mockIsLocalAuthEnabled = false;
     mockSubscribeLocalAuthUser.mockReturnValue(jest.fn());
     mockOnAuthStateChanged.mockImplementation(
       () => jest.fn() as ReturnType<typeof onAuthStateChanged>,
@@ -72,6 +80,7 @@ describe("useAuthSyncSubscription", () => {
 
   it("Firebase 未設定時は local auth を購読する", () => {
     mockIsFirebaseConfigured = false;
+    mockIsLocalAuthEnabled = true;
     const handleAuthStateChanged = jest.fn<void, [User | null]>();
     const setLoading = jest.fn();
     const unsubscribe = jest.fn();
@@ -91,6 +100,24 @@ describe("useAuthSyncSubscription", () => {
     unmount();
 
     expect(unsubscribe).toHaveBeenCalled();
+  });
+
+  it("Firebase 未設定かつ local auth 無効時は loading を解除する", () => {
+    mockIsFirebaseConfigured = false;
+    const handleAuthStateChanged = jest.fn<void, [User | null]>();
+    const setLoading = jest.fn();
+
+    renderHook(() =>
+      useAuthSyncSubscription({ handleAuthStateChanged, setLoading }),
+    );
+
+    expect(mockSubscribeLocalAuthUser).not.toHaveBeenCalled();
+
+    act(() => {
+      jest.runAllTimers();
+    });
+
+    expect(setLoading).toHaveBeenCalledWith(false);
   });
 
   it("auth instance の取得失敗時も loading を解除する", () => {

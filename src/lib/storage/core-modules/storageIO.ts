@@ -65,3 +65,21 @@ export const setStorageItem = <T>(
     // Silently fail
   }
 };
+
+export const removeStorageItem = (
+  key: string,
+  options?: SetStorageItemOptions,
+): void => {
+  if (typeof window === "undefined") return;
+
+  try {
+    const scopedKey = getUserScopedKey(key);
+    localStorage.removeItem(scopedKey);
+
+    if (!options?.skipLocalDataUpdatedAt && key !== LOCAL_DATA_UPDATED_AT_KEY) {
+      setLocalDataUpdatedAt(Date.now());
+    }
+  } catch {
+    // Silently fail
+  }
+};

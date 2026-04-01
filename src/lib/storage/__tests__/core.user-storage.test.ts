@@ -4,6 +4,7 @@ import {
   getStorageItem,
   getUserScopedKey,
   migrateToUserStorage,
+  removeStorageItem,
   setCurrentUserId,
   setStorageItem,
 } from "../core";
@@ -73,6 +74,34 @@ describe("storage/core user storage", () => {
     );
 
     dispatchSpy.mockRestore();
+  });
+
+  it("removeStorageItemはユーザースコープ付きキーを削除する", () => {
+    setCurrentUserId("uid-1");
+    localStorage.setItem(
+      "user:uid-1:daily-routines",
+      JSON.stringify([{ id: "r1" }]),
+    );
+
+    removeStorageItem("daily-routines", {
+      skipLocalDataUpdatedAt: true,
+    });
+
+    expect(localStorage.getItem("user:uid-1:daily-routines")).toBeNull();
+  });
+
+  it("removeStorageItemはローカル更新イベント用の更新時刻を書き換える", () => {
+    setCurrentUserId("uid-1");
+    localStorage.setItem(
+      "user:uid-1:daily-routines",
+      JSON.stringify([{ id: "r1" }]),
+    );
+
+    removeStorageItem("daily-routines");
+
+    expect(
+      localStorage.getItem("user:uid-1:local-data-updated-at"),
+    ).not.toBeNull();
   });
 
   it("migrateToUserStorageは未スコープデータをユーザースコープへ移行する", () => {
