@@ -3,6 +3,8 @@
     "title": "📅 Daily Routine",
     "signUpModeLabel": "新規アカウント作成",
     "loginModeLabel": "ログイン",
+    "localModeTitle": "ローカルモードでログインできます",
+    "localModeDescription": "Firebase が未設定のため、この環境ではローカル専用の疑似ログインを使用します。\nクラウド同期や本番と同じ認証確認が必要な場合は .env.local を設定して開発サーバーを再起動してください。",
     "testAccountHint": "※ テストアカウント: test@example.com / test123456",
     "anonymousHint": "※ 匿名ログインではデータの永続的な保存はできません"
   },

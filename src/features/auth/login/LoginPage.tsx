@@ -1,6 +1,7 @@
 "use client";
 
 import { CardPanel } from "@/components";
+import { isFirebaseConfigured } from "@/lib/firebase";
 import { LoginAlternativeActions } from "./LoginAlternativeActions";
 import { LoginCredentialForm } from "./LoginCredentialForm";
 import texts from "./locales/ja.json";
@@ -13,6 +14,7 @@ import { useLoginPageState } from "./useLoginPageState";
  */
 export const LoginPage = () => {
   const state = useLoginPageState();
+  const isLocalMode = !isFirebaseConfigured;
 
   return (
     <div className="min-h-screen bg-linear-to-br from-blue-50 to-indigo-100 dark:from-slate-400 dark:to-slate-300 flex items-center justify-center p-4">
@@ -42,6 +44,15 @@ export const LoginPage = () => {
           onTestLogin={state.handleTestLogin}
           onAnonymousLogin={state.handleAnonymousLogin}
         />
+
+        {isLocalMode && (
+          <div className="mt-4 rounded-lg border border-sky-300 bg-sky-50 p-3 text-sm text-sky-800 dark:border-sky-400 dark:bg-sky-100 dark:text-sky-900">
+            <p className="font-medium">{texts.loginPage.localModeTitle}</p>
+            <p className="mt-1 whitespace-pre-line">
+              {texts.loginPage.localModeDescription}
+            </p>
+          </div>
+        )}
 
         <div className="text-center text-xs text-gray-500 dark:text-gray-600">
           <p className="mb-2">{texts.loginPage.testAccountHint}</p>

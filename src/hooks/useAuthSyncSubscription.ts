@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import type { User } from "firebase/auth";
 import { onAuthStateChanged } from "firebase/auth";
 import { getAuthInstance, isFirebaseConfigured } from "@/lib/firebase";
+import { subscribeLocalAuthUser } from "@/services/authService";
 
 type UseAuthSyncSubscriptionArgs = {
   handleAuthStateChanged: (user: User | null) => void;
@@ -19,10 +20,7 @@ export const useAuthSyncSubscription = ({
     initializedRef.current = true;
 
     if (!isFirebaseConfigured) {
-      const timer = setTimeout(() => setLoading(false), 0);
-      return () => {
-        clearTimeout(timer);
-      };
+      return subscribeLocalAuthUser(handleAuthStateChanged);
     }
 
     try {

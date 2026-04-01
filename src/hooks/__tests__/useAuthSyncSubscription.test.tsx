@@ -1,5 +1,6 @@
 import { act, renderHook } from "@testing-library/react";
 import { getAuthInstance } from "@/lib/firebase";
+import { subscribeLocalAuthUser } from "@/services/authService";
 import { onAuthStateChanged, type Auth, type User } from "firebase/auth";
 
 let mockIsFirebaseConfigured = true;
@@ -11,6 +12,10 @@ jest.mock("@/lib/firebase", () => ({
   },
 }));
 
+jest.mock("@/services/authService", () => ({
+  subscribeLocalAuthUser: jest.fn(),
+}));
+
 jest.mock("firebase/auth", () => ({
   onAuthStateChanged: jest.fn(),
 }));
@@ -20,6 +25,8 @@ import { useAuthSyncSubscription } from "../useAuthSyncSubscription";
 const mockGetAuthInstance = getAuthInstance as jest.MockedFunction<
   typeof getAuthInstance
 >;
+const mockSubscribeLocalAuthUser =
+  subscribeLocalAuthUser as jest.MockedFunction<typeof subscribeLocalAuthUser>;
 const mockOnAuthStateChanged = onAuthStateChanged as jest.MockedFunction<
   typeof onAuthStateChanged
 >;
@@ -29,6 +36,7 @@ describe("useAuthSyncSubscription", () => {
     jest.clearAllMocks();
     jest.useFakeTimers();
     mockIsFirebaseConfigured = true;
+    mockSubscribeLocalAuthUser.mockReturnValue(jest.fn());
     mockOnAuthStateChanged.mockImplementation(
       () => jest.fn() as ReturnType<typeof onAuthStateChanged>,
     );
@@ -62,23 +70,27 @@ describe("useAuthSyncSubscription", () => {
     expect(unsubscribe).toHaveBeenCalled();
   });
 
-  it("Firebase 未設定時は loading を解除して listener を貼らない", () => {
+  it("Firebase 未設定時は local auth を購読する", () => {
     mockIsFirebaseConfigured = false;
     const handleAuthStateChanged = jest.fn<void, [User | null]>();
     const setLoading = jest.fn();
+    const unsubscribe = jest.fn();
 
-    renderHook(() =>
+    mockSubscribeLocalAuthUser.mockReturnValue(unsubscribe);
+
+    const { unmount } = renderHook(() =>
       useAuthSyncSubscription({ handleAuthStateChanged, setLoading }),
     );
 
     expect(mockOnAuthStateChanged).not.toHaveBeenCalled();
+    expect(mockSubscribeLocalAuthUser).toHaveBeenCalledWith(
+      handleAuthStateChanged,
+    );
     expect(setLoading).not.toHaveBeenCalled();
 
-    act(() => {
-      jest.runAllTimers();
-    });
+    unmount();
 
-    expect(setLoading).toHaveBeenCalledWith(false);
+    expect(unsubscribe).toHaveBeenCalled();
   });
 
   it("auth instance の取得失敗時も loading を解除する", () => {
