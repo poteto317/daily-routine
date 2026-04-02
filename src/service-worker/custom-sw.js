@@ -32,6 +32,12 @@ registerRoute(
     request.destination === "script" || request.destination === "style",
   new StaleWhileRevalidate({
     cacheName: "dynamic-cache",
+    plugins: [
+      new ExpirationPlugin({
+        maxEntries: 50,
+        maxAgeSeconds: 60 * 60 * 24 * 30, // 30日間：古いチャンクの蓄積を防ぐ
+      }),
+    ],
   }),
 );
 
