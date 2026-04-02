@@ -1,8 +1,8 @@
 // カスタムService Worker - Workboxと通知機能を統合
 /// <reference lib="webworker" />
 
-import { precacheAndRoute } from "workbox-precaching";
 import { ExpirationPlugin } from "workbox-expiration";
+import { precacheAndRoute } from "workbox-precaching";
 import { registerRoute } from "workbox-routing";
 import { NetworkFirst, StaleWhileRevalidate } from "workbox-strategies";
 import { logToClient } from "./custom-sw/logToClient";
