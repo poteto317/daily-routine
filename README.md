@@ -74,6 +74,7 @@ cp .env.local.example .env.local
 ```
 
 ```env
+NEXT_PUBLIC_ENABLE_LOCAL_AUTH=false
 NEXT_PUBLIC_FIREBASE_API_KEY=
 NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=
 NEXT_PUBLIC_FIREBASE_PROJECT_ID=
@@ -83,6 +84,12 @@ NEXT_PUBLIC_FIREBASE_APP_ID=
 NEXT_PUBLIC_FIREBASE_VAPID_KEY=
 NEXT_PUBLIC_FIREBASE_FUNCTIONS_URL=
 ```
+
+`NEXT_PUBLIC_ENABLE_LOCAL_AUTH=true` を設定すると、`development` 環境でのみ Firebase 未設定時のローカル擬似認証を有効化できます。
+
+- 既定値は `false` です
+- `production` では有効になりません
+- 共有の開発環境や検証環境では有効化しないでください
 
 通知を使う場合は Firebase Cloud Messaging の設定も必要です。
 

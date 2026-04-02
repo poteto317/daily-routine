@@ -3,6 +3,10 @@ import { getUserScopedKey } from "./userScope";
 const LOCAL_DATA_UPDATED_AT_KEY = "local-data-updated-at";
 export const LOCAL_DATA_UPDATED_AT_EVENT = "local-data-updated-at-changed";
 
+const getResolvedStorageKey = (key: string, scoped = true): string => {
+  return scoped ? getUserScopedKey(key) : key;
+};
+
 type SetStorageItemOptions = {
   skipLocalDataUpdatedAt?: boolean;
 };
@@ -40,8 +44,19 @@ export const setLocalDataUpdatedAt = (timestamp: number): void => {
 export const getStorageItem = <T>(key: string, defaultValue: T): T => {
   if (typeof window === "undefined") return defaultValue;
   try {
-    const scopedKey = getUserScopedKey(key);
+    const scopedKey = getResolvedStorageKey(key);
     const data = localStorage.getItem(scopedKey);
+    return data ? JSON.parse(data) : defaultValue;
+  } catch {
+    return defaultValue;
+  }
+};
+
+export const getUnscopedStorageItem = <T>(key: string, defaultValue: T): T => {
+  if (typeof window === "undefined") return defaultValue;
+
+  try {
+    const data = localStorage.getItem(getResolvedStorageKey(key, false));
     return data ? JSON.parse(data) : defaultValue;
   } catch {
     return defaultValue;
@@ -55,8 +70,64 @@ export const setStorageItem = <T>(
 ): void => {
   if (typeof window === "undefined") return;
   try {
-    const scopedKey = getUserScopedKey(key);
+    const scopedKey = getResolvedStorageKey(key);
     localStorage.setItem(scopedKey, JSON.stringify(value));
+
+    if (!options?.skipLocalDataUpdatedAt && key !== LOCAL_DATA_UPDATED_AT_KEY) {
+      setLocalDataUpdatedAt(Date.now());
+    }
+  } catch {
+    // Silently fail
+  }
+};
+
+export const setUnscopedStorageItem = <T>(
+  key: string,
+  value: T,
+  options?: SetStorageItemOptions,
+): void => {
+  if (typeof window === "undefined") return;
+
+  try {
+    localStorage.setItem(
+      getResolvedStorageKey(key, false),
+      JSON.stringify(value),
+    );
+
+    if (!options?.skipLocalDataUpdatedAt && key !== LOCAL_DATA_UPDATED_AT_KEY) {
+      setLocalDataUpdatedAt(Date.now());
+    }
+  } catch {
+    // Silently fail
+  }
+};
+
+export const removeStorageItem = (
+  key: string,
+  options?: SetStorageItemOptions,
+): void => {
+  if (typeof window === "undefined") return;
+
+  try {
+    const scopedKey = getResolvedStorageKey(key);
+    localStorage.removeItem(scopedKey);
+
+    if (!options?.skipLocalDataUpdatedAt && key !== LOCAL_DATA_UPDATED_AT_KEY) {
+      setLocalDataUpdatedAt(Date.now());
+    }
+  } catch {
+    // Silently fail
+  }
+};
+
+export const removeUnscopedStorageItem = (
+  key: string,
+  options?: SetStorageItemOptions,
+): void => {
+  if (typeof window === "undefined") return;
+
+  try {
+    localStorage.removeItem(getResolvedStorageKey(key, false));
 
     if (!options?.skipLocalDataUpdatedAt && key !== LOCAL_DATA_UPDATED_AT_KEY) {
       setLocalDataUpdatedAt(Date.now());

@@ -2,6 +2,7 @@ import texts from "./locales/ja.json";
 import { getLoginSubmitLabel } from "./helpers";
 
 interface LoginCredentialFormProps {
+  authUnavailable: boolean;
   email: string;
   password: string;
   error: string | null;
@@ -13,6 +14,7 @@ interface LoginCredentialFormProps {
 }
 
 export const LoginCredentialForm = ({
+  authUnavailable,
   email,
   error,
   isSignUp,
@@ -39,7 +41,7 @@ export const LoginCredentialForm = ({
           required
           className="w-full px-4 py-2 border border-gray-300 dark:border-gray-400 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-white text-gray-900"
           placeholder={texts.loginCredentialForm.emailPlaceholder}
-          disabled={loading}
+          disabled={loading || authUnavailable}
         />
       </div>
 
@@ -59,7 +61,7 @@ export const LoginCredentialForm = ({
           minLength={6}
           className="w-full px-4 py-2 border border-gray-300 dark:border-gray-400 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-white text-gray-900"
           placeholder={texts.loginCredentialForm.passwordPlaceholder}
-          disabled={loading}
+          disabled={loading || authUnavailable}
         />
       </div>
 
@@ -71,7 +73,7 @@ export const LoginCredentialForm = ({
 
       <button
         type="submit"
-        disabled={loading}
+        disabled={loading || authUnavailable}
         className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-300 text-white font-semibold py-3 rounded-lg transition-colors"
       >
         {getLoginSubmitLabel(loading, isSignUp)}

@@ -2,6 +2,7 @@ import texts from "./locales/ja.json";
 import { getLoginAlternativeToggleLabel } from "./helpers";
 
 interface LoginAlternativeActionsProps {
+  authUnavailable: boolean;
   isSignUp: boolean;
   loading: boolean;
   onToggleMode: () => void;
@@ -10,6 +11,7 @@ interface LoginAlternativeActionsProps {
 }
 
 export const LoginAlternativeActions = ({
+  authUnavailable,
   isSignUp,
   loading,
   onAnonymousLogin,
@@ -43,7 +45,7 @@ export const LoginAlternativeActions = ({
       <button
         type="button"
         onClick={onAnonymousLogin}
-        disabled={loading}
+        disabled={loading || authUnavailable}
         className="w-full bg-gray-100 dark:bg-gray-200 hover:bg-gray-200 dark:hover:bg-gray-300 disabled:opacity-50 text-gray-700 dark:text-gray-800 font-medium py-3 rounded-lg transition-colors"
       >
         {texts.loginAlternativeActions.anonymousLabel}
@@ -53,7 +55,7 @@ export const LoginAlternativeActions = ({
         <button
           type="button"
           onClick={onTestLogin}
-          disabled={loading}
+          disabled={loading || authUnavailable}
           className="w-full bg-yellow-100 dark:bg-yellow-200 hover:bg-yellow-200 dark:hover:bg-yellow-300 disabled:opacity-50 text-yellow-800 dark:text-yellow-900 font-medium py-3 rounded-lg transition-colors text-sm"
         >
           {texts.loginAlternativeActions.testAccountLabel}
