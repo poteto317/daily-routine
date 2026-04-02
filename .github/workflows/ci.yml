@@ -1,0 +1,110 @@
+# ============================================================
+# CI ワークフロー
+# ------------------------------------------------------------
+# Pull Request 作成・更新時、および main ブランチへの push 時に
+# lint / 型チェック / テスト / ビルド を自動実行する。
+# ============================================================
+
+name: CI
+
+# ────────────────────────────────────────────────────────────
+# トリガー条件
+# ────────────────────────────────────────────────────────────
+on:
+  # main へのプッシュ時（マージ後の検証）
+  push:
+    branches: [main]
+
+  # Pull Request が開かれた / 更新された / 再オープンされた時
+  pull_request:
+    branches: [main]
+
+# ────────────────────────────────────────────────────────────
+# 同一 PR の古いワークフローを自動キャンセル
+# ────────────────────────────────────────────────────────────
+concurrency:
+  # PR ごと、または push ごとにグループ化
+  group: ci-${{ github.ref }}
+  # 新しい実行が来たら古い実行をキャンセル
+  cancel-in-progress: true
+
+# ────────────────────────────────────────────────────────────
+# ジョブ定義
+# ────────────────────────────────────────────────────────────
+jobs:
+  ci:
+    name: Lint / Typecheck / Test / Build
+    runs-on: ubuntu-latest
+
+    steps:
+      # ──────────────────────────────────────────────────────
+      # 1. リポジトリのコードをチェックアウト
+      # ──────────────────────────────────────────────────────
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ──────────────────────────────────────────────────────
+      # 2. Node.js のセットアップ
+      #    - node-version: 使用する Node.js のバージョン
+      #    - cache: npm のキャッシュを有効化し、
+      #      毎回 npm install が走る時間を短縮
+      # ──────────────────────────────────────────────────────
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.x"
+          cache: npm
+
+      # ──────────────────────────────────────────────────────
+      # 3. 依存パッケージのインストール
+      #    - ci: package-lock.json に従い厳密にインストール
+      #      （npm install と違い lock ファイルを書き換えない）
+      # ──────────────────────────────────────────────────────
+      - name: Install dependencies
+        run: npm ci
+
+      # ──────────────────────────────────────────────────────
+      # 4. Tailwind 短縮記法チェック
+      #    - tools/tailwind/check-shorthand.mjs によるカスタムチェック
+      # ──────────────────────────────────────────────────────
+      - name: Tailwind shorthand scan
+        run: npm run tailwind:scan
+
+      # ──────────────────────────────────────────────────────
+      # 5. ESLint による静的解析
+      #    - --max-warnings 0: 警告も許容しない厳格モード
+      # ──────────────────────────────────────────────────────
+      - name: Lint
+        run: npm run lint
+
+      # ──────────────────────────────────────────────────────
+      # 6. TypeScript 型チェック
+      #    - tsconfig.json と tsconfig.test.json の両方をチェック
+      # ──────────────────────────────────────────────────────
+      - name: Type check
+        run: npm run typecheck
+
+      # ──────────────────────────────────────────────────────
+      # 7. Jest テスト実行
+      #    - --runInBand: シリアル実行（CI 環境での安定性向上）
+      #    - --forceExit: テスト完了後にプロセスを強制終了
+      # ──────────────────────────────────────────────────────
+      - name: Run tests
+        run: npm test -- --runInBand
+
+      # ──────────────────────────────────────────────────────
+      # 8. Next.js プロダクションビルド
+      #    - ビルドが通ることを検証
+      #    - Firebase の環境変数はダミー値を設定（ビルド通過用）
+      # ──────────────────────────────────────────────────────
+      - name: Build
+        run: npm run build
+        env:
+          NEXT_PUBLIC_FIREBASE_API_KEY: dummy
+          NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: dummy
+          NEXT_PUBLIC_FIREBASE_PROJECT_ID: dummy
+          NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: dummy
+          NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: dummy
+          NEXT_PUBLIC_FIREBASE_APP_ID: dummy
+          NEXT_PUBLIC_FIREBASE_VAPID_KEY: dummy
+          NEXT_PUBLIC_FIREBASE_FUNCTIONS_URL: dummy
