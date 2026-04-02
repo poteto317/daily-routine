@@ -135,7 +135,7 @@ npm run dev
 firebase deploy --only functions
 ```
 
-デプロイ後、Functions の URL が表示されるので、`.env.local` の `NEXT_PUBLIC_FIREBASE_FUNCTIONS_URL` を更新してください。
+デプロイ後、Functions の URL が表示されるので、`.env.local` の `NEXT_PUBLIC_FUNCTIONS_URL` を更新してください。
 
 ### Vercel へのデプロイ
 
@@ -159,7 +159,7 @@ Vercel で本番運用する場合は、`.env.local` に設定した Firebase �
 - `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID`
 - `NEXT_PUBLIC_FIREBASE_APP_ID`
 - `NEXT_PUBLIC_FIREBASE_VAPID_KEY`
-- `NEXT_PUBLIC_FIREBASE_FUNCTIONS_URL`
+- `NEXT_PUBLIC_FUNCTIONS_URL`
 
 設定方法:
 
