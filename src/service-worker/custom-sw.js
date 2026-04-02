@@ -20,7 +20,7 @@ registerRoute(
     plugins: [
       new ExpirationPlugin({
         maxEntries: 10,
-        maxAgeSeconds: 60 * 60,
+        maxAgeSeconds: 60 * 60 * 24 * 7, // 7日間：オフライン時のフォールバックとして機能させるため
       }),
     ],
   }),
