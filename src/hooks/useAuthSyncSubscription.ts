@@ -1,7 +1,9 @@
 import { useEffect, useRef } from "react";
 import type { User } from "firebase/auth";
 import { onAuthStateChanged } from "firebase/auth";
+import { isLocalAuthEnabled } from "@/features/auth/storage";
 import { getAuthInstance, isFirebaseConfigured } from "@/lib/firebase";
+import { subscribeLocalAuthUser } from "@/services/authService";
 
 type UseAuthSyncSubscriptionArgs = {
   handleAuthStateChanged: (user: User | null) => void;
@@ -17,6 +19,10 @@ export const useAuthSyncSubscription = ({
   useEffect(() => {
     if (initializedRef.current) return;
     initializedRef.current = true;
+
+    if (!isFirebaseConfigured && isLocalAuthEnabled) {
+      return subscribeLocalAuthUser(handleAuthStateChanged);
+    }
 
     if (!isFirebaseConfigured) {
       const timer = setTimeout(() => setLoading(false), 0);

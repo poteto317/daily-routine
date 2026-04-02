@@ -16,6 +16,7 @@
 - [x] Vercel ログイン
 - [x] `.env.local` ファイル作成
 - [x] Firebase 設定情報を `.env.local` に追加
+- [ ] 必要な場合のみ `NEXT_PUBLIC_ENABLE_LOCAL_AUTH=true` を設定
 
 ## ⚠️ 要確認・設定
 
@@ -38,6 +39,17 @@ firebase projects:webapp:sdkconfig --json
 2. 「ウェブプッシュ証明書」セクション
 3. キーペアが未生成の場合は「キーペアを生成」
 4. 生成されたキーを `.env.local` に追加
+
+### 開発用ローカル認証の扱い
+
+Firebase をまだ用意していないローカル開発では、必要に応じて `.env.local` に `NEXT_PUBLIC_ENABLE_LOCAL_AUTH=true` を設定すると、`development` 環境でのみローカル擬似認証を使えます。
+
+注意点:
+
+- 既定値は `false` のままです
+- `production` では有効になりません
+- shared 開発環境、staging、プレビュー環境では有効化しないでください
+- Firebase 認証や Firestore 連携の本番同等確認をしたい場合は、このフラグを使わず Firebase 設定を行ってください
 
 ### 2. Firestore データベースの作成
 
@@ -139,6 +151,7 @@ Vercel で本番運用する場合は、`.env.local` に設定した Firebase �
 
 対象例:
 
+- `NEXT_PUBLIC_ENABLE_LOCAL_AUTH`
 - `NEXT_PUBLIC_FIREBASE_API_KEY`
 - `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN`
 - `NEXT_PUBLIC_FIREBASE_PROJECT_ID`

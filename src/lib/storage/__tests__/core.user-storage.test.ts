@@ -2,10 +2,14 @@ import {
   LOCAL_DATA_UPDATED_AT_EVENT,
   getCurrentUserId,
   getStorageItem,
+  getUnscopedStorageItem,
   getUserScopedKey,
   migrateToUserStorage,
+  removeStorageItem,
+  removeUnscopedStorageItem,
   setCurrentUserId,
   setStorageItem,
+  setUnscopedStorageItem,
 } from "../core";
 
 describe("storage/core user storage", () => {
@@ -73,6 +77,60 @@ describe("storage/core user storage", () => {
     );
 
     dispatchSpy.mockRestore();
+  });
+
+  it("removeStorageItemはユーザースコープ付きキーを削除する", () => {
+    setCurrentUserId("uid-1");
+    localStorage.setItem(
+      "user:uid-1:daily-routines",
+      JSON.stringify([{ id: "r1" }]),
+    );
+
+    removeStorageItem("daily-routines", {
+      skipLocalDataUpdatedAt: true,
+    });
+
+    expect(localStorage.getItem("user:uid-1:daily-routines")).toBeNull();
+  });
+
+  it("removeStorageItemはローカル更新イベント用の更新時刻を書き換える", () => {
+    setCurrentUserId("uid-1");
+    localStorage.setItem(
+      "user:uid-1:daily-routines",
+      JSON.stringify([{ id: "r1" }]),
+    );
+
+    removeStorageItem("daily-routines");
+
+    expect(
+      localStorage.getItem("user:uid-1:local-data-updated-at"),
+    ).not.toBeNull();
+  });
+
+  it("unscoped storage helperはcurrentUserIdに影響されない固定キーを使う", () => {
+    setCurrentUserId("uid-1");
+
+    setUnscopedStorageItem(
+      "local-dev-auth-user",
+      { uid: "local-user" },
+      {
+        skipLocalDataUpdatedAt: true,
+      },
+    );
+
+    expect(getUnscopedStorageItem("local-dev-auth-user", null)).toEqual({
+      uid: "local-user",
+    });
+    expect(localStorage.getItem("local-dev-auth-user")).toBe(
+      JSON.stringify({ uid: "local-user" }),
+    );
+    expect(localStorage.getItem("user:uid-1:local-dev-auth-user")).toBeNull();
+
+    removeUnscopedStorageItem("local-dev-auth-user", {
+      skipLocalDataUpdatedAt: true,
+    });
+
+    expect(localStorage.getItem("local-dev-auth-user")).toBeNull();
   });
 
   it("migrateToUserStorageは未スコープデータをユーザースコープへ移行する", () => {
