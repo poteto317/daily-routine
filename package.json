@@ -11,9 +11,9 @@
     "tailwind:scan": "node tools/tailwind/check-shorthand.mjs",
     "tailwind:fix": "node tools/tailwind/check-shorthand.mjs --fix",
     "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.test.json",
-    "test": "jest --forceExit",
-    "test:watch": "jest --watch",
-    "test:ci": "jest --ci --coverage --forceExit",
+    "test": "cross-env TZ=Asia/Tokyo jest --forceExit",
+    "test:watch": "cross-env TZ=Asia/Tokyo jest --watch",
+    "test:ci": "cross-env TZ=Asia/Tokyo jest --ci --coverage --forceExit",
     "verify": "npm run tailwind:scan && npm run lint && npm run typecheck && npm test -- --runInBand && npm run build"
   },
   "dependencies": {
@@ -42,6 +42,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "babel-plugin-react-compiler": "1.0.0",
+    "cross-env": "^7.0.3",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
     "jest": "^30.2.0",
