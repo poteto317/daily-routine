@@ -33,8 +33,12 @@ concurrency:
 # ────────────────────────────────────────────────────────────
 jobs:
   ci:
-    name: Lint / Typecheck / Test / Build
+    name: Lint / Typecheck / Test / Build (Node ${{ matrix.node-version }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: ["20.x", "22.x"]
 
     steps:
       # ──────────────────────────────────────────────────────
@@ -47,12 +51,12 @@ jobs:
       # 2. Node.js のセットアップ
       #    - node-version: 使用する Node.js のバージョン
       #    - cache: npm のキャッシュを有効化し、
-      #      毎回 npm install が走る時間を短縮
+      #      毎回 npm ci が走る時間を短縮
       # ──────────────────────────────────────────────────────
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "22.x"
+          node-version: ${{ matrix.node-version }}
           cache: npm
 
       # ──────────────────────────────────────────────────────
@@ -107,4 +111,4 @@ jobs:
           NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: dummy
           NEXT_PUBLIC_FIREBASE_APP_ID: dummy
           NEXT_PUBLIC_FIREBASE_VAPID_KEY: dummy
-          NEXT_PUBLIC_FIREBASE_FUNCTIONS_URL: dummy
+          NEXT_PUBLIC_FUNCTIONS_URL: dummy

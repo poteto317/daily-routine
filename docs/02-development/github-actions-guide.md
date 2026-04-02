@@ -121,15 +121,20 @@ concurrency:
 ```yaml
 jobs:
   ci:
-    name: Lint / Typecheck / Test / Build
+    name: Lint / Typecheck / Test / Build (Node ${{ matrix.node-version }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: ["20.x", "22.x"]
 ```
 
-| 設定                     | 意味                                             |
-| ------------------------ | ------------------------------------------------ |
-| `ci:`                    | ジョブID（内部的な識別子）                       |
-| `name:`                  | GitHub UI に表示されるジョブ名                   |
-| `runs-on: ubuntu-latest` | Ubuntu Linux の最新版で実行（GitHub が無料提供） |
+| 設定                     | 意味                                                                          |
+| ------------------------ | ----------------------------------------------------------------------------- |
+| `ci:`                    | ジョブID（内部的な識別子）                                                    |
+| `name:`                  | GitHub UI に表示されるジョブ名。Node バージョンも表示して判別しやすくする     |
+| `runs-on: ubuntu-latest` | Ubuntu Linux の最新版で実行（GitHub が無料提供）                              |
+| `strategy.matrix`        | Node 20.x / 22.x の2系統で並列実行し、README に書いた対応範囲を CI で担保する |
 
 ---
 
@@ -150,16 +155,16 @@ jobs:
 - name: Setup Node.js
   uses: actions/setup-node@v4
   with:
-    node-version: "22.x"
+    node-version: ${{ matrix.node-version }}
     cache: npm
 ```
 
-| 設定                   | 意味                                                                   |
-| ---------------------- | ---------------------------------------------------------------------- |
-| `node-version: "22.x"` | Node.js 22 系の最新パッチをインストール                                |
-| `cache: npm`           | `node_modules` のキャッシュを有効化。2回目以降の `npm ci` が高速になる |
+| 設定                                       | 意味                                                      |
+| ------------------------------------------ | --------------------------------------------------------- |
+| `node-version: ${{ matrix.node-version }}` | matrix で定義した Node.js バージョンを使う                |
+| `cache: npm`                               | npm キャッシュを有効化。2回目以降の `npm ci` が高速になる |
 
-**Node.js 22 を選んだ理由**: LTS（長期サポート）版で安定しており、プロジェクトの依存パッケージとの互換性がある。`"22.x"` と指定することで、マイナー・パッチの更新は追従しつつメジャーバージョンは固定できる。
+**Node.js 20.x / 22.x を使う理由**: README ではフロントエンドを「Node.js 20 以上を推奨」としているため、CI でも 20 系と 22 系の両方で実行し、サポート範囲の互換性を確認する。
 
 ---
 
@@ -230,6 +235,7 @@ Jest テストをシリアル実行（`--runInBand`）で実行。CI 環境で�
     NEXT_PUBLIC_FIREBASE_API_KEY: dummy
     NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: dummy
     ...
+    NEXT_PUBLIC_FUNCTIONS_URL: dummy
 ```
 
 Next.js のプロダクションビルドを実行。ビルドが成功することを検証する。
@@ -245,7 +251,7 @@ Next.js のプロダクションビルドを実行。ビルドが成功するこ
          ↓
 GitHub が .github/workflows/ci.yml を検出
          ↓
-Ubuntu サーバー（Runner）が起動
+Ubuntu サーバー（Runner）が Node 20.x / 22.x で並列起動
          ↓
 [Checkout] → [Node.js Setup] → [npm ci] → [tailwind:scan] → [lint] → [typecheck] → [test] → [build]
          ↓
@@ -285,7 +291,7 @@ CI が通らない PR のマージを防ぐため、GitHub のリポジトリ設
 2. 「Add branch ruleset」または「Add classic branch protection rule」
 3. Branch name pattern: `main`
 4. 「Require status checks to pass before merging」を有効化
-5. 必須チェックに `CI` ジョブを追加
+5. 必須チェックに Node 20.x / 22.x の `CI` ジョブを追加
 
 これにより、CI が Pass しないと main へのマージができなくなる。
 
@@ -319,6 +325,7 @@ A: 実行される内容はほぼ同じ。違いは以下:
 | ---------------- | ---------------- | ----------------------------- |
 | 実行場所         | ローカル PC      | GitHub のサーバー             |
 | 実行タイミング   | 手動             | Push / PR 時に自動            |
+| Node.js          | ローカル環境依存 | Node 20.x / 22.x              |
 | OS               | macOS            | Ubuntu Linux                  |
 | テストモード     | 通常             | シリアル実行（`--runInBand`） |
 | ビルドの環境変数 | `.env.local`     | ダミー値                      |
