@@ -11,12 +11,17 @@ import {
   createTodoListRenameHandler,
   createTodoListVisibilityToggleHandler,
 } from "../todoListManagementMutationHandlers";
+import { normalizeTitle } from "../todoListTitleNormalization";
 
 jest.mock("../managementPageStateActions", () => ({
   createTodoListAndPersist: jest.fn(),
   deleteTodoListAndPersist: jest.fn(),
   renameTodoListAndPersist: jest.fn(),
   toggleTodoListVisibilityAndPersist: jest.fn(),
+}));
+
+jest.mock("../todoListTitleNormalization", () => ({
+  normalizeTitle: jest.fn(),
 }));
 
 const baseList: TodoList = {
@@ -30,6 +35,10 @@ const baseList: TodoList = {
 describe("todoListManagementMutationHandlers", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    const real = jest.requireActual<
+      typeof import("../todoListTitleNormalization")
+    >("../todoListTitleNormalization");
+    (normalizeTitle as jest.Mock).mockImplementation(real.normalizeTitle);
   });
 
   it("作成 handler が成功時のみ close を呼ぶ", () => {
@@ -118,5 +127,35 @@ describe("todoListManagementMutationHandlers", () => {
     })("list-1", "   ");
 
     expect(renameTodoListAndPersist).toHaveBeenCalledTimes(1);
+  });
+
+  it("rename handler は normalizeTitle に委譲する", () => {
+    const persist = jest.fn();
+    (normalizeTitle as jest.Mock).mockReturnValue("NormalizedTitle");
+
+    createTodoListRenameHandler({
+      lists: [baseList],
+      persist,
+    })("list-1", "  raw title  ");
+
+    expect(normalizeTitle).toHaveBeenCalledWith("  raw title  ");
+    expect(renameTodoListAndPersist).toHaveBeenCalledWith(
+      [baseList],
+      "list-1",
+      "NormalizedTitle",
+      persist,
+    );
+  });
+
+  it("normalizeTitle が null を返すと renameTodoListAndPersist を呼ばない", () => {
+    const persist = jest.fn();
+    (normalizeTitle as jest.Mock).mockReturnValue(null);
+
+    createTodoListRenameHandler({
+      lists: [baseList],
+      persist,
+    })("list-1", "   ");
+
+    expect(renameTodoListAndPersist).not.toHaveBeenCalled();
   });
 });

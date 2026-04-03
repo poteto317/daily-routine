@@ -1,6 +1,9 @@
-import { createTodoListDetailHandlers } from "./todoListPageViewActions";
+import {
+  createDeleteItemConfirmMessage,
+  createDeleteListConfirmMessage,
+} from "./todoListDetailConfirmMessages";
+import { createTodoListDetailHandlers } from "./todoListDetailCrudHandlerFactory";
 import type { TodoList } from "./types";
-import texts from "./locales/ja.json";
 
 type TodoListPersist = (next: TodoList[]) => void;
 
@@ -23,10 +26,8 @@ export const useTodoListDetailHandlers = ({
     detailHandlers: createTodoListDetailHandlers({
       lists,
       persist,
-      deleteItemConfirmTemplate: (title) =>
-        texts.list.deleteItemConfirm.replace("{title}", title),
-      deleteListConfirmTemplate: (title) =>
-        texts.list.deleteListConfirm.replace("{title}", title),
+      deleteItemConfirmTemplate: createDeleteItemConfirmMessage,
+      deleteListConfirmTemplate: createDeleteListConfirmMessage,
     }),
   };
 };

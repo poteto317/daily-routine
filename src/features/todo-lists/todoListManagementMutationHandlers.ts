@@ -1,4 +1,5 @@
 import type { TodoList } from "./types";
+import { normalizeTitle } from "./todoListTitleNormalization";
 import {
   createTodoListAndPersist,
   deleteTodoListAndPersist,
@@ -65,8 +66,8 @@ export const createTodoListRenameHandler = (params: {
   const { lists, persist } = params;
 
   return (listId: string, title: string) => {
-    const trimmed = title.trim();
-    if (!trimmed) return;
-    renameTodoListAndPersist(lists, listId, trimmed, persist);
+    const normalized = normalizeTitle(title);
+    if (!normalized) return;
+    renameTodoListAndPersist(lists, listId, normalized, persist);
   };
 };

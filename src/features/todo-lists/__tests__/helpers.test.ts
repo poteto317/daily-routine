@@ -4,13 +4,24 @@ import {
   createTodoListItem,
   deleteItemFromList,
   getListProgress,
-  getMaxAllowedIndent,
   indentItemInList,
   outdentItemInList,
   reorderItemsInList,
   toggleItemInList,
 } from "../helpers";
+import { isItemCompleted } from "../todoListItemCompletedPredicate";
+import { getItemIndentLevel } from "../todoListItemIndentLevel";
 import type { TodoList, TodoListItem } from "../types";
+
+jest.mock("../todoListItemCompletedPredicate", () => ({
+  ...jest.requireActual("../todoListItemCompletedPredicate"),
+  isItemCompleted: jest.fn(),
+}));
+
+jest.mock("../todoListItemIndentLevel", () => ({
+  ...jest.requireActual("../todoListItemIndentLevel"),
+  getItemIndentLevel: jest.fn(),
+}));
 
 const createList = (overrides: Partial<TodoList> = {}): TodoList => ({
   id: "list-1",
@@ -34,6 +45,18 @@ describe("todo list helpers", () => {
     jest.useFakeTimers().setSystemTime(new Date("2026-03-07T12:00:00.000Z"));
     jest.spyOn(Date, "now").mockReturnValue(12345);
     jest.spyOn(Math, "random").mockReturnValue(0.123456789);
+    const real = jest.requireActual<
+      typeof import("../todoListItemIndentLevel")
+    >("../todoListItemIndentLevel");
+    (getItemIndentLevel as jest.Mock).mockImplementation(
+      real.getItemIndentLevel,
+    );
+    const realCompleted = jest.requireActual<
+      typeof import("../todoListItemCompletedPredicate")
+    >("../todoListItemCompletedPredicate");
+    (isItemCompleted as jest.Mock).mockImplementation(
+      realCompleted.isItemCompleted,
+    );
   });
 
   afterEach(() => {
@@ -119,22 +142,6 @@ describe("todo list helpers", () => {
     ).toBe(0);
   });
 
-  it("前アイテムをもとに最大インデントを返す", () => {
-    expect(getMaxAllowedIndent([createItem()], 0)).toBe(0);
-    expect(
-      getMaxAllowedIndent(
-        [createItem({ indent: 1 }), createItem({ id: "item-2" })],
-        1,
-      ),
-    ).toBe(2);
-    expect(
-      getMaxAllowedIndent(
-        [createItem({ indent: 3 }), createItem({ id: "item-2" })],
-        1,
-      ),
-    ).toBe(3);
-  });
-
   it("親アイテムの並び替え時は子要素も一緒に移動する", () => {
     const items = [
       createItem({ id: "item-1", title: "Parent" }),
@@ -188,5 +195,54 @@ describe("todo list helpers", () => {
       total: 2,
       percentage: 50,
     });
+  });
+
+  it("getListProgress は isItemCompleted に委譲して完了数を計算する", () => {
+    (isItemCompleted as jest.Mock).mockReturnValue(true);
+
+    const items = [createItem(), createItem({ id: "item-2" })];
+    const result = getListProgress(createList({ items }));
+
+    expect(isItemCompleted).toHaveBeenCalledWith(
+      expect.objectContaining({ id: "item-1" }),
+      expect.any(Number),
+      expect.any(Array),
+    );
+    expect(result.completed).toBe(2);
+  });
+
+  it("indentItemInList は getItemIndentLevel に委譲してインデントを読み取る", () => {
+    (getItemIndentLevel as jest.Mock).mockReturnValue(1);
+
+    const items = [createItem({ indent: 1 })];
+    indentItemInList([createList({ items })], "list-1", "item-1");
+
+    expect(getItemIndentLevel).toHaveBeenCalledWith(
+      expect.objectContaining({ id: "item-1" }),
+    );
+  });
+
+  it("outdentItemInList は getItemIndentLevel に委譲してインデントを読み取る", () => {
+    (getItemIndentLevel as jest.Mock).mockReturnValue(2);
+
+    const items = [createItem({ indent: 2 })];
+    outdentItemInList([createList({ items })], "list-1", "item-1");
+
+    expect(getItemIndentLevel).toHaveBeenCalledWith(
+      expect.objectContaining({ id: "item-1" }),
+    );
+  });
+
+  it("reorderItemsInList は getItemIndentLevel に委譲してブロック境界を判定する", () => {
+    const items = [
+      createItem({ id: "item-1", indent: 0 }),
+      createItem({ id: "item-2", indent: 1 }),
+      createItem({ id: "item-3", indent: 0 }),
+    ];
+    const list = createList({ items });
+
+    reorderItemsInList([list], "list-1", 0, 2);
+
+    expect(getItemIndentLevel).toHaveBeenCalled();
   });
 });

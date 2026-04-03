@@ -4,7 +4,7 @@ import { CardPanel } from "@/components";
 import { isImeComposingKeyDown } from "@/lib/isImeComposingKeyDown";
 import texts from "./locales/ja.json";
 import { useNavigationContext } from "@/features/routine/pages/NavigationContext";
-import { isTodoListVisible } from "./managementPageStateActions";
+import { isTodoListVisible } from "./todoListVisibilityPredicate";
 import { useTodoListManagementPageState } from "./useTodoListManagementPageState";
 
 export const TodoListManagementPage = () => {

@@ -1,8 +1,8 @@
 import type { TodoList } from "./types";
 import { createTodoListDetailComputedStateResult } from "./todoListDetailComputedStateResult";
-import { useTodoListDetailComputedValues } from "./useTodoListDetailComputedValues";
-import { useTodoListDetailVisibilityActions } from "./useTodoListDetailVisibilityActions";
-import { useTodoListDetailVisibilityState } from "./useTodoListDetailVisibilityState";
+import { useTodoListDetailProgress } from "./useTodoListDetailProgress";
+import { useTodoListDetailVisibleItems } from "./useTodoListDetailVisibleItems";
+import { useTodoListDetailVisibility } from "./useTodoListDetailVisibility";
 
 type UseTodoListDetailComputedStateParams = {
   list: TodoList;
@@ -11,18 +11,17 @@ type UseTodoListDetailComputedStateParams = {
 export const useTodoListDetailComputedState = ({
   list,
 }: UseTodoListDetailComputedStateParams) => {
-  const visibilityState = useTodoListDetailVisibilityState();
-  const computedValues = useTodoListDetailComputedValues({
-    hideCompleted: visibilityState.hideCompleted,
+  const detailVisibility = useTodoListDetailVisibility();
+  const detailProgress = useTodoListDetailProgress({ list });
+  const detailVisibleItems = useTodoListDetailVisibleItems({
+    hideCompleted: detailVisibility.hideCompleted,
+    collapsedItemIds: detailVisibility.collapsedItemIds,
     list,
-  });
-  const visibilityActions = useTodoListDetailVisibilityActions({
-    setHideCompleted: visibilityState.setHideCompleted,
   });
 
   return createTodoListDetailComputedStateResult({
-    computedValues,
-    visibilityActions,
-    visibilityState,
+    detailProgress,
+    detailVisibleItems,
+    detailVisibility,
   });
 };

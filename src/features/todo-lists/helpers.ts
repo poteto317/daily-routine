@@ -1,3 +1,5 @@
+import { getItemIndentLevel } from "./todoListItemIndentLevel";
+import { isItemCompleted } from "./todoListItemCompletedPredicate";
 import type { TodoList, TodoListItem } from "./types";
 
 export const generateId = (): string =>
@@ -114,7 +116,7 @@ export const indentItemInList = (
           ...list,
           items: list.items.map((item) =>
             item.id === itemId
-              ? { ...item, indent: Math.min((item.indent ?? 0) + 1, 3) }
+              ? { ...item, indent: Math.min(getItemIndentLevel(item) + 1, 3) }
               : item,
           ),
           updatedAt: new Date().toISOString(),
@@ -136,27 +138,13 @@ export const outdentItemInList = (
           ...list,
           items: list.items.map((item) =>
             item.id === itemId
-              ? { ...item, indent: Math.max((item.indent ?? 0) - 1, 0) }
+              ? { ...item, indent: Math.max(getItemIndentLevel(item) - 1, 0) }
               : item,
           ),
           updatedAt: new Date().toISOString(),
         }
       : list,
   );
-
-/**
- * 直前アイテムのインデントを考慮した最大許容インデントを返す
- */
-export const getMaxAllowedIndent = (
-  items: TodoListItem[],
-  index: number,
-): number => {
-  if (index === 0) return 0;
-  const prevIndent = items[index - 1].indent ?? 0;
-  return Math.min(prevIndent + 1, 3);
-};
-
-const getIndentLevel = (item: TodoListItem): number => item.indent ?? 0;
 
 const getReorderBlockEndIndex = (
   items: TodoListItem[],
@@ -166,12 +154,12 @@ const getReorderBlockEndIndex = (
     return startIndex;
   }
 
-  const parentIndent = getIndentLevel(items[startIndex]);
+  const parentIndent = getItemIndentLevel(items[startIndex]);
   let endIndex = startIndex + 1;
 
   while (
     endIndex < items.length &&
-    getIndentLevel(items[endIndex]) > parentIndent
+    getItemIndentLevel(items[endIndex]) > parentIndent
   ) {
     endIndex += 1;
   }
@@ -229,7 +217,7 @@ export const getListProgress = (
   list: TodoList,
 ): { completed: number; total: number; percentage: number } => {
   const total = list.items.length;
-  const completed = list.items.filter((item) => item.isCompleted).length;
+  const completed = list.items.filter(isItemCompleted).length;
   const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
   return { completed, total, percentage };
 };

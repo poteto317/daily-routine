@@ -1,15 +1,15 @@
 import { renderHook } from "@testing-library/react";
 
-jest.mock("../useTodoListDetailComputedValues", () => ({
-  useTodoListDetailComputedValues: jest.fn(),
+jest.mock("../useTodoListDetailVisibility", () => ({
+  useTodoListDetailVisibility: jest.fn(),
 }));
 
-jest.mock("../useTodoListDetailVisibilityActions", () => ({
-  useTodoListDetailVisibilityActions: jest.fn(),
+jest.mock("../useTodoListDetailProgress", () => ({
+  useTodoListDetailProgress: jest.fn(),
 }));
 
-jest.mock("../useTodoListDetailVisibilityState", () => ({
-  useTodoListDetailVisibilityState: jest.fn(),
+jest.mock("../useTodoListDetailVisibleItems", () => ({
+  useTodoListDetailVisibleItems: jest.fn(),
 }));
 
 jest.mock("../todoListDetailComputedStateResult", () => ({
@@ -17,9 +17,9 @@ jest.mock("../todoListDetailComputedStateResult", () => ({
 }));
 
 import { createTodoListDetailComputedStateResult } from "../todoListDetailComputedStateResult";
-import { useTodoListDetailComputedValues } from "../useTodoListDetailComputedValues";
-import { useTodoListDetailVisibilityActions } from "../useTodoListDetailVisibilityActions";
-import { useTodoListDetailVisibilityState } from "../useTodoListDetailVisibilityState";
+import { useTodoListDetailVisibility } from "../useTodoListDetailVisibility";
+import { useTodoListDetailProgress } from "../useTodoListDetailProgress";
+import { useTodoListDetailVisibleItems } from "../useTodoListDetailVisibleItems";
 import { useTodoListDetailComputedState } from "../useTodoListDetailComputedState";
 
 describe("useTodoListDetailComputedState", () => {
@@ -46,48 +46,49 @@ describe("useTodoListDetailComputedState", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    (useTodoListDetailVisibilityState as jest.Mock).mockReturnValue({
+    (useTodoListDetailVisibility as jest.Mock).mockReturnValue({
+      collapsedItemIds: new Set<string>(),
       hideCompleted: false,
-      setHideCompleted: jest.fn(),
-    });
-    (useTodoListDetailComputedValues as jest.Mock).mockReturnValue({
-      progress: { completed: 1, total: 2, percentage: 50 },
-      visibleItems: list.items,
-    });
-    (useTodoListDetailVisibilityActions as jest.Mock).mockReturnValue({
+      toggleCollapseItem: jest.fn(),
       toggleHideCompleted: jest.fn(),
+    });
+    (useTodoListDetailProgress as jest.Mock).mockReturnValue({
+      progress: { completed: 1, total: 2, percentage: 50 },
+    });
+    (useTodoListDetailVisibleItems as jest.Mock).mockReturnValue({
+      visibleItems: list.items,
     });
     (createTodoListDetailComputedStateResult as jest.Mock).mockReturnValue({
       computed: true,
     });
   });
 
-  it("visibility state と計算値と action hook を合成する", () => {
+  it("3つの独立フックを合成して result に委譲する", () => {
     const { result } = renderHook(() =>
       useTodoListDetailComputedState({ list }),
     );
 
-    expect(useTodoListDetailVisibilityState).toHaveBeenCalledWith();
-    expect(useTodoListDetailComputedValues).toHaveBeenCalledWith({
+    expect(useTodoListDetailVisibility).toHaveBeenCalledWith();
+    expect(useTodoListDetailProgress).toHaveBeenCalledWith({ list });
+    expect(useTodoListDetailVisibleItems).toHaveBeenCalledWith({
       hideCompleted: false,
+      collapsedItemIds: expect.any(Set),
       list,
     });
-    expect(useTodoListDetailVisibilityActions).toHaveBeenCalledWith({
-      setHideCompleted: expect.any(Function),
-    });
     expect(createTodoListDetailComputedStateResult).toHaveBeenCalledWith({
-      computedValues: {
-        progress: { completed: 1, total: 2, percentage: 50 },
-        visibleItems: list.items,
-      },
-      visibilityActions: {
-        toggleHideCompleted: (useTodoListDetailVisibilityActions as jest.Mock)
-          .mock.results[0].value.toggleHideCompleted,
-      },
-      visibilityState: {
+      detailVisibility: {
+        collapsedItemIds: expect.any(Set),
         hideCompleted: false,
-        setHideCompleted: (useTodoListDetailVisibilityState as jest.Mock).mock
-          .results[0].value.setHideCompleted,
+        toggleCollapseItem: (useTodoListDetailVisibility as jest.Mock).mock
+          .results[0].value.toggleCollapseItem,
+        toggleHideCompleted: (useTodoListDetailVisibility as jest.Mock).mock
+          .results[0].value.toggleHideCompleted,
+      },
+      detailProgress: {
+        progress: { completed: 1, total: 2, percentage: 50 },
+      },
+      detailVisibleItems: {
+        visibleItems: list.items,
       },
     });
     expect(result.current).toEqual({ computed: true });

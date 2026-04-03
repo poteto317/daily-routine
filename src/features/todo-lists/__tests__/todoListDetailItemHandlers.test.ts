@@ -17,6 +17,11 @@ import {
   createToggleTodoItemHandler,
   createUpdateTodoItemTitleHandler,
 } from "../todoListDetailItemHandlers";
+import { normalizeTitle } from "../todoListTitleNormalization";
+
+jest.mock("../todoListTitleNormalization", () => ({
+  normalizeTitle: jest.fn(),
+}));
 
 jest.mock("../pageStateActions", () => ({
   addTodoItemAndPersist: jest.fn(),
@@ -46,6 +51,10 @@ const baseList: TodoList = {
 describe("todoListDetailItemHandlers", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    const real = jest.requireActual<
+      typeof import("../todoListTitleNormalization")
+    >("../todoListTitleNormalization");
+    (normalizeTitle as jest.Mock).mockImplementation(real.normalizeTitle);
   });
 
   it("item handler 群が pageState action を組み立てる", () => {
@@ -141,5 +150,34 @@ describe("todoListDetailItemHandlers", () => {
     })("list-1", "item-1", "   ");
 
     expect(updateTodoItemTitleAndPersist).toHaveBeenCalledTimes(1);
+  });
+
+  it("item title 更新 handler は normalizeTitle に委譲する", () => {
+    const persist = jest.fn();
+    (normalizeTitle as jest.Mock).mockReturnValue("Normalized");
+
+    createUpdateTodoItemTitleHandler({ lists: [baseList], persist })(
+      "list-1",
+      "item-1",
+      "  raw  ",
+    );
+
+    expect(normalizeTitle).toHaveBeenCalledWith("  raw  ");
+    expect(updateTodoItemTitleAndPersist).toHaveBeenCalledWith(
+      expect.objectContaining({ title: "Normalized" }),
+    );
+  });
+
+  it("normalizeTitle が null を返すと updateTodoItemTitleAndPersist を呼ばない", () => {
+    const persist = jest.fn();
+    (normalizeTitle as jest.Mock).mockReturnValue(null);
+
+    createUpdateTodoItemTitleHandler({ lists: [baseList], persist })(
+      "list-1",
+      "item-1",
+      "   ",
+    );
+
+    expect(updateTodoItemTitleAndPersist).not.toHaveBeenCalled();
   });
 });
