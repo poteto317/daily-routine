@@ -7,7 +7,17 @@ export const getVisibleTodoItems = (
   hideCompleted: boolean,
   collapsedItemIds: ReadonlySet<string> = new Set(),
 ): TodoListItem[] => {
-  const itemsToCollapse = hideCompleted ? filterIncompleteItems(items) : items;
+  if (!hideCompleted) {
+    return filterCollapsedItems(items, collapsedItemIds);
+  }
 
-  return filterCollapsedItems(itemsToCollapse, collapsedItemIds);
+  const visibleItemIds = new Set(
+    filterIncompleteItems(items).map((item) => item.id),
+  );
+  const effectiveCollapsedItemIds = new Set(
+    [...collapsedItemIds].filter((itemId) => visibleItemIds.has(itemId)),
+  );
+  const afterCollapse = filterCollapsedItems(items, effectiveCollapsedItemIds);
+
+  return afterCollapse.filter((item) => visibleItemIds.has(item.id));
 };

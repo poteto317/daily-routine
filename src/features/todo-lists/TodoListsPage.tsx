@@ -79,6 +79,12 @@ const DetailView = ({
   const itemsForParentDetection = hideCompleted
     ? filterIncompleteItems(list.items)
     : list.items;
+  const itemIndexById = new Map(
+    list.items.map((item, index) => [item.id, index]),
+  );
+  const parentDetectionIndexById = new Map(
+    itemsForParentDetection.map((item, index) => [item.id, index]),
+  );
 
   return (
     <div className="min-h-screen bg-linear-to-br from-teal-50 to-cyan-100 dark:from-slate-400 dark:to-slate-300">
@@ -177,9 +183,12 @@ const DetailView = ({
           ) : (
             <ul className="space-y-2 mb-6">
               {visibleItems.map((item) => {
-                const origIndex = list.items.indexOf(item);
-                const parentDetectionIndex =
-                  itemsForParentDetection.indexOf(item);
+                const origIndex = itemIndexById.get(item.id);
+                if (origIndex === undefined) return null;
+
+                const parentDetectionIndex = parentDetectionIndexById.get(
+                  item.id,
+                );
                 const currentIndent = getItemIndentLevel(item);
                 const maxIndent = getMaxAllowedIndent(list.items, origIndex);
                 const isDragOver =
@@ -187,7 +196,7 @@ const DetailView = ({
                 const canSwipeIndent =
                   editingItemId !== item.id && currentIndent < maxIndent;
                 const isParent =
-                  parentDetectionIndex >= 0 &&
+                  parentDetectionIndex !== undefined &&
                   hasChildren(itemsForParentDetection, parentDetectionIndex);
                 const isCollapsed = collapsedItemIds.has(item.id);
                 return (

@@ -28,20 +28,24 @@ describe("getVisibleTodoItems", () => {
     expect(filterIncompleteItems).not.toHaveBeenCalled();
   });
 
-  it("hideCompleted=true では未完了フィルタ後に折りたたみフィルタを適用する", () => {
-    const items = [{ id: "item-1" }];
-    const afterIncomplete = [{ id: "item-2" }];
-    const afterCollapse = [{ id: "item-3" }];
+  it("hideCompleted=true では元の items に collapse を適用しつつ非表示になる completed 親の collapse は無視する", () => {
+    const items = [{ id: "open-parent" }, { id: "completed-parent" }];
+    const afterIncomplete = [{ id: "open-parent" }];
+    const afterCollapse = [{ id: "open-parent" }, { id: "completed-parent" }];
     (filterIncompleteItems as jest.Mock).mockReturnValue(afterIncomplete);
     (filterCollapsedItems as jest.Mock).mockReturnValue(afterCollapse);
 
     expect(
-      getVisibleTodoItems(items as never[], true, new Set(["parent"])),
-    ).toBe(afterCollapse);
+      getVisibleTodoItems(
+        items as never[],
+        true,
+        new Set(["open-parent", "completed-parent"]),
+      ),
+    ).toEqual([afterCollapse[0]]);
     expect(filterIncompleteItems).toHaveBeenCalledWith(items);
-    expect(filterCollapsedItems).toHaveBeenCalledWith(
-      afterIncomplete,
-      new Set(["parent"]),
+    expect(filterCollapsedItems).toHaveBeenCalledWith(items, expect.any(Set));
+    expect((filterCollapsedItems as jest.Mock).mock.calls[0][1]).toEqual(
+      new Set(["open-parent"]),
     );
   });
 
