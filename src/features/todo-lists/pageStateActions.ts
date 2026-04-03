@@ -243,6 +243,11 @@ export const cutTodoItemsAndPersist = ({
     listId,
     itemIds,
   });
+
+  if (cutItems.length === 0) {
+    return cutItems;
+  }
+
   persist(updatedLists);
   return cutItems;
 };
@@ -260,6 +265,14 @@ export const pasteTodoItemsAndPersist = ({
   items,
   persist,
 }: PasteTodoItemsArgs): void => {
+  if (items.length === 0) {
+    return;
+  }
+
+  if (!lists.some((list) => list.id === listId)) {
+    return;
+  }
+
   const nextLists = pasteTodoItemsToLists({ lists, listId, items });
   persist(nextLists);
 };

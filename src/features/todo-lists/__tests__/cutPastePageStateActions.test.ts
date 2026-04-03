@@ -29,6 +29,10 @@ const createList = (overrides: Partial<TodoList> = {}): TodoList => ({
   ...overrides,
 });
 
+beforeEach(() => {
+  jest.clearAllMocks();
+});
+
 describe("cutTodoItemsAndPersist", () => {
   it("切り取りして persist を呼び、切り取ったアイテムを返す", () => {
     const lists = [createList()];
@@ -72,6 +76,25 @@ describe("cutTodoItemsAndPersist", () => {
     expect(result[0].id).toBe("a");
     expect(result[1].id).toBe("b");
   });
+
+  it("cutItems が空なら persist を呼ばない", () => {
+    const lists = [createList()];
+    const persist = jest.fn();
+    (cutTodoItemsFromLists as jest.Mock).mockReturnValue({
+      updatedLists: lists,
+      cutItems: [],
+    });
+
+    const result = cutTodoItemsAndPersist({
+      lists,
+      listId: "list-1",
+      itemIds: new Set(["missing"]),
+      persist,
+    });
+
+    expect(result).toEqual([]);
+    expect(persist).not.toHaveBeenCalled();
+  });
 });
 
 describe("pasteTodoItemsAndPersist", () => {
@@ -112,5 +135,36 @@ describe("pasteTodoItemsAndPersist", () => {
       items,
     });
     expect(persist).toHaveBeenCalledWith(nextLists);
+  });
+
+  it("items が空なら persist も pasteTodoItemsToLists も呼ばない", () => {
+    const lists = [createList()];
+    const persist = jest.fn();
+
+    pasteTodoItemsAndPersist({
+      lists,
+      listId: "list-1",
+      items: [],
+      persist,
+    });
+
+    expect(pasteTodoItemsToLists).not.toHaveBeenCalled();
+    expect(persist).not.toHaveBeenCalled();
+  });
+
+  it("対象 listId が存在しないなら persist も pasteTodoItemsToLists も呼ばない", () => {
+    const lists = [createList({ id: "list-1" })];
+    const persist = jest.fn();
+    const items = [createItem({ id: "a" })];
+
+    pasteTodoItemsAndPersist({
+      lists,
+      listId: "missing-list",
+      items,
+      persist,
+    });
+
+    expect(pasteTodoItemsToLists).not.toHaveBeenCalled();
+    expect(persist).not.toHaveBeenCalled();
   });
 });
