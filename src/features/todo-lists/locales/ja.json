@@ -38,6 +38,6 @@
     "pasteButton": "ペースト",
     "cancelClipboardButton": "キャンセル",
     "clearSelectionButton": "選択解除",
-    "selectItemLabel": "選択"
+    "selectItemLabel": "「{title}」を選択"
   }
 }

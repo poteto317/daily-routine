@@ -8,13 +8,24 @@ export const cutItemsFromList = (
   listId: string,
   itemIds: ReadonlySet<string>,
 ): { updatedLists: TodoList[]; cutItems: TodoListItem[] } => {
-  let cutItems: TodoListItem[] = [];
+  const cutItems: TodoListItem[] = [];
   const updatedLists = lists.map((list) => {
     if (list.id !== listId) return list;
-    cutItems = list.items.filter((item) => itemIds.has(item.id));
+    const remainingItems: TodoListItem[] = [];
+
+    for (const item of list.items) {
+      if (itemIds.has(item.id)) {
+        cutItems.push(item);
+      } else {
+        remainingItems.push(item);
+      }
+    }
+
+    if (cutItems.length === 0) return list;
+
     return {
       ...list,
-      items: list.items.filter((item) => !itemIds.has(item.id)),
+      items: remainingItems,
       updatedAt: new Date().toISOString(),
     };
   });

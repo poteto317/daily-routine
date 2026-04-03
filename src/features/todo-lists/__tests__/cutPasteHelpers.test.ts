@@ -44,7 +44,12 @@ describe("cutItemsFromList", () => {
 
   it("存在しないアイテムIDは無視される", () => {
     const items = [createItem({ id: "a" })];
-    const lists = [createList({ items })];
+    const lists = [
+      createList({
+        items,
+        updatedAt: "2024-01-01T00:00:00.000Z",
+      }),
+    ];
     const { updatedLists, cutItems } = cutItemsFromList(
       lists,
       "list-1",
@@ -52,7 +57,9 @@ describe("cutItemsFromList", () => {
     );
 
     expect(cutItems).toHaveLength(0);
+    expect(updatedLists[0]).toBe(lists[0]);
     expect(updatedLists[0].items).toHaveLength(1);
+    expect(updatedLists[0].updatedAt).toBe("2024-01-01T00:00:00.000Z");
   });
 
   it("対象外リストは変更されない", () => {

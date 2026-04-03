@@ -336,7 +336,10 @@ const DetailView = ({
                           type="button"
                           role="checkbox"
                           aria-checked={isSelected}
-                          aria-label={texts.list.selectItemLabel}
+                          aria-label={texts.list.selectItemLabel.replace(
+                            "{title}",
+                            item.title,
+                          )}
                           onClick={() => toggleSelectItem(item.id)}
                           className={`shrink-0 w-4 h-4 rounded border-2 flex items-center justify-center transition-all ${
                             isSelected
@@ -345,7 +348,10 @@ const DetailView = ({
                           }`}
                         >
                           {isSelected && (
-                            <span className="text-white text-[10px] leading-none">
+                            <span
+                              aria-hidden="true"
+                              className="text-white text-[10px] leading-none"
+                            >
                               ✓
                             </span>
                           )}

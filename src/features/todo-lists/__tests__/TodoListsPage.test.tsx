@@ -4,6 +4,7 @@ import {
   render,
   screen,
   waitFor,
+  within,
 } from "@testing-library/react";
 import { TodoListsPage } from "../TodoListsPage";
 
@@ -47,6 +48,9 @@ const mockSaveAndSyncTodoLists = saveAndSyncTodoLists as jest.MockedFunction<
 const mockGetSelectedTodoListId = getSelectedTodoListId as jest.MockedFunction<
   typeof getSelectedTodoListId
 >;
+
+const getSelectCheckbox = (title: string) =>
+  screen.getByRole("checkbox", { name: `「${title}」を選択` });
 const mockSetSelectedTodoListId = setSelectedTodoListId as jest.MockedFunction<
   typeof setSelectedTodoListId
 >;
@@ -602,12 +606,17 @@ describe("TodoListsPage", () => {
 
     render(<TodoListsPage />);
 
-    fireEvent.click(screen.getAllByLabelText("選択")[0]);
+    fireEvent.click(getSelectCheckbox("Task 1"));
 
     await waitFor(() => {
       expect(screen.getByText("1件選択中")).toBeInTheDocument();
     });
     expect(screen.getByText(/切り取り/)).toBeInTheDocument();
+
+    expect(within(getSelectCheckbox("Task 1")).getByText("✓")).toHaveAttribute(
+      "aria-hidden",
+      "true",
+    );
   });
 
   it("選択解除ボタンで選択バーが消える", async () => {
@@ -616,7 +625,7 @@ describe("TodoListsPage", () => {
 
     render(<TodoListsPage />);
 
-    fireEvent.click(screen.getAllByLabelText("選択")[0]);
+    fireEvent.click(getSelectCheckbox("Task 1"));
     await waitFor(() => {
       expect(screen.getByText("1件選択中")).toBeInTheDocument();
     });
@@ -634,7 +643,7 @@ describe("TodoListsPage", () => {
 
     render(<TodoListsPage />);
 
-    fireEvent.click(screen.getAllByLabelText("選択")[0]);
+    fireEvent.click(getSelectCheckbox("Task 1"));
     await waitFor(() => {
       expect(screen.getByText(/切り取り/)).toBeInTheDocument();
     });
@@ -656,7 +665,7 @@ describe("TodoListsPage", () => {
 
     render(<TodoListsPage />);
 
-    fireEvent.click(screen.getAllByLabelText("選択")[0]);
+    fireEvent.click(getSelectCheckbox("Task 1"));
     await waitFor(() =>
       expect(screen.getByText(/切り取り/)).toBeInTheDocument(),
     );
@@ -681,7 +690,7 @@ describe("TodoListsPage", () => {
 
     render(<TodoListsPage />);
 
-    fireEvent.click(screen.getAllByLabelText("選択")[0]);
+    fireEvent.click(getSelectCheckbox("Task 1"));
     await waitFor(() =>
       expect(screen.getByText(/切り取り/)).toBeInTheDocument(),
     );
@@ -723,7 +732,7 @@ describe("TodoListsPage", () => {
     const { rerender } = render(<TodoListsPage />);
 
     // list-1 の Task 1 を選択して切り取り
-    fireEvent.click(screen.getAllByLabelText("選択")[0]);
+    fireEvent.click(getSelectCheckbox("Task 1"));
     await waitFor(() =>
       expect(screen.getByText(/切り取り/)).toBeInTheDocument(),
     );
