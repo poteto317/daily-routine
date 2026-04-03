@@ -28,21 +28,21 @@ describe("getVisibleTodoItems", () => {
     expect(filterIncompleteItems).not.toHaveBeenCalled();
   });
 
-  it("hideCompleted=true では折りたたみ後に未完了フィルタを適用する", () => {
+  it("hideCompleted=true では未完了フィルタ後に折りたたみフィルタを適用する", () => {
     const items = [{ id: "item-1" }];
-    const afterCollapse = [{ id: "item-2" }];
-    const afterIncomplete = [{ id: "item-3" }];
-    (filterCollapsedItems as jest.Mock).mockReturnValue(afterCollapse);
+    const afterIncomplete = [{ id: "item-2" }];
+    const afterCollapse = [{ id: "item-3" }];
     (filterIncompleteItems as jest.Mock).mockReturnValue(afterIncomplete);
+    (filterCollapsedItems as jest.Mock).mockReturnValue(afterCollapse);
 
     expect(
       getVisibleTodoItems(items as never[], true, new Set(["parent"])),
-    ).toBe(afterIncomplete);
+    ).toBe(afterCollapse);
+    expect(filterIncompleteItems).toHaveBeenCalledWith(items);
     expect(filterCollapsedItems).toHaveBeenCalledWith(
-      items,
+      afterIncomplete,
       new Set(["parent"]),
     );
-    expect(filterIncompleteItems).toHaveBeenCalledWith(afterCollapse);
   });
 
   it("collapsedItemIds 省略時は空の Set で折りたたみフィルタに委譲する", () => {

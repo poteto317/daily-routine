@@ -36,6 +36,18 @@ describe("getVisibleTodoItems（折りたたみ統合）", () => {
     expect(result.map((i) => i.id)).toEqual(["A", "C", "D"]);
   });
 
+  it("完了済み親が折りたたまれていても未完了の子は表示する", () => {
+    const nestedItems: TodoListItem[] = [
+      item("parent", 0, true),
+      item("child-open", 1, false),
+      item("sibling", 0, false),
+    ];
+
+    const result = getVisibleTodoItems(nestedItems, true, new Set(["parent"]));
+
+    expect(result.map((i) => i.id)).toEqual(["child-open", "sibling"]);
+  });
+
   it("collapsedItemIds を省略できる（後方互換）", () => {
     const result = getVisibleTodoItems(items, false);
     expect(result).toEqual(items);
