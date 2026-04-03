@@ -1,32 +1,30 @@
-import type { useTodoListDetailComputedValues } from "./useTodoListDetailComputedValues";
-import type { useTodoListDetailVisibilityActions } from "./useTodoListDetailVisibilityActions";
-import type { useTodoListDetailVisibilityState } from "./useTodoListDetailVisibilityState";
+import type { useTodoListDetailProgress } from "./useTodoListDetailProgress";
+import type { useTodoListDetailVisibleItems } from "./useTodoListDetailVisibleItems";
+import type { useTodoListDetailVisibility } from "./useTodoListDetailVisibility";
 
-type TodoListDetailVisibilityState = ReturnType<
-  typeof useTodoListDetailVisibilityState
+type TodoListDetailProgress = ReturnType<typeof useTodoListDetailProgress>;
+type TodoListDetailVisibleItems = ReturnType<
+  typeof useTodoListDetailVisibleItems
 >;
-type TodoListDetailComputedValues = ReturnType<
-  typeof useTodoListDetailComputedValues
->;
-type TodoListDetailVisibilityActions = ReturnType<
-  typeof useTodoListDetailVisibilityActions
->;
+type TodoListDetailVisibility = ReturnType<typeof useTodoListDetailVisibility>;
 
 type CreateTodoListDetailComputedStateResultParams = {
-  computedValues: TodoListDetailComputedValues;
-  visibilityActions: TodoListDetailVisibilityActions;
-  visibilityState: TodoListDetailVisibilityState;
+  detailProgress: TodoListDetailProgress;
+  detailVisibleItems: TodoListDetailVisibleItems;
+  detailVisibility: TodoListDetailVisibility;
 };
 
 export const createTodoListDetailComputedStateResult = ({
-  computedValues,
-  visibilityActions,
-  visibilityState,
+  detailProgress,
+  detailVisibleItems,
+  detailVisibility,
 }: CreateTodoListDetailComputedStateResultParams) => {
   return {
-    hideCompleted: visibilityState.hideCompleted,
-    progress: computedValues.progress,
-    toggleHideCompleted: visibilityActions.toggleHideCompleted,
-    visibleItems: computedValues.visibleItems,
+    collapsedItemIds: detailVisibility.collapsedItemIds,
+    hideCompleted: detailVisibility.hideCompleted,
+    toggleCollapseItem: detailVisibility.toggleCollapseItem,
+    toggleHideCompleted: detailVisibility.toggleHideCompleted,
+    progress: detailProgress.progress,
+    visibleItems: detailVisibleItems.visibleItems,
   };
 };

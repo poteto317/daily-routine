@@ -1,14 +1,14 @@
 import type { Dispatch, SetStateAction } from "react";
 
-type TodoListDetailVisibilityStateResultInput = {
+type TodoListHideCompletedStateResultInput = {
   hideCompleted: boolean;
   setHideCompleted: Dispatch<SetStateAction<boolean>>;
 };
 
-export const createTodoListDetailVisibilityStateResult = ({
+export const createTodoListHideCompletedStateResult = ({
   hideCompleted,
   setHideCompleted,
-}: TodoListDetailVisibilityStateResultInput) => ({
+}: TodoListHideCompletedStateResultInput) => ({
   hideCompleted,
   setHideCompleted,
 });

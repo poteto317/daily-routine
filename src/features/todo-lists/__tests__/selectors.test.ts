@@ -1,17 +1,11 @@
-import {
-  findTodoListById,
-  getVisibleTodoItems,
-  resolveSelectedTodoListId,
-} from "../selectors";
-import type { TodoList, TodoListItem } from "../types";
+import { findTodoListById, resolveSelectedTodoListId } from "../selectors";
+import { isTodoListVisible } from "../todoListVisibilityPredicate";
+import type { TodoList } from "../types";
 
-const createItem = (overrides: Partial<TodoListItem> = {}): TodoListItem => ({
-  id: "item-1",
-  title: "Task",
-  isCompleted: false,
-  createdAt: "2026-03-07T00:00:00.000Z",
-  ...overrides,
-});
+jest.mock("../todoListVisibilityPredicate", () => ({
+  ...jest.requireActual("../todoListVisibilityPredicate"),
+  isTodoListVisible: jest.fn(),
+}));
 
 const createList = (overrides: Partial<TodoList> = {}): TodoList => ({
   id: "list-1",
@@ -23,15 +17,13 @@ const createList = (overrides: Partial<TodoList> = {}): TodoList => ({
 });
 
 describe("todo list selectors", () => {
-  it("完了済みの表示切替に応じてアイテムを返す", () => {
-    const items = [createItem({ isCompleted: true }), createItem({ id: "item-2" })];
-
-    expect(getVisibleTodoItems(items, false)).toHaveLength(2);
-    expect(getVisibleTodoItems(items, true)).toEqual([
-      expect.objectContaining({ id: "item-2" }),
-    ]);
+  beforeEach(() => {
+    jest.clearAllMocks();
+    const real = jest.requireActual<
+      typeof import("../todoListVisibilityPredicate")
+    >("../todoListVisibilityPredicate");
+    (isTodoListVisible as jest.Mock).mockImplementation(real.isTodoListVisible);
   });
-
   it("選択中リストが表示可能ならそのまま返す", () => {
     const lists = [createList(), createList({ id: "list-2" })];
     expect(resolveSelectedTodoListId(lists, "list-2")).toBe("list-2");
@@ -47,7 +39,9 @@ describe("todo list selectors", () => {
   });
 
   it("表示可能なリストがない場合は null を返す", () => {
-    expect(resolveSelectedTodoListId([createList({ isHidden: true })], null)).toBeNull();
+    expect(
+      resolveSelectedTodoListId([createList({ isHidden: true })], null),
+    ).toBeNull();
   });
 
   it("IDでリストを取得する", () => {
@@ -57,5 +51,20 @@ describe("todo list selectors", () => {
       expect.objectContaining({ id: "list-2" }),
     );
     expect(findTodoListById(lists, "missing")).toBeNull();
+  });
+
+  it("resolveSelectedTodoListId は isTodoListVisible に委譲して可視リストを絞り込む", () => {
+    const hidden = createList({ id: "hidden" });
+    const visible = createList({ id: "visible" });
+
+    // hidden を非表示扱いにする
+    (isTodoListVisible as jest.Mock).mockImplementation(
+      (list: TodoList) => list.id !== "hidden",
+    );
+
+    const result = resolveSelectedTodoListId([hidden, visible], "missing");
+
+    expect(isTodoListVisible).toHaveBeenCalled();
+    expect(result).toBe("visible");
   });
 });

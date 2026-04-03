@@ -4,7 +4,9 @@ import { CardPanel } from "@/components";
 import { SwipeableRoutineItem } from "@/components/SwipeableRoutineItem";
 import { isImeComposingKeyDown } from "@/lib/isImeComposingKeyDown";
 import type { TodoList } from "./types";
-import { getMaxAllowedIndent } from "./helpers";
+import { hasChildren } from "./todoListItemHasChildren";
+import { getItemIndentLevel } from "./todoListItemIndentLevel";
+import { getMaxAllowedIndent } from "./todoListItemMaxIndent";
 import {
   useTodoListDetailState,
   useTodoListSelectionState,
@@ -42,6 +44,7 @@ const DetailView = ({
   onUpdateListTitle: (listId: string, title: string) => void;
 }) => {
   const {
+    collapsedItemIds,
     dragOverIndex,
     editingItemId,
     editingItemTitle,
@@ -64,6 +67,7 @@ const DetailView = ({
     handleAdd,
     startEditItem,
     startEditListTitle,
+    toggleCollapseItem,
     toggleHideCompleted,
   } = useTodoListDetailViewState({
     list,
@@ -170,12 +174,14 @@ const DetailView = ({
             <ul className="space-y-2 mb-6">
               {visibleItems.map((item) => {
                 const origIndex = list.items.indexOf(item);
-                const currentIndent = item.indent ?? 0;
+                const currentIndent = getItemIndentLevel(item);
                 const maxIndent = getMaxAllowedIndent(list.items, origIndex);
                 const isDragOver =
                   !hideCompleted && dragOverIndex === origIndex;
                 const canSwipeIndent =
                   editingItemId !== item.id && currentIndent < maxIndent;
+                const isParent = hasChildren(list.items, origIndex);
+                const isCollapsed = collapsedItemIds.has(item.id);
                 return (
                   <li
                     key={item.id}
@@ -246,6 +252,22 @@ const DetailView = ({
                             →
                           </button>
                         </div>
+                        {isParent ? (
+                          <button
+                            type="button"
+                            onClick={() => toggleCollapseItem(item.id)}
+                            className="shrink-0 w-5 h-5 text-gray-400 hover:text-teal-500 dark:text-gray-500 dark:hover:text-teal-400 flex items-center justify-center text-xs transition-colors"
+                            aria-label={
+                              isCollapsed
+                                ? "子Todoを展開"
+                                : "子Todoを折りたたむ"
+                            }
+                          >
+                            {isCollapsed ? "▶" : "▼"}
+                          </button>
+                        ) : (
+                          <span className="shrink-0 w-5" />
+                        )}
                         <button
                           type="button"
                           onClick={() => onToggleItem(list.id, item.id)}

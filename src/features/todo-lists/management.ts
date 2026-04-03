@@ -1,11 +1,12 @@
 import { createTodoList } from "./helpers";
+import { normalizeTodoTitle } from "./todoListTitleNormalization";
 import type { TodoList } from "./types";
 
 export const addTodoList = (lists: TodoList[], title: string): TodoList[] => {
-  const trimmed = title.trim();
-  if (!trimmed) return lists;
+  const normalized = normalizeTodoTitle(title);
+  if (!normalized) return lists;
 
-  return [...lists, createTodoList(trimmed)];
+  return [...lists, createTodoList(normalized)];
 };
 
 export const toggleTodoListVisibility = (

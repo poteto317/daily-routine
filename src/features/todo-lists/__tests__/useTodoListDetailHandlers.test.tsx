@@ -1,11 +1,20 @@
 import { renderHook } from "@testing-library/react";
 import { useTodoListDetailHandlers } from "../useTodoListDetailHandlers";
 
-jest.mock("../todoListPageViewActions", () => ({
+jest.mock("../todoListDetailCrudHandlerFactory", () => ({
   createTodoListDetailHandlers: jest.fn(),
 }));
 
-import { createTodoListDetailHandlers } from "../todoListPageViewActions";
+jest.mock("../todoListDetailConfirmMessages", () => ({
+  createDeleteItemConfirmMessage: jest.fn((t: string) => `item:${t}`),
+  createDeleteListConfirmMessage: jest.fn((t: string) => `list:${t}`),
+}));
+
+import { createTodoListDetailHandlers } from "../todoListDetailCrudHandlerFactory";
+import {
+  createDeleteItemConfirmMessage,
+  createDeleteListConfirmMessage,
+} from "../todoListDetailConfirmMessages";
 
 describe("useTodoListDetailHandlers", () => {
   const list = {
@@ -63,5 +72,33 @@ describe("useTodoListDetailHandlers", () => {
 
     expect(createTodoListDetailHandlers).not.toHaveBeenCalled();
     expect(result.current.detailHandlers).toBeNull();
+  });
+
+  it("deleteItemConfirmTemplate は createDeleteItemConfirmMessage に委譲する", () => {
+    const persist = jest.fn();
+    (createTodoListDetailHandlers as jest.Mock).mockReturnValue({});
+
+    renderHook(() =>
+      useTodoListDetailHandlers({ list, lists: [list], persist }),
+    );
+
+    const call = (createTodoListDetailHandlers as jest.Mock).mock.calls[0][0];
+    call.deleteItemConfirmTemplate("Task A");
+
+    expect(createDeleteItemConfirmMessage).toHaveBeenCalledWith("Task A");
+  });
+
+  it("deleteListConfirmTemplate は createDeleteListConfirmMessage に委譲する", () => {
+    const persist = jest.fn();
+    (createTodoListDetailHandlers as jest.Mock).mockReturnValue({});
+
+    renderHook(() =>
+      useTodoListDetailHandlers({ list, lists: [list], persist }),
+    );
+
+    const call = (createTodoListDetailHandlers as jest.Mock).mock.calls[0][0];
+    call.deleteListConfirmTemplate("Inbox");
+
+    expect(createDeleteListConfirmMessage).toHaveBeenCalledWith("Inbox");
   });
 });

@@ -287,4 +287,209 @@ describe("TodoListsPage", () => {
       expect(screen.getByText("完了済みのみです")).toBeInTheDocument();
     });
   });
+
+  it("子を持つ親Todoには折りたたみボタンが表示される", () => {
+    const listWithParent = {
+      ...baseList,
+      items: [
+        {
+          id: "parent",
+          title: "Parent Task",
+          isCompleted: false,
+          createdAt: "2026-03-07T00:00:00.000Z",
+          indent: 0,
+        },
+        {
+          id: "child",
+          title: "Child Task",
+          isCompleted: false,
+          createdAt: "2026-03-07T00:00:00.000Z",
+          indent: 1,
+        },
+      ],
+    };
+
+    mockGetTodoLists.mockReturnValue([listWithParent]);
+    mockGetSelectedTodoListId.mockReturnValue("list-1");
+
+    render(<TodoListsPage />);
+
+    // 親には折りたたみボタン（▼）が表示される
+    expect(screen.getByLabelText("子Todoを折りたたむ")).toBeInTheDocument();
+    // 子（葉）にはボタンなし（スペーサーを使用）
+    expect(screen.queryByLabelText("子Todoを展開")).not.toBeInTheDocument();
+  });
+
+  it("子を持たないTodoには折りたたみボタンが表示されない", () => {
+    mockGetTodoLists.mockReturnValue([baseList]);
+    mockGetSelectedTodoListId.mockReturnValue("list-1");
+
+    render(<TodoListsPage />);
+
+    expect(
+      screen.queryByLabelText("子Todoを折りたたむ"),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("子Todoを展開")).not.toBeInTheDocument();
+  });
+
+  it("折りたたみボタンを押すと子Todoが非表示になる", async () => {
+    const listWithParent = {
+      ...baseList,
+      items: [
+        {
+          id: "parent",
+          title: "Parent Task",
+          isCompleted: false,
+          createdAt: "2026-03-07T00:00:00.000Z",
+          indent: 0,
+        },
+        {
+          id: "child",
+          title: "Child Task",
+          isCompleted: false,
+          createdAt: "2026-03-07T00:00:00.000Z",
+          indent: 1,
+        },
+      ],
+    };
+
+    mockGetTodoLists.mockReturnValue([listWithParent]);
+    mockGetSelectedTodoListId.mockReturnValue("list-1");
+
+    render(<TodoListsPage />);
+
+    expect(screen.getByText("Child Task")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByLabelText("子Todoを折りたたむ"));
+
+    await waitFor(() => {
+      expect(screen.queryByText("Child Task")).not.toBeInTheDocument();
+    });
+    // 折りたたみ後はボタンが ▶（展開）に変わる
+    expect(screen.getByLabelText("子Todoを展開")).toBeInTheDocument();
+  });
+
+  it("展開ボタンを押すと子Todoが再び表示される", async () => {
+    const listWithParent = {
+      ...baseList,
+      items: [
+        {
+          id: "parent",
+          title: "Parent Task",
+          isCompleted: false,
+          createdAt: "2026-03-07T00:00:00.000Z",
+          indent: 0,
+        },
+        {
+          id: "child",
+          title: "Child Task",
+          isCompleted: false,
+          createdAt: "2026-03-07T00:00:00.000Z",
+          indent: 1,
+        },
+      ],
+    };
+
+    mockGetTodoLists.mockReturnValue([listWithParent]);
+    mockGetSelectedTodoListId.mockReturnValue("list-1");
+
+    render(<TodoListsPage />);
+
+    fireEvent.click(screen.getByLabelText("子Todoを折りたたむ"));
+    await waitFor(() => {
+      expect(screen.queryByText("Child Task")).not.toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByLabelText("子Todoを展開"));
+    await waitFor(() => {
+      expect(screen.getByText("Child Task")).toBeInTheDocument();
+    });
+    expect(screen.getByLabelText("子Todoを折りたたむ")).toBeInTheDocument();
+  });
+
+  it("折りたたみは指定した親のみに適用され、他の親には影響しない", async () => {
+    const listWithTwoParents = {
+      ...baseList,
+      items: [
+        {
+          id: "parent-a",
+          title: "Parent A",
+          isCompleted: false,
+          createdAt: "2026-03-07T00:00:00.000Z",
+          indent: 0,
+        },
+        {
+          id: "child-a",
+          title: "Child A",
+          isCompleted: false,
+          createdAt: "2026-03-07T00:00:00.000Z",
+          indent: 1,
+        },
+        {
+          id: "parent-b",
+          title: "Parent B",
+          isCompleted: false,
+          createdAt: "2026-03-07T00:00:00.000Z",
+          indent: 0,
+        },
+        {
+          id: "child-b",
+          title: "Child B",
+          isCompleted: false,
+          createdAt: "2026-03-07T00:00:00.000Z",
+          indent: 1,
+        },
+      ],
+    };
+
+    mockGetTodoLists.mockReturnValue([listWithTwoParents]);
+    mockGetSelectedTodoListId.mockReturnValue("list-1");
+
+    render(<TodoListsPage />);
+
+    const collapseButtons = screen.getAllByLabelText("子Todoを折りたたむ");
+    expect(collapseButtons).toHaveLength(2);
+
+    // Parent A だけ折りたたむ
+    fireEvent.click(collapseButtons[0]);
+
+    await waitFor(() => {
+      expect(screen.queryByText("Child A")).not.toBeInTheDocument();
+    });
+    // Parent B の子は影響を受けない
+    expect(screen.getByText("Child B")).toBeInTheDocument();
+  });
+
+  it("インデントに応じた marginLeft が適用される（getItemIndentLevel に委譲）", () => {
+    const listWithIndent = {
+      ...baseList,
+      items: [
+        {
+          id: "root",
+          title: "Root Task",
+          isCompleted: false,
+          createdAt: "2026-03-07T00:00:00.000Z",
+          indent: 0,
+        },
+        {
+          id: "nested",
+          title: "Nested Task",
+          isCompleted: false,
+          createdAt: "2026-03-07T00:00:00.000Z",
+          indent: 2,
+        },
+      ],
+    };
+
+    mockGetTodoLists.mockReturnValue([listWithIndent]);
+    mockGetSelectedTodoListId.mockReturnValue("list-1");
+
+    render(<TodoListsPage />);
+
+    const rootLi = screen.getByText("Root Task").closest("li");
+    const nestedLi = screen.getByText("Nested Task").closest("li");
+
+    expect(rootLi).toHaveStyle("margin-left: 0px");
+    expect(nestedLi).toHaveStyle("margin-left: 40px");
+  });
 });

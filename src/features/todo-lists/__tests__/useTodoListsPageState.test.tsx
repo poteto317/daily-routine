@@ -35,7 +35,7 @@ jest.mock("../todoListDetailStateResult", () => ({
   createTodoListDetailStateResult: jest.fn(),
 }));
 
-jest.mock("../todoListPageViewActions", () => ({
+jest.mock("../todoListDetailCrudHandlerFactory", () => ({
   createTodoListDetailHandlers: jest.fn(),
 }));
 
@@ -50,7 +50,7 @@ import { findTodoListById, resolveSelectedTodoListId } from "../selectors";
 import { createTodoListDetailHandlerBindings } from "../todoListDetailHandlerBindings";
 import { createPersistTodoListsAction } from "../todoListDetailPersistActions";
 import { createTodoListDetailStateResult } from "../todoListDetailStateResult";
-import { createTodoListDetailHandlers } from "../todoListPageViewActions";
+import { createTodoListDetailHandlers } from "../todoListDetailCrudHandlerFactory";
 
 describe("useTodoListsPageState", () => {
   const list = {

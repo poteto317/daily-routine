@@ -1,17 +1,11 @@
-import type { TodoList, TodoListItem } from "./types";
-
-export const getVisibleTodoItems = (
-  items: TodoListItem[],
-  hideCompleted: boolean,
-): TodoListItem[] => {
-  return hideCompleted ? items.filter((item) => !item.isCompleted) : items;
-};
+import { isTodoListVisible } from "./todoListVisibilityPredicate";
+import type { TodoList } from "./types";
 
 export const resolveSelectedTodoListId = (
   lists: TodoList[],
   selectedId: string | null,
 ): string | null => {
-  const visibleLists = lists.filter((list) => !list.isHidden);
+  const visibleLists = lists.filter(isTodoListVisible);
   const hasSelectedList = visibleLists.some((list) => list.id === selectedId);
 
   if (hasSelectedList) {

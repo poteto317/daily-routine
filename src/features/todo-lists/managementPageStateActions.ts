@@ -5,6 +5,7 @@ import {
   toggleTodoListVisibility,
 } from "./management";
 import { updateListTitle } from "./helpers";
+import { isTodoListVisible } from "./todoListVisibilityPredicate";
 
 type PersistTodoListsArgs = {
   nextLists: TodoList[];
@@ -102,6 +103,6 @@ export const shouldFocusTodoListForm = (showForm: boolean): boolean => {
   return showForm;
 };
 
-export const isTodoListVisible = (list: TodoList): boolean => !list.isHidden;
+export { isTodoListVisible };
 
 export type { TodoListFormState };
