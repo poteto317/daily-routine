@@ -1,7 +1,7 @@
 import { createTodoListCollapsedItemsStateResult } from "../todoListCollapsedItemsStateResult";
 
 describe("createTodoListCollapsedItemsStateResult", () => {
-  it("collapsedItemIds state の公開 shape を返す", () => {
+  it("collapsedItemIds state を ReadonlySet の公開 shape で返す", () => {
     const collapsedItemIds = new Set<string>(["item-1", "item-2"]);
     const setCollapsedItemIds = jest.fn();
 

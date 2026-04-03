@@ -257,6 +257,7 @@ const DetailView = ({
                             type="button"
                             onClick={() => toggleCollapseItem(item.id)}
                             className="shrink-0 w-5 h-5 text-gray-400 hover:text-teal-500 dark:text-gray-500 dark:hover:text-teal-400 flex items-center justify-center text-xs transition-colors"
+                            aria-expanded={!isCollapsed}
                             aria-label={
                               isCollapsed
                                 ? "子Todoを展開"

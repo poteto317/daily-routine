@@ -7,7 +7,7 @@ import {
   createDeleteTodoListHandler,
   createUpdateListTitleHandler,
 } from "../todoListDetailListHandlers";
-import { normalizeTodoTitle } from "../todoListTitleNormalization";
+import { normalizeTitle } from "../todoListTitleNormalization";
 
 jest.mock("../pageStateActions", () => ({
   deleteTodoListAndPersist: jest.fn(),
@@ -15,7 +15,7 @@ jest.mock("../pageStateActions", () => ({
 }));
 
 jest.mock("../todoListTitleNormalization", () => ({
-  normalizeTodoTitle: jest.fn(),
+  normalizeTitle: jest.fn(),
 }));
 
 const baseList: TodoList = {
@@ -32,9 +32,7 @@ describe("todoListDetailListHandlers", () => {
     const real = jest.requireActual<
       typeof import("../todoListTitleNormalization")
     >("../todoListTitleNormalization");
-    (normalizeTodoTitle as jest.Mock).mockImplementation(
-      real.normalizeTodoTitle,
-    );
+    (normalizeTitle as jest.Mock).mockImplementation(real.normalizeTitle);
   });
 
   it("list 削除 handler が確認文言を組み立てる", () => {
@@ -77,24 +75,24 @@ describe("todoListDetailListHandlers", () => {
     expect(updateTodoListTitleAndPersist).toHaveBeenCalledTimes(1);
   });
 
-  it("list title 更新 handler は normalizeTodoTitle に委譲する", () => {
+  it("list title 更新 handler は normalizeTitle に委譲する", () => {
     const persist = jest.fn();
-    (normalizeTodoTitle as jest.Mock).mockReturnValue("Normalized");
+    (normalizeTitle as jest.Mock).mockReturnValue("Normalized");
 
     createUpdateListTitleHandler({ lists: [baseList], persist })(
       "list-1",
       "  raw  ",
     );
 
-    expect(normalizeTodoTitle).toHaveBeenCalledWith("  raw  ");
+    expect(normalizeTitle).toHaveBeenCalledWith("  raw  ");
     expect(updateTodoListTitleAndPersist).toHaveBeenCalledWith(
       expect.objectContaining({ title: "Normalized" }),
     );
   });
 
-  it("normalizeTodoTitle が null を返すと updateTodoListTitleAndPersist を呼ばない", () => {
+  it("normalizeTitle が null を返すと updateTodoListTitleAndPersist を呼ばない", () => {
     const persist = jest.fn();
-    (normalizeTodoTitle as jest.Mock).mockReturnValue(null);
+    (normalizeTitle as jest.Mock).mockReturnValue(null);
 
     createUpdateListTitleHandler({ lists: [baseList], persist })(
       "list-1",

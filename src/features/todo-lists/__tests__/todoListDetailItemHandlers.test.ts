@@ -17,10 +17,10 @@ import {
   createToggleTodoItemHandler,
   createUpdateTodoItemTitleHandler,
 } from "../todoListDetailItemHandlers";
-import { normalizeTodoTitle } from "../todoListTitleNormalization";
+import { normalizeTitle } from "../todoListTitleNormalization";
 
 jest.mock("../todoListTitleNormalization", () => ({
-  normalizeTodoTitle: jest.fn(),
+  normalizeTitle: jest.fn(),
 }));
 
 jest.mock("../pageStateActions", () => ({
@@ -54,9 +54,7 @@ describe("todoListDetailItemHandlers", () => {
     const real = jest.requireActual<
       typeof import("../todoListTitleNormalization")
     >("../todoListTitleNormalization");
-    (normalizeTodoTitle as jest.Mock).mockImplementation(
-      real.normalizeTodoTitle,
-    );
+    (normalizeTitle as jest.Mock).mockImplementation(real.normalizeTitle);
   });
 
   it("item handler 群が pageState action を組み立てる", () => {
@@ -154,9 +152,9 @@ describe("todoListDetailItemHandlers", () => {
     expect(updateTodoItemTitleAndPersist).toHaveBeenCalledTimes(1);
   });
 
-  it("item title 更新 handler は normalizeTodoTitle に委譲する", () => {
+  it("item title 更新 handler は normalizeTitle に委譲する", () => {
     const persist = jest.fn();
-    (normalizeTodoTitle as jest.Mock).mockReturnValue("Normalized");
+    (normalizeTitle as jest.Mock).mockReturnValue("Normalized");
 
     createUpdateTodoItemTitleHandler({ lists: [baseList], persist })(
       "list-1",
@@ -164,15 +162,15 @@ describe("todoListDetailItemHandlers", () => {
       "  raw  ",
     );
 
-    expect(normalizeTodoTitle).toHaveBeenCalledWith("  raw  ");
+    expect(normalizeTitle).toHaveBeenCalledWith("  raw  ");
     expect(updateTodoItemTitleAndPersist).toHaveBeenCalledWith(
       expect.objectContaining({ title: "Normalized" }),
     );
   });
 
-  it("normalizeTodoTitle が null を返すと updateTodoItemTitleAndPersist を呼ばない", () => {
+  it("normalizeTitle が null を返すと updateTodoItemTitleAndPersist を呼ばない", () => {
     const persist = jest.fn();
-    (normalizeTodoTitle as jest.Mock).mockReturnValue(null);
+    (normalizeTitle as jest.Mock).mockReturnValue(null);
 
     createUpdateTodoItemTitleHandler({ lists: [baseList], persist })(
       "list-1",

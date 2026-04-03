@@ -1,8 +1,8 @@
 import { addTodoItemFromDetailInput } from "../todoListPageViewActions";
-import { normalizeTodoTitle } from "../todoListTitleNormalization";
+import { normalizeTitle } from "../todoListTitleNormalization";
 
 jest.mock("../todoListTitleNormalization", () => ({
-  normalizeTodoTitle: jest.fn(),
+  normalizeTitle: jest.fn(),
 }));
 
 describe("todoListPageViewActions", () => {
@@ -11,9 +11,7 @@ describe("todoListPageViewActions", () => {
     const real = jest.requireActual<
       typeof import("../todoListTitleNormalization")
     >("../todoListTitleNormalization");
-    (normalizeTodoTitle as jest.Mock).mockImplementation(
-      real.normalizeTodoTitle,
-    );
+    (normalizeTitle as jest.Mock).mockImplementation(real.normalizeTitle);
   });
   it("入力値から Todo 追加を実行し、成功時に入力をリセットする", () => {
     const onAddItem = jest.fn();
@@ -103,9 +101,9 @@ describe("todoListPageViewActions", () => {
     expect(focusInput).toHaveBeenCalledTimes(1);
   });
 
-  it("addTodoItemFromDetailInput は normalizeTodoTitle に委譲する", () => {
+  it("addTodoItemFromDetailInput は normalizeTitle に委譲する", () => {
     const onAddItem = jest.fn();
-    (normalizeTodoTitle as jest.Mock).mockReturnValue("NormalizedTask");
+    (normalizeTitle as jest.Mock).mockReturnValue("NormalizedTask");
 
     addTodoItemFromDetailInput({
       inputText: "  raw input  ",
@@ -115,13 +113,13 @@ describe("todoListPageViewActions", () => {
       focusInput: jest.fn(),
     });
 
-    expect(normalizeTodoTitle).toHaveBeenCalledWith("  raw input  ");
+    expect(normalizeTitle).toHaveBeenCalledWith("  raw input  ");
     expect(onAddItem).toHaveBeenCalledWith("list-1", "NormalizedTask");
   });
 
-  it("normalizeTodoTitle が null を返すと onAddItem を呼ばずに false を返す", () => {
+  it("normalizeTitle が null を返すと onAddItem を呼ばずに false を返す", () => {
     const onAddItem = jest.fn();
-    (normalizeTodoTitle as jest.Mock).mockReturnValue(null);
+    (normalizeTitle as jest.Mock).mockReturnValue(null);
 
     const result = addTodoItemFromDetailInput({
       inputText: "   ",

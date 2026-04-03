@@ -11,7 +11,7 @@ import {
   createTodoListRenameHandler,
   createTodoListVisibilityToggleHandler,
 } from "../todoListManagementMutationHandlers";
-import { normalizeTodoTitle } from "../todoListTitleNormalization";
+import { normalizeTitle } from "../todoListTitleNormalization";
 
 jest.mock("../managementPageStateActions", () => ({
   createTodoListAndPersist: jest.fn(),
@@ -21,7 +21,7 @@ jest.mock("../managementPageStateActions", () => ({
 }));
 
 jest.mock("../todoListTitleNormalization", () => ({
-  normalizeTodoTitle: jest.fn(),
+  normalizeTitle: jest.fn(),
 }));
 
 const baseList: TodoList = {
@@ -38,9 +38,7 @@ describe("todoListManagementMutationHandlers", () => {
     const real = jest.requireActual<
       typeof import("../todoListTitleNormalization")
     >("../todoListTitleNormalization");
-    (normalizeTodoTitle as jest.Mock).mockImplementation(
-      real.normalizeTodoTitle,
-    );
+    (normalizeTitle as jest.Mock).mockImplementation(real.normalizeTitle);
   });
 
   it("作成 handler が成功時のみ close を呼ぶ", () => {
@@ -131,16 +129,16 @@ describe("todoListManagementMutationHandlers", () => {
     expect(renameTodoListAndPersist).toHaveBeenCalledTimes(1);
   });
 
-  it("rename handler は normalizeTodoTitle に委譲する", () => {
+  it("rename handler は normalizeTitle に委譲する", () => {
     const persist = jest.fn();
-    (normalizeTodoTitle as jest.Mock).mockReturnValue("NormalizedTitle");
+    (normalizeTitle as jest.Mock).mockReturnValue("NormalizedTitle");
 
     createTodoListRenameHandler({
       lists: [baseList],
       persist,
     })("list-1", "  raw title  ");
 
-    expect(normalizeTodoTitle).toHaveBeenCalledWith("  raw title  ");
+    expect(normalizeTitle).toHaveBeenCalledWith("  raw title  ");
     expect(renameTodoListAndPersist).toHaveBeenCalledWith(
       [baseList],
       "list-1",
@@ -149,9 +147,9 @@ describe("todoListManagementMutationHandlers", () => {
     );
   });
 
-  it("normalizeTodoTitle が null を返すと renameTodoListAndPersist を呼ばない", () => {
+  it("normalizeTitle が null を返すと renameTodoListAndPersist を呼ばない", () => {
     const persist = jest.fn();
-    (normalizeTodoTitle as jest.Mock).mockReturnValue(null);
+    (normalizeTitle as jest.Mock).mockReturnValue(null);
 
     createTodoListRenameHandler({
       lists: [baseList],

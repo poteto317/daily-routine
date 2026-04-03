@@ -315,7 +315,10 @@ describe("TodoListsPage", () => {
     render(<TodoListsPage />);
 
     // 親には折りたたみボタン（▼）が表示される
-    expect(screen.getByLabelText("子Todoを折りたたむ")).toBeInTheDocument();
+    expect(screen.getByLabelText("子Todoを折りたたむ")).toHaveAttribute(
+      "aria-expanded",
+      "true",
+    );
     // 子（葉）にはボタンなし（スペーサーを使用）
     expect(screen.queryByLabelText("子Todoを展開")).not.toBeInTheDocument();
   });
@@ -366,7 +369,10 @@ describe("TodoListsPage", () => {
       expect(screen.queryByText("Child Task")).not.toBeInTheDocument();
     });
     // 折りたたみ後はボタンが ▶（展開）に変わる
-    expect(screen.getByLabelText("子Todoを展開")).toBeInTheDocument();
+    expect(screen.getByLabelText("子Todoを展開")).toHaveAttribute(
+      "aria-expanded",
+      "false",
+    );
   });
 
   it("展開ボタンを押すと子Todoが再び表示される", async () => {
@@ -404,7 +410,10 @@ describe("TodoListsPage", () => {
     await waitFor(() => {
       expect(screen.getByText("Child Task")).toBeInTheDocument();
     });
-    expect(screen.getByLabelText("子Todoを折りたたむ")).toBeInTheDocument();
+    expect(screen.getByLabelText("子Todoを折りたたむ")).toHaveAttribute(
+      "aria-expanded",
+      "true",
+    );
   });
 
   it("折りたたみは指定した親のみに適用され、他の親には影響しない", async () => {

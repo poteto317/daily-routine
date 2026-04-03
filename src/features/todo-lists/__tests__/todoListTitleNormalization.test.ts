@@ -1,23 +1,23 @@
-import { normalizeTodoTitle } from "../todoListTitleNormalization";
+import { normalizeTitle } from "../todoListTitleNormalization";
 
-describe("normalizeTodoTitle", () => {
+describe("normalizeTitle", () => {
   it("前後の空白を除去して返す", () => {
-    expect(normalizeTodoTitle("  Hello  ")).toBe("Hello");
+    expect(normalizeTitle("  Hello  ")).toBe("Hello");
   });
 
   it("空白のみの文字列は null を返す", () => {
-    expect(normalizeTodoTitle("   ")).toBeNull();
+    expect(normalizeTitle("   ")).toBeNull();
   });
 
   it("空文字は null を返す", () => {
-    expect(normalizeTodoTitle("")).toBeNull();
+    expect(normalizeTitle("")).toBeNull();
   });
 
   it("空白のない文字列はそのまま返す", () => {
-    expect(normalizeTodoTitle("Task")).toBe("Task");
+    expect(normalizeTitle("Task")).toBe("Task");
   });
 
   it("内側の空白は保持する", () => {
-    expect(normalizeTodoTitle("  Hello World  ")).toBe("Hello World");
+    expect(normalizeTitle("  Hello World  ")).toBe("Hello World");
   });
 });

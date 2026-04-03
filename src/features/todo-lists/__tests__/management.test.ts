@@ -3,11 +3,11 @@ import {
   removeTodoList,
   toggleTodoListVisibility,
 } from "../management";
-import { normalizeTodoTitle } from "../todoListTitleNormalization";
+import { normalizeTitle } from "../todoListTitleNormalization";
 import type { TodoList } from "../types";
 
 jest.mock("../todoListTitleNormalization", () => ({
-  normalizeTodoTitle: jest.fn(),
+  normalizeTitle: jest.fn(),
 }));
 
 const createList = (overrides: Partial<TodoList> = {}): TodoList => ({
@@ -25,9 +25,7 @@ describe("todo list management", () => {
     const real = jest.requireActual<
       typeof import("../todoListTitleNormalization")
     >("../todoListTitleNormalization");
-    (normalizeTodoTitle as jest.Mock).mockImplementation(
-      real.normalizeTodoTitle,
-    );
+    (normalizeTitle as jest.Mock).mockImplementation(real.normalizeTitle);
   });
 
   afterEach(() => {
@@ -58,20 +56,20 @@ describe("todo list management", () => {
     expect(result).toEqual([expect.objectContaining({ id: "list-2" })]);
   });
 
-  it("addTodoList は normalizeTodoTitle に委譲する", () => {
-    (normalizeTodoTitle as jest.Mock).mockReturnValue("NormalizedTitle");
+  it("addTodoList は normalizeTitle に委譲する", () => {
+    (normalizeTitle as jest.Mock).mockReturnValue("NormalizedTitle");
 
     const result = addTodoList([], "  raw title  ");
 
-    expect(normalizeTodoTitle).toHaveBeenCalledWith("  raw title  ");
+    expect(normalizeTitle).toHaveBeenCalledWith("  raw title  ");
     expect(result).toEqual([
       expect.objectContaining({ title: "NormalizedTitle" }),
     ]);
   });
 
-  it("normalizeTodoTitle が null を返すとリストを追加しない", () => {
+  it("normalizeTitle が null を返すとリストを追加しない", () => {
     const lists = [createList()];
-    (normalizeTodoTitle as jest.Mock).mockReturnValue(null);
+    (normalizeTitle as jest.Mock).mockReturnValue(null);
 
     const result = addTodoList(lists, "   ");
 

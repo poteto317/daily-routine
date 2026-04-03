@@ -1,9 +1,9 @@
 import { createTodoList } from "./helpers";
-import { normalizeTodoTitle } from "./todoListTitleNormalization";
+import { normalizeTitle } from "./todoListTitleNormalization";
 import type { TodoList } from "./types";
 
 export const addTodoList = (lists: TodoList[], title: string): TodoList[] => {
-  const normalized = normalizeTodoTitle(title);
+  const normalized = normalizeTitle(title);
   if (!normalized) return lists;
 
   return [...lists, createTodoList(normalized)];

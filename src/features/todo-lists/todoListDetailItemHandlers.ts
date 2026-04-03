@@ -1,4 +1,4 @@
-import { normalizeTodoTitle } from "./todoListTitleNormalization";
+import { normalizeTitle } from "./todoListTitleNormalization";
 import type { TodoList } from "./types";
 import {
   addTodoItemAndPersist,
@@ -84,7 +84,7 @@ export const createUpdateTodoItemTitleHandler = ({
   persist,
 }: TodoListsHandlerArgs) => {
   return (listId: string, itemId: string, title: string) => {
-    const normalized = normalizeTodoTitle(title);
+    const normalized = normalizeTitle(title);
     if (!normalized) return;
     updateTodoItemTitleAndPersist({
       lists,

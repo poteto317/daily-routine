@@ -1,4 +1,4 @@
-import { normalizeTodoTitle } from "./todoListTitleNormalization";
+import { normalizeTitle } from "./todoListTitleNormalization";
 
 export const addTodoItemFromDetailInput = (params: {
   inputText: string;
@@ -8,7 +8,7 @@ export const addTodoItemFromDetailInput = (params: {
   focusInput: () => void;
 }): boolean => {
   const { inputText, listId, onAddItem, clearInput, focusInput } = params;
-  const normalized = normalizeTodoTitle(inputText);
+  const normalized = normalizeTitle(inputText);
 
   if (!normalized) {
     return false;
