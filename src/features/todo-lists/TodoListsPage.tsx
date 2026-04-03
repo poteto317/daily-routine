@@ -4,6 +4,7 @@ import { CardPanel } from "@/components";
 import { SwipeableRoutineItem } from "@/components/SwipeableRoutineItem";
 import { isImeComposingKeyDown } from "@/lib/isImeComposingKeyDown";
 import type { TodoList } from "./types";
+import { filterIncompleteItems } from "./todoListIncompleteItemsFilter";
 import { hasChildren } from "./todoListItemHasChildren";
 import { getItemIndentLevel } from "./todoListItemIndentLevel";
 import { getMaxAllowedIndent } from "./todoListItemMaxIndent";
@@ -75,6 +76,9 @@ const DetailView = ({
     onUpdateItemTitle,
     onUpdateListTitle,
   });
+  const itemsForParentDetection = hideCompleted
+    ? filterIncompleteItems(list.items)
+    : list.items;
 
   return (
     <div className="min-h-screen bg-linear-to-br from-teal-50 to-cyan-100 dark:from-slate-400 dark:to-slate-300">
@@ -174,13 +178,17 @@ const DetailView = ({
             <ul className="space-y-2 mb-6">
               {visibleItems.map((item) => {
                 const origIndex = list.items.indexOf(item);
+                const parentDetectionIndex =
+                  itemsForParentDetection.indexOf(item);
                 const currentIndent = getItemIndentLevel(item);
                 const maxIndent = getMaxAllowedIndent(list.items, origIndex);
                 const isDragOver =
                   !hideCompleted && dragOverIndex === origIndex;
                 const canSwipeIndent =
                   editingItemId !== item.id && currentIndent < maxIndent;
-                const isParent = hasChildren(list.items, origIndex);
+                const isParent =
+                  parentDetectionIndex >= 0 &&
+                  hasChildren(itemsForParentDetection, parentDetectionIndex);
                 const isCollapsed = collapsedItemIds.has(item.id);
                 return (
                   <li

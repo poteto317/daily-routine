@@ -175,6 +175,100 @@ describe("TodoListsPage", () => {
     expect(screen.getByText("完了済みを表示")).toBeInTheDocument();
   });
 
+  it("hideCompleted中に表示対象の子がない親には折りたたみボタンを表示しない", async () => {
+    const listWithCompletedChild = {
+      ...baseList,
+      items: [
+        {
+          id: "parent",
+          title: "Parent Task",
+          isCompleted: false,
+          createdAt: "2026-03-07T00:00:00.000Z",
+          indent: 0,
+        },
+        {
+          id: "child-done",
+          title: "Child Done",
+          isCompleted: true,
+          createdAt: "2026-03-07T00:00:00.000Z",
+          indent: 1,
+        },
+      ],
+    };
+
+    mockGetTodoLists.mockReturnValue([listWithCompletedChild]);
+    mockGetSelectedTodoListId.mockReturnValue("list-1");
+
+    render(<TodoListsPage />);
+
+    expect(screen.getByLabelText("子Todoを折りたたむ")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByText("完了済みを非表示"));
+
+    await waitFor(() => {
+      expect(screen.queryByText("Child Done")).not.toBeInTheDocument();
+    });
+    expect(
+      screen.queryByLabelText("子Todoを折りたたむ"),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("子Todoを展開")).not.toBeInTheDocument();
+  });
+
+  it("hideCompleted中も未完了の子が残る親には折りたたみボタンを維持する", async () => {
+    const listWithMixedChildren = {
+      ...baseList,
+      items: [
+        {
+          id: "parent",
+          title: "Parent Task",
+          isCompleted: false,
+          createdAt: "2026-03-07T00:00:00.000Z",
+          indent: 0,
+        },
+        {
+          id: "child-done",
+          title: "Child Done",
+          isCompleted: true,
+          createdAt: "2026-03-07T00:00:00.000Z",
+          indent: 1,
+        },
+        {
+          id: "child-open",
+          title: "Child Open",
+          isCompleted: false,
+          createdAt: "2026-03-07T00:00:00.000Z",
+          indent: 1,
+        },
+      ],
+    };
+
+    mockGetTodoLists.mockReturnValue([listWithMixedChildren]);
+    mockGetSelectedTodoListId.mockReturnValue("list-1");
+
+    render(<TodoListsPage />);
+
+    fireEvent.click(screen.getByText("完了済みを非表示"));
+
+    await waitFor(() => {
+      expect(screen.queryByText("Child Done")).not.toBeInTheDocument();
+    });
+    expect(screen.getByText("Child Open")).toBeInTheDocument();
+    expect(screen.getByLabelText("子Todoを折りたたむ")).toHaveAttribute(
+      "aria-expanded",
+      "true",
+    );
+
+    fireEvent.click(screen.getByLabelText("子Todoを折りたたむ"));
+
+    await waitFor(() => {
+      expect(screen.queryByText("Child Open")).not.toBeInTheDocument();
+    });
+    expect(screen.getByLabelText("子Todoを展開")).toHaveAttribute(
+      "aria-expanded",
+      "false",
+    );
+  });
+
   it("確認後にTodoを削除できる", async () => {
     mockGetTodoLists.mockReturnValue([baseList]);
     mockGetSelectedTodoListId.mockReturnValue("list-1");
