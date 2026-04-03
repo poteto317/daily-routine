@@ -1,10 +1,12 @@
 import { normalizeTitle } from "./todoListTitleNormalization";
-import type { TodoList } from "./types";
+import type { TodoList, TodoListItem } from "./types";
 import {
   addTodoItemAndPersist,
+  cutTodoItemsAndPersist,
   deleteTodoItemAndPersist,
   indentTodoItemAndPersist,
   outdentTodoItemAndPersist,
+  pasteTodoItemsAndPersist,
   reorderTodoItemsAndPersist,
   toggleTodoItemAndPersist,
   updateTodoItemTitleAndPersist,
@@ -93,5 +95,23 @@ export const createUpdateTodoItemTitleHandler = ({
       title: normalized,
       persist,
     });
+  };
+};
+
+export const createCutTodoItemsHandler = ({
+  lists,
+  persist,
+}: TodoListsHandlerArgs) => {
+  return (listId: string, itemIds: ReadonlySet<string>): TodoListItem[] => {
+    return cutTodoItemsAndPersist({ lists, listId, itemIds, persist });
+  };
+};
+
+export const createPasteTodoItemsHandler = ({
+  lists,
+  persist,
+}: TodoListsHandlerArgs) => {
+  return (listId: string, items: TodoListItem[]) => {
+    pasteTodoItemsAndPersist({ lists, listId, items, persist });
   };
 };

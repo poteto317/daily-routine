@@ -4,6 +4,7 @@ import {
   render,
   screen,
   waitFor,
+  within,
 } from "@testing-library/react";
 import { TodoListsPage } from "../TodoListsPage";
 
@@ -47,6 +48,9 @@ const mockSaveAndSyncTodoLists = saveAndSyncTodoLists as jest.MockedFunction<
 const mockGetSelectedTodoListId = getSelectedTodoListId as jest.MockedFunction<
   typeof getSelectedTodoListId
 >;
+
+const getSelectCheckbox = (title: string) =>
+  screen.getByRole("checkbox", { name: `「${title}」を選択` });
 const mockSetSelectedTodoListId = setSelectedTodoListId as jest.MockedFunction<
   typeof setSelectedTodoListId
 >;
@@ -594,5 +598,178 @@ describe("TodoListsPage", () => {
 
     expect(rootLi).toHaveStyle("margin-left: 0px");
     expect(nestedLi).toHaveStyle("margin-left: 40px");
+  });
+
+  it("アイテムを選択すると選択バーが表示される", async () => {
+    mockGetTodoLists.mockReturnValue([baseList]);
+    mockGetSelectedTodoListId.mockReturnValue("list-1");
+
+    render(<TodoListsPage />);
+
+    fireEvent.click(getSelectCheckbox("Task 1"));
+
+    await waitFor(() => {
+      expect(screen.getByText("1件選択中")).toBeInTheDocument();
+    });
+    expect(screen.getByText(/切り取り/)).toBeInTheDocument();
+
+    expect(within(getSelectCheckbox("Task 1")).getByText("✓")).toHaveAttribute(
+      "aria-hidden",
+      "true",
+    );
+  });
+
+  it("選択解除ボタンで選択バーが消える", async () => {
+    mockGetTodoLists.mockReturnValue([baseList]);
+    mockGetSelectedTodoListId.mockReturnValue("list-1");
+
+    render(<TodoListsPage />);
+
+    fireEvent.click(getSelectCheckbox("Task 1"));
+    await waitFor(() => {
+      expect(screen.getByText("1件選択中")).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByText("選択解除"));
+
+    await waitFor(() => {
+      expect(screen.queryByText("1件選択中")).toBeNull();
+    });
+  });
+
+  it("切り取りするとアイテムがリストから消えクリップボードバーが表示される", async () => {
+    mockGetTodoLists.mockReturnValue([baseList]);
+    mockGetSelectedTodoListId.mockReturnValue("list-1");
+
+    render(<TodoListsPage />);
+
+    fireEvent.click(getSelectCheckbox("Task 1"));
+    await waitFor(() => {
+      expect(screen.getByText(/切り取り/)).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByText(/切り取り/));
+
+    await waitFor(() => {
+      expect(screen.queryByText("Task 1")).toBeNull();
+    });
+    expect(screen.getByText(/1件のTodoをペーストできます/)).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /ペースト/ }),
+    ).toBeInTheDocument();
+  });
+
+  it("クリップボードキャンセルボタンでクリップボードバーが消える", async () => {
+    mockGetTodoLists.mockReturnValue([baseList]);
+    mockGetSelectedTodoListId.mockReturnValue("list-1");
+
+    render(<TodoListsPage />);
+
+    fireEvent.click(getSelectCheckbox("Task 1"));
+    await waitFor(() =>
+      expect(screen.getByText(/切り取り/)).toBeInTheDocument(),
+    );
+    fireEvent.click(screen.getByText(/切り取り/));
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("button", { name: /ペースト/ }),
+      ).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: "キャンセル" }));
+
+    await waitFor(() => {
+      expect(screen.queryByText(/ペースト/)).toBeNull();
+    });
+  });
+
+  it("ペーストするとアイテムが同一リストの末尾に追加される", async () => {
+    mockGetTodoLists.mockReturnValue([baseList]);
+    mockGetSelectedTodoListId.mockReturnValue("list-1");
+
+    render(<TodoListsPage />);
+
+    fireEvent.click(getSelectCheckbox("Task 1"));
+    await waitFor(() =>
+      expect(screen.getByText(/切り取り/)).toBeInTheDocument(),
+    );
+    fireEvent.click(screen.getByText(/切り取り/));
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("button", { name: /ペースト/ }),
+      ).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: /ペースト/ }));
+
+    await waitFor(() => {
+      expect(screen.getByText("Task 1")).toBeInTheDocument();
+    });
+    expect(screen.queryByText(/ペースト/)).toBeNull();
+  });
+
+  it("リスト切替後もクリップボードが保持されペーストできる（リスト間移動）", async () => {
+    const list2 = {
+      id: "list-2",
+      title: "Work",
+      items: [
+        {
+          id: "item-3",
+          title: "Work Task",
+          isCompleted: false,
+          createdAt: "2026-03-07T00:00:00.000Z",
+        },
+      ],
+      createdAt: "2026-03-07T00:00:00.000Z",
+      updatedAt: "2026-03-07T00:00:00.000Z",
+    };
+
+    mockGetTodoLists.mockReturnValue([baseList, list2]);
+    mockGetSelectedTodoListId.mockReturnValue("list-1");
+
+    const { rerender } = render(<TodoListsPage />);
+
+    // list-1 の Task 1 を選択して切り取り
+    fireEvent.click(getSelectCheckbox("Task 1"));
+    await waitFor(() =>
+      expect(screen.getByText(/切り取り/)).toBeInTheDocument(),
+    );
+    fireEvent.click(screen.getByText(/切り取り/));
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(/1件のTodoをペーストできます/),
+      ).toBeInTheDocument();
+    });
+
+    // list-2 に切り替える
+    mockGetSelectedTodoListId.mockReturnValue("list-2");
+    rerender(<TodoListsPage />);
+
+    await waitFor(() => {
+      expect(screen.getByText("Work Task")).toBeInTheDocument();
+    });
+
+    // クリップボードバーがまだ表示されている
+    expect(screen.getByText(/1件のTodoをペーストできます/)).toBeInTheDocument();
+
+    // list-2 にペースト
+    fireEvent.click(screen.getByRole("button", { name: /ペースト/ }));
+
+    await waitFor(() => {
+      expect(mockSaveAndSyncTodoLists).toHaveBeenCalledWith(
+        expect.arrayContaining([
+          expect.objectContaining({
+            id: "list-2",
+            items: expect.arrayContaining([
+              expect.objectContaining({ title: "Task 1" }),
+            ]),
+          }),
+        ]),
+      );
+    });
+    expect(screen.queryByText(/ペースト/)).toBeNull();
   });
 });

@@ -1,8 +1,10 @@
 import {
   createAddTodoItemHandler,
+  createCutTodoItemsHandler,
   createDeleteTodoItemHandler,
   createIndentTodoItemHandler,
   createOutdentTodoItemHandler,
+  createPasteTodoItemsHandler,
   createReorderTodoItemsHandler,
   createUpdateTodoItemTitleHandler,
   createToggleTodoItemHandler,
@@ -46,5 +48,7 @@ export const createTodoListDetailHandlers = (params: {
     onReorderItems: createReorderTodoItemsHandler({ lists, persist }),
     onUpdateItemTitle: createUpdateTodoItemTitleHandler({ lists, persist }),
     onUpdateListTitle: createUpdateListTitleHandler({ lists, persist }),
+    onCutItems: createCutTodoItemsHandler({ lists, persist }),
+    onPasteItems: createPasteTodoItemsHandler({ lists, persist }),
   };
 };

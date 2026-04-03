@@ -9,8 +9,9 @@ import {
   updateItemTitleInList,
   updateListTitle,
 } from "./helpers";
+import { cutItemsFromList, pasteItemsToList } from "./todoListCutPasteHelpers";
 import { removeTodoList } from "./management";
-import type { TodoList } from "./types";
+import type { TodoList, TodoListItem } from "./types";
 
 type ConfirmDelete = (message: string) => boolean;
 
@@ -129,4 +130,22 @@ export const updateTodoListTitleInLists = (params: {
   const { lists, listId, title } = params;
 
   return updateListTitle(lists, listId, title);
+};
+
+export const cutTodoItemsFromLists = (params: {
+  lists: TodoList[];
+  listId: string;
+  itemIds: ReadonlySet<string>;
+}): { updatedLists: TodoList[]; cutItems: TodoListItem[] } => {
+  const { lists, listId, itemIds } = params;
+  return cutItemsFromList(lists, listId, itemIds);
+};
+
+export const pasteTodoItemsToLists = (params: {
+  lists: TodoList[];
+  listId: string;
+  items: TodoListItem[];
+}): TodoList[] => {
+  const { lists, listId, items } = params;
+  return pasteItemsToList(lists, listId, items);
 };

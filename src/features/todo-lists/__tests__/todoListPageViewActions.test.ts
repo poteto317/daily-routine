@@ -4,7 +4,6 @@ import { normalizeTitle } from "../todoListTitleNormalization";
 jest.mock("../todoListTitleNormalization", () => ({
   normalizeTitle: jest.fn(),
 }));
-
 describe("todoListPageViewActions", () => {
   beforeEach(() => {
     jest.clearAllMocks();
