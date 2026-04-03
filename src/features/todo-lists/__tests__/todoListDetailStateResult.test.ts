@@ -19,6 +19,8 @@ describe("todoListDetailStateResult", () => {
       onReorderItems: jest.fn(),
       onUpdateItemTitle: jest.fn(),
       onUpdateListTitle: jest.fn(),
+      onCutItems: jest.fn(),
+      onPasteItems: jest.fn(),
     };
 
     expect(

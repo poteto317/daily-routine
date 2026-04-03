@@ -31,6 +31,13 @@
     "hideCompleted": "完了済みを非表示",
     "showCompleted": "完了済みを表示",
     "deleteItemConfirm": "「{title}」を削除しますか？",
-    "editItemLabel": "編集"
+    "editItemLabel": "編集",
+    "selectedCount": "{count}件選択中",
+    "cutButton": "切り取り",
+    "pasteMessage": "{count}件のTodoをペーストできます",
+    "pasteButton": "ペースト",
+    "cancelClipboardButton": "キャンセル",
+    "clearSelectionButton": "選択解除",
+    "selectItemLabel": "選択"
   }
 }

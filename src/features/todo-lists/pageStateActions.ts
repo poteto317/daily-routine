@@ -1,10 +1,12 @@
-import type { TodoList } from "./types";
+import type { TodoList, TodoListItem } from "./types";
 import {
   addTodoItemToLists,
   confirmAndDeleteTodoItem,
   confirmAndDeleteTodoList,
+  cutTodoItemsFromLists,
   indentTodoItemInLists,
   outdentTodoItemInLists,
+  pasteTodoItemsToLists,
   reorderTodoItemsInLists,
   updateTodoItemTitleInLists,
   updateTodoListTitleInLists,
@@ -170,7 +172,12 @@ export const reorderTodoItemsAndPersist = ({
   toIndex,
   persist,
 }: ReorderTodoItemsArgs): TodoList[] => {
-  const nextLists = reorderTodoItemsInLists({ lists, listId, fromIndex, toIndex });
+  const nextLists = reorderTodoItemsInLists({
+    lists,
+    listId,
+    fromIndex,
+    toIndex,
+  });
   persist(nextLists);
   return nextLists;
 };
@@ -190,7 +197,12 @@ export const updateTodoItemTitleAndPersist = ({
   title,
   persist,
 }: UpdateTodoItemTitleArgs): TodoList[] => {
-  const nextLists = updateTodoItemTitleInLists({ lists, listId, itemId, title });
+  const nextLists = updateTodoItemTitleInLists({
+    lists,
+    listId,
+    itemId,
+    title,
+  });
   persist(nextLists);
   return nextLists;
 };
@@ -211,4 +223,43 @@ export const updateTodoListTitleAndPersist = ({
   const nextLists = updateTodoListTitleInLists({ lists, listId, title });
   persist(nextLists);
   return nextLists;
+};
+
+type CutTodoItemsArgs = {
+  lists: TodoList[];
+  listId: string;
+  itemIds: ReadonlySet<string>;
+  persist: PersistLists;
+};
+
+export const cutTodoItemsAndPersist = ({
+  lists,
+  listId,
+  itemIds,
+  persist,
+}: CutTodoItemsArgs): TodoListItem[] => {
+  const { updatedLists, cutItems } = cutTodoItemsFromLists({
+    lists,
+    listId,
+    itemIds,
+  });
+  persist(updatedLists);
+  return cutItems;
+};
+
+type PasteTodoItemsArgs = {
+  lists: TodoList[];
+  listId: string;
+  items: TodoListItem[];
+  persist: PersistLists;
+};
+
+export const pasteTodoItemsAndPersist = ({
+  lists,
+  listId,
+  items,
+  persist,
+}: PasteTodoItemsArgs): void => {
+  const nextLists = pasteTodoItemsToLists({ lists, listId, items });
+  persist(nextLists);
 };

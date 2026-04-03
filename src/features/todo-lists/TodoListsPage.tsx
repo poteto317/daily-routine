@@ -3,7 +3,7 @@
 import { CardPanel } from "@/components";
 import { SwipeableRoutineItem } from "@/components/SwipeableRoutineItem";
 import { isImeComposingKeyDown } from "@/lib/isImeComposingKeyDown";
-import type { TodoList } from "./types";
+import type { TodoList, TodoListItem } from "./types";
 import { filterIncompleteItems } from "./todoListIncompleteItemsFilter";
 import { hasChildren } from "./todoListItemHasChildren";
 import { getItemIndentLevel } from "./todoListItemIndentLevel";
@@ -13,6 +13,8 @@ import {
   useTodoListSelectionState,
 } from "./useTodoListsPageState";
 import { useTodoListDetailViewState } from "./useTodoListDetailViewState";
+import { useTodoListDetailSelection } from "./useTodoListDetailSelection";
+import { useTodoListDetailClipboard } from "./useTodoListDetailClipboard";
 import texts from "./locales/ja.json";
 
 // ドラッグ中のリストアイテムインデックスを管理するシングルトン（ref代替）
@@ -21,19 +23,9 @@ let _dragFromIndex: number | null = null;
 // ============================================================
 // Todo 詳細ビュー
 // ============================================================
-const DetailView = ({
-  list,
-  onAddItem,
-  onToggleItem,
-  onDeleteItem,
-  onDeleteList,
-  onIndentItem,
-  onOutdentItem,
-  onReorderItems,
-  onUpdateItemTitle,
-  onUpdateListTitle,
-}: {
+type DetailViewProps = {
   list: TodoList;
+  clipboardItems: TodoListItem[];
   onAddItem: (listId: string, title: string) => void;
   onToggleItem: (listId: string, itemId: string) => void;
   onDeleteItem: (listId: string, itemId: string, title: string) => void;
@@ -43,7 +35,46 @@ const DetailView = ({
   onReorderItems: (listId: string, fromIndex: number, toIndex: number) => void;
   onUpdateItemTitle: (listId: string, itemId: string, title: string) => void;
   onUpdateListTitle: (listId: string, title: string) => void;
-}) => {
+  onCutItems: (listId: string, itemIds: ReadonlySet<string>) => TodoListItem[];
+  onPasteItems: (listId: string, items: TodoListItem[]) => void;
+  onSetClipboard: (items: TodoListItem[]) => void;
+  onClearClipboard: () => void;
+};
+
+const DetailView = ({
+  list,
+  clipboardItems,
+  onAddItem,
+  onToggleItem,
+  onDeleteItem,
+  onDeleteList,
+  onIndentItem,
+  onOutdentItem,
+  onReorderItems,
+  onUpdateItemTitle,
+  onUpdateListTitle,
+  onCutItems,
+  onPasteItems,
+  onSetClipboard,
+  onClearClipboard,
+}: DetailViewProps) => {
+  const {
+    selectedItemIds,
+    toggleSelectItem,
+    clearSelection,
+    hasSelection,
+    handleCut,
+    handlePaste,
+  } = useTodoListDetailSelection({
+    listId: list.id,
+    clipboardItems,
+    onCutItems,
+    onPasteItems,
+    onSetClipboard,
+    onClearClipboard,
+  });
+
+  const hasClipboard = clipboardItems.length > 0;
   const {
     collapsedItemIds,
     dragOverIndex,
@@ -168,6 +199,63 @@ const DetailView = ({
           )}
 
           {/* Todoアイテム一覧 */}
+          {/* 選択アクションバー */}
+          {hasSelection && (
+            <div className="flex items-center justify-between gap-2 mb-4 p-3 bg-teal-50 dark:bg-teal-900/30 border border-teal-200 dark:border-teal-700 rounded-xl">
+              <span className="text-sm text-teal-700 dark:text-teal-300 font-medium">
+                {texts.list.selectedCount.replace(
+                  "{count}",
+                  String(selectedItemIds.size),
+                )}
+              </span>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={clearSelection}
+                  className="text-xs text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
+                >
+                  {texts.list.clearSelectionButton}
+                </button>
+                <button
+                  type="button"
+                  onClick={handleCut}
+                  className="text-xs bg-teal-500 hover:bg-teal-600 text-white px-3 py-1 rounded-lg font-medium transition-colors"
+                >
+                  ✂️ {texts.list.cutButton}
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* クリップボードバー */}
+          {hasClipboard && !hasSelection && (
+            <div className="flex items-center justify-between gap-2 mb-4 p-3 bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-700 rounded-xl">
+              <span className="text-sm text-amber-700 dark:text-amber-300 font-medium">
+                📋{" "}
+                {texts.list.pasteMessage.replace(
+                  "{count}",
+                  String(clipboardItems.length),
+                )}
+              </span>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={onClearClipboard}
+                  className="text-xs text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
+                >
+                  {texts.list.cancelClipboardButton}
+                </button>
+                <button
+                  type="button"
+                  onClick={handlePaste}
+                  className="text-xs bg-amber-500 hover:bg-amber-600 text-white px-3 py-1 rounded-lg font-medium transition-colors"
+                >
+                  📋 {texts.list.pasteButton}
+                </button>
+              </div>
+            </div>
+          )}
+
           {visibleItems.length === 0 ? (
             <div className="text-center py-10 text-gray-400 dark:text-gray-500">
               <p className="text-3xl mb-2">✅</p>
@@ -199,6 +287,7 @@ const DetailView = ({
                   parentDetectionIndex !== undefined &&
                   hasChildren(itemsForParentDetection, parentDetectionIndex);
                 const isCollapsed = collapsedItemIds.has(item.id);
+                const isSelected = selectedItemIds.has(item.id);
                 return (
                   <li
                     key={item.id}
@@ -238,9 +327,29 @@ const DetailView = ({
                         className={`flex items-center gap-2 p-3 bg-white dark:bg-gray-700 border rounded-xl hover:shadow-sm transition-shadow ${
                           isDragOver
                             ? "border-teal-400 dark:border-teal-500 shadow-md"
-                            : "border-gray-100 dark:border-gray-500"
+                            : isSelected
+                              ? "border-teal-300 dark:border-teal-400 bg-teal-50 dark:bg-teal-900/20"
+                              : "border-gray-100 dark:border-gray-500"
                         }`}
                       >
+                        <button
+                          type="button"
+                          role="checkbox"
+                          aria-checked={isSelected}
+                          aria-label={texts.list.selectItemLabel}
+                          onClick={() => toggleSelectItem(item.id)}
+                          className={`shrink-0 w-4 h-4 rounded border-2 flex items-center justify-center transition-all ${
+                            isSelected
+                              ? "bg-teal-500 border-teal-500"
+                              : "border-gray-300 dark:border-gray-400 hover:border-teal-400"
+                          }`}
+                        >
+                          {isSelected && (
+                            <span className="text-white text-[10px] leading-none">
+                              ✓
+                            </span>
+                          )}
+                        </button>
                         {!hideCompleted && (
                           <span
                             className="shrink-0 cursor-grab active:cursor-grabbing text-gray-300 dark:text-gray-500 hover:text-gray-400 dark:hover:text-gray-400 select-none"
@@ -397,7 +506,19 @@ const DetailView = ({
 // ============================================================
 // リスト詳細の状態管理コンテナ（key={listId} でリスト切替時に再マウント）
 // ============================================================
-const TodoListDetail = ({ listId }: { listId: string }) => {
+type TodoListDetailProps = {
+  listId: string;
+  clipboardItems: TodoListItem[];
+  onSetClipboard: (items: TodoListItem[]) => void;
+  onClearClipboard: () => void;
+};
+
+const TodoListDetail = ({
+  listId,
+  clipboardItems,
+  onSetClipboard,
+  onClearClipboard,
+}: TodoListDetailProps) => {
   const { list, detailHandlers } = useTodoListDetailState(listId);
 
   if (!list || !detailHandlers) {
@@ -417,7 +538,15 @@ const TodoListDetail = ({ listId }: { listId: string }) => {
     );
   }
 
-  return <DetailView list={list} {...detailHandlers} />;
+  return (
+    <DetailView
+      list={list}
+      {...detailHandlers}
+      clipboardItems={clipboardItems}
+      onSetClipboard={onSetClipboard}
+      onClearClipboard={onClearClipboard}
+    />
+  );
 };
 
 // ============================================================
@@ -425,6 +554,8 @@ const TodoListDetail = ({ listId }: { listId: string }) => {
 // ============================================================
 export const TodoListsPage = () => {
   const { effectiveSelectedId } = useTodoListSelectionState();
+  const { clipboardItems, setClipboard, clearClipboard } =
+    useTodoListDetailClipboard();
 
   if (!effectiveSelectedId) {
     return (
@@ -445,6 +576,12 @@ export const TodoListsPage = () => {
   // key={selectedId} により、リスト切替時に TodoListDetail が再マウントされ
   // useState の初期値として最新の localStorage データが読み込まれる
   return (
-    <TodoListDetail key={effectiveSelectedId} listId={effectiveSelectedId} />
+    <TodoListDetail
+      key={effectiveSelectedId}
+      listId={effectiveSelectedId}
+      clipboardItems={clipboardItems}
+      onSetClipboard={setClipboard}
+      onClearClipboard={clearClipboard}
+    />
   );
 };

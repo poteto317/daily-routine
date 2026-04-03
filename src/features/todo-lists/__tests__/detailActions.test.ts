@@ -2,8 +2,10 @@ import {
   addTodoItemToLists,
   confirmAndDeleteTodoItem,
   confirmAndDeleteTodoList,
+  cutTodoItemsFromLists,
   indentTodoItemInLists,
   outdentTodoItemInLists,
+  pasteTodoItemsToLists,
   persistTodoLists,
   toggleTodoItemInLists,
 } from "../detailActions";
@@ -136,5 +138,39 @@ describe("todo detailActions", () => {
       outdentTodoItemInLists({ lists, listId: "list-1", itemId: "item-1" })[0]
         .items[0].indent,
     ).toBe(0);
+  });
+
+  it("指定アイテムをリストから切り取って返す", () => {
+    const items = [
+      createItem({ id: "a", title: "A" }),
+      createItem({ id: "b", title: "B" }),
+    ];
+    const lists = [createList({ items })];
+
+    const { updatedLists, cutItems } = cutTodoItemsFromLists({
+      lists,
+      listId: "list-1",
+      itemIds: new Set(["a"]),
+    });
+
+    expect(cutItems).toHaveLength(1);
+    expect(cutItems[0].id).toBe("a");
+    expect(updatedLists[0].items).toHaveLength(1);
+    expect(updatedLists[0].items[0].id).toBe("b");
+  });
+
+  it("アイテムをリストの末尾に貼り付ける", () => {
+    const existing = createItem({ id: "existing", title: "Existing" });
+    const lists = [createList({ items: [existing] })];
+    const toPaste = [createItem({ id: "pasted", title: "Pasted" })];
+
+    const result = pasteTodoItemsToLists({
+      lists,
+      listId: "list-1",
+      items: toPaste,
+    });
+
+    expect(result[0].items).toHaveLength(2);
+    expect(result[0].items[1].id).toBe("pasted");
   });
 });

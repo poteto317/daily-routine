@@ -2,9 +2,11 @@ import { createTodoListDetailHandlers } from "../todoListDetailCrudHandlerFactor
 
 jest.mock("../todoListDetailItemHandlers", () => ({
   createAddTodoItemHandler: jest.fn(),
+  createCutTodoItemsHandler: jest.fn(),
   createDeleteTodoItemHandler: jest.fn(),
   createIndentTodoItemHandler: jest.fn(),
   createOutdentTodoItemHandler: jest.fn(),
+  createPasteTodoItemsHandler: jest.fn(),
   createReorderTodoItemsHandler: jest.fn(),
   createToggleTodoItemHandler: jest.fn(),
   createUpdateTodoItemTitleHandler: jest.fn(),
@@ -17,9 +19,11 @@ jest.mock("../todoListDetailListHandlers", () => ({
 
 import {
   createAddTodoItemHandler,
+  createCutTodoItemsHandler,
   createDeleteTodoItemHandler,
   createIndentTodoItemHandler,
   createOutdentTodoItemHandler,
+  createPasteTodoItemsHandler,
   createReorderTodoItemsHandler,
   createToggleTodoItemHandler,
   createUpdateTodoItemTitleHandler,
@@ -54,6 +58,8 @@ describe("todoListDetailCrudHandlerFactory", () => {
     const onReorderItems = jest.fn();
     const onUpdateItemTitle = jest.fn();
     const onUpdateListTitle = jest.fn();
+    const onCutItems = jest.fn();
+    const onPasteItems = jest.fn();
 
     (createAddTodoItemHandler as jest.Mock).mockReturnValue(onAddItem);
     (createToggleTodoItemHandler as jest.Mock).mockReturnValue(onToggleItem);
@@ -70,6 +76,8 @@ describe("todoListDetailCrudHandlerFactory", () => {
     (createUpdateListTitleHandler as jest.Mock).mockReturnValue(
       onUpdateListTitle,
     );
+    (createCutTodoItemsHandler as jest.Mock).mockReturnValue(onCutItems);
+    (createPasteTodoItemsHandler as jest.Mock).mockReturnValue(onPasteItems);
 
     const deleteItemConfirmTemplate = (title: string) =>
       `アイテム「${title}」を削除しますか？`;
@@ -93,6 +101,8 @@ describe("todoListDetailCrudHandlerFactory", () => {
       onReorderItems,
       onUpdateItemTitle,
       onUpdateListTitle,
+      onCutItems,
+      onPasteItems,
     });
   });
 
@@ -133,6 +143,14 @@ describe("todoListDetailCrudHandlerFactory", () => {
       persist,
     });
     expect(createUpdateListTitleHandler).toHaveBeenCalledWith({
+      lists: [list],
+      persist,
+    });
+    expect(createCutTodoItemsHandler).toHaveBeenCalledWith({
+      lists: [list],
+      persist,
+    });
+    expect(createPasteTodoItemsHandler).toHaveBeenCalledWith({
       lists: [list],
       persist,
     });
