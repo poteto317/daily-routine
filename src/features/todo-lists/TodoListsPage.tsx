@@ -139,8 +139,10 @@ const DetailView = ({
     if (!colorPickerItemId && !showBulkColorPicker) return;
 
     const handleMouseDown = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
-      if (!target.closest("[data-color-picker]")) {
+      if (
+        !(e.target instanceof Element) ||
+        !e.target.closest("[data-color-picker]")
+      ) {
         setColorPickerItemId(null);
         setShowBulkColorPicker(false);
       }
@@ -444,7 +446,7 @@ const DetailView = ({
                             ⠿
                           </span>
                         )}
-                        <div className="flex shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div className="flex shrink-0 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity">
                           <button
                             type="button"
                             onClick={() => onOutdentItem(list.id, item.id)}
@@ -542,7 +544,7 @@ const DetailView = ({
                                       : item.id,
                                   );
                                 }}
-                                className="shrink-0 text-gray-300 hover:text-teal-500 dark:text-gray-500 dark:hover:text-teal-400 opacity-0 group-hover:opacity-100 transition-opacity"
+                                className="shrink-0 text-gray-300 hover:text-teal-500 dark:text-gray-500 dark:hover:text-teal-400 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 focus-visible:opacity-100 transition-opacity"
                                 aria-label="背景色を変更"
                                 aria-expanded={colorPickerItemId === item.id}
                               >
@@ -577,7 +579,7 @@ const DetailView = ({
                             <button
                               type="button"
                               onClick={() => startEditItem(item.id, item.title)}
-                              className="shrink-0 text-gray-300 hover:text-teal-500 dark:text-gray-500 dark:hover:text-teal-400 opacity-0 group-hover:opacity-100 transition-opacity"
+                              className="shrink-0 text-gray-300 hover:text-teal-500 dark:text-gray-500 dark:hover:text-teal-400 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 focus-visible:opacity-100 transition-opacity"
                               aria-label={texts.list.editItemLabel}
                             >
                               ✏️
@@ -587,7 +589,7 @@ const DetailView = ({
                               onClick={() =>
                                 onDeleteItem(list.id, item.id, item.title)
                               }
-                              className="shrink-0 text-gray-300 hover:text-red-400 dark:text-gray-500 dark:hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity"
+                              className="shrink-0 text-gray-300 hover:text-red-400 dark:text-gray-500 dark:hover:text-red-400 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 focus-visible:opacity-100 transition-opacity"
                               aria-label="削除"
                             >
                               🗑️

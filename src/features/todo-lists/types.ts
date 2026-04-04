@@ -1,4 +1,4 @@
-/** アイテムの背景色として使用できる Tailwind クラス名の union 型 */
+/** アイテムの背景色として使用できる Tailwind クラス名の union 型（undefined = 未指定/デフォルト） */
 export type TodoItemBgColorValue =
   | undefined
   | "bg-red-50"
