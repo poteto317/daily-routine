@@ -137,6 +137,19 @@ import { AuthGuard } from "@/components/AuthGuard";
 - **'use client'**: クライアントコンポーネントには必ず宣言
 - **ダークモード対応**: Tailwindの `dark:` プレフィックスを使用
 - **アクセシビリティ**: `aria-label` を適切に設定
+- **React の `key`**: リストレンダリングでは表示文言（label）を `key` に使わない。`undefined` になり得る値には固定フォールバック文字列（例: `"__default__"`）を使い、安定した識別子を `key` にする。
+
+```tsx
+// ❌ 悪い例 — 文言変更や i18n 対応で key が変わり不要な再マウントが起きる
+{
+  items.map((item) => <button key={item.label} />);
+}
+
+// ✅ 良い例 — value は安定した識別子。undefined には固定フォールバックを使う
+{
+  items.map((item) => <button key={item.value ?? "__default__"} />);
+}
+```
 
 ```tsx
 "use client";

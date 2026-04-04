@@ -249,7 +249,7 @@ const DetailView = ({
                 <div className="absolute top-full left-0 mt-1 p-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-500 rounded-lg shadow-lg z-10 flex gap-1.5">
                   {TODO_ITEM_BG_COLORS.map((color) => (
                     <button
-                      key={color.label}
+                      key={color.value ?? "__default__"}
                       type="button"
                       onClick={() => {
                         onUpdateAllItemsBgColor(list.id, color.value);
@@ -554,7 +554,7 @@ const DetailView = ({
                                 <div className="absolute top-full right-0 mt-1 p-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-500 rounded-lg shadow-lg z-10 flex gap-1.5">
                                   {TODO_ITEM_BG_COLORS.map((color) => (
                                     <button
-                                      key={color.label}
+                                      key={color.value ?? "__default__"}
                                       type="button"
                                       onClick={() => {
                                         onUpdateItemBgColor(
