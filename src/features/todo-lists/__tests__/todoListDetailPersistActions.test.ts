@@ -1,9 +1,9 @@
 import type { TodoList } from "../types";
-import { persistTodoLists } from "../detailActions";
+import { persistTodoLists } from "../todoListPersistence";
 import { createPersistTodoListsAction } from "../todoListDetailPersistActions";
 import { saveAndSyncTodoLists } from "../sync";
 
-jest.mock("../detailActions", () => ({
+jest.mock("../todoListPersistence", () => ({
   persistTodoLists: jest.fn(),
 }));
 

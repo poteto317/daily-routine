@@ -1,16 +1,17 @@
 import type { TodoList } from "../types";
-import {
-  deleteTodoListAndPersist,
-  updateTodoListTitleAndPersist,
-} from "../pageStateActions";
+import { deleteTodoListAndPersist } from "../todoListDeletePersistActions";
+import { updateTodoListTitleAndPersist } from "../todoListTitleUpdatePersistAction";
 import {
   createDeleteTodoListHandler,
   createUpdateListTitleHandler,
 } from "../todoListDetailListHandlers";
 import { normalizeTitle } from "../todoListTitleNormalization";
 
-jest.mock("../pageStateActions", () => ({
+jest.mock("../todoListDeletePersistActions", () => ({
   deleteTodoListAndPersist: jest.fn(),
+}));
+
+jest.mock("../todoListTitleUpdatePersistAction", () => ({
   updateTodoListTitleAndPersist: jest.fn(),
 }));
 

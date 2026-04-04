@@ -1,16 +1,18 @@
 import {
   cutTodoItemsAndPersist,
   pasteTodoItemsAndPersist,
-} from "../pageStateActions";
+} from "../todoListCutPastePersistActions";
 import type { TodoList, TodoListItem } from "../types";
 
-jest.mock("../detailActions", () => ({
-  ...jest.requireActual("../detailActions"),
+jest.mock("../todoListCutPasteActions", () => ({
   cutTodoItemsFromLists: jest.fn(),
   pasteTodoItemsToLists: jest.fn(),
 }));
 
-import { cutTodoItemsFromLists, pasteTodoItemsToLists } from "../detailActions";
+import {
+  cutTodoItemsFromLists,
+  pasteTodoItemsToLists,
+} from "../todoListCutPasteActions";
 
 const createItem = (overrides: Partial<TodoListItem> = {}): TodoListItem => ({
   id: "item-1",

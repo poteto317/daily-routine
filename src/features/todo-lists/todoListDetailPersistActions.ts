@@ -1,6 +1,6 @@
 import type { Dispatch, SetStateAction } from "react";
 import type { TodoList } from "./types";
-import { persistTodoLists } from "./detailActions";
+import { persistTodoLists } from "./todoListPersistence";
 import { saveAndSyncTodoLists } from "./sync";
 
 type PersistTodoListsActionArgs = {

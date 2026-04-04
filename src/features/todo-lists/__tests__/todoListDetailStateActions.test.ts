@@ -9,7 +9,7 @@ import {
   createToggleTodoItemHandler,
 } from "../todoListDetailStateActions";
 
-jest.mock("../detailActions", () => ({
+jest.mock("../todoListPersistence", () => ({
   persistTodoLists: jest.fn(),
 }));
 
@@ -19,23 +19,28 @@ jest.mock("../sync", () => ({
 
 jest.mock("../pageStateActions", () => ({
   addTodoItemAndPersist: jest.fn(),
-  deleteTodoItemAndPersist: jest.fn(),
-  deleteTodoListAndPersist: jest.fn(),
   indentTodoItemAndPersist: jest.fn(),
   outdentTodoItemAndPersist: jest.fn(),
   toggleTodoItemAndPersist: jest.fn(),
 }));
 
-import { persistTodoLists } from "../detailActions";
+jest.mock("../todoListDeletePersistActions", () => ({
+  deleteTodoItemAndPersist: jest.fn(),
+  deleteTodoListAndPersist: jest.fn(),
+}));
+
+import { persistTodoLists } from "../todoListPersistence";
 import { saveAndSyncTodoLists } from "../sync";
 import {
   addTodoItemAndPersist,
-  deleteTodoItemAndPersist,
-  deleteTodoListAndPersist,
   indentTodoItemAndPersist,
   outdentTodoItemAndPersist,
   toggleTodoItemAndPersist,
 } from "../pageStateActions";
+import {
+  deleteTodoItemAndPersist,
+  deleteTodoListAndPersist,
+} from "../todoListDeletePersistActions";
 
 const baseList: TodoList = {
   id: "list-1",
@@ -77,15 +82,27 @@ describe("todoListDetailStateActions", () => {
       persist,
       deleteListConfirmTemplate: (title) => `delete-list:${title}`,
     })(baseList);
-    createAddTodoItemHandler({ lists: [baseList], persist })("list-1", "New Task");
-    createToggleTodoItemHandler({ lists: [baseList], persist })("list-1", "item-1");
+    createAddTodoItemHandler({ lists: [baseList], persist })(
+      "list-1",
+      "New Task",
+    );
+    createToggleTodoItemHandler({ lists: [baseList], persist })(
+      "list-1",
+      "item-1",
+    );
     createDeleteTodoItemHandler({
       lists: [baseList],
       persist,
       deleteItemConfirmTemplate: (title) => `delete-item:${title}`,
     })("list-1", "item-1", "Task 1");
-    createIndentTodoItemHandler({ lists: [baseList], persist })("list-1", "item-1");
-    createOutdentTodoItemHandler({ lists: [baseList], persist })("list-1", "item-1");
+    createIndentTodoItemHandler({ lists: [baseList], persist })(
+      "list-1",
+      "item-1",
+    );
+    createOutdentTodoItemHandler({ lists: [baseList], persist })(
+      "list-1",
+      "item-1",
+    );
 
     expect(deleteTodoListAndPersist).toHaveBeenCalledWith({
       lists: [baseList],
@@ -109,7 +126,6 @@ describe("todoListDetailStateActions", () => {
       lists: [baseList],
       listId: "list-1",
       itemId: "item-1",
-      title: "Task 1",
       message: "delete-item:Task 1",
       persist,
     });

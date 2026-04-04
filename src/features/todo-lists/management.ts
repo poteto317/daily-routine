@@ -1,4 +1,4 @@
-import { createTodoList } from "./helpers";
+import { createTodoList } from "./todoListFactory";
 import { normalizeTitle } from "./todoListTitleNormalization";
 import type { TodoList } from "./types";
 

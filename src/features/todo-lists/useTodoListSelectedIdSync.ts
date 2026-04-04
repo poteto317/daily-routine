@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { syncSelectedTodoListIdIfNeeded } from "./pageStateActions";
+import { syncSelectedTodoListIdIfNeeded } from "./todoListSelectedIdSyncAction";
 import { setSelectedTodoListId } from "./selectedTodoList";
 
 type UseTodoListSelectedIdSyncParams = {

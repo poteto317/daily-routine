@@ -1,7 +1,5 @@
 import {
   addItemToList,
-  createTodoListItem,
-  deleteItemFromList,
   indentItemInList,
   outdentItemInList,
   reorderItemsInList,
@@ -9,25 +7,8 @@ import {
   updateItemTitleInList,
   updateListTitle,
 } from "./helpers";
-import { cutItemsFromList, pasteItemsToList } from "./todoListCutPasteHelpers";
-import { removeTodoList } from "./management";
-import type { TodoList, TodoListItem } from "./types";
-
-type ConfirmDelete = (message: string) => boolean;
-
-type SetLists = (lists: TodoList[]) => void;
-type SaveLists = (lists: TodoList[]) => void;
-
-export const persistTodoLists = (params: {
-  nextLists: TodoList[];
-  setLists: SetLists;
-  saveLists: SaveLists;
-}): void => {
-  const { nextLists, setLists, saveLists } = params;
-
-  setLists(nextLists);
-  saveLists(nextLists);
-};
+import { createTodoListItem } from "./todoListFactory";
+import type { TodoList } from "./types";
 
 export const addTodoItemToLists = (params: {
   lists: TodoList[];
@@ -47,37 +28,6 @@ export const toggleTodoItemInLists = (params: {
   const { lists, listId, itemId } = params;
 
   return toggleItemInList(lists, listId, itemId);
-};
-
-export const confirmAndDeleteTodoList = (params: {
-  lists: TodoList[];
-  list: TodoList;
-  message: string;
-  confirmDelete: ConfirmDelete;
-}): TodoList[] | null => {
-  const { lists, list, message, confirmDelete } = params;
-
-  if (!confirmDelete(message)) {
-    return null;
-  }
-
-  return removeTodoList(lists, list.id);
-};
-
-export const confirmAndDeleteTodoItem = (params: {
-  lists: TodoList[];
-  listId: string;
-  itemId: string;
-  message: string;
-  confirmDelete: ConfirmDelete;
-}): TodoList[] | null => {
-  const { lists, listId, itemId, message, confirmDelete } = params;
-
-  if (!confirmDelete(message)) {
-    return null;
-  }
-
-  return deleteItemFromList(lists, listId, itemId);
 };
 
 export const indentTodoItemInLists = (params: {
@@ -130,22 +80,4 @@ export const updateTodoListTitleInLists = (params: {
   const { lists, listId, title } = params;
 
   return updateListTitle(lists, listId, title);
-};
-
-export const cutTodoItemsFromLists = (params: {
-  lists: TodoList[];
-  listId: string;
-  itemIds: ReadonlySet<string>;
-}): { updatedLists: TodoList[]; cutItems: TodoListItem[] } => {
-  const { lists, listId, itemIds } = params;
-  return cutItemsFromList(lists, listId, itemIds);
-};
-
-export const pasteTodoItemsToLists = (params: {
-  lists: TodoList[];
-  listId: string;
-  items: TodoListItem[];
-}): TodoList[] => {
-  const { lists, listId, items } = params;
-  return pasteItemsToList(lists, listId, items);
 };

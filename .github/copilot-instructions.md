@@ -137,6 +137,42 @@ import { AuthGuard } from "@/components/AuthGuard";
 - **'use client'**: クライアントコンポーネントには必ず宣言
 - **ダークモード対応**: Tailwindの `dark:` プレフィックスを使用
 - **アクセシビリティ**: `aria-label` を適切に設定
+- **選択状態の ARIA**: 色スウォッチなど「どれが選択中か」を視覚的に表現する場合、支援技術にも状態を伝える。グループコンテナに `role="radiogroup"`、各選択肢に `role="radio"` + `aria-checked={isSelected}` を付与する。
+- **混在状態の表現**: `undefined` が「未選択/デフォルト」として有効な値である場合、「複数の値が混在している」状態を `undefined` で表してはならない。`null` などの別の sentinel 値を使い、`undefined` と明確に区別すること。
+- **React の `key`**: リストレンダリングでは表示文言（label）を `key` に使わない。`undefined` になり得る値には固定フォールバック文字列（例: `"__default__"`）を使い、安定した識別子を `key` にする。
+
+```tsx
+// ❌ 悪い例 — 文言変更や i18n 対応で key が変わり不要な再マウントが起きる
+{
+  items.map((item) => <button key={item.label} />);
+}
+
+// ✅ 良い例 — value は安定した識別子。undefined には固定フォールバックを使う
+{
+  items.map((item) => <button key={item.value ?? "__default__"} />);
+}
+```
+
+```tsx
+// ❌ 悪い例 — ring だけでは支援技術に選択状態が伝わらない
+<div className="flex gap-1">
+  {colors.map((c) => (
+    <button key={c.value} className={isSelected ? "ring-2" : ""} />
+  ))}
+</div>
+
+// ✅ 良い例 — radiogroup + radio + aria-checked で状態を明示
+<div role="radiogroup" aria-label="背景色" className="flex gap-1">
+  {colors.map((c) => (
+    <button
+      key={c.value ?? "__default__"}
+      role="radio"
+      aria-checked={currentValue === c.value}
+      className={currentValue === c.value ? "ring-2" : ""}
+    />
+  ))}
+</div>
+```
 
 ```tsx
 "use client";

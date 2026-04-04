@@ -14,7 +14,7 @@ jest.mock("../selectedTodoList", () => ({
   subscribeSelectedTodoListId: jest.fn(() => () => undefined),
 }));
 
-jest.mock("../pageStateActions", () => ({
+jest.mock("../todoListSelectedIdSyncAction", () => ({
   syncSelectedTodoListIdIfNeeded: jest.fn(),
 }));
 
@@ -45,7 +45,7 @@ import {
   setSelectedTodoListId,
   subscribeSelectedTodoListId,
 } from "../selectedTodoList";
-import { syncSelectedTodoListIdIfNeeded } from "../pageStateActions";
+import { syncSelectedTodoListIdIfNeeded } from "../todoListSelectedIdSyncAction";
 import { findTodoListById, resolveSelectedTodoListId } from "../selectors";
 import { createTodoListDetailHandlerBindings } from "../todoListDetailHandlerBindings";
 import { createPersistTodoListsAction } from "../todoListDetailPersistActions";

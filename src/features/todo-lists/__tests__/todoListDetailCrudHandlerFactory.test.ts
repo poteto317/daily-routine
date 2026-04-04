@@ -12,6 +12,11 @@ jest.mock("../todoListDetailItemHandlers", () => ({
   createUpdateTodoItemTitleHandler: jest.fn(),
 }));
 
+jest.mock("../todoListDetailBgColorHandlers", () => ({
+  createUpdateTodoItemBgColorHandler: jest.fn(),
+  createUpdateAllTodoItemsBgColorHandler: jest.fn(),
+}));
+
 jest.mock("../todoListDetailListHandlers", () => ({
   createDeleteTodoListHandler: jest.fn(),
   createUpdateListTitleHandler: jest.fn(),
@@ -28,6 +33,10 @@ import {
   createToggleTodoItemHandler,
   createUpdateTodoItemTitleHandler,
 } from "../todoListDetailItemHandlers";
+import {
+  createUpdateTodoItemBgColorHandler,
+  createUpdateAllTodoItemsBgColorHandler,
+} from "../todoListDetailBgColorHandlers";
 import {
   createDeleteTodoListHandler,
   createUpdateListTitleHandler,
@@ -58,6 +67,8 @@ describe("todoListDetailCrudHandlerFactory", () => {
     const onReorderItems = jest.fn();
     const onUpdateItemTitle = jest.fn();
     const onUpdateListTitle = jest.fn();
+    const onUpdateItemBgColor = jest.fn();
+    const onUpdateAllItemsBgColor = jest.fn();
     const onCutItems = jest.fn();
     const onPasteItems = jest.fn();
 
@@ -72,6 +83,12 @@ describe("todoListDetailCrudHandlerFactory", () => {
     );
     (createUpdateTodoItemTitleHandler as jest.Mock).mockReturnValue(
       onUpdateItemTitle,
+    );
+    (createUpdateTodoItemBgColorHandler as jest.Mock).mockReturnValue(
+      onUpdateItemBgColor,
+    );
+    (createUpdateAllTodoItemsBgColorHandler as jest.Mock).mockReturnValue(
+      onUpdateAllItemsBgColor,
     );
     (createUpdateListTitleHandler as jest.Mock).mockReturnValue(
       onUpdateListTitle,
@@ -101,6 +118,8 @@ describe("todoListDetailCrudHandlerFactory", () => {
       onReorderItems,
       onUpdateItemTitle,
       onUpdateListTitle,
+      onUpdateItemBgColor,
+      onUpdateAllItemsBgColor,
       onCutItems,
       onPasteItems,
     });
@@ -139,6 +158,14 @@ describe("todoListDetailCrudHandlerFactory", () => {
       persist,
     });
     expect(createUpdateTodoItemTitleHandler).toHaveBeenCalledWith({
+      lists: [list],
+      persist,
+    });
+    expect(createUpdateTodoItemBgColorHandler).toHaveBeenCalledWith({
+      lists: [list],
+      persist,
+    });
+    expect(createUpdateAllTodoItemsBgColorHandler).toHaveBeenCalledWith({
       lists: [list],
       persist,
     });

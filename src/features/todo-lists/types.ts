@@ -1,3 +1,7 @@
+/** TodoItemBgColorValue は todoItemBgColor.ts の TODO_ITEM_BG_COLORS から派生。型の正典はそちら。 */
+export type { TodoItemBgColorValue } from "./todoItemBgColor";
+import type { TodoItemBgColorValue } from "./todoItemBgColor";
+
 export interface TodoListItem {
   id: string;
   title: string;
@@ -5,6 +9,8 @@ export interface TodoListItem {
   createdAt: string;
   /** インデントレベル（0=最上位, 最大3） */
   indent?: number;
+  /** アイテムの背景色（Tailwind クラス名） */
+  bgColor?: TodoItemBgColorValue;
 }
 
 export interface TodoList {
@@ -15,3 +21,6 @@ export interface TodoList {
   updatedAt: string;
   isHidden?: boolean;
 }
+
+/** TodoList 配列の永続化コールバック型 */
+export type PersistTodoLists = (nextLists: TodoList[]) => void;

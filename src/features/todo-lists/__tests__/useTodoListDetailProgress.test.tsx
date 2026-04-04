@@ -1,5 +1,5 @@
 import { renderHook } from "@testing-library/react";
-import { getListProgress } from "../helpers";
+import { getListProgress } from "../todoListProgress";
 import { createTodoListDetailProgressResult } from "../todoListDetailProgressResult";
 import { useTodoListDetailProgress } from "../useTodoListDetailProgress";
 
@@ -7,15 +7,17 @@ jest.mock("../todoListDetailProgressResult", () => ({
   createTodoListDetailProgressResult: jest.fn(),
 }));
 
-jest.mock("../helpers", () => ({
-  ...jest.requireActual("../helpers"),
+jest.mock("../todoListProgress", () => ({
+  ...jest.requireActual("../todoListProgress"),
   getListProgress: jest.fn(),
 }));
 
 describe("useTodoListDetailProgress", () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    const real = jest.requireActual<typeof import("../helpers")>("../helpers");
+    const real = jest.requireActual<typeof import("../todoListProgress")>(
+      "../todoListProgress",
+    );
     (getListProgress as jest.Mock).mockImplementation(real.getListProgress);
     (createTodoListDetailProgressResult as jest.Mock).mockImplementation(
       (args) => args,

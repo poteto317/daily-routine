@@ -1,7 +1,7 @@
 import { renderHook } from "@testing-library/react";
 import { useTodoListSelectedIdSync } from "../useTodoListSelectedIdSync";
 
-jest.mock("../pageStateActions", () => ({
+jest.mock("../todoListSelectedIdSyncAction", () => ({
   syncSelectedTodoListIdIfNeeded: jest.fn(),
 }));
 
@@ -11,7 +11,7 @@ jest.mock("../selectedTodoList", () => ({
   subscribeSelectedTodoListId: jest.fn(),
 }));
 
-import { syncSelectedTodoListIdIfNeeded } from "../pageStateActions";
+import { syncSelectedTodoListIdIfNeeded } from "../todoListSelectedIdSyncAction";
 import { setSelectedTodoListId } from "../selectedTodoList";
 
 describe("useTodoListSelectedIdSync", () => {

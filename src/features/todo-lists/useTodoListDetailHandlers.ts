@@ -3,9 +3,7 @@ import {
   createDeleteListConfirmMessage,
 } from "./todoListDetailConfirmMessages";
 import { createTodoListDetailHandlers } from "./todoListDetailCrudHandlerFactory";
-import type { TodoList } from "./types";
-
-type TodoListPersist = (next: TodoList[]) => void;
+import type { PersistTodoLists, TodoList } from "./types";
 
 export const useTodoListDetailHandlers = ({
   list,
@@ -14,7 +12,7 @@ export const useTodoListDetailHandlers = ({
 }: {
   list: TodoList | null;
   lists: TodoList[];
-  persist: TodoListPersist;
+  persist: PersistTodoLists;
 }) => {
   if (!list) {
     return {

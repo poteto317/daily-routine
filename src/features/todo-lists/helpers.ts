@@ -1,24 +1,5 @@
 import { getItemIndentLevel } from "./todoListItemIndentLevel";
-import { isItemCompleted } from "./todoListItemCompletedPredicate";
 import type { TodoList, TodoListItem } from "./types";
-
-export const generateId = (): string =>
-  `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
-
-export const createTodoList = (title: string): TodoList => ({
-  id: generateId(),
-  title,
-  items: [],
-  createdAt: new Date().toISOString(),
-  updatedAt: new Date().toISOString(),
-});
-
-export const createTodoListItem = (title: string): TodoListItem => ({
-  id: generateId(),
-  title,
-  isCompleted: false,
-  createdAt: new Date().toISOString(),
-});
 
 export const addItemToList = (
   lists: TodoList[],
@@ -212,12 +193,3 @@ export const reorderItemsInList = (
       updatedAt: new Date().toISOString(),
     };
   });
-
-export const getListProgress = (
-  list: TodoList,
-): { completed: number; total: number; percentage: number } => {
-  const total = list.items.length;
-  const completed = list.items.filter(isItemCompleted).length;
-  const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
-  return { completed, total, percentage };
-};
