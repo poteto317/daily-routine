@@ -1,11 +1,11 @@
 import { normalizeTitle } from "./todoListTitleNormalization";
-import type { TodoList } from "./types";
+import type { PersistTodoLists, TodoList } from "./types";
 import { deleteTodoListAndPersist } from "./todoListDeletePersistActions";
 import { updateTodoListTitleAndPersist } from "./todoListTitleUpdatePersistAction";
 
 type TodoListsHandlerArgs = {
   lists: TodoList[];
-  persist: (next: TodoList[]) => void;
+  persist: PersistTodoLists;
 };
 
 export const createDeleteTodoListHandler = ({
