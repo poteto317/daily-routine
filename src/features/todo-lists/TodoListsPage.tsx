@@ -251,25 +251,35 @@ const DetailView = ({
                   aria-label="一括背景色"
                   className="absolute top-full left-0 mt-1 p-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-500 rounded-lg shadow-lg z-10 flex gap-1.5"
                 >
-                  {TODO_ITEM_BG_COLORS.map((color) => (
-                    <button
-                      key={color.value ?? "__default__"}
-                      role="radio"
-                      aria-checked={false}
-                      type="button"
-                      onClick={() => {
-                        onUpdateAllItemsBgColor(list.id, color.value);
-                        setShowBulkColorPicker(false);
-                      }}
-                      className={`w-6 h-6 rounded-full border-2 transition-all ${color.class} ${
-                        !color.value
-                          ? "border-gray-400 dark:border-gray-300"
-                          : "border-gray-200 dark:border-gray-500 hover:border-teal-400"
-                      }`}
-                      aria-label={color.label}
-                      title={color.label}
-                    />
-                  ))}
+                  {(() => {
+                    const bgColors = list.items.map((i) => i.bgColor);
+                    const bulkSelected =
+                      bgColors.length > 0 &&
+                      bgColors.every((c) => c === bgColors[0])
+                        ? bgColors[0]
+                        : undefined;
+                    return TODO_ITEM_BG_COLORS.map((color) => (
+                      <button
+                        key={color.value ?? "__default__"}
+                        role="radio"
+                        aria-checked={bulkSelected === color.value}
+                        type="button"
+                        onClick={() => {
+                          onUpdateAllItemsBgColor(list.id, color.value);
+                          setShowBulkColorPicker(false);
+                        }}
+                        className={`w-6 h-6 rounded-full border-2 transition-all ${color.class} ${
+                          bulkSelected === color.value
+                            ? "border-teal-500 ring-2 ring-teal-300"
+                            : !color.value
+                              ? "border-gray-400 dark:border-gray-300"
+                              : "border-gray-200 dark:border-gray-500 hover:border-teal-400"
+                        }`}
+                        aria-label={color.label}
+                        title={color.label}
+                      />
+                    ));
+                  })()}
                 </div>
               )}
             </div>
