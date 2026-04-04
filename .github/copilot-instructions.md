@@ -138,6 +138,7 @@ import { AuthGuard } from "@/components/AuthGuard";
 - **ダークモード対応**: Tailwindの `dark:` プレフィックスを使用
 - **アクセシビリティ**: `aria-label` を適切に設定
 - **選択状態の ARIA**: 色スウォッチなど「どれが選択中か」を視覚的に表現する場合、支援技術にも状態を伝える。グループコンテナに `role="radiogroup"`、各選択肢に `role="radio"` + `aria-checked={isSelected}` を付与する。
+- **混在状態の表現**: `undefined` が「未選択/デフォルト」として有効な値である場合、「複数の値が混在している」状態を `undefined` で表してはならない。`null` などの別の sentinel 値を使い、`undefined` と明確に区別すること。
 - **React の `key`**: リストレンダリングでは表示文言（label）を `key` に使わない。`undefined` になり得る値には固定フォールバック文字列（例: `"__default__"`）を使い、安定した識別子を `key` にする。
 
 ```tsx

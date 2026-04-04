@@ -253,11 +253,16 @@ const DetailView = ({
                 >
                   {(() => {
                     const bgColors = list.items.map((i) => i.bgColor);
-                    const bulkSelected =
+                    // null = 混在（どのスウォッチも選択中にしない）
+                    // undefined = 全アイテムがデフォルト色
+                    const bulkSelected:
+                      | TodoItemBgColorValue
+                      | undefined
+                      | null =
                       bgColors.length > 0 &&
                       bgColors.every((c) => c === bgColors[0])
                         ? bgColors[0]
-                        : undefined;
+                        : null;
                     return TODO_ITEM_BG_COLORS.map((color) => (
                       <button
                         key={color.value ?? "__default__"}

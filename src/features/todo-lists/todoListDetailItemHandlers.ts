@@ -1,5 +1,5 @@
 import { normalizeTitle } from "./todoListTitleNormalization";
-import type { TodoList, TodoListItem } from "./types";
+import type { PersistTodoLists, TodoList, TodoListItem } from "./types";
 import {
   cutTodoItemsAndPersist,
   pasteTodoItemsAndPersist,
@@ -16,7 +16,7 @@ import {
 
 type TodoListsHandlerArgs = {
   lists: TodoList[];
-  persist: (next: TodoList[]) => void;
+  persist: PersistTodoLists;
 };
 
 export const createAddTodoItemHandler = ({
