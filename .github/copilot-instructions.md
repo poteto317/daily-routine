@@ -137,6 +137,7 @@ import { AuthGuard } from "@/components/AuthGuard";
 - **'use client'**: クライアントコンポーネントには必ず宣言
 - **ダークモード対応**: Tailwindの `dark:` プレフィックスを使用
 - **アクセシビリティ**: `aria-label` を適切に設定
+- **選択状態の ARIA**: 色スウォッチなど「どれが選択中か」を視覚的に表現する場合、支援技術にも状態を伝える。グループコンテナに `role="radiogroup"`、各選択肢に `role="radio"` + `aria-checked={isSelected}` を付与する。
 - **React の `key`**: リストレンダリングでは表示文言（label）を `key` に使わない。`undefined` になり得る値には固定フォールバック文字列（例: `"__default__"`）を使い、安定した識別子を `key` にする。
 
 ```tsx
@@ -149,6 +150,27 @@ import { AuthGuard } from "@/components/AuthGuard";
 {
   items.map((item) => <button key={item.value ?? "__default__"} />);
 }
+```
+
+```tsx
+// ❌ 悪い例 — ring だけでは支援技術に選択状態が伝わらない
+<div className="flex gap-1">
+  {colors.map((c) => (
+    <button key={c.value} className={isSelected ? "ring-2" : ""} />
+  ))}
+</div>
+
+// ✅ 良い例 — radiogroup + radio + aria-checked で状態を明示
+<div role="radiogroup" aria-label="背景色" className="flex gap-1">
+  {colors.map((c) => (
+    <button
+      key={c.value ?? "__default__"}
+      role="radio"
+      aria-checked={currentValue === c.value}
+      className={currentValue === c.value ? "ring-2" : ""}
+    />
+  ))}
+</div>
 ```
 
 ```tsx

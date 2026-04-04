@@ -246,10 +246,16 @@ const DetailView = ({
                 🎨 一括背景色
               </button>
               {showBulkColorPicker && (
-                <div className="absolute top-full left-0 mt-1 p-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-500 rounded-lg shadow-lg z-10 flex gap-1.5">
+                <div
+                  role="radiogroup"
+                  aria-label="一括背景色"
+                  className="absolute top-full left-0 mt-1 p-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-500 rounded-lg shadow-lg z-10 flex gap-1.5"
+                >
                   {TODO_ITEM_BG_COLORS.map((color) => (
                     <button
                       key={color.value ?? "__default__"}
+                      role="radio"
+                      aria-checked={false}
                       type="button"
                       onClick={() => {
                         onUpdateAllItemsBgColor(list.id, color.value);
@@ -551,10 +557,18 @@ const DetailView = ({
                                 🎨
                               </button>
                               {colorPickerItemId === item.id && (
-                                <div className="absolute top-full right-0 mt-1 p-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-500 rounded-lg shadow-lg z-10 flex gap-1.5">
+                                <div
+                                  role="radiogroup"
+                                  aria-label="背景色"
+                                  className="absolute top-full right-0 mt-1 p-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-500 rounded-lg shadow-lg z-10 flex gap-1.5"
+                                >
                                   {TODO_ITEM_BG_COLORS.map((color) => (
                                     <button
                                       key={color.value ?? "__default__"}
+                                      role="radio"
+                                      aria-checked={
+                                        item.bgColor === color.value
+                                      }
                                       type="button"
                                       onClick={() => {
                                         onUpdateItemBgColor(

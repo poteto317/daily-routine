@@ -723,7 +723,7 @@ describe("TodoListsPage", () => {
     fireEvent.click(bgButtons[0]);
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: "赤" })).toBeInTheDocument();
+      expect(screen.getByRole("radio", { name: "赤" })).toBeInTheDocument();
     });
     expect(bgButtons[0]).toHaveAttribute("aria-expanded", "true");
 
@@ -731,7 +731,7 @@ describe("TodoListsPage", () => {
     fireEvent.click(bgButtons[0]);
 
     await waitFor(() => {
-      expect(screen.queryByRole("button", { name: "赤" })).toBeNull();
+      expect(screen.queryByRole("radio", { name: "赤" })).toBeNull();
     });
     expect(bgButtons[0]).toHaveAttribute("aria-expanded", "false");
   });
@@ -745,10 +745,10 @@ describe("TodoListsPage", () => {
     fireEvent.click(screen.getAllByLabelText("背景色を変更")[0]);
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: "赤" })).toBeInTheDocument();
+      expect(screen.getByRole("radio", { name: "赤" })).toBeInTheDocument();
     });
 
-    fireEvent.click(screen.getByRole("button", { name: "赤" }));
+    fireEvent.click(screen.getByRole("radio", { name: "赤" }));
 
     await waitFor(() => {
       expect(mockSaveAndSyncTodoLists).toHaveBeenCalledWith([
@@ -763,7 +763,7 @@ describe("TodoListsPage", () => {
 
     // 選択後にピッカーが閉じる
     await waitFor(() => {
-      expect(screen.queryByRole("button", { name: "赤" })).toBeNull();
+      expect(screen.queryByRole("radio", { name: "赤" })).toBeNull();
     });
   });
 
@@ -779,7 +779,7 @@ describe("TodoListsPage", () => {
     fireEvent.click(bulkBtn);
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: "赤" })).toBeInTheDocument();
+      expect(screen.getByRole("radio", { name: "赤" })).toBeInTheDocument();
     });
     expect(bulkBtn).toHaveAttribute("aria-expanded", "true");
   });
@@ -793,10 +793,10 @@ describe("TodoListsPage", () => {
     fireEvent.click(screen.getByLabelText("一括背景色変更"));
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: "青" })).toBeInTheDocument();
+      expect(screen.getByRole("radio", { name: "青" })).toBeInTheDocument();
     });
 
-    fireEvent.click(screen.getByRole("button", { name: "青" }));
+    fireEvent.click(screen.getByRole("radio", { name: "青" }));
 
     await waitFor(() => {
       expect(mockSaveAndSyncTodoLists).toHaveBeenCalledWith([

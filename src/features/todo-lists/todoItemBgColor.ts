@@ -1,5 +1,3 @@
-import type { TodoItemBgColorValue } from "./types";
-
 /** アイテム背景色の選択肢 */
 export const TODO_ITEM_BG_COLORS = [
   { value: undefined, label: "デフォルト", class: "bg-white dark:bg-gray-700" },
@@ -31,6 +29,15 @@ export const TODO_ITEM_BG_COLORS = [
     class: "bg-pink-50 dark:bg-pink-900/30",
   },
 ] as const;
+
+/**
+ * TODO_ITEM_BG_COLORS の value から undefined を除いた union 型。
+ * 色を追加・変更する場合は TODO_ITEM_BG_COLORS のみ編集すれば型も自動追従する。
+ */
+export type TodoItemBgColorValue = Exclude<
+  (typeof TODO_ITEM_BG_COLORS)[number]["value"],
+  undefined
+>;
 
 /** bgColor 値から表示用クラスを取得 */
 export const getTodoItemBgClass = (bgColor?: TodoItemBgColorValue): string => {

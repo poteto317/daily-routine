@@ -1,12 +1,6 @@
-/** アイテムの背景色として使用できる Tailwind クラス名の union 型（未指定は bgColor? の optional で表現） */
-export type TodoItemBgColorValue =
-  | "bg-red-50"
-  | "bg-orange-50"
-  | "bg-yellow-50"
-  | "bg-green-50"
-  | "bg-blue-50"
-  | "bg-purple-50"
-  | "bg-pink-50";
+/** TodoItemBgColorValue は todoItemBgColor.ts の TODO_ITEM_BG_COLORS から派生。型の正典はそちら。 */
+export type { TodoItemBgColorValue } from "./todoItemBgColor";
+import type { TodoItemBgColorValue } from "./todoItemBgColor";
 
 export interface TodoListItem {
   id: string;
