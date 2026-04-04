@@ -8,7 +8,7 @@ type UpdateTodoItemBgColorArgs = {
   lists: TodoList[];
   listId: string;
   itemId: string;
-  bgColor: TodoItemBgColorValue;
+  bgColor: TodoItemBgColorValue | undefined;
   persist: PersistTodoLists;
 };
 
@@ -32,7 +32,7 @@ export const updateTodoItemBgColorAndPersist = ({
 type UpdateAllTodoItemsBgColorArgs = {
   lists: TodoList[];
   listId: string;
-  bgColor: TodoItemBgColorValue;
+  bgColor: TodoItemBgColorValue | undefined;
   persist: PersistTodoLists;
 };
 

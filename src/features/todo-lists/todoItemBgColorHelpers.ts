@@ -7,7 +7,7 @@ export const updateItemBgColorInList = (
   lists: TodoList[],
   listId: string,
   itemId: string,
-  bgColor: TodoItemBgColorValue,
+  bgColor: TodoItemBgColorValue | undefined,
 ): TodoList[] =>
   lists.map((list) =>
     list.id === listId
@@ -27,7 +27,7 @@ export const updateItemBgColorInList = (
 export const updateAllItemsBgColorInList = (
   lists: TodoList[],
   listId: string,
-  bgColor: TodoItemBgColorValue,
+  bgColor: TodoItemBgColorValue | undefined,
 ): TodoList[] =>
   lists.map((list) =>
     list.id === listId

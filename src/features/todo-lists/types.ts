@@ -1,6 +1,5 @@
-/** アイテムの背景色として使用できる Tailwind クラス名の union 型（undefined = 未指定/デフォルト） */
+/** アイテムの背景色として使用できる Tailwind クラス名の union 型（未指定は bgColor? の optional で表現） */
 export type TodoItemBgColorValue =
-  | undefined
   | "bg-red-50"
   | "bg-orange-50"
   | "bg-yellow-50"

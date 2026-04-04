@@ -8,7 +8,7 @@ export const updateTodoItemBgColorInLists = (params: {
   lists: TodoList[];
   listId: string;
   itemId: string;
-  bgColor: TodoItemBgColorValue;
+  bgColor: TodoItemBgColorValue | undefined;
 }): TodoList[] => {
   const { lists, listId, itemId, bgColor } = params;
 
@@ -18,7 +18,7 @@ export const updateTodoItemBgColorInLists = (params: {
 export const updateAllTodoItemsBgColorInLists = (params: {
   lists: TodoList[];
   listId: string;
-  bgColor: TodoItemBgColorValue;
+  bgColor: TodoItemBgColorValue | undefined;
 }): TodoList[] => {
   const { lists, listId, bgColor } = params;
 

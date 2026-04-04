@@ -40,11 +40,11 @@ type DetailViewProps = {
   onUpdateItemBgColor: (
     listId: string,
     itemId: string,
-    bgColor: TodoItemBgColorValue,
+    bgColor: TodoItemBgColorValue | undefined,
   ) => void;
   onUpdateAllItemsBgColor: (
     listId: string,
-    bgColor: TodoItemBgColorValue,
+    bgColor: TodoItemBgColorValue | undefined,
   ) => void;
   onCutItems: (listId: string, itemIds: ReadonlySet<string>) => TodoListItem[];
   onPasteItems: (listId: string, items: TodoListItem[]) => void;

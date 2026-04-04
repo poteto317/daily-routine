@@ -13,7 +13,7 @@ export const createUpdateTodoItemBgColorHandler = ({
   lists,
   persist,
 }: TodoListsHandlerArgs) => {
-  return (listId: string, itemId: string, bgColor: TodoItemBgColorValue) => {
+  return (listId: string, itemId: string, bgColor: TodoItemBgColorValue | undefined) => {
     updateTodoItemBgColorAndPersist({
       lists,
       listId,
@@ -28,7 +28,7 @@ export const createUpdateAllTodoItemsBgColorHandler = ({
   lists,
   persist,
 }: TodoListsHandlerArgs) => {
-  return (listId: string, bgColor: TodoItemBgColorValue) => {
+  return (listId: string, bgColor: TodoItemBgColorValue | undefined) => {
     updateAllTodoItemsBgColorAndPersist({ lists, listId, bgColor, persist });
   };
 };
