@@ -1,12 +1,14 @@
 import { normalizeTitle } from "./todoListTitleNormalization";
 import type { TodoList, TodoListItem } from "./types";
 import {
-  addTodoItemAndPersist,
   cutTodoItemsAndPersist,
-  deleteTodoItemAndPersist,
+  pasteTodoItemsAndPersist,
+} from "./todoListCutPastePersistActions";
+import { deleteTodoItemAndPersist } from "./todoListDeletePersistActions";
+import {
+  addTodoItemAndPersist,
   indentTodoItemAndPersist,
   outdentTodoItemAndPersist,
-  pasteTodoItemsAndPersist,
   reorderTodoItemsAndPersist,
   toggleTodoItemAndPersist,
   updateTodoItemTitleAndPersist,
@@ -47,7 +49,6 @@ export const createDeleteTodoItemHandler = ({
       lists,
       listId,
       itemId,
-      title,
       message: deleteItemConfirmTemplate(title),
       persist,
     });

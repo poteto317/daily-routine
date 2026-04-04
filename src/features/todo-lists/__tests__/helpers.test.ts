@@ -1,22 +1,13 @@
 import {
   addItemToList,
-  createTodoList,
-  createTodoListItem,
   deleteItemFromList,
-  getListProgress,
   indentItemInList,
   outdentItemInList,
   reorderItemsInList,
   toggleItemInList,
 } from "../helpers";
-import { isItemCompleted } from "../todoListItemCompletedPredicate";
 import { getItemIndentLevel } from "../todoListItemIndentLevel";
 import type { TodoList, TodoListItem } from "../types";
-
-jest.mock("../todoListItemCompletedPredicate", () => ({
-  ...jest.requireActual("../todoListItemCompletedPredicate"),
-  isItemCompleted: jest.fn(),
-}));
 
 jest.mock("../todoListItemIndentLevel", () => ({
   ...jest.requireActual("../todoListItemIndentLevel"),
@@ -51,36 +42,11 @@ describe("todo list helpers", () => {
     (getItemIndentLevel as jest.Mock).mockImplementation(
       real.getItemIndentLevel,
     );
-    const realCompleted = jest.requireActual<
-      typeof import("../todoListItemCompletedPredicate")
-    >("../todoListItemCompletedPredicate");
-    (isItemCompleted as jest.Mock).mockImplementation(
-      realCompleted.isItemCompleted,
-    );
   });
 
   afterEach(() => {
     jest.useRealTimers();
     jest.restoreAllMocks();
-  });
-
-  it("Todoリストを生成する", () => {
-    expect(createTodoList("Work")).toEqual({
-      id: expect.any(String),
-      title: "Work",
-      items: [],
-      createdAt: "2026-03-07T12:00:00.000Z",
-      updatedAt: "2026-03-07T12:00:00.000Z",
-    });
-  });
-
-  it("Todoアイテムを生成する", () => {
-    expect(createTodoListItem("Write tests")).toEqual({
-      id: expect.any(String),
-      title: "Write tests",
-      isCompleted: false,
-      createdAt: "2026-03-07T12:00:00.000Z",
-    });
   });
 
   it("指定リストにアイテムを追加する", () => {
@@ -178,37 +144,6 @@ describe("todo list helpers", () => {
       "item-2",
       "item-3",
     ]);
-  });
-
-  it("進捗情報を計算する", () => {
-    expect(
-      getListProgress(
-        createList({
-          items: [
-            createItem({ isCompleted: true }),
-            createItem({ id: "item-2" }),
-          ],
-        }),
-      ),
-    ).toEqual({
-      completed: 1,
-      total: 2,
-      percentage: 50,
-    });
-  });
-
-  it("getListProgress は isItemCompleted に委譲して完了数を計算する", () => {
-    (isItemCompleted as jest.Mock).mockReturnValue(true);
-
-    const items = [createItem(), createItem({ id: "item-2" })];
-    const result = getListProgress(createList({ items }));
-
-    expect(isItemCompleted).toHaveBeenCalledWith(
-      expect.objectContaining({ id: "item-1" }),
-      expect.any(Number),
-      expect.any(Array),
-    );
-    expect(result.completed).toBe(2);
   });
 
   it("indentItemInList は getItemIndentLevel に委譲してインデントを読み取る", () => {

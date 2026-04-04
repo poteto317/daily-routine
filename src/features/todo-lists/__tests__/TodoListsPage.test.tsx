@@ -710,6 +710,113 @@ describe("TodoListsPage", () => {
     expect(screen.queryByText(/ペースト/)).toBeNull();
   });
 
+  it("アイテムの🎨ボタンをクリックすると色選択ポップオーバーが表示・非表示を切り替えられる", async () => {
+    mockGetTodoLists.mockReturnValue([baseList]);
+    mockGetSelectedTodoListId.mockReturnValue("list-1");
+
+    render(<TodoListsPage />);
+
+    const bgButtons = screen.getAllByLabelText("背景色を変更");
+    expect(bgButtons[0]).toHaveAttribute("aria-expanded", "false");
+
+    // クリックでピッカーが開く
+    fireEvent.click(bgButtons[0]);
+
+    await waitFor(() => {
+      expect(screen.getByRole("button", { name: "赤" })).toBeInTheDocument();
+    });
+    expect(bgButtons[0]).toHaveAttribute("aria-expanded", "true");
+
+    // もう一度クリックでピッカーが閉じる
+    fireEvent.click(bgButtons[0]);
+
+    await waitFor(() => {
+      expect(screen.queryByRole("button", { name: "赤" })).toBeNull();
+    });
+    expect(bgButtons[0]).toHaveAttribute("aria-expanded", "false");
+  });
+
+  it("カラーピッカーで色を選択するとbgColorが保存されピッカーが閉じる", async () => {
+    mockGetTodoLists.mockReturnValue([baseList]);
+    mockGetSelectedTodoListId.mockReturnValue("list-1");
+
+    render(<TodoListsPage />);
+
+    fireEvent.click(screen.getAllByLabelText("背景色を変更")[0]);
+
+    await waitFor(() => {
+      expect(screen.getByRole("button", { name: "赤" })).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: "赤" }));
+
+    await waitFor(() => {
+      expect(mockSaveAndSyncTodoLists).toHaveBeenCalledWith([
+        expect.objectContaining({
+          id: "list-1",
+          items: expect.arrayContaining([
+            expect.objectContaining({ id: "item-1", bgColor: "bg-red-50" }),
+          ]),
+        }),
+      ]);
+    });
+
+    // 選択後にピッカーが閉じる
+    await waitFor(() => {
+      expect(screen.queryByRole("button", { name: "赤" })).toBeNull();
+    });
+  });
+
+  it("一括背景色ボタンをクリックすると一括カラーピッカーが表示される", async () => {
+    mockGetTodoLists.mockReturnValue([baseList]);
+    mockGetSelectedTodoListId.mockReturnValue("list-1");
+
+    render(<TodoListsPage />);
+
+    const bulkBtn = screen.getByLabelText("一括背景色変更");
+    expect(bulkBtn).toHaveAttribute("aria-expanded", "false");
+
+    fireEvent.click(bulkBtn);
+
+    await waitFor(() => {
+      expect(screen.getByRole("button", { name: "赤" })).toBeInTheDocument();
+    });
+    expect(bulkBtn).toHaveAttribute("aria-expanded", "true");
+  });
+
+  it("一括カラーピッカーで色を選択するとすべてのアイテムのbgColorが更新されピッカーが閉じる", async () => {
+    mockGetTodoLists.mockReturnValue([baseList]);
+    mockGetSelectedTodoListId.mockReturnValue("list-1");
+
+    render(<TodoListsPage />);
+
+    fireEvent.click(screen.getByLabelText("一括背景色変更"));
+
+    await waitFor(() => {
+      expect(screen.getByRole("button", { name: "青" })).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: "青" }));
+
+    await waitFor(() => {
+      expect(mockSaveAndSyncTodoLists).toHaveBeenCalledWith([
+        expect.objectContaining({
+          id: "list-1",
+          items: expect.arrayContaining([
+            expect.objectContaining({ id: "item-1", bgColor: "bg-blue-50" }),
+            expect.objectContaining({ id: "item-2", bgColor: "bg-blue-50" }),
+          ]),
+        }),
+      ]);
+    });
+
+    // 選択後にピッカーが閉じる
+    expect(screen.getByLabelText("一括背景色変更")).toHaveAttribute(
+      "aria-expanded",
+      "false",
+    );
+  });
+
   it("リスト切替後もクリップボードが保持されペーストできる（リスト間移動）", async () => {
     const list2 = {
       id: "list-2",

@@ -1,9 +1,7 @@
 import { normalizeTitle } from "./todoListTitleNormalization";
 import type { TodoList } from "./types";
-import {
-  deleteTodoListAndPersist,
-  updateTodoListTitleAndPersist,
-} from "./pageStateActions";
+import { deleteTodoListAndPersist } from "./todoListDeletePersistActions";
+import { updateTodoListTitleAndPersist } from "./todoListTitleUpdatePersistAction";
 
 type TodoListsHandlerArgs = {
   lists: TodoList[];

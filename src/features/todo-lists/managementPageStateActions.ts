@@ -1,4 +1,5 @@
-import type { TodoList } from "./types";
+import type { ConfirmDelete } from "./todoListConfirmDeleteActions";
+import type { PersistTodoLists, TodoList } from "./types";
 import {
   addTodoList,
   removeTodoList,
@@ -9,22 +10,22 @@ import { isTodoListVisible } from "./todoListVisibilityPredicate";
 
 type PersistTodoListsArgs = {
   nextLists: TodoList[];
-  setLists: (lists: TodoList[]) => void;
-  saveLists: (lists: TodoList[]) => void;
+  setLists: PersistTodoLists;
+  saveLists: PersistTodoLists;
 };
 
 type CreateTodoListArgs = {
   lists: TodoList[];
   titleInput: string;
-  persist: (lists: TodoList[]) => void;
+  persist: PersistTodoLists;
 };
 
 type DeleteTodoListArgs = {
   lists: TodoList[];
   list: TodoList;
   message: string;
-  persist: (lists: TodoList[]) => void;
-  confirmDelete?: (message: string) => boolean;
+  persist: PersistTodoLists;
+  confirmDelete?: ConfirmDelete;
 };
 
 type TodoListFormState = {
@@ -65,7 +66,7 @@ export const createTodoListAndPersist = ({
 export const toggleTodoListVisibilityAndPersist = (
   lists: TodoList[],
   listId: string,
-  persist: (lists: TodoList[]) => void,
+  persist: PersistTodoLists,
 ): TodoList[] => {
   const nextLists = toggleTodoListVisibility(lists, listId);
   persist(nextLists);
@@ -92,7 +93,7 @@ export const renameTodoListAndPersist = (
   lists: TodoList[],
   listId: string,
   title: string,
-  persist: (lists: TodoList[]) => void,
+  persist: PersistTodoLists,
 ): TodoList[] => {
   const nextLists = updateListTitle(lists, listId, title);
   persist(nextLists);

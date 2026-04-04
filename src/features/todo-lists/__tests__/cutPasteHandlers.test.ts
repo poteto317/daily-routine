@@ -4,8 +4,8 @@ import {
 } from "../todoListDetailItemHandlers";
 import type { TodoList, TodoListItem } from "../types";
 
-jest.mock("../pageStateActions", () => ({
-  ...jest.requireActual("../pageStateActions"),
+jest.mock("../todoListCutPastePersistActions", () => ({
+  ...jest.requireActual("../todoListCutPastePersistActions"),
   cutTodoItemsAndPersist: jest.fn(),
   pasteTodoItemsAndPersist: jest.fn(),
 }));
@@ -13,7 +13,7 @@ jest.mock("../pageStateActions", () => ({
 import {
   cutTodoItemsAndPersist,
   pasteTodoItemsAndPersist,
-} from "../pageStateActions";
+} from "../todoListCutPastePersistActions";
 
 const createItem = (overrides: Partial<TodoListItem> = {}): TodoListItem => ({
   id: "item-1",
@@ -51,7 +51,7 @@ describe("createCutTodoItemsHandler", () => {
     expect(result).toBe(cutItems);
   });
 
-  it("空の itemIds でも cutTodoItemsAndPersist に委譲される（空チェックは pageStateActions に委ねる）", () => {
+  it("空の itemIds でも cutTodoItemsAndPersist に委譲される（空チェックは todoListCutPastePersistActions に委ねる）", () => {
     const lists = [createList()];
     const persist = jest.fn();
     (cutTodoItemsAndPersist as jest.Mock).mockReturnValue([]);
@@ -85,7 +85,7 @@ describe("createPasteTodoItemsHandler", () => {
     });
   });
 
-  it("空アイテム配列でも呼び出される（空チェックは pageStateActions に委ねる）", () => {
+  it("空アイテム配列でも呼び出される（空チェックは todoListCutPastePersistActions に委ねる）", () => {
     const lists = [createList()];
     const persist = jest.fn();
 

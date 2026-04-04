@@ -1,9 +1,11 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { CardPanel } from "@/components";
 import { SwipeableRoutineItem } from "@/components/SwipeableRoutineItem";
 import { isImeComposingKeyDown } from "@/lib/isImeComposingKeyDown";
-import type { TodoList, TodoListItem } from "./types";
+import type { TodoItemBgColorValue, TodoList, TodoListItem } from "./types";
+import { TODO_ITEM_BG_COLORS, getTodoItemBgClass } from "./todoItemBgColor";
 import { filterIncompleteItems } from "./todoListIncompleteItemsFilter";
 import { hasChildren } from "./todoListItemHasChildren";
 import { getItemIndentLevel } from "./todoListItemIndentLevel";
@@ -35,6 +37,15 @@ type DetailViewProps = {
   onReorderItems: (listId: string, fromIndex: number, toIndex: number) => void;
   onUpdateItemTitle: (listId: string, itemId: string, title: string) => void;
   onUpdateListTitle: (listId: string, title: string) => void;
+  onUpdateItemBgColor: (
+    listId: string,
+    itemId: string,
+    bgColor: TodoItemBgColorValue,
+  ) => void;
+  onUpdateAllItemsBgColor: (
+    listId: string,
+    bgColor: TodoItemBgColorValue,
+  ) => void;
   onCutItems: (listId: string, itemIds: ReadonlySet<string>) => TodoListItem[];
   onPasteItems: (listId: string, items: TodoListItem[]) => void;
   onSetClipboard: (items: TodoListItem[]) => void;
@@ -53,6 +64,8 @@ const DetailView = ({
   onReorderItems,
   onUpdateItemTitle,
   onUpdateListTitle,
+  onUpdateItemBgColor,
+  onUpdateAllItemsBgColor,
   onCutItems,
   onPasteItems,
   onSetClipboard,
@@ -116,6 +129,38 @@ const DetailView = ({
   const parentDetectionIndexById = new Map(
     itemsForParentDetection.map((item, index) => [item.id, index]),
   );
+
+  const [colorPickerItemId, setColorPickerItemId] = useState<string | null>(
+    null,
+  );
+  const [showBulkColorPicker, setShowBulkColorPicker] = useState(false);
+
+  useEffect(() => {
+    if (!colorPickerItemId && !showBulkColorPicker) return;
+
+    const handleMouseDown = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (!target.closest("[data-color-picker]")) {
+        setColorPickerItemId(null);
+        setShowBulkColorPicker(false);
+      }
+    };
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setColorPickerItemId(null);
+        setShowBulkColorPicker(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleMouseDown);
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("mousedown", handleMouseDown);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [colorPickerItemId, showBulkColorPicker]);
 
   return (
     <div className="min-h-screen bg-linear-to-br from-teal-50 to-cyan-100 dark:from-slate-400 dark:to-slate-300">
@@ -183,9 +228,41 @@ const DetailView = ({
             </div>
           )}
 
-          {/* 完了済みトグル */}
-          {list.items.some((item) => item.isCompleted) && (
-            <div className="mb-4 flex justify-end">
+          {/* 完了済みトグル + 一括背景色 */}
+          <div className="mb-4 flex items-center justify-between">
+            <div className="relative" data-color-picker>
+              <button
+                type="button"
+                onClick={() => setShowBulkColorPicker((v) => !v)}
+                className="text-xs text-gray-500 dark:text-gray-600 hover:text-teal-600 dark:hover:text-teal-700 transition-colors"
+                aria-label="一括背景色変更"
+                aria-expanded={showBulkColorPicker}
+              >
+                🎨 一括背景色
+              </button>
+              {showBulkColorPicker && (
+                <div className="absolute top-full left-0 mt-1 p-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-500 rounded-lg shadow-lg z-10 flex gap-1.5">
+                  {TODO_ITEM_BG_COLORS.map((color) => (
+                    <button
+                      key={color.label}
+                      type="button"
+                      onClick={() => {
+                        onUpdateAllItemsBgColor(list.id, color.value);
+                        setShowBulkColorPicker(false);
+                      }}
+                      className={`w-6 h-6 rounded-full border-2 transition-all ${color.class} ${
+                        !color.value
+                          ? "border-gray-400 dark:border-gray-300"
+                          : "border-gray-200 dark:border-gray-500 hover:border-teal-400"
+                      }`}
+                      aria-label={color.label}
+                      title={color.label}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+            {list.items.some((item) => item.isCompleted) && (
               <button
                 type="button"
                 onClick={toggleHideCompleted}
@@ -195,8 +272,8 @@ const DetailView = ({
                   ? texts.list.showCompleted
                   : texts.list.hideCompleted}
               </button>
-            </div>
-          )}
+            )}
+          </div>
 
           {/* Todoアイテム一覧 */}
           {/* 選択アクションバー */}
@@ -324,12 +401,12 @@ const DetailView = ({
                       isEditMode={canSwipeIndent}
                     >
                       <div
-                        className={`flex items-center gap-2 p-3 bg-white dark:bg-gray-700 border rounded-xl hover:shadow-sm transition-shadow ${
+                        className={`flex items-center gap-2 p-3 border rounded-xl hover:shadow-sm transition-shadow ${
                           isDragOver
-                            ? "border-teal-400 dark:border-teal-500 shadow-md"
+                            ? `${getTodoItemBgClass(item.bgColor)} border-teal-400 dark:border-teal-500 shadow-md`
                             : isSelected
-                              ? "border-teal-300 dark:border-teal-400 bg-teal-50 dark:bg-teal-900/20"
-                              : "border-gray-100 dark:border-gray-500"
+                              ? "bg-teal-50 dark:bg-teal-900/20 border-teal-300 dark:border-teal-400"
+                              : `${getTodoItemBgClass(item.bgColor)} border-gray-100 dark:border-gray-500`
                         }`}
                       >
                         <button
@@ -451,6 +528,48 @@ const DetailView = ({
                         )}
                         {editingItemId !== item.id && (
                           <>
+                            <div className="relative" data-color-picker>
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  setColorPickerItemId(
+                                    colorPickerItemId === item.id
+                                      ? null
+                                      : item.id,
+                                  )
+                                }
+                                className="shrink-0 text-gray-300 hover:text-teal-500 dark:text-gray-500 dark:hover:text-teal-400 opacity-0 group-hover:opacity-100 transition-opacity"
+                                aria-label="背景色を変更"
+                                aria-expanded={colorPickerItemId === item.id}
+                              >
+                                🎨
+                              </button>
+                              {colorPickerItemId === item.id && (
+                                <div className="absolute top-full right-0 mt-1 p-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-500 rounded-lg shadow-lg z-10 flex gap-1.5">
+                                  {TODO_ITEM_BG_COLORS.map((color) => (
+                                    <button
+                                      key={color.label}
+                                      type="button"
+                                      onClick={() => {
+                                        onUpdateItemBgColor(
+                                          list.id,
+                                          item.id,
+                                          color.value,
+                                        );
+                                        setColorPickerItemId(null);
+                                      }}
+                                      className={`w-6 h-6 rounded-full border-2 transition-all ${color.class} ${
+                                        item.bgColor === color.value
+                                          ? "border-teal-500 ring-2 ring-teal-300"
+                                          : "border-gray-200 dark:border-gray-500 hover:border-teal-400"
+                                      }`}
+                                      aria-label={color.label}
+                                      title={color.label}
+                                    />
+                                  ))}
+                                </div>
+                              )}
+                            </div>
                             <button
                               type="button"
                               onClick={() => startEditItem(item.id, item.title)}

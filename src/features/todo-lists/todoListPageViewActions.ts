@@ -1,4 +1,6 @@
+import type { Dispatch, SetStateAction } from "react";
 import { normalizeTitle } from "./todoListTitleNormalization";
+export { createTodoListDetailHandlers } from "./todoListDetailCrudHandlerFactory";
 
 export const addTodoItemFromDetailInput = (params: {
   inputText: string;
@@ -18,4 +20,12 @@ export const addTodoItemFromDetailInput = (params: {
   clearInput();
   focusInput();
   return true;
+};
+
+export const createCompletedVisibilityToggleHandler = (
+  setHideCompleted: Dispatch<SetStateAction<boolean>>,
+) => {
+  return () => {
+    setHideCompleted((value) => !value);
+  };
 };

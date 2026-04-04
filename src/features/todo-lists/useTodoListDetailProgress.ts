@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { getListProgress } from "./helpers";
+import { getListProgress } from "./todoListProgress";
 import { createTodoListDetailProgressResult } from "./todoListDetailProgressResult";
 import type { TodoList } from "./types";
 

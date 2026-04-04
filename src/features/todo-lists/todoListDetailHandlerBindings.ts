@@ -1,11 +1,9 @@
-import type { TodoList } from "./types";
-
-type TodoListPersist = (next: TodoList[]) => void;
+import type { PersistTodoLists, TodoList } from "./types";
 
 type TodoListDetailHandlerBindingsArgs = {
   list: TodoList | null;
   lists: TodoList[];
-  persist: TodoListPersist;
+  persist: PersistTodoLists;
 };
 
 export const createTodoListDetailHandlerBindings = ({

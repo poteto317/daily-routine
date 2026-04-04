@@ -1,7 +1,6 @@
 import type { TodoList } from "../types";
 import {
   addTodoItemAndPersist,
-  deleteTodoItemAndPersist,
   indentTodoItemAndPersist,
   outdentTodoItemAndPersist,
   reorderTodoItemsAndPersist,
@@ -9,10 +8,17 @@ import {
   updateTodoItemTitleAndPersist,
 } from "../pageStateActions";
 import {
+  cutTodoItemsAndPersist,
+  pasteTodoItemsAndPersist,
+} from "../todoListCutPastePersistActions";
+import { deleteTodoItemAndPersist } from "../todoListDeletePersistActions";
+import {
   createAddTodoItemHandler,
+  createCutTodoItemsHandler,
   createDeleteTodoItemHandler,
   createIndentTodoItemHandler,
   createOutdentTodoItemHandler,
+  createPasteTodoItemsHandler,
   createReorderTodoItemsHandler,
   createToggleTodoItemHandler,
   createUpdateTodoItemTitleHandler,
@@ -25,12 +31,20 @@ jest.mock("../todoListTitleNormalization", () => ({
 
 jest.mock("../pageStateActions", () => ({
   addTodoItemAndPersist: jest.fn(),
-  deleteTodoItemAndPersist: jest.fn(),
   indentTodoItemAndPersist: jest.fn(),
   outdentTodoItemAndPersist: jest.fn(),
   reorderTodoItemsAndPersist: jest.fn(),
   toggleTodoItemAndPersist: jest.fn(),
   updateTodoItemTitleAndPersist: jest.fn(),
+}));
+
+jest.mock("../todoListCutPastePersistActions", () => ({
+  cutTodoItemsAndPersist: jest.fn(),
+  pasteTodoItemsAndPersist: jest.fn(),
+}));
+
+jest.mock("../todoListDeletePersistActions", () => ({
+  deleteTodoItemAndPersist: jest.fn(),
 }));
 
 const baseList: TodoList = {
@@ -103,7 +117,6 @@ describe("todoListDetailItemHandlers", () => {
       lists: [baseList],
       listId: "list-1",
       itemId: "item-1",
-      title: "Task 1",
       message: "delete-item:Task 1",
       persist,
     });
@@ -179,5 +192,41 @@ describe("todoListDetailItemHandlers", () => {
     );
 
     expect(updateTodoItemTitleAndPersist).not.toHaveBeenCalled();
+  });
+
+  it("cut handler が cutTodoItemsAndPersist を呼んで切り取ったアイテムを返す", () => {
+    const persist = jest.fn();
+    const cutItem = { ...baseList.items[0] };
+    (cutTodoItemsAndPersist as jest.Mock).mockReturnValue([cutItem]);
+
+    const result = createCutTodoItemsHandler({ lists: [baseList], persist })(
+      "list-1",
+      new Set(["item-1"]),
+    );
+
+    expect(cutTodoItemsAndPersist).toHaveBeenCalledWith({
+      lists: [baseList],
+      listId: "list-1",
+      itemIds: new Set(["item-1"]),
+      persist,
+    });
+    expect(result).toEqual([cutItem]);
+  });
+
+  it("paste handler が pasteTodoItemsAndPersist を呼ぶ", () => {
+    const persist = jest.fn();
+    const items = [baseList.items[0]];
+
+    createPasteTodoItemsHandler({ lists: [baseList], persist })(
+      "list-1",
+      items,
+    );
+
+    expect(pasteTodoItemsAndPersist).toHaveBeenCalledWith({
+      lists: [baseList],
+      listId: "list-1",
+      items,
+      persist,
+    });
   });
 });

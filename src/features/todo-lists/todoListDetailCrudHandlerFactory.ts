@@ -10,16 +10,18 @@ import {
   createToggleTodoItemHandler,
 } from "./todoListDetailItemHandlers";
 import {
+  createUpdateTodoItemBgColorHandler,
+  createUpdateAllTodoItemsBgColorHandler,
+} from "./todoListDetailBgColorHandlers";
+import {
   createDeleteTodoListHandler,
   createUpdateListTitleHandler,
 } from "./todoListDetailListHandlers";
-import type { TodoList } from "./types";
-
-type TodoListPersist = (next: TodoList[]) => void;
+import type { PersistTodoLists, TodoList } from "./types";
 
 export const createTodoListDetailHandlers = (params: {
   lists: TodoList[];
-  persist: TodoListPersist;
+  persist: PersistTodoLists;
   deleteItemConfirmTemplate: (title: string) => string;
   deleteListConfirmTemplate: (title: string) => string;
 }) => {
@@ -48,6 +50,11 @@ export const createTodoListDetailHandlers = (params: {
     onReorderItems: createReorderTodoItemsHandler({ lists, persist }),
     onUpdateItemTitle: createUpdateTodoItemTitleHandler({ lists, persist }),
     onUpdateListTitle: createUpdateListTitleHandler({ lists, persist }),
+    onUpdateItemBgColor: createUpdateTodoItemBgColorHandler({ lists, persist }),
+    onUpdateAllItemsBgColor: createUpdateAllTodoItemsBgColorHandler({
+      lists,
+      persist,
+    }),
     onCutItems: createCutTodoItemsHandler({ lists, persist }),
     onPasteItems: createPasteTodoItemsHandler({ lists, persist }),
   };
