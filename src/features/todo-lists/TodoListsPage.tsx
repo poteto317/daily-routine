@@ -233,7 +233,10 @@ const DetailView = ({
             <div className="relative" data-color-picker>
               <button
                 type="button"
-                onClick={() => setShowBulkColorPicker((v) => !v)}
+                onClick={() => {
+                  setColorPickerItemId(null);
+                  setShowBulkColorPicker((v) => !v);
+                }}
                 className="text-xs text-gray-500 dark:text-gray-600 hover:text-teal-600 dark:hover:text-teal-700 transition-colors"
                 aria-label="一括背景色変更"
                 aria-expanded={showBulkColorPicker}
@@ -531,13 +534,14 @@ const DetailView = ({
                             <div className="relative" data-color-picker>
                               <button
                                 type="button"
-                                onClick={() =>
+                                onClick={() => {
+                                  setShowBulkColorPicker(false);
                                   setColorPickerItemId(
                                     colorPickerItemId === item.id
                                       ? null
                                       : item.id,
-                                  )
-                                }
+                                  );
+                                }}
                                 className="shrink-0 text-gray-300 hover:text-teal-500 dark:text-gray-500 dark:hover:text-teal-400 opacity-0 group-hover:opacity-100 transition-opacity"
                                 aria-label="背景色を変更"
                                 aria-expanded={colorPickerItemId === item.id}

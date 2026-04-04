@@ -78,7 +78,7 @@ describe("todoListProgress", () => {
       });
     });
 
-    it("端数は小数点以下を切り捨て（Math.round）する", () => {
+    it("端数は四捨五入（Math.round）する", () => {
       const items = [
         createItem({ id: "item-1", isCompleted: true }),
         createItem({ id: "item-2" }),

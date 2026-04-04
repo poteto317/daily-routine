@@ -5,7 +5,6 @@ import {
 import type { TodoList, TodoListItem } from "../types";
 
 jest.mock("../todoListCutPasteActions", () => ({
-  ...jest.requireActual("../detailActions"),
   cutTodoItemsFromLists: jest.fn(),
   pasteTodoItemsToLists: jest.fn(),
 }));
