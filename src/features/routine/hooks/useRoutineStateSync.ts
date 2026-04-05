@@ -1,5 +1,6 @@
 import type { Dispatch, SetStateAction } from "react";
 import type { Routine } from "@/types/routine";
+import { useRoutineFocusSync } from "./useRoutineFocusSync";
 import { useRoutinePageShowSync } from "./useRoutinePageShowSync";
 import { useRoutineSavedSync } from "./useRoutineSavedSync";
 import { useRoutineVisibilitySync } from "./useRoutineVisibilitySync";
@@ -12,5 +13,6 @@ export const useRoutineStateSync = (
 ): void => {
   useRoutineVisibilitySync(isLoaded, setRoutines);
   useRoutinePageShowSync(isLoaded, setRoutines);
+  useRoutineFocusSync(isLoaded, setRoutines);
   useRoutineSavedSync(isLoaded, setRoutines);
 };

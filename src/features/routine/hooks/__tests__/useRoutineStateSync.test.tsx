@@ -8,10 +8,15 @@ jest.mock("../useRoutinePageShowSync", () => ({
   useRoutinePageShowSync: jest.fn(),
 }));
 
+jest.mock("../useRoutineFocusSync", () => ({
+  useRoutineFocusSync: jest.fn(),
+}));
+
 jest.mock("../useRoutineSavedSync", () => ({
   useRoutineSavedSync: jest.fn(),
 }));
 
+import { useRoutineFocusSync } from "../useRoutineFocusSync";
 import { useRoutinePageShowSync } from "../useRoutinePageShowSync";
 import { useRoutineSavedSync } from "../useRoutineSavedSync";
 import { useRoutineStateSync } from "../useRoutineStateSync";
@@ -25,6 +30,7 @@ describe("useRoutineStateSync", () => {
 
     expect(useRoutineVisibilitySync).toHaveBeenCalledWith(true, setRoutines);
     expect(useRoutinePageShowSync).toHaveBeenCalledWith(true, setRoutines);
+    expect(useRoutineFocusSync).toHaveBeenCalledWith(true, setRoutines);
     expect(useRoutineSavedSync).toHaveBeenCalledWith(true, setRoutines);
   });
 });
