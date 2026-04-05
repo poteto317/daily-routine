@@ -1,9 +1,7 @@
 import type { Dispatch, SetStateAction } from "react";
 import type { Routine } from "@/types/routine";
-import { useRoutineFocusSync } from "./useRoutineFocusSync";
-import { useRoutinePageShowSync } from "./useRoutinePageShowSync";
+import { useRoutineForegroundSync } from "./useRoutineForegroundSync";
 import { useRoutineSavedSync } from "./useRoutineSavedSync";
-import { useRoutineVisibilitySync } from "./useRoutineVisibilitySync";
 
 type SetRoutines = Dispatch<SetStateAction<Routine[]>>;
 
@@ -11,8 +9,6 @@ export const useRoutineStateSync = (
   isLoaded: boolean,
   setRoutines: SetRoutines,
 ): void => {
-  useRoutineVisibilitySync(isLoaded, setRoutines);
-  useRoutinePageShowSync(isLoaded, setRoutines);
-  useRoutineFocusSync(isLoaded, setRoutines);
+  useRoutineForegroundSync(isLoaded, setRoutines);
   useRoutineSavedSync(isLoaded, setRoutines);
 };
