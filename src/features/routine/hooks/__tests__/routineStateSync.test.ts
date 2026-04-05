@@ -12,7 +12,6 @@ import {
 import {
   refreshRoutineState,
   reloadRoutinesFromStorage,
-  shouldRefreshOnPageShow,
   shouldRefreshOnVisibilityChange,
 } from "../routineStateSync";
 
@@ -43,16 +42,12 @@ describe("routineStateSync", () => {
     expect(shouldRefreshOnVisibilityChange("hidden")).toBe(false);
   });
 
-  it("pageshow は bfcache 復元または visible で再評価する", () => {
-    expect(shouldRefreshOnPageShow(true, "hidden")).toBe(true);
-    expect(shouldRefreshOnPageShow(false, "visible")).toBe(true);
-    expect(shouldRefreshOnPageShow(false, "hidden")).toBe(false);
-  });
-
   it("日付変更時はリセット済みルーティンに置き換える", () => {
     const updatedRoutines = [{ ...previousRoutines[0], isCompleted: false }];
     const setRoutines = jest.fn();
-    (resetRoutinesWhenDateChanged as jest.Mock).mockReturnValue(updatedRoutines);
+    (resetRoutinesWhenDateChanged as jest.Mock).mockReturnValue(
+      updatedRoutines,
+    );
 
     refreshRoutineState(setRoutines);
 

@@ -21,13 +21,6 @@ export const shouldRefreshOnVisibilityChange = (
   return visibilityState === "visible";
 };
 
-export const shouldRefreshOnPageShow = (
-  persisted: boolean,
-  visibilityState: DocumentVisibilityState,
-): boolean => {
-  return persisted || visibilityState === "visible";
-};
-
 export const reloadRoutinesFromStorage = (
   setRoutines: SetRoutines,
   scheduleTask: ScheduleTask = setTimeout,
