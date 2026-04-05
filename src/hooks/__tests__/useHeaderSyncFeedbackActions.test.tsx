@@ -1,5 +1,5 @@
 import { act, renderHook } from "@testing-library/react";
-import texts from "@/layouts/locales/ja.json";
+import texts from "@/layouts/texts";
 
 jest.mock("@/hooks/headerSyncFeedback", () => ({
   applyHeaderSyncFeedback: jest.fn(),

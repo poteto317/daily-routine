@@ -2,7 +2,7 @@ import { useCallback } from "react";
 import { applyHeaderSyncFeedback } from "./headerSyncFeedback";
 import { createHeaderSyncFeedbackActionsResult } from "./headerSyncFeedbackActionsResult";
 import type { HeaderSyncResult } from "./useHeaderSync";
-import texts from "@/layouts/locales/ja.json";
+import texts from "@/layouts/texts";
 
 type UseHeaderSyncFeedbackActionsArgs = {
   handleUpload: () => Promise<HeaderSyncResult>;
@@ -13,7 +13,7 @@ type UseHeaderSyncFeedbackActionsArgs = {
 export const useHeaderSyncFeedbackActions = ({
   handleUpload,
   handleDownload,
-  confirmAction = (message) => confirm(message),
+  confirmAction = confirm,
 }: UseHeaderSyncFeedbackActionsArgs) => {
   const handleUploadClick = useCallback(async () => {
     if (!confirmAction(texts.headerSyncButton.uploadConfirm)) return;

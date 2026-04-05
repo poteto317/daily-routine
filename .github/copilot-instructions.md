@@ -197,6 +197,38 @@ npm run test        # watchモード
 npm run test:ci     # CI用（カバレッジ付き）
 ```
 
+### 9. Hooks・関数の実装ルール
+
+- **デフォルト引数の参照安定性**: カスタム hook やファクトリー関数のオプション引数に関数デフォルトを設定する場合、`(arg) => fn(arg)` のようなラッパーを使わず、`fn` を直接渡す。ラッパーは呼び出しごとに新しいインスタンスを生成し、`useCallback` などの依存配列が常に変化する原因になる。
+
+```ts
+// ❌ 悪い例 — 毎レンダーで新しい関数インスタンスが生成される
+const useFoo = ({ onConfirm = (msg) => confirm(msg) } = {}) => {
+  const handler = useCallback(() => {
+    onConfirm("...");
+  }, [onConfirm]);
+};
+
+// ✅ 良い例 — confirm は安定した参照なので useCallback の依存が変化しない
+const useFoo = ({ onConfirm = confirm } = {}) => {
+  const handler = useCallback(() => {
+    onConfirm("...");
+  }, [onConfirm]);
+};
+```
+
+- **ローカライズテキストの import 経路**: `src/layouts/` 配下のテキスト定義は `locales/ja.json` を直接 import せず、集約モジュール `src/layouts/texts.ts` から import する。`src/layouts/` 外（`hooks/` など）から参照する場合は `@/layouts/texts` を使用する。
+
+```ts
+// ❌ 悪い例
+import texts from "./locales/ja.json"; // layouts 内からの直接参照
+import texts from "@/layouts/locales/ja.json"; // layouts 外からの直接参照
+
+// ✅ 良い例
+import texts from "./texts"; // layouts 内から集約モジュール経由
+import texts from "@/layouts/texts"; // layouts 外から集約モジュール経由
+```
+
 ---
 
 ## 環境変数
