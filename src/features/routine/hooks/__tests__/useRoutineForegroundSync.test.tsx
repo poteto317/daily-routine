@@ -80,6 +80,28 @@ describe("useRoutineForegroundSync", () => {
     expect(refreshRoutineState).toHaveBeenCalledWith(setRoutines);
   });
 
+  it("タイマー実行前に hidden に戻った場合は refresh しない", () => {
+    const setRoutines = jest.fn();
+    let visibilityState: DocumentVisibilityState = "visible";
+    Object.defineProperty(document, "visibilityState", {
+      configurable: true,
+      get: () => visibilityState,
+    });
+    (shouldRefreshOnVisibilityChange as jest.Mock).mockReturnValue(true);
+
+    renderHook(() => useRoutineForegroundSync(true, setRoutines));
+
+    act(() => {
+      // visible でスケジュール登録
+      document.dispatchEvent(new Event("visibilitychange"));
+      // タイマー実行前に hidden に遷移
+      visibilityState = "hidden";
+      jest.runAllTimers();
+    });
+
+    expect(refreshRoutineState).not.toHaveBeenCalled();
+  });
+
   it("複数イベントが同一 tick で発火しても refresh は 1 回だけ呼ばれる", () => {
     const setRoutines = jest.fn();
     Object.defineProperty(document, "visibilityState", {

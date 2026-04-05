@@ -30,6 +30,8 @@ export const useRoutineForegroundSync = (
       }
       pendingIdRef.current = setTimeout(() => {
         pendingIdRef.current = null;
+        // タイマー実行時点で hidden に戻っていた場合はスキップする
+        if (document.visibilityState !== "visible") return;
         refreshRoutineState(setRoutines);
       }, 0);
     };
