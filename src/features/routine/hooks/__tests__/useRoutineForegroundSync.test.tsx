@@ -59,6 +59,10 @@ describe("useRoutineForegroundSync", () => {
 
   it("focus イベントで refresh をスケジュールする", () => {
     const setRoutines = jest.fn();
+    Object.defineProperty(document, "visibilityState", {
+      configurable: true,
+      get: () => "visible",
+    });
 
     renderHook(() => useRoutineForegroundSync(true, setRoutines));
 
