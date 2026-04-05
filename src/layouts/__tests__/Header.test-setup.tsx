@@ -43,12 +43,14 @@ const defaultProps: HeaderProps = {
 export const setupHeaderTestDefaults = () => {
   jest.clearAllMocks();
   jest.spyOn(window, "alert").mockImplementation(() => undefined);
+  jest.spyOn(window, "confirm").mockImplementation(() => true);
   mockUploadToFirestore.mockResolvedValue(undefined);
   mockDownloadFromFirestore.mockResolvedValue(undefined);
 };
 
 export const cleanupHeaderTestDefaults = () => {
   (window.alert as jest.Mock).mockRestore();
+  (window.confirm as jest.Mock).mockRestore();
 };
 
 export const renderHeader = (props?: Partial<HeaderProps>) => {
