@@ -3,12 +3,10 @@ import { act, renderHook } from "@testing-library/react";
 jest.mock("../routineStateSync", () => ({
   refreshRoutineState: jest.fn(),
   shouldRefreshOnVisibilityChange: jest.fn(),
-  shouldRefreshOnPageShow: jest.fn(),
 }));
 
 import {
   refreshRoutineState,
-  shouldRefreshOnPageShow,
   shouldRefreshOnVisibilityChange,
 } from "../routineStateSync";
 import { useRoutineForegroundSync } from "../useRoutineForegroundSync";
@@ -18,7 +16,6 @@ describe("useRoutineForegroundSync", () => {
     jest.useFakeTimers();
     (refreshRoutineState as jest.Mock).mockClear();
     (shouldRefreshOnVisibilityChange as jest.Mock).mockReturnValue(false);
-    (shouldRefreshOnPageShow as jest.Mock).mockReturnValue(false);
   });
 
   afterEach(() => {
@@ -43,24 +40,17 @@ describe("useRoutineForegroundSync", () => {
     expect(refreshRoutineState).toHaveBeenCalledWith(setRoutines);
   });
 
-  it("pageshow 条件を満たすとき refresh をスケジュールする", () => {
+  it("pageshow 発火で refresh をスケジュールする（visible なら実行される）", () => {
     const setRoutines = jest.fn();
     Object.defineProperty(document, "visibilityState", {
       configurable: true,
       get: () => "visible",
     });
-    (shouldRefreshOnPageShow as jest.Mock).mockReturnValue(true);
 
     renderHook(() => useRoutineForegroundSync(true, setRoutines));
 
-    const event = new Event("pageshow") as PageTransitionEvent;
-    Object.defineProperty(event, "persisted", {
-      configurable: true,
-      value: true,
-    });
-
     act(() => {
-      window.dispatchEvent(event);
+      window.dispatchEvent(new Event("pageshow"));
       jest.runAllTimers();
     });
 
@@ -109,18 +99,12 @@ describe("useRoutineForegroundSync", () => {
       get: () => "visible",
     });
     (shouldRefreshOnVisibilityChange as jest.Mock).mockReturnValue(true);
-    (shouldRefreshOnPageShow as jest.Mock).mockReturnValue(true);
 
     renderHook(() => useRoutineForegroundSync(true, setRoutines));
 
     act(() => {
       document.dispatchEvent(new Event("visibilitychange"));
-      const pageShowEvent = new Event("pageshow") as PageTransitionEvent;
-      Object.defineProperty(pageShowEvent, "persisted", {
-        configurable: true,
-        value: true,
-      });
-      window.dispatchEvent(pageShowEvent);
+      window.dispatchEvent(new Event("pageshow"));
       window.dispatchEvent(new Event("focus"));
       jest.runAllTimers();
     });

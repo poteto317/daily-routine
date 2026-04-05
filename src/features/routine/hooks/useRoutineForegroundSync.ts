@@ -2,7 +2,6 @@ import { useEffect, useRef, type Dispatch, type SetStateAction } from "react";
 import type { Routine } from "@/types/routine";
 import {
   refreshRoutineState,
-  shouldRefreshOnPageShow,
   shouldRefreshOnVisibilityChange,
 } from "./routineStateSync";
 
@@ -42,10 +41,8 @@ export const useRoutineForegroundSync = (
       }
     };
 
-    const handlePageShow = (event: PageTransitionEvent) => {
-      if (shouldRefreshOnPageShow(event.persisted, document.visibilityState)) {
-        scheduleRefresh();
-      }
+    const handlePageShow = () => {
+      scheduleRefresh();
     };
 
     const handleFocus = () => {
