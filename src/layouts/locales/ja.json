@@ -8,6 +8,8 @@
     "downloadTitle": "最後にアップロードされたクラウドデータをダウンロード",
     "downloadAvailableTitle": "クラウドに新しい更新があります。ダウンロードできます。",
     "cloudUpdatedPrefix": "クラウド更新:",
-    "localUpdatedPrefix": "ローカル更新:"
+    "localUpdatedPrefix": "ローカル更新:",
+    "uploadConfirm": "ローカルデータをクラウドにアップロードしますか？",
+    "downloadConfirm": "クラウドデータをダウンロードしてローカルデータを上書きしますか？"
   }
 }

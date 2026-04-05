@@ -1,5 +1,5 @@
 import type { getSyncStatus } from "@/features/sync";
-import texts from "./locales/ja.json";
+import texts from "./texts";
 import { getHeaderSyncButtonTitle } from "./helpers";
 
 type SyncStatus = ReturnType<typeof getSyncStatus>;

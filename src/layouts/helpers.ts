@@ -2,7 +2,7 @@
  * Layouts layer helper functions
  */
 
-import texts from "./locales/ja.json";
+import texts from "./texts";
 
 const formatHeaderSyncTimestamp = (
   timestamp?: number | null,
