@@ -2,20 +2,15 @@ import { act, renderHook } from "@testing-library/react";
 
 jest.mock("../routineStateSync", () => ({
   refreshRoutineState: jest.fn(),
-  shouldRefreshOnVisibilityChange: jest.fn(),
 }));
 
-import {
-  refreshRoutineState,
-  shouldRefreshOnVisibilityChange,
-} from "../routineStateSync";
+import { refreshRoutineState } from "../routineStateSync";
 import { useRoutineForegroundSync } from "../useRoutineForegroundSync";
 
 describe("useRoutineForegroundSync", () => {
   beforeEach(() => {
     jest.useFakeTimers();
     (refreshRoutineState as jest.Mock).mockClear();
-    (shouldRefreshOnVisibilityChange as jest.Mock).mockReturnValue(false);
   });
 
   afterEach(() => {
@@ -28,7 +23,6 @@ describe("useRoutineForegroundSync", () => {
       configurable: true,
       get: () => "visible",
     });
-    (shouldRefreshOnVisibilityChange as jest.Mock).mockReturnValue(true);
 
     renderHook(() => useRoutineForegroundSync(true, setRoutines));
 
@@ -81,8 +75,6 @@ describe("useRoutineForegroundSync", () => {
       configurable: true,
       get: () => visibilityState,
     });
-    (shouldRefreshOnVisibilityChange as jest.Mock).mockReturnValue(true);
-
     renderHook(() => useRoutineForegroundSync(true, setRoutines));
 
     act(() => {
@@ -102,7 +94,6 @@ describe("useRoutineForegroundSync", () => {
       configurable: true,
       get: () => "visible",
     });
-    (shouldRefreshOnVisibilityChange as jest.Mock).mockReturnValue(true);
 
     renderHook(() => useRoutineForegroundSync(true, setRoutines));
 
