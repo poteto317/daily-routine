@@ -96,9 +96,27 @@ describe("routine storage", () => {
         skipLocalDataUpdatedAt: true,
       },
     );
-    expect(saveDailyHistorySpy).toHaveBeenCalledWith("2026-02-12", ["r1"]);
+    // skipLocalDataUpdatedAt: true が saveDailyHistory にも伝播されること
+    expect(saveDailyHistorySpy).toHaveBeenCalledWith("2026-02-12", ["r1"], {
+      skipLocalDataUpdatedAt: true,
+    });
 
     saveDailyHistorySpy.mockRestore();
+  });
+
+  it("saveDailyHistoryはoptionsをsaveMonthlyHistory経由でsetStorageItemへ伝播する", () => {
+    // getMonthlyHistory が返す値を設定（mockReturnValueOnce で後続テストに影響させない）
+    mockGetStorageItem.mockReturnValueOnce({});
+
+    routineStorage.saveDailyHistory("2026-02-12", [], {
+      skipLocalDataUpdatedAt: true,
+    });
+
+    expect(mockSetStorageItem).toHaveBeenCalledWith(
+      "daily-history",
+      expect.any(Object),
+      { skipLocalDataUpdatedAt: true },
+    );
   });
 
   it("getDailyHistoryは対象日がなければnullを返す", () => {
