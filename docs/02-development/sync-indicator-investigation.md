@@ -43,19 +43,19 @@ setStorageItem() でデータ保存
 
 ### Bug 1: Todoリストの変更がアップロードマークを出さない
 
-**原因**: `todo-lists/storage.ts` の `saveTodoLists()` が直接 `localStorage.setItem()` を使用しており、`setLocalDataUpdatedAt()` が呼ばれなかった。
+**原因**: `todo-lists/storage.ts` の `saveTodoLists()` が直接 `localStorage.setItem()` を使用していたため、`setLocalDataUpdatedAt()` が呼ばれていなかった（このPRで修正）。
 
 **修正**: `setStorageItem()` を使用するよう変更（`getUserScopedKey` + 直接 `localStorage` 操作から `getStorageItem/setStorageItem` 委譲への変更）。
 
 ### Bug 2: プリセットの変更がアップロードマークを出さない
 
-**原因**: `preset/storageData.ts` の `savePresets()` が直接 `localStorage.setItem()` を使用していた。
+**原因**: `preset/storageData.ts` の `savePresets()` が直接 `localStorage.setItem()` を使用していたため、`setLocalDataUpdatedAt()` が呼ばれていなかった（このPRで修正）。
 
 **修正**: `setStorageItem()` を使用するよう変更（`getStorageItem/setStorageItem` 委譲）。あわせて `import { RoutinePreset }` を `import type { RoutinePreset }` に修正。
 
 ### Bug 3: ルーティン達成履歴の保存がアップロードマークを出さない
 
-**原因**: `routine/storage.ts` の `saveDailyHistory()` が直接 `localStorage.setItem()` を使用しており、同じキーに書き込む `saveMonthlyHistory()` を使っていなかった。
+**原因**: `routine/storage.ts` の `saveDailyHistory()` が直接 `localStorage.setItem()` を使用していたため、同じキーに書き込む `saveMonthlyHistory()` が使われていなかった（このPRで修正）。
 
 **修正**: `saveMonthlyHistory()` に委譲するよう変更。合わせて `options?: { skipLocalDataUpdatedAt?: boolean }` パラメータを追加し、`saveDailyProgressSilently()` から呼ぶ際に `skipLocalDataUpdatedAt: true` を伝播できるようにした。
 
@@ -106,12 +106,17 @@ let syncBatchDepth = 0;
 export function withSyncBatch(fn: () => Promise<unknown>): never;
 export function withSyncBatch(fn: () => void): void;
 export function withSyncBatch(fn: () => unknown): void {
+  // 1. async 関数は fn() 実行前に弾く（副作用ゼロで失敗させる）
+  if (Object.prototype.toString.call(fn) === "[object AsyncFunction]") {
+    throw new Error("withSyncBatch には同期関数のみ渡してください");
+  }
   syncBatchDepth++;
   try {
     const result = fn();
+    // 2. () => Promise.resolve() のような通常関数は実行前に検知できない。
+    //    fn() の同期部分はすでにバッチ中に実行されている点に注意。
+    //    （デクリメントは finally に委ねる）
     if (result instanceof Promise) {
-      // 誤って async 関数を渡した場合はランタイムで例外とする
-      // （デクリメントは finally に委ねる）
       throw new Error("withSyncBatch には同期関数のみ渡してください");
     }
   } finally {
@@ -135,6 +140,11 @@ if (
 
 ### async 関数の誤用防止
 
-型レベルでは渡す行為を完全に禁止できないため、`instanceof Promise` でランタイム検知し例外を投げます。バッチ深度は `finally` で必ず 1 回だけ戻します。
+型レベルでは渡す行為を完全に禁止できないため、2段階でランタイム検知します。
+
+1. **`AsyncFunction` 前段チェック** (`Object.prototype.toString`): `fn()` 実行前に検知するため、副作用ゼロで失敗させられる。
+2. **`instanceof Promise` フォールバック**: `() => Promise.resolve()` のような通常関数が Promise を返す場合は実行後に検知。この時点で `fn()` の同期部分はすでに実行済みであることに注意。
+
+バッチ深度は `finally` で必ず 1 回だけ戻します。
 
 `withSyncBatch()` 内で呼ばれる save 関数は `setLocalDataUpdatedAt()` をスキップし、バッチ完了後に明示的に一度だけタイムスタンプを設定する。

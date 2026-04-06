@@ -226,31 +226,21 @@ describe("withSyncBatch", () => {
     );
   });
 
-  it("async 関数で例外後も syncBatchDepth が正しく戻る（次のバッチが正常動作する）", () => {
+  it("Promise を返す関数で例外後も syncBatchDepth が正しく戻る（次のバッチが正常動作する）", () => {
     const dispatchSpy = jest.spyOn(window, "dispatchEvent");
 
-    // async 関数で例外が発生しても深度が壊れないことを確認
-    const asyncFn = async () => {};
+    // () => Promise.resolve() は通常関数だが Promise を返す。
+    // syncBatchDepth++ 後に instanceof Promise で例外を投げ、
+    // finally で depth が 0 に戻ることを確認する。
+    // （async 関数は syncBatchDepth++ 前に弾かれるため、そのパスでは深度は変化しない）
     try {
-      withSyncBatch(asyncFn as unknown as () => void);
+      withSyncBatch((() => Promise.resolve()) as unknown as () => void);
     } catch {
       // 例外は想定内
     }
 
-    // 例外後の通常バッチは正常に動作しないはず（setStorageItem がイベントを発火しない）
-    // → 深度が適切に戻っていれば、バッチ外では即座にイベント発火する
-    withSyncBatch(() => {
-      setStorageItem("daily-routines", [{ id: "r1" }]);
-    });
-
-    // バッチ中なのでイベントは発火しない
-    expect(dispatchSpy).not.toHaveBeenCalledWith(
-      expect.objectContaining({ type: LOCAL_DATA_UPDATED_AT_EVENT }),
-    );
-
-    // バッチを抜けた後は通常通り発火する
-    dispatchSpy.mockClear();
-    setStorageItem("daily-routines", [{ id: "r2" }]);
+    // 深度が正しく 0 に戻っていれば、バッチ外では即座にイベントが発火する
+    setStorageItem("daily-routines", [{ id: "r1" }]);
     expect(dispatchSpy).toHaveBeenCalledWith(
       expect.objectContaining({ type: LOCAL_DATA_UPDATED_AT_EVENT }),
     );
