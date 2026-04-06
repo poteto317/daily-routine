@@ -216,8 +216,8 @@ describe("withSyncBatch", () => {
     dispatchSpy.mockRestore();
   });
 
-  it("async 関数を渡すとランタイムで例外を投げる", () => {
-    // 型レベルでは防ぎきれないため、ランタイムで検知して例外とする
+  it("async 関数を渡すと実行前に例外を投げる", () => {
+    // AsyncFunction 判定は fn() 実行前に行なわれるため、副作用は発生しない
     const asyncFn = async () => {
       setStorageItem("daily-routines", []);
     };
