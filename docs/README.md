@@ -20,6 +20,7 @@
 
 - **[coding-standards.md](./02-development/coding-standards.md)** - React/Next.jsのコーディング規約
 - **[refactoring-guide.md](./02-development/refactoring-guide.md)** - コンポーネントのリファクタリングルール
+- **[drag-reorder-investigation.md](./02-development/drag-reorder-investigation.md)** - ルーティン並び替えドラッグ不安定問題の調査・修正記録
 
 ### 🧪 [03. テストガイド](./03-testing/)
 

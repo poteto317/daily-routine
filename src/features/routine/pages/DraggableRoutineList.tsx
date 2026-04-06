@@ -1,11 +1,8 @@
 "use client";
 
-import { useState } from "react";
 import {
   DndContext,
   closestCenter,
-  DragEndEvent,
-  DragStartEvent,
   DragOverlay,
   PointerSensor,
   TouchSensor,
@@ -18,10 +15,9 @@ import {
 } from "@dnd-kit/sortable";
 import { SortableRoutineItem } from "@/features/routine";
 import { SortableRoutineNormalDragItem } from "@/features/routine/components/SortableRoutineNormalDragItem";
-import { RoutineCardContent } from "@/features/routine/components/RoutineCardContent";
-import { getRoutineItemCardClassName } from "@/features/routine/components/routineItemModel";
+import { RoutineDragOverlay } from "@/features/routine/components/RoutineDragOverlay";
 import { Routine } from "@/types/routine";
-import { reorderRoutinesWithOriginalTimes } from "./draggableRoutineListHelpers";
+import { useRoutineDragState } from "./useRoutineDragState";
 
 interface DraggableRoutineListProps {
   routines: Routine[];
@@ -35,7 +31,7 @@ interface DraggableRoutineListProps {
 
 /**
  * ドラッグ&ドロップ対応ルーティンリスト
- * - 通常モード: ロングプレス（300ms）でドラッグ並び替えを開始
+ * - 通常モード: ドラッグハンドル（⨿）をタップして並び替えを開始
  * - 編集モード: ドラッグハンドル付き、編集・削除ボタンを表示
  */
 export const DraggableRoutineList = ({
@@ -46,44 +42,22 @@ export const DraggableRoutineList = ({
   onDeleteAction,
   onReorderAction,
 }: DraggableRoutineListProps) => {
-  const [activeId, setActiveId] = useState<string | null>(null);
+  const {
+    activeId,
+    activeRoutine,
+    handleDragStart,
+    handleDragEnd,
+    handleDragCancel,
+  } = useRoutineDragState({ routines, onReorderAction });
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
     useSensor(TouchSensor, {
-      // 300ms のロングプレスでドラッグ開始。5px 以内の動きは許容し、
-      // 横スワイプ（5px 以上の素早い移動）はドラッグをキャンセルしてスクロール等に委ねる
-      activationConstraint: { delay: 300, tolerance: 5 },
+      // ドラッグハンドルからの操作のため、ロングプレス遅延は不要。
+      // Todolist と同様に movement ベースで開始する。
+      activationConstraint: { distance: 5 },
     }),
   );
-
-  const handleDragStart = (event: DragStartEvent) => {
-    setActiveId(String(event.active.id));
-  };
-
-  const handleDragEnd = (event: DragEndEvent) => {
-    setActiveId(null);
-    const { active, over } = event;
-    if (!over || active.id === over.id) return;
-
-    const reordered = reorderRoutinesWithOriginalTimes(
-      routines,
-      String(active.id),
-      String(over.id),
-    );
-
-    if (!reordered) return;
-
-    onReorderAction(reordered);
-  };
-
-  const handleDragCancel = () => {
-    setActiveId(null);
-  };
-
-  const activeRoutine = activeId
-    ? routines.find((r) => r.id === activeId)
-    : null;
 
   return (
     <DndContext
@@ -122,19 +96,7 @@ export const DraggableRoutineList = ({
 
       {/* ドラッグ中に動くゴースト要素 */}
       <DragOverlay>
-        {activeRoutine ? (
-          <div
-            className={
-              getRoutineItemCardClassName({
-                routine: activeRoutine,
-                isEditMode: false,
-                isDraggable: false,
-              }) + " shadow-xl opacity-95"
-            }
-          >
-            <RoutineCardContent routine={activeRoutine} showDuration />
-          </div>
-        ) : null}
+        <RoutineDragOverlay routine={activeRoutine} />
       </DragOverlay>
     </DndContext>
   );

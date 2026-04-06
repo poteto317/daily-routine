@@ -1,4 +1,4 @@
-import { getDeviceId } from "../sync/localData";
+import { getDeviceId } from "../sync/deviceId";
 import { LOCAL_DATA_UPDATED_AT_EVENT } from "@/lib/storage/core";
 import * as localDataHelpers from "../sync/localDataHelpers";
 

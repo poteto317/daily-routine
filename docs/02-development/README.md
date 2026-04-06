@@ -20,6 +20,12 @@
   - 国際化対応の実装方法
   - 8ステップのリファクタリング手順
 
+### 調査記録
+
+- **[drag-reorder-investigation.md](./drag-reorder-investigation.md)** - ルーティン並び替え（ドラッグ＆ドロップ）不安定問題の調査・修正記録
+  - `touchAction: "pan-y"` とブラウザスクロールの競合が根本原因
+  - dnd-kit TouchSensor の仕組みと制約
+
 ## 🎯 開発の基本方針
 
 ### 1. ディレクトリ構成
