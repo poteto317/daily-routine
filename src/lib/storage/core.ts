@@ -8,6 +8,7 @@ export {
 export {
   LOCAL_DATA_UPDATED_AT_EVENT,
   getLocalDataUpdatedAt,
+  getRawUnscopedStorageItem,
   getStorageItem,
   getUnscopedStorageItem,
   removeStorageItem,

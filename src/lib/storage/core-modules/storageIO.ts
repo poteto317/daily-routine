@@ -86,6 +86,20 @@ export const getUnscopedStorageItem = <T>(key: string, defaultValue: T): T => {
   }
 };
 
+/**
+ * JSON.parse せずに生文字列をそのまま返す unscoped getter。
+ * 旧形式（JSON エンコードなし）で保存された値の後方互換読み取りに使用する。
+ * 通常の読み書きには getUnscopedStorageItem/setUnscopedStorageItem を使うこと。
+ */
+export const getRawUnscopedStorageItem = (key: string): string | null => {
+  if (typeof window === "undefined") return null;
+  try {
+    return localStorage.getItem(getResolvedStorageKey(key, false));
+  } catch {
+    return null;
+  }
+};
+
 export const setStorageItem = <T>(
   key: string,
   value: T,

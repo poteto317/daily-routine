@@ -8,6 +8,7 @@ import {
 } from "@/features/routine/storage";
 import {
   getLocalDataUpdatedAt,
+  getRawUnscopedStorageItem,
   getUnscopedStorageItem,
   setLocalDataUpdatedAt,
   setUnscopedStorageItem,
@@ -47,10 +48,7 @@ export const getDeviceId = (): string => {
 
   // 後方互換: 旧形式（生文字列）が残っている場合はそのまま採用して JSON 形式へ移行
   if (!deviceId) {
-    const raw =
-      typeof window !== "undefined"
-        ? localStorage.getItem(DEVICE_ID_KEY)
-        : null;
+    const raw = getRawUnscopedStorageItem(DEVICE_ID_KEY);
     if (raw && !raw.startsWith('"')) {
       deviceId = raw;
       setUnscopedStorageItem(DEVICE_ID_KEY, deviceId, {

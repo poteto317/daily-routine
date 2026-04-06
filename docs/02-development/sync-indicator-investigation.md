@@ -45,19 +45,19 @@ setStorageItem() でデータ保存
 
 **原因**: `todo-lists/storage.ts` の `saveTodoLists()` が直接 `localStorage.setItem()` を使用しており、`setLocalDataUpdatedAt()` が呼ばれなかった。
 
-**修正**: `setStorageItem()` を使用するよう変更。
+**修正**: `setStorageItem()` を使用するよう変更（`getUserScopedKey` + 直接 `localStorage` 操作から `getStorageItem/setStorageItem` 委譲への変更）。
 
 ### Bug 2: プリセットの変更がアップロードマークを出さない
 
 **原因**: `preset/storageData.ts` の `savePresets()` が直接 `localStorage.setItem()` を使用していた。
 
-**修正**: `setStorageItem()` を使用するよう変更。
+**修正**: `setStorageItem()` を使用するよう変更（`getStorageItem/setStorageItem` 委譲）。あわせて `import { RoutinePreset }` を `import type { RoutinePreset }` に修正。
 
 ### Bug 3: ルーティン達成履歴の保存がアップロードマークを出さない
 
 **原因**: `routine/storage.ts` の `saveDailyHistory()` が直接 `localStorage.setItem()` を使用しており、同じキーに書き込む `saveMonthlyHistory()` を使っていなかった。
 
-**修正**: `saveMonthlyHistory()` に委譲するよう変更。
+**修正**: `saveMonthlyHistory()` に委譲するよう変更。合わせて `options?: { skipLocalDataUpdatedAt?: boolean }` パラメータを追加し、`saveDailyProgressSilently()` から呼ぶ際に `skipLocalDataUpdatedAt: true` を伝播できるようにした。
 
 ### Bug 4: ダウンロード後に誤ってアップロードマークが表示される（クリティカル）
 
@@ -100,16 +100,26 @@ setStorageItem() でデータ保存
 // storageIO.ts
 let syncBatchDepth = 0;
 
-export const withSyncBatch = (fn: () => void): void => {
+// 型レベルでは async 関数の誤用を完全に防げないため、ランタイムで落とす。
+// Promise を返す関数を渡したときの戻り値が never になるオーバーロードで
+// 呼び出し側の誤用を一部抑止しているが、渡す行為自体をコンパイルエラーにはできない。
+export function withSyncBatch(fn: () => Promise<unknown>): never;
+export function withSyncBatch(fn: () => void): void;
+export function withSyncBatch(fn: () => unknown): void {
   syncBatchDepth++;
   try {
-    fn();
+    const result = fn();
+    if (result instanceof Promise) {
+      // 誤って async 関数を渡した場合はランタイムで例外とする
+      // （デクリメントは finally に委ねる）
+      throw new Error("withSyncBatch には同期関数のみ渡してください");
+    }
   } finally {
-    syncBatchDepth--;
+    syncBatchDepth = Math.max(0, syncBatchDepth - 1);
   }
-};
+}
 
-// setStorageItem 内の判定
+// setStorageItem 内の判定（set/setUnscoped/remove/removeUnscoped で統一）
 if (
   !options?.skipLocalDataUpdatedAt &&
   syncBatchDepth === 0 &&
@@ -121,6 +131,10 @@ if (
 
 ### ネスト安全性
 
-フラグ（`boolean`）方式では、内側の `withSyncBatch` の `finally` が実行された時点で外側のバッチも終了扱いになる問題があるため、参照カウント（`number`）方式を採用しています。
+フラグ（`boolean`）方式では、内側の `withSyncBatch` の `finally` が実行された時点で外側のバッチも終了扱いになる問題があるため、参照カウント（`number`）方式を採用しています。`Math.max(0, ...)` により深度が負になることも防いでいます。
+
+### async 関数の誤用防止
+
+型レベルでは渡す行為を完全に禁止できないため、`instanceof Promise` でランタイム検知し例外を投げます。バッチ深度は `finally` で必ず 1 回だけ戻します。
 
 `withSyncBatch()` 内で呼ばれる save 関数は `setLocalDataUpdatedAt()` をスキップし、バッチ完了後に明示的に一度だけタイムスタンプを設定する。
