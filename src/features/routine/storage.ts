@@ -57,10 +57,13 @@ export const saveDailyHistory = (
 ): void => {
   const routines = getRoutines();
   const history = getMonthlyHistory();
-  saveMonthlyHistory({
-    ...history,
-    [date]: buildDailyHistoryEntry(date, completedRoutineIds, routines),
-  }, options);
+  saveMonthlyHistory(
+    {
+      ...history,
+      [date]: buildDailyHistoryEntry(date, completedRoutineIds, routines),
+    },
+    options,
+  );
 };
 
 export const saveDailyProgress = (progress: DailyProgress): void => {
