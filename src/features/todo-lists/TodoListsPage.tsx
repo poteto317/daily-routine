@@ -6,6 +6,7 @@ import {
   closestCenter,
   type DragEndEvent,
   type DragStartEvent,
+  KeyboardSensor,
   PointerSensor,
   TouchSensor,
   useSensor,
@@ -14,6 +15,7 @@ import {
 } from "@dnd-kit/core";
 import {
   SortableContext,
+  sortableKeyboardCoordinates,
   useSortable,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
@@ -160,7 +162,8 @@ const SortableTodoListItem = ({
             )}
           </button>
           {!hideCompleted && (
-            <span
+            <button
+              type="button"
               {...attributes}
               {...listeners}
               style={{ touchAction: "none" }}
@@ -168,7 +171,7 @@ const SortableTodoListItem = ({
               aria-label="並び替え"
             >
               ⠿
-            </span>
+            </button>
           )}
           <div className="flex shrink-0 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity">
             <button
@@ -461,6 +464,9 @@ const DetailView = ({
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
     useSensor(TouchSensor, {
       activationConstraint: { delay: 300, tolerance: 5 },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
     }),
   );
 
