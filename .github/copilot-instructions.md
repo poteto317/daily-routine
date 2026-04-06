@@ -134,6 +134,31 @@ import { AuthGuard } from "@/components/AuthGuard";
 
 ### 7. コンポーネント設計
 
+- **ドラッグハンドルとスワイプの競合防止**: `SwipeableRoutineItem` など `onTouchStart` / `onMouseDown` でジェスチャーを検知する祖先コンポーネントの内部にドラッグハンドルを配置する場合、ハンドルの `button` に `onTouchStartCapture` と `onMouseDownCapture` で `e.stopPropagation()` を設定する。これにより、ハンドルへのタッチ・クリックがスワイプ検知に到達しなくなる。`onPointerDownCapture` は `{...listeners}` の `onPointerDown`（dnd-kit の PointerSensor）を無効化するため追加してはならない。
+
+```tsx
+// ❌ 悪い例 — ハンドルを触るとスワイプも同時に開始してしまう
+<SwipeableRoutineItem ...>
+  <div {...listeners}>
+    <button aria-label="並び替え">⨿</button>
+  </div>
+</SwipeableRoutineItem>
+
+// ✅ 良い例 — capture で伝播を止め、スワイプと干渉しない
+<SwipeableRoutineItem ...>
+  <button
+    {...attributes}
+    {...listeners}
+    style={{ touchAction: "none" }}
+    aria-label="並び替え"
+    onTouchStartCapture={(e) => e.stopPropagation()}
+    onMouseDownCapture={(e) => e.stopPropagation()}
+  >
+    ⨿
+  </button>
+</SwipeableRoutineItem>
+```
+
 - **'use client'**: クライアントコンポーネントには必ず宣言
 - **ダークモード対応**: Tailwindの `dark:` プレフィックスを使用
 - **アクセシビリティ**: `aria-label` を適切に設定

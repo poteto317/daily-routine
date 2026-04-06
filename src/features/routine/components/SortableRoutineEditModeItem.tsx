@@ -60,6 +60,12 @@ export const SortableRoutineEditModeItem = ({
           style={{ touchAction: "none" }}
           className="shrink-0 cursor-grab active:cursor-grabbing text-gray-300 dark:text-gray-500 hover:text-gray-400 dark:hover:text-gray-400 select-none"
           aria-label="並び替え"
+          // capture フェーズで伝播を止めることで、祖先の SwipeableRoutineItem に
+          // touchstart / mousedown が届かないようにする。
+          // onPointerDownCapture は追加しない（{...listeners} の onPointerDown を
+          // 潰すと PointerSensor が起動しなくなるため）。
+          onTouchStartCapture={(e) => e.stopPropagation()}
+          onMouseDownCapture={(e) => e.stopPropagation()}
         >
           ⨿
         </button>
