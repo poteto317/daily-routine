@@ -52,10 +52,18 @@ export const getDeviceId = (): string => {
   if (!deviceId) {
     const raw = getRawUnscopedStorageItem(DEVICE_ID_KEY);
     if (raw && !raw.startsWith('"')) {
-      deviceId = raw;
-      setUnscopedStorageItem(DEVICE_ID_KEY, deviceId, {
-        skipLocalDataUpdatedAt: true,
-      });
+      // raw が JSON プリミティブ（null/number/boolean 等）の場合は破損値とみなし再生成に委ねる。
+      // JSON.parse が例外を投げる場合のみ旧形式の生文字列として扱う。
+      try {
+        JSON.parse(raw);
+        // 成功 = JSON プリミティブ → 旧形式ではなく破損値、何もしない
+      } catch {
+        // 失敗 = 非 JSON な生文字列 → 旧形式デバイス ID
+        deviceId = raw;
+        setUnscopedStorageItem(DEVICE_ID_KEY, deviceId, {
+          skipLocalDataUpdatedAt: true,
+        });
+      }
     }
   }
 
