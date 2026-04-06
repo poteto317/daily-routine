@@ -1,8 +1,5 @@
 import type { DailyProgress } from "@/types/routine";
-import {
-  getStorageItem,
-  setStorageItem,
-} from "@/lib/storage/core";
+import { getStorageItem, setStorageItem } from "@/lib/storage/core";
 import {
   getHistoryForMonth,
   getDailyHistory,
@@ -48,19 +45,22 @@ export const saveDailyProgressSilently = (progress: DailyProgress): void => {
   setStorageItem(STORAGE_KEY_PROGRESS, progress, {
     skipLocalDataUpdatedAt: true,
   });
-  saveDailyHistory(progress.date, progress.completedRoutineIds);
+  saveDailyHistory(progress.date, progress.completedRoutineIds, {
+    skipLocalDataUpdatedAt: true,
+  });
 };
 
 export const saveDailyHistory = (
   date: string,
   completedRoutineIds: string[],
+  options?: { skipLocalDataUpdatedAt?: boolean },
 ): void => {
   const routines = getRoutines();
   const history = getMonthlyHistory();
   saveMonthlyHistory({
     ...history,
     [date]: buildDailyHistoryEntry(date, completedRoutineIds, routines),
-  });
+  }, options);
 };
 
 export const saveDailyProgress = (progress: DailyProgress): void => {
