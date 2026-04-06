@@ -54,7 +54,7 @@ export const DraggableRoutineList = ({
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
     useSensor(TouchSensor, {
       // ドラッグハンドルからの操作のため、ロングプレス遅延は不要。
-      // Todolist と同様に movement ベースで開始する。
+      // distance ベース（5px）で即座にドラッグ開始する。
       activationConstraint: { distance: 5 },
     }),
   );

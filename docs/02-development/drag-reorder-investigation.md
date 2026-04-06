@@ -83,26 +83,38 @@ TouchSensor の `activationConstraint.tolerance` が 5px に設定されてい�
 
 #### touchAction の状態比較
 
-| 領域             | 旧実装                                 | 新実装（現在）                          |
-| ---------------- | -------------------------------------- | --------------------------------------- |
-| カード全体       | `touchAction: "none"` (スクロール不可) | `touchAction: "pan-y"` (スクロール許可) |
-| ドラッグハンドル | —                                      | `touchAction: "none"` (ドラッグ制御)    |
+| 領域                         | 旧実装                                                        | 新実装（現在）                                              |
+| ---------------------------- | ------------------------------------------------------------- | ----------------------------------------------------------- |
+| カード全体（NormalDragItem） | `touchAction: "pan-y"`、`{listeners}` をカードに設定          | `touchAction: "pan-y"` 維持、`{listeners}` をハンドルに移動 |
+| カード全体（EditModeItem）   | `touchAction` 未設定（=`auto`）、`{listeners}` をカードに設定 | `touchAction: "pan-y"` 追加、`{listeners}` をハンドルに移動 |
+| ドラッグハンドル             | —（存在しない）                                               | `touchAction: "none"`（ドラッグ制御）、`{listeners}` を設定 |
 
-### 1. カード全体の `touchAction` を `pan-y` に戻し、ハンドルのみ `none` に設定
+### 1. `{listeners}` をカードからハンドルに移動し、EditModeItem に `touchAction: "pan-y"` を追加
 
 **ファイル:** `SortableRoutineNormalDragItem.tsx` / `SortableRoutineEditModeItem.tsx`
 
 ```diff
- // カードコンテナ
+ // カードコンテナ（SortableRoutineNormalDragItem）
  style={{
    transform: CSS.Transform.toString(transform),
    transition,
    opacity: isDragging ? 0.3 : 1,
--  touchAction: "none",
-+  touchAction: "pan-y",   // ハンドル以外の領域でスクロールを許可
+   touchAction: "pan-y",  // 変更なし（旧実装から継続）
  }}
+-{...attributes}
+-{...listeners}
 
- // ドラッグハンドルボタン（⨿）を追加
+ // カードコンテナ（SortableRoutineEditModeItem）
+ style={{
+   transform: CSS.Transform.toString(transform),
+   transition,
+   opacity: isDragging ? 0.5 : 1,
++  touchAction: "pan-y",  // 追加（旧実装は未設定 = auto）
+ }}
+-{...attributes}
+-{...listeners}
+
+ // ドラッグハンドルボタン（⨿）を両コンポーネントに追加
 +<button
 +  type="button"
 +  {...attributes}
@@ -114,7 +126,7 @@ TouchSensor の `activationConstraint.tolerance` が 5px に設定されてい�
 +</button>
 ```
 
-ハンドル（⨿）上でのみ `touchAction: "none"` を設定することで、カード本体のタッチスクロールを維持しつつ、ハンドルからのドラッグを確実に制御できる。
+NormalDragItem はカード側の `touchAction: "pan-y"` を維持したまま `{...listeners}` をハンドルに移動。EditModeItem はそれに加え `touchAction: "pan-y"` も新規追加した。ハンドル（⨿）上でのみ `touchAction: "none"` を設定することで、カード本体のタッチスクロールを維持しつつ、ハンドルからのドラッグを確実に制御できる。
 
 ### 2. ドラッグ有効化を delay → distance ベースに変更
 
