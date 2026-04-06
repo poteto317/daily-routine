@@ -14,6 +14,53 @@ jest.mock("@/components", () => ({
   ),
 }));
 
+// ---------- dnd-kit モック ----------
+// DndContext: onDragStart/onDragEnd/onDragCancel をキャプチャして外部から呼び出せるようにする
+type DragCallbacks = {
+  onDragStart?: (e: { active: { id: string } }) => void;
+  onDragEnd?: (e: {
+    active: { id: string };
+    over: { id: string } | null;
+  }) => void;
+  onDragCancel?: () => void;
+};
+let capturedDragCallbacks: DragCallbacks = {};
+jest.mock("@dnd-kit/core", () => ({
+  DndContext: ({
+    children,
+    onDragStart,
+    onDragEnd,
+    onDragCancel,
+  }: React.PropsWithChildren<DragCallbacks>) => {
+    capturedDragCallbacks = { onDragStart, onDragEnd, onDragCancel };
+    return <>{children}</>;
+  },
+  DragOverlay: ({ children }: React.PropsWithChildren) => <>{children}</>,
+  closestCenter: jest.fn(),
+  PointerSensor: jest.fn(),
+  TouchSensor: jest.fn(),
+  KeyboardSensor: jest.fn(),
+  useSensor: jest.fn(),
+  useSensors: jest.fn(() => []),
+}));
+jest.mock("@dnd-kit/sortable", () => ({
+  SortableContext: ({ children }: React.PropsWithChildren) => <>{children}</>,
+  useSortable: () => ({
+    attributes: {},
+    listeners: {},
+    setNodeRef: jest.fn(),
+    transform: null,
+    transition: null,
+    isDragging: false,
+  }),
+  verticalListSortingStrategy: jest.fn(),
+  sortableKeyboardCoordinates: jest.fn(),
+}));
+jest.mock("@dnd-kit/utilities", () => ({
+  CSS: { Transform: { toString: jest.fn(() => undefined) } },
+}));
+// ------------------------------------
+
 jest.mock("@/lib/isImeComposingKeyDown", () => ({
   isImeComposingKeyDown: jest.fn(() => false),
 }));
@@ -878,5 +925,135 @@ describe("TodoListsPage", () => {
       );
     });
     expect(screen.queryByText(/ペースト/)).toBeNull();
+  });
+
+  // ============================================================
+  // dnd-kit ドラッグ＆ドロップ
+  // ============================================================
+  describe("dnd-kit ドラッグ＆ドロップ", () => {
+    const dndList = {
+      id: "list-1",
+      title: "DnD List",
+      items: [
+        {
+          id: "item-a",
+          title: "Alpha",
+          isCompleted: false,
+          createdAt: "2026-03-07T00:00:00.000Z",
+        },
+        {
+          id: "item-b",
+          title: "Beta",
+          isCompleted: false,
+          createdAt: "2026-03-07T00:00:00.000Z",
+        },
+        {
+          id: "item-c",
+          title: "Gamma",
+          isCompleted: false,
+          createdAt: "2026-03-07T00:00:00.000Z",
+        },
+      ],
+      createdAt: "2026-03-07T00:00:00.000Z",
+      updatedAt: "2026-03-07T00:00:00.000Z",
+    };
+
+    beforeEach(() => {
+      capturedDragCallbacks = {};
+      mockGetTodoLists.mockReturnValue([dndList]);
+      mockGetSelectedTodoListId.mockReturnValue("list-1");
+    });
+
+    it("onDragEnd で異なるアイテム間なら onReorderItems が呼ばれ永続化される", async () => {
+      render(<TodoListsPage />);
+
+      // DndContext が capture されていること
+      expect(capturedDragCallbacks.onDragEnd).toBeDefined();
+
+      // item-a (index 0) → item-c (index 2) へドロップ
+      act(() => {
+        capturedDragCallbacks.onDragEnd!({
+          active: { id: "item-a" },
+          over: { id: "item-c" },
+        });
+      });
+
+      await waitFor(() => {
+        expect(mockSaveAndSyncTodoLists).toHaveBeenCalledWith([
+          expect.objectContaining({
+            id: "list-1",
+            items: [
+              expect.objectContaining({ id: "item-b" }),
+              expect.objectContaining({ id: "item-c" }),
+              expect.objectContaining({ id: "item-a" }),
+            ],
+          }),
+        ]);
+      });
+    });
+
+    it("onDragEnd で active と over が同一 id なら onReorderItems は呼ばれない", async () => {
+      render(<TodoListsPage />);
+
+      act(() => {
+        capturedDragCallbacks.onDragEnd!({
+          active: { id: "item-b" },
+          over: { id: "item-b" },
+        });
+      });
+
+      // 同一アイテムへのドロップでは saveAndSync が呼ばれない
+      await waitFor(() => {
+        expect(mockSaveAndSyncTodoLists).not.toHaveBeenCalled();
+      });
+    });
+
+    it("onDragEnd で over が null なら onReorderItems は呼ばれない", async () => {
+      render(<TodoListsPage />);
+
+      act(() => {
+        capturedDragCallbacks.onDragEnd!({
+          active: { id: "item-a" },
+          over: null,
+        });
+      });
+
+      await waitFor(() => {
+        expect(mockSaveAndSyncTodoLists).not.toHaveBeenCalled();
+      });
+    });
+
+    it("onDragStart で DragOverlay 用の activeItem が表示される", async () => {
+      render(<TodoListsPage />);
+
+      act(() => {
+        capturedDragCallbacks.onDragStart!({ active: { id: "item-b" } });
+      });
+
+      await waitFor(() => {
+        // DragOverlay 内にアイテムタイトルが表示される
+        expect(screen.getAllByText("Beta")).toHaveLength(2);
+      });
+    });
+
+    it("onDragCancel でドラッグ状態がリセットされる", async () => {
+      render(<TodoListsPage />);
+
+      act(() => {
+        capturedDragCallbacks.onDragStart!({ active: { id: "item-b" } });
+      });
+      await waitFor(() => {
+        expect(screen.getAllByText("Beta")).toHaveLength(2);
+      });
+
+      act(() => {
+        capturedDragCallbacks.onDragCancel!();
+      });
+
+      await waitFor(() => {
+        // DragOverlay が消えリスト内の1件のみになる
+        expect(screen.getAllByText("Beta")).toHaveLength(1);
+      });
+    });
   });
 });
