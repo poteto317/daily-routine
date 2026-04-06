@@ -44,7 +44,9 @@ import type { SyncData } from "./types";
 
 export const getDeviceId = (): string => {
   // JSON 形式で保存された値を試みる
-  let deviceId = getUnscopedStorageItem<string>(DEVICE_ID_KEY, "");
+  // getUnscopedStorageItem は型パラメータを検証しないため、typeof で実行時型保証する
+  const stored = getUnscopedStorageItem<unknown>(DEVICE_ID_KEY, "");
+  let deviceId = typeof stored === "string" ? stored : "";
 
   // 後方互換: 旧形式（生文字列）が残っている場合はそのまま採用して JSON 形式へ移行
   if (!deviceId) {
