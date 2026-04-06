@@ -1,9 +1,6 @@
 import { useEffect, useRef, type Dispatch, type SetStateAction } from "react";
 import type { Routine } from "@/types/routine";
-import {
-  refreshRoutineState,
-  shouldRefreshOnVisibilityChange,
-} from "./routineStateSync";
+import { refreshRoutineState } from "./routineStateSync";
 
 type SetRoutines = Dispatch<SetStateAction<Routine[]>>;
 
@@ -35,19 +32,9 @@ export const useRoutineForegroundSync = (
       }, 0);
     };
 
-    const handleVisibilityChange = () => {
-      if (shouldRefreshOnVisibilityChange(document.visibilityState)) {
-        scheduleRefresh();
-      }
-    };
-
-    const handlePageShow = () => {
-      scheduleRefresh();
-    };
-
-    const handleFocus = () => {
-      scheduleRefresh();
-    };
+    const handleVisibilityChange = scheduleRefresh;
+    const handlePageShow = scheduleRefresh;
+    const handleFocus = scheduleRefresh;
 
     document.addEventListener("visibilitychange", handleVisibilityChange);
     window.addEventListener("pageshow", handlePageShow);

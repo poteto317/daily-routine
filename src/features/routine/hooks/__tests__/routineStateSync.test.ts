@@ -12,7 +12,6 @@ import {
 import {
   refreshRoutineState,
   reloadRoutinesFromStorage,
-  shouldRefreshOnVisibilityChange,
 } from "../routineStateSync";
 
 describe("routineStateSync", () => {
@@ -35,11 +34,6 @@ describe("routineStateSync", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-  });
-
-  it("可視状態が visible のときだけ再評価する", () => {
-    expect(shouldRefreshOnVisibilityChange("visible")).toBe(true);
-    expect(shouldRefreshOnVisibilityChange("hidden")).toBe(false);
   });
 
   it("日付変更時はリセット済みルーティンに置き換える", () => {

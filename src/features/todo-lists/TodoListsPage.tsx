@@ -1,6 +1,25 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import {
+  DndContext,
+  closestCenter,
+  type DragEndEvent,
+  type DragStartEvent,
+  KeyboardSensor,
+  PointerSensor,
+  TouchSensor,
+  useSensor,
+  useSensors,
+  DragOverlay,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import { CardPanel } from "@/components";
 import { SwipeableRoutineItem } from "@/components/SwipeableRoutineItem";
 import { isImeComposingKeyDown } from "@/lib/isImeComposingKeyDown";
@@ -19,8 +38,284 @@ import { useTodoListDetailSelection } from "./useTodoListDetailSelection";
 import { useTodoListDetailClipboard } from "./useTodoListDetailClipboard";
 import texts from "./locales/ja.json";
 
-// ドラッグ中のリストアイテムインデックスを管理するシングルトン（ref代替）
-let _dragFromIndex: number | null = null;
+// ============================================================
+// ソート可能な個別 Todo アイテム（dnd-kit + 全機能版）
+// ============================================================
+type SortableTodoListItemProps = {
+  item: TodoListItem;
+  list: TodoList;
+  origIndex: number;
+  hideCompleted: boolean;
+  isDragActive: boolean;
+  editingItemId: string | null;
+  editingItemTitle: string;
+  setEditingItemTitle: (v: string) => void;
+  commitEditItem: (id: string) => void;
+  cancelEditItem: () => void;
+  startEditItem: (id: string, title: string) => void;
+  isSelected: boolean;
+  toggleSelectItem: (id: string) => void;
+  isParent: boolean;
+  isCollapsed: boolean;
+  toggleCollapseItem: (id: string) => void;
+  colorPickerItemId: string | null;
+  setColorPickerItemId: (id: string | null) => void;
+  setShowBulkColorPicker: (v: boolean) => void;
+  onUpdateItemBgColor: (
+    listId: string,
+    itemId: string,
+    bgColor: TodoItemBgColorValue | undefined,
+  ) => void;
+  onToggleItem: (listId: string, itemId: string) => void;
+  onDeleteItem: (listId: string, itemId: string, title: string) => void;
+  onIndentItem: (listId: string, itemId: string) => void;
+  onOutdentItem: (listId: string, itemId: string) => void;
+};
+
+const SortableTodoListItem = ({
+  item,
+  list,
+  origIndex,
+  hideCompleted,
+  isDragActive,
+  editingItemId,
+  editingItemTitle,
+  setEditingItemTitle,
+  commitEditItem,
+  cancelEditItem,
+  startEditItem,
+  isSelected,
+  toggleSelectItem,
+  isParent,
+  isCollapsed,
+  toggleCollapseItem,
+  colorPickerItemId,
+  setColorPickerItemId,
+  setShowBulkColorPicker,
+  onUpdateItemBgColor,
+  onToggleItem,
+  onDeleteItem,
+  onIndentItem,
+  onOutdentItem,
+}: SortableTodoListItemProps) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: item.id, disabled: hideCompleted });
+
+  const currentIndent = getItemIndentLevel(item);
+  const maxIndent = getMaxAllowedIndent(list.items, origIndex);
+  const canSwipeIndent = editingItemId !== item.id && currentIndent < maxIndent;
+
+  return (
+    <li
+      ref={setNodeRef}
+      style={{
+        transform: CSS.Transform.toString(transform),
+        transition,
+        opacity: isDragging ? 0.4 : 1,
+        marginLeft: `${currentIndent * 20}px`,
+        touchAction: "pan-y",
+      }}
+      className="group"
+    >
+      <SwipeableRoutineItem
+        onSwipeAction={() => onIndentItem(list.id, item.id)}
+        swipeActionType="indent"
+        isEditMode={canSwipeIndent}
+      >
+        <div
+          className={`flex items-center gap-2 p-3 border rounded-xl hover:shadow-sm transition-shadow ${
+            isDragging
+              ? `${getTodoItemBgClass(item.bgColor)} border-teal-400 dark:border-teal-500 shadow-md`
+              : isSelected
+                ? "bg-teal-50 dark:bg-teal-900/20 border-teal-300 dark:border-teal-400"
+                : `${getTodoItemBgClass(item.bgColor)} border-gray-100 dark:border-gray-500`
+          }`}
+        >
+          <button
+            type="button"
+            role="checkbox"
+            aria-checked={isSelected}
+            aria-label={texts.list.selectItemLabel.replace(
+              "{title}",
+              item.title,
+            )}
+            onClick={() => toggleSelectItem(item.id)}
+            className={`shrink-0 w-4 h-4 rounded border-2 flex items-center justify-center transition-all ${
+              isSelected
+                ? "bg-teal-500 border-teal-500"
+                : "border-gray-300 dark:border-gray-400 hover:border-teal-400"
+            }`}
+          >
+            {isSelected && (
+              <span
+                aria-hidden="true"
+                className="text-white text-[10px] leading-none"
+              >
+                ✓
+              </span>
+            )}
+          </button>
+          {!hideCompleted && (
+            <button
+              type="button"
+              {...attributes}
+              {...listeners}
+              style={{ touchAction: "none" }}
+              className="shrink-0 cursor-grab active:cursor-grabbing text-gray-300 dark:text-gray-500 hover:text-gray-400 dark:hover:text-gray-400 select-none"
+              aria-label="並び替え"
+            >
+              ⠿
+            </button>
+          )}
+          <div className="flex shrink-0 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity">
+            <button
+              type="button"
+              onClick={() => onOutdentItem(list.id, item.id)}
+              disabled={currentIndent === 0}
+              className="w-5 h-5 text-gray-400 hover:text-teal-500 dark:text-gray-500 dark:hover:text-teal-400 disabled:opacity-20 disabled:cursor-not-allowed flex items-center justify-center text-xs rounded transition-colors"
+              aria-label="インデントを下げる"
+            >
+              ←
+            </button>
+            <button
+              type="button"
+              onClick={() => onIndentItem(list.id, item.id)}
+              disabled={currentIndent >= maxIndent}
+              className="w-5 h-5 text-gray-400 hover:text-teal-500 dark:text-gray-500 dark:hover:text-teal-400 disabled:opacity-20 disabled:cursor-not-allowed flex items-center justify-center text-xs rounded transition-colors"
+              aria-label="インデントを上げる"
+            >
+              →
+            </button>
+          </div>
+          {isParent ? (
+            <button
+              type="button"
+              onClick={() => toggleCollapseItem(item.id)}
+              className="shrink-0 w-5 h-5 text-gray-400 hover:text-teal-500 dark:text-gray-500 dark:hover:text-teal-400 flex items-center justify-center text-xs transition-colors"
+              aria-expanded={!isCollapsed}
+              aria-label={isCollapsed ? "子Todoを展開" : "子Todoを折りたたむ"}
+            >
+              {isCollapsed ? "▶" : "▼"}
+            </button>
+          ) : (
+            <span className="shrink-0 w-5" />
+          )}
+          <button
+            type="button"
+            onClick={() => {
+              if (isDragActive) return;
+              onToggleItem(list.id, item.id);
+            }}
+            className={`shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${
+              item.isCompleted
+                ? "bg-teal-500 border-teal-500"
+                : "border-gray-300 dark:border-gray-400 hover:border-teal-400"
+            }`}
+            aria-label={item.isCompleted ? "未完了に戻す" : "完了にする"}
+          >
+            {item.isCompleted && (
+              <span className="text-white text-xs leading-none">✓</span>
+            )}
+          </button>
+          {editingItemId === item.id ? (
+            <input
+              type="text"
+              autoFocus
+              value={editingItemTitle}
+              onChange={(e) => setEditingItemTitle(e.target.value)}
+              onBlur={() => commitEditItem(item.id)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !isImeComposingKeyDown(e))
+                  commitEditItem(item.id);
+                if (e.key === "Escape") cancelEditItem();
+              }}
+              className="flex-1 min-w-0 text-sm px-1 py-0.5 border-b-2 border-teal-400 bg-transparent text-gray-800 dark:text-gray-100 focus:outline-none"
+            />
+          ) : (
+            <span
+              className={`flex-1 min-w-0 text-sm break-words ${
+                item.isCompleted
+                  ? "line-through text-gray-400 dark:text-gray-500"
+                  : "text-gray-800 dark:text-gray-100"
+              }`}
+            >
+              {item.title}
+            </span>
+          )}
+          {editingItemId !== item.id && (
+            <>
+              <div className="relative" data-color-picker>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowBulkColorPicker(false);
+                    setColorPickerItemId(
+                      colorPickerItemId === item.id ? null : item.id,
+                    );
+                  }}
+                  className="shrink-0 text-gray-300 hover:text-teal-500 dark:text-gray-500 dark:hover:text-teal-400 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 focus-visible:opacity-100 transition-opacity"
+                  aria-label="背景色を変更"
+                  aria-expanded={colorPickerItemId === item.id}
+                >
+                  🎨
+                </button>
+                {colorPickerItemId === item.id && (
+                  <div
+                    role="radiogroup"
+                    aria-label="背景色"
+                    className="absolute top-full right-0 mt-1 p-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-500 rounded-lg shadow-lg z-10 flex gap-1.5"
+                  >
+                    {TODO_ITEM_BG_COLORS.map((color) => (
+                      <button
+                        key={color.value ?? "__default__"}
+                        role="radio"
+                        aria-checked={item.bgColor === color.value}
+                        type="button"
+                        onClick={() => {
+                          onUpdateItemBgColor(list.id, item.id, color.value);
+                          setColorPickerItemId(null);
+                        }}
+                        className={`w-6 h-6 rounded-full border-2 transition-all ${color.class} ${
+                          item.bgColor === color.value
+                            ? "border-teal-500 ring-2 ring-teal-300"
+                            : "border-gray-200 dark:border-gray-500 hover:border-teal-400"
+                        }`}
+                        aria-label={color.label}
+                        title={color.label}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+              <button
+                type="button"
+                onClick={() => startEditItem(item.id, item.title)}
+                className="shrink-0 text-gray-300 hover:text-teal-500 dark:text-gray-500 dark:hover:text-teal-400 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 focus-visible:opacity-100 transition-opacity"
+                aria-label={texts.list.editItemLabel}
+              >
+                ✏️
+              </button>
+              <button
+                type="button"
+                onClick={() => onDeleteItem(list.id, item.id, item.title)}
+                className="shrink-0 text-gray-300 hover:text-red-400 dark:text-gray-500 dark:hover:text-red-400 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 focus-visible:opacity-100 transition-opacity"
+                aria-label="削除"
+              >
+                🗑️
+              </button>
+            </>
+          )}
+        </div>
+      </SwipeableRoutineItem>
+    </li>
+  );
+};
 
 // ============================================================
 // Todo 詳細ビュー
@@ -90,7 +385,6 @@ const DetailView = ({
   const hasClipboard = clipboardItems.length > 0;
   const {
     collapsedItemIds,
-    dragOverIndex,
     editingItemId,
     editingItemTitle,
     editingListTitle,
@@ -101,7 +395,6 @@ const DetailView = ({
     listTitleInputRef,
     progress: { completed, total, percentage },
     visibleItems,
-    setDragOverIndex,
     setEditingItemTitle,
     setEditingListTitleValue,
     setInputText,
@@ -163,6 +456,42 @@ const DetailView = ({
       document.removeEventListener("keydown", handleKeyDown);
     };
   }, [colorPickerItemId, showBulkColorPicker]);
+
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const activeItem = list.items.find((i) => i.id === activeId) ?? null;
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(TouchSensor, {
+      activationConstraint: { delay: 300, tolerance: 5 },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    }),
+  );
+
+  const handleDragStart = useCallback((event: DragStartEvent) => {
+    setActiveId(String(event.active.id));
+  }, []);
+
+  const handleDragEnd = useCallback(
+    (event: DragEndEvent) => {
+      setActiveId(null);
+      const { active, over } = event;
+      if (!over || active.id === over.id) return;
+
+      const fromIndex = list.items.findIndex((i) => i.id === active.id);
+      const toIndex = list.items.findIndex((i) => i.id === over.id);
+      if (fromIndex === -1 || toIndex === -1) return;
+
+      onReorderItems(list.id, fromIndex, toIndex);
+    },
+    [list.items, list.id, onReorderItems],
+  );
+
+  const handleDragCancel = useCallback(() => {
+    setActiveId(null);
+  }, []);
 
   return (
     <div className="min-h-screen bg-linear-to-br from-teal-50 to-cyan-100 dark:from-slate-400 dark:to-slate-300">
@@ -372,265 +701,75 @@ const DetailView = ({
               )}
             </div>
           ) : (
-            <ul className="space-y-2 mb-6">
-              {visibleItems.map((item) => {
-                const origIndex = itemIndexById.get(item.id);
-                if (origIndex === undefined) return null;
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragStart={handleDragStart}
+              onDragEnd={handleDragEnd}
+              onDragCancel={handleDragCancel}
+            >
+              <SortableContext
+                items={visibleItems.map((i) => i.id)}
+                strategy={verticalListSortingStrategy}
+              >
+                <ul className="space-y-2 mb-6">
+                  {visibleItems.map((item) => {
+                    const origIndex = itemIndexById.get(item.id);
+                    if (origIndex === undefined) return null;
 
-                const parentDetectionIndex = parentDetectionIndexById.get(
-                  item.id,
-                );
-                const currentIndent = getItemIndentLevel(item);
-                const maxIndent = getMaxAllowedIndent(list.items, origIndex);
-                const isDragOver =
-                  !hideCompleted && dragOverIndex === origIndex;
-                const canSwipeIndent =
-                  editingItemId !== item.id && currentIndent < maxIndent;
-                const isParent =
-                  parentDetectionIndex !== undefined &&
-                  hasChildren(itemsForParentDetection, parentDetectionIndex);
-                const isCollapsed = collapsedItemIds.has(item.id);
-                const isSelected = selectedItemIds.has(item.id);
-                return (
-                  <li
-                    key={item.id}
-                    draggable={!hideCompleted}
-                    onDragStart={() => {
-                      _dragFromIndex = origIndex;
-                    }}
-                    onDragOver={(e) => {
-                      if (hideCompleted) return;
-                      e.preventDefault();
-                      setDragOverIndex(origIndex);
-                    }}
-                    onDrop={(e) => {
-                      e.preventDefault();
-                      if (
-                        _dragFromIndex !== null &&
-                        _dragFromIndex !== origIndex
-                      ) {
-                        onReorderItems(list.id, _dragFromIndex, origIndex);
-                      }
-                      _dragFromIndex = null;
-                      setDragOverIndex(null);
-                    }}
-                    onDragEnd={() => {
-                      _dragFromIndex = null;
-                      setDragOverIndex(null);
-                    }}
-                    style={{ marginLeft: `${currentIndent * 20}px` }}
-                    className="group"
+                    const parentDetectionIndex = parentDetectionIndexById.get(
+                      item.id,
+                    );
+                    const isParent =
+                      parentDetectionIndex !== undefined &&
+                      hasChildren(
+                        itemsForParentDetection,
+                        parentDetectionIndex,
+                      );
+                    const isCollapsed = collapsedItemIds.has(item.id);
+                    const isSelected = selectedItemIds.has(item.id);
+                    return (
+                      <SortableTodoListItem
+                        key={item.id}
+                        item={item}
+                        list={list}
+                        origIndex={origIndex}
+                        hideCompleted={hideCompleted}
+                        isDragActive={activeId !== null}
+                        editingItemId={editingItemId}
+                        editingItemTitle={editingItemTitle}
+                        setEditingItemTitle={setEditingItemTitle}
+                        commitEditItem={commitEditItem}
+                        cancelEditItem={cancelEditItem}
+                        startEditItem={startEditItem}
+                        isSelected={isSelected}
+                        toggleSelectItem={toggleSelectItem}
+                        isParent={isParent}
+                        isCollapsed={isCollapsed}
+                        toggleCollapseItem={toggleCollapseItem}
+                        colorPickerItemId={colorPickerItemId}
+                        setColorPickerItemId={setColorPickerItemId}
+                        setShowBulkColorPicker={setShowBulkColorPicker}
+                        onUpdateItemBgColor={onUpdateItemBgColor}
+                        onToggleItem={onToggleItem}
+                        onDeleteItem={onDeleteItem}
+                        onIndentItem={onIndentItem}
+                        onOutdentItem={onOutdentItem}
+                      />
+                    );
+                  })}
+                </ul>
+              </SortableContext>
+              <DragOverlay>
+                {activeItem ? (
+                  <div
+                    className={`p-3 ${getTodoItemBgClass(activeItem.bgColor)} border border-teal-400 dark:border-teal-500 rounded-xl shadow-lg text-sm text-gray-800 dark:text-gray-100 opacity-90 cursor-grabbing`}
                   >
-                    <SwipeableRoutineItem
-                      onSwipeAction={() => onIndentItem(list.id, item.id)}
-                      swipeActionType="indent"
-                      isEditMode={canSwipeIndent}
-                    >
-                      <div
-                        className={`flex items-center gap-2 p-3 border rounded-xl hover:shadow-sm transition-shadow ${
-                          isDragOver
-                            ? `${getTodoItemBgClass(item.bgColor)} border-teal-400 dark:border-teal-500 shadow-md`
-                            : isSelected
-                              ? "bg-teal-50 dark:bg-teal-900/20 border-teal-300 dark:border-teal-400"
-                              : `${getTodoItemBgClass(item.bgColor)} border-gray-100 dark:border-gray-500`
-                        }`}
-                      >
-                        <button
-                          type="button"
-                          role="checkbox"
-                          aria-checked={isSelected}
-                          aria-label={texts.list.selectItemLabel.replace(
-                            "{title}",
-                            item.title,
-                          )}
-                          onClick={() => toggleSelectItem(item.id)}
-                          className={`shrink-0 w-4 h-4 rounded border-2 flex items-center justify-center transition-all ${
-                            isSelected
-                              ? "bg-teal-500 border-teal-500"
-                              : "border-gray-300 dark:border-gray-400 hover:border-teal-400"
-                          }`}
-                        >
-                          {isSelected && (
-                            <span
-                              aria-hidden="true"
-                              className="text-white text-[10px] leading-none"
-                            >
-                              ✓
-                            </span>
-                          )}
-                        </button>
-                        {!hideCompleted && (
-                          <span
-                            className="shrink-0 cursor-grab active:cursor-grabbing text-gray-300 dark:text-gray-500 hover:text-gray-400 dark:hover:text-gray-400 select-none"
-                            aria-label="並び替え"
-                          >
-                            ⠿
-                          </span>
-                        )}
-                        <div className="flex shrink-0 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity">
-                          <button
-                            type="button"
-                            onClick={() => onOutdentItem(list.id, item.id)}
-                            disabled={currentIndent === 0}
-                            className="w-5 h-5 text-gray-400 hover:text-teal-500 dark:text-gray-500 dark:hover:text-teal-400 disabled:opacity-20 disabled:cursor-not-allowed flex items-center justify-center text-xs rounded transition-colors"
-                            aria-label="インデントを下げる"
-                          >
-                            ←
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => onIndentItem(list.id, item.id)}
-                            disabled={currentIndent >= maxIndent}
-                            className="w-5 h-5 text-gray-400 hover:text-teal-500 dark:text-gray-500 dark:hover:text-teal-400 disabled:opacity-20 disabled:cursor-not-allowed flex items-center justify-center text-xs rounded transition-colors"
-                            aria-label="インデントを上げる"
-                          >
-                            →
-                          </button>
-                        </div>
-                        {isParent ? (
-                          <button
-                            type="button"
-                            onClick={() => toggleCollapseItem(item.id)}
-                            className="shrink-0 w-5 h-5 text-gray-400 hover:text-teal-500 dark:text-gray-500 dark:hover:text-teal-400 flex items-center justify-center text-xs transition-colors"
-                            aria-expanded={!isCollapsed}
-                            aria-label={
-                              isCollapsed
-                                ? "子Todoを展開"
-                                : "子Todoを折りたたむ"
-                            }
-                          >
-                            {isCollapsed ? "▶" : "▼"}
-                          </button>
-                        ) : (
-                          <span className="shrink-0 w-5" />
-                        )}
-                        <button
-                          type="button"
-                          onClick={() => onToggleItem(list.id, item.id)}
-                          className={`shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${
-                            item.isCompleted
-                              ? "bg-teal-500 border-teal-500"
-                              : "border-gray-300 dark:border-gray-400 hover:border-teal-400"
-                          }`}
-                          aria-label={
-                            item.isCompleted ? "未完了に戻す" : "完了にする"
-                          }
-                        >
-                          {item.isCompleted && (
-                            <span className="text-white text-xs leading-none">
-                              ✓
-                            </span>
-                          )}
-                        </button>
-                        {editingItemId === item.id ? (
-                          <input
-                            type="text"
-                            autoFocus
-                            value={editingItemTitle}
-                            onChange={(e) =>
-                              setEditingItemTitle(e.target.value)
-                            }
-                            onBlur={() => commitEditItem(item.id)}
-                            onKeyDown={(e) => {
-                              if (
-                                e.key === "Enter" &&
-                                !isImeComposingKeyDown(e)
-                              )
-                                commitEditItem(item.id);
-                              if (e.key === "Escape") cancelEditItem();
-                            }}
-                            className="flex-1 min-w-0 text-sm px-1 py-0.5 border-b-2 border-teal-400 bg-transparent text-gray-800 dark:text-gray-100 focus:outline-none"
-                          />
-                        ) : (
-                          <span
-                            className={`flex-1 min-w-0 text-sm break-words ${
-                              item.isCompleted
-                                ? "line-through text-gray-400 dark:text-gray-500"
-                                : "text-gray-800 dark:text-gray-100"
-                            }`}
-                          >
-                            {item.title}
-                          </span>
-                        )}
-                        {editingItemId !== item.id && (
-                          <>
-                            <div className="relative" data-color-picker>
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  setShowBulkColorPicker(false);
-                                  setColorPickerItemId(
-                                    colorPickerItemId === item.id
-                                      ? null
-                                      : item.id,
-                                  );
-                                }}
-                                className="shrink-0 text-gray-300 hover:text-teal-500 dark:text-gray-500 dark:hover:text-teal-400 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 focus-visible:opacity-100 transition-opacity"
-                                aria-label="背景色を変更"
-                                aria-expanded={colorPickerItemId === item.id}
-                              >
-                                🎨
-                              </button>
-                              {colorPickerItemId === item.id && (
-                                <div
-                                  role="radiogroup"
-                                  aria-label="背景色"
-                                  className="absolute top-full right-0 mt-1 p-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-500 rounded-lg shadow-lg z-10 flex gap-1.5"
-                                >
-                                  {TODO_ITEM_BG_COLORS.map((color) => (
-                                    <button
-                                      key={color.value ?? "__default__"}
-                                      role="radio"
-                                      aria-checked={
-                                        item.bgColor === color.value
-                                      }
-                                      type="button"
-                                      onClick={() => {
-                                        onUpdateItemBgColor(
-                                          list.id,
-                                          item.id,
-                                          color.value,
-                                        );
-                                        setColorPickerItemId(null);
-                                      }}
-                                      className={`w-6 h-6 rounded-full border-2 transition-all ${color.class} ${
-                                        item.bgColor === color.value
-                                          ? "border-teal-500 ring-2 ring-teal-300"
-                                          : "border-gray-200 dark:border-gray-500 hover:border-teal-400"
-                                      }`}
-                                      aria-label={color.label}
-                                      title={color.label}
-                                    />
-                                  ))}
-                                </div>
-                              )}
-                            </div>
-                            <button
-                              type="button"
-                              onClick={() => startEditItem(item.id, item.title)}
-                              className="shrink-0 text-gray-300 hover:text-teal-500 dark:text-gray-500 dark:hover:text-teal-400 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 focus-visible:opacity-100 transition-opacity"
-                              aria-label={texts.list.editItemLabel}
-                            >
-                              ✏️
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() =>
-                                onDeleteItem(list.id, item.id, item.title)
-                              }
-                              className="shrink-0 text-gray-300 hover:text-red-400 dark:text-gray-500 dark:hover:text-red-400 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 focus-visible:opacity-100 transition-opacity"
-                              aria-label="削除"
-                            >
-                              🗑️
-                            </button>
-                          </>
-                        )}
-                      </div>
-                    </SwipeableRoutineItem>
-                  </li>
-                );
-              })}
-            </ul>
+                    {activeItem.title}
+                  </div>
+                ) : null}
+              </DragOverlay>
+            </DndContext>
           )}
 
           {/* 追加フォーム */}
