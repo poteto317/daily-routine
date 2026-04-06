@@ -17,9 +17,13 @@
 
 ### イベントチェーン
 
+以下は通常時（`skipLocalDataUpdatedAt` 未指定かつ `withSyncBatch()` バッチ外）のフロー。  
+`skipLocalDataUpdatedAt: true` を指定した場合、または `withSyncBatch()` 内から呼ばれた場合は `setLocalDataUpdatedAt()` がスキップされ、その後のイベントも発火しない。
+
 ```
 setStorageItem() でデータ保存
   → setLocalDataUpdatedAt(Date.now()) でローカルタイムスタンプ更新
+  │  ※ skipLocalDataUpdatedAt: true またはバッチ中の場合はここで終了
     → LOCAL_DATA_UPDATED_AT_EVENT 発火
       → headerSyncState.ts の recalculateHeaderSyncStatus()
         → refreshSyncStatusFromStoredRemote()
