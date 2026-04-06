@@ -13,7 +13,11 @@ type SetStorageItemOptions = {
 
 let syncBatchDepth = 0;
 
-// async 関数（Promise を返す関数）を渡すと型エラーになるようオーバーロードで制約する
+// 型レベルでは async 関数の誤用を完全に防げないため、ランタイムで落とす。
+// オーバーロード宣言は「async 関数を渡したときの戻り値が never になる」ことで
+// 呼び出し側が戻り値を使うコードに対して型エラーを出す効果はあるが、
+// 渡す行為そのものをコンパイルエラーにはできない。
+// → async 関数が渡されたことを instanceof Promise で検知し、実行時に例外を投げる。
 export function withSyncBatch(fn: () => Promise<unknown>): never;
 export function withSyncBatch(fn: () => void): void;
 export function withSyncBatch(fn: () => unknown): void {
@@ -21,12 +25,12 @@ export function withSyncBatch(fn: () => unknown): void {
   try {
     const result = fn();
     if (result instanceof Promise) {
-      // 誤って async 関数を渡した場合はバッチ深度を戻して例外とする（ランタイム保護）
-      syncBatchDepth--;
+      // 誤って async 関数を渡した場合はランタイムで例外とする
+      // （デクリメントは finally に委ねる）
       throw new Error("withSyncBatch には同期関数のみ渡してください");
     }
   } finally {
-    if (syncBatchDepth > 0) syncBatchDepth--;
+    syncBatchDepth = Math.max(0, syncBatchDepth - 1);
   }
 }
 

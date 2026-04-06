@@ -10,6 +10,7 @@ import {
   setCurrentUserId,
   setStorageItem,
   setUnscopedStorageItem,
+  withSyncBatch,
 } from "../core";
 
 describe("storage/core user storage", () => {
@@ -155,5 +156,105 @@ describe("storage/core user storage", () => {
     migrateToUserStorage("uid-1");
 
     expect(localStorage.getItem("user:uid-1:daily-routines")).toBeNull();
+  });
+});
+
+describe("withSyncBatch", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    localStorage.clear();
+    setCurrentUserId("uid-1");
+  });
+
+  it("バッチ中は setStorageItem が setLocalDataUpdatedAt を呼ばない", () => {
+    const dispatchSpy = jest.spyOn(window, "dispatchEvent");
+
+    withSyncBatch(() => {
+      setStorageItem("daily-routines", [{ id: "r1" }]);
+      setStorageItem("daily-routines", [{ id: "r2" }]);
+    });
+
+    // バッチ中の2回の setStorageItem ではイベントが発火しない
+    // バッチ自体は setLocalDataUpdatedAt を呼ばないため、イベントも発火しない
+    expect(dispatchSpy).not.toHaveBeenCalledWith(
+      expect.objectContaining({ type: LOCAL_DATA_UPDATED_AT_EVENT }),
+    );
+
+    dispatchSpy.mockRestore();
+  });
+
+  it("バッチ後に手動で setLocalDataUpdatedAt を呼ぶとイベントが1回だけ発火する", () => {
+    const { setLocalDataUpdatedAt } = jest.requireActual(
+      "../core",
+    ) as typeof import("../core");
+    const dispatchSpy = jest.spyOn(window, "dispatchEvent");
+
+    withSyncBatch(() => {
+      setStorageItem("daily-routines", [{ id: "r1" }]);
+      setStorageItem("app-settings", { theme: "dark" });
+    });
+    setLocalDataUpdatedAt(Date.now());
+
+    const calls = dispatchSpy.mock.calls.filter(
+      ([e]) =>
+        e instanceof CustomEvent && e.type === LOCAL_DATA_UPDATED_AT_EVENT,
+    );
+    expect(calls).toHaveLength(1);
+
+    dispatchSpy.mockRestore();
+  });
+
+  it("バッチ外では setStorageItem が即座に setLocalDataUpdatedAt を呼ぶ", () => {
+    const dispatchSpy = jest.spyOn(window, "dispatchEvent");
+
+    setStorageItem("daily-routines", [{ id: "r1" }]);
+
+    expect(dispatchSpy).toHaveBeenCalledWith(
+      expect.objectContaining({ type: LOCAL_DATA_UPDATED_AT_EVENT }),
+    );
+
+    dispatchSpy.mockRestore();
+  });
+
+  it("async 関数を渡すとランタイムで例外を投げる", () => {
+    // 型レベルでは防ぎきれないため、ランタイムで検知して例外とする
+    const asyncFn = async () => {
+      setStorageItem("daily-routines", []);
+    };
+    expect(() => withSyncBatch(asyncFn as unknown as () => void)).toThrow(
+      "withSyncBatch には同期関数のみ渡してください",
+    );
+  });
+
+  it("async 関数で例外後も syncBatchDepth が正しく戻る（次のバッチが正常動作する）", () => {
+    const dispatchSpy = jest.spyOn(window, "dispatchEvent");
+
+    // async 関数で例外が発生しても深度が壊れないことを確認
+    const asyncFn = async () => {};
+    try {
+      withSyncBatch(asyncFn as unknown as () => void);
+    } catch {
+      // 例外は想定内
+    }
+
+    // 例外後の通常バッチは正常に動作しないはず（setStorageItem がイベントを発火しない）
+    // → 深度が適切に戻っていれば、バッチ外では即座にイベント発火する
+    withSyncBatch(() => {
+      setStorageItem("daily-routines", [{ id: "r1" }]);
+    });
+
+    // バッチ中なのでイベントは発火しない
+    expect(dispatchSpy).not.toHaveBeenCalledWith(
+      expect.objectContaining({ type: LOCAL_DATA_UPDATED_AT_EVENT }),
+    );
+
+    // バッチを抜けた後は通常通り発火する
+    dispatchSpy.mockClear();
+    setStorageItem("daily-routines", [{ id: "r2" }]);
+    expect(dispatchSpy).toHaveBeenCalledWith(
+      expect.objectContaining({ type: LOCAL_DATA_UPDATED_AT_EVENT }),
+    );
+
+    dispatchSpy.mockRestore();
   });
 });
