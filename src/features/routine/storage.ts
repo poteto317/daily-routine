@@ -57,6 +57,7 @@ export const saveDailyHistory = (
 ): void => {
   const routines = getRoutines();
   const history = getMonthlyHistory();
+  // getMonthlyHistory は JSON.parse で毎回新オブジェクトを返すため in-place 更新しても副作用なし
   history[date] = buildDailyHistoryEntry(date, completedRoutineIds, routines);
   saveMonthlyHistory(history, options);
 };

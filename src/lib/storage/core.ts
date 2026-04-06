@@ -8,6 +8,7 @@ export {
 export {
   LOCAL_DATA_UPDATED_AT_EVENT,
   getLocalDataUpdatedAt,
+  getRawUnscopedStorageItem,
   getStorageItem,
   getUnscopedStorageItem,
   removeStorageItem,
@@ -15,6 +16,7 @@ export {
   setLocalDataUpdatedAt,
   setStorageItem,
   setUnscopedStorageItem,
+  withSyncBatch,
 } from "./core-modules/storageIO";
 
 export {

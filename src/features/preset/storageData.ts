@@ -1,4 +1,4 @@
-import { RoutinePreset } from "@/types/routine";
+import type { RoutinePreset } from "@/types/routine";
 import { getStorageItem, setStorageItem } from "@/lib/storage/core";
 
 const STORAGE_KEY = "routine-presets";

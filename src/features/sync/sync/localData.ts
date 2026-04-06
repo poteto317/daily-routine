@@ -8,7 +8,11 @@ import {
 } from "@/features/routine/storage";
 import {
   getLocalDataUpdatedAt,
+  getRawUnscopedStorageItem,
+  getUnscopedStorageItem,
   setLocalDataUpdatedAt,
+  setUnscopedStorageItem,
+  withSyncBatch,
 } from "@/lib/storage/core";
 import { getSettings, saveSettings } from "@/features/settings/storage";
 import {
@@ -39,11 +43,35 @@ import { collectLatestTimestamp } from "./timestamp";
 import type { SyncData } from "./types";
 
 export const getDeviceId = (): string => {
-  let deviceId = localStorage.getItem(DEVICE_ID_KEY);
+  // JSON 形式で保存された値を試みる
+  // getUnscopedStorageItem は型パラメータを検証しないため、typeof で実行時型保証する
+  const stored = getUnscopedStorageItem<unknown>(DEVICE_ID_KEY, "");
+  let deviceId = typeof stored === "string" ? stored : "";
+
+  // 後方互換: 旧形式（生文字列）が残っている場合はそのまま採用して JSON 形式へ移行
+  if (!deviceId) {
+    const raw = getRawUnscopedStorageItem(DEVICE_ID_KEY);
+    if (raw && !raw.startsWith('"')) {
+      // raw が JSON プリミティブ（null/number/boolean 等）の場合は破損値とみなし再生成に委ねる。
+      // JSON.parse が例外を投げる場合のみ旧形式の生文字列として扱う。
+      try {
+        JSON.parse(raw);
+        // 成功 = JSON プリミティブ → 旧形式ではなく破損値、何もしない
+      } catch {
+        // 失敗 = 非 JSON な生文字列 → 旧形式デバイス ID
+        deviceId = raw;
+        setUnscopedStorageItem(DEVICE_ID_KEY, deviceId, {
+          skipLocalDataUpdatedAt: true,
+        });
+      }
+    }
+  }
 
   if (!deviceId) {
     deviceId = createDeviceId();
-    localStorage.setItem(DEVICE_ID_KEY, deviceId);
+    setUnscopedStorageItem(DEVICE_ID_KEY, deviceId, {
+      skipLocalDataUpdatedAt: true,
+    });
   }
 
   return deviceId;
@@ -69,21 +97,23 @@ export const collectLocalSyncData = (): Omit<
 });
 
 export const saveSyncDataToLocal = (data: Partial<SyncData>): void => {
-  saveRoutines(data.routines ?? []);
-  if (data.dailyProgress) {
-    saveDailyProgressForSync(data.dailyProgress);
-  }
-  saveMonthlyHistory(data.dailyHistory ?? {});
-  saveSettings(data.settings ?? getSettings());
-  savePomodoroHistory(data.pomodoroHistory ?? {});
-  saveWorkSessionHistory(data.workSessionHistory ?? {});
-  saveWorkTemplates(data.workTemplates ?? []);
-  saveWeightHistory(data.weightHistory ?? {});
-  saveJournalHistory(data.journalHistory ?? {});
-  saveBudgetData(data.budgetData ?? { budgets: {}, expenses: {} });
-  saveMealHistory(data.mealHistory ?? {});
-  savePresets(data.presets ?? []);
-  saveTodoLists(data.todoLists ?? []);
+  withSyncBatch(() => {
+    saveRoutines(data.routines ?? []);
+    if (data.dailyProgress) {
+      saveDailyProgressForSync(data.dailyProgress);
+    }
+    saveMonthlyHistory(data.dailyHistory ?? {});
+    saveSettings(data.settings ?? getSettings());
+    savePomodoroHistory(data.pomodoroHistory ?? {});
+    saveWorkSessionHistory(data.workSessionHistory ?? {});
+    saveWorkTemplates(data.workTemplates ?? []);
+    saveWeightHistory(data.weightHistory ?? {});
+    saveJournalHistory(data.journalHistory ?? {});
+    saveBudgetData(data.budgetData ?? { budgets: {}, expenses: {} });
+    saveMealHistory(data.mealHistory ?? {});
+    savePresets(data.presets ?? []);
+    saveTodoLists(data.todoLists ?? []);
+  });
   setLocalDataUpdatedAt(data.lastModified ?? Date.now());
 };
 
