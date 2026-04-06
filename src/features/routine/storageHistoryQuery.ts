@@ -7,8 +7,11 @@ export const getMonthlyHistory = (): MonthlyHistory => {
   return getStorageItem<MonthlyHistory>(STORAGE_KEY_HISTORY, {});
 };
 
-export const saveMonthlyHistory = (history: MonthlyHistory): void => {
-  setStorageItem(STORAGE_KEY_HISTORY, history);
+export const saveMonthlyHistory = (
+  history: MonthlyHistory,
+  options?: { skipLocalDataUpdatedAt?: boolean },
+): void => {
+  setStorageItem(STORAGE_KEY_HISTORY, history, options);
 };
 
 export const getDailyHistory = (date: string): DailyHistory | null => {
