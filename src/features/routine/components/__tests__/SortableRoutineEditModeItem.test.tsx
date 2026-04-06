@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { createEvent, fireEvent, render, screen } from "@testing-library/react";
 import { SortableRoutineEditModeItem } from "../SortableRoutineEditModeItem";
 import type { Routine } from "@/types/routine";
 
@@ -130,5 +130,39 @@ describe("SortableRoutineEditModeItem", () => {
       />,
     );
     expect(screen.getByTestId("swipeable-wrapper")).toBeInTheDocument();
+  });
+
+  it("ドラッグハンドルの touchstart は stopPropagation を呼ぶ（スワイプ検知への伝播防止）", () => {
+    render(
+      <SortableRoutineEditModeItem
+        routine={routine}
+        onEditAction={jest.fn()}
+        onDeleteAction={jest.fn()}
+        onSwipeAction={jest.fn()}
+        swipeActionType="delete"
+      />,
+    );
+    const handle = screen.getByRole("button", { name: "並び替え" });
+    const event = createEvent.touchStart(handle);
+    const stopPropagation = jest.spyOn(event, "stopPropagation");
+    fireEvent(handle, event);
+    expect(stopPropagation).toHaveBeenCalled();
+  });
+
+  it("ドラッグハンドルの mousedown は stopPropagation を呼ぶ（スワイプ検知への伝播防止）", () => {
+    render(
+      <SortableRoutineEditModeItem
+        routine={routine}
+        onEditAction={jest.fn()}
+        onDeleteAction={jest.fn()}
+        onSwipeAction={jest.fn()}
+        swipeActionType="delete"
+      />,
+    );
+    const handle = screen.getByRole("button", { name: "並び替え" });
+    const event = createEvent.mouseDown(handle);
+    const stopPropagation = jest.spyOn(event, "stopPropagation");
+    fireEvent(handle, event);
+    expect(stopPropagation).toHaveBeenCalled();
   });
 });

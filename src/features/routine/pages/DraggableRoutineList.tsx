@@ -4,6 +4,7 @@ import {
   DndContext,
   closestCenter,
   DragOverlay,
+  KeyboardSensor,
   PointerSensor,
   TouchSensor,
   useSensor,
@@ -11,6 +12,7 @@ import {
 } from "@dnd-kit/core";
 import {
   SortableContext,
+  sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { SortableRoutineItem } from "@/features/routine";
@@ -56,6 +58,9 @@ export const DraggableRoutineList = ({
       // ドラッグハンドルからの操作のため、ロングプレス遅延は不要。
       // distance ベース（5px）で即座にドラッグ開始する。
       activationConstraint: { distance: 5 },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
     }),
   );
 
