@@ -4,8 +4,8 @@ import {
   indentTodoItemInLists,
   outdentTodoItemInLists,
   reorderTodoItemsInLists,
-  updateTodoItemTitleInLists,
   toggleTodoItemInLists,
+  updateTodoItemTitleInLists,
 } from "./detailActions";
 
 type AddTodoItemArgs = {

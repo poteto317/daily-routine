@@ -8,7 +8,10 @@ import {
 } from "@/features/routine/storage";
 import {
   getLocalDataUpdatedAt,
+  getUnscopedStorageItem,
   setLocalDataUpdatedAt,
+  setUnscopedStorageItem,
+  withSyncBatch,
 } from "@/lib/storage/core";
 import { getSettings, saveSettings } from "@/features/settings/storage";
 import {
@@ -39,11 +42,13 @@ import { collectLatestTimestamp } from "./timestamp";
 import type { SyncData } from "./types";
 
 export const getDeviceId = (): string => {
-  let deviceId = localStorage.getItem(DEVICE_ID_KEY);
+  let deviceId = getUnscopedStorageItem<string>(DEVICE_ID_KEY, "");
 
   if (!deviceId) {
     deviceId = createDeviceId();
-    localStorage.setItem(DEVICE_ID_KEY, deviceId);
+    setUnscopedStorageItem(DEVICE_ID_KEY, deviceId, {
+      skipLocalDataUpdatedAt: true,
+    });
   }
 
   return deviceId;
@@ -69,21 +74,23 @@ export const collectLocalSyncData = (): Omit<
 });
 
 export const saveSyncDataToLocal = (data: Partial<SyncData>): void => {
-  saveRoutines(data.routines ?? []);
-  if (data.dailyProgress) {
-    saveDailyProgressForSync(data.dailyProgress);
-  }
-  saveMonthlyHistory(data.dailyHistory ?? {});
-  saveSettings(data.settings ?? getSettings());
-  savePomodoroHistory(data.pomodoroHistory ?? {});
-  saveWorkSessionHistory(data.workSessionHistory ?? {});
-  saveWorkTemplates(data.workTemplates ?? []);
-  saveWeightHistory(data.weightHistory ?? {});
-  saveJournalHistory(data.journalHistory ?? {});
-  saveBudgetData(data.budgetData ?? { budgets: {}, expenses: {} });
-  saveMealHistory(data.mealHistory ?? {});
-  savePresets(data.presets ?? []);
-  saveTodoLists(data.todoLists ?? []);
+  withSyncBatch(() => {
+    saveRoutines(data.routines ?? []);
+    if (data.dailyProgress) {
+      saveDailyProgressForSync(data.dailyProgress);
+    }
+    saveMonthlyHistory(data.dailyHistory ?? {});
+    saveSettings(data.settings ?? getSettings());
+    savePomodoroHistory(data.pomodoroHistory ?? {});
+    saveWorkSessionHistory(data.workSessionHistory ?? {});
+    saveWorkTemplates(data.workTemplates ?? []);
+    saveWeightHistory(data.weightHistory ?? {});
+    saveJournalHistory(data.journalHistory ?? {});
+    saveBudgetData(data.budgetData ?? { budgets: {}, expenses: {} });
+    saveMealHistory(data.mealHistory ?? {});
+    savePresets(data.presets ?? []);
+    saveTodoLists(data.todoLists ?? []);
+  });
   setLocalDataUpdatedAt(data.lastModified ?? Date.now());
 };
 

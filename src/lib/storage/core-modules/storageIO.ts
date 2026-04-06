@@ -11,6 +11,17 @@ type SetStorageItemOptions = {
   skipLocalDataUpdatedAt?: boolean;
 };
 
+let syncBatchDepth = 0;
+
+export const withSyncBatch = (fn: () => void): void => {
+  syncBatchDepth++;
+  try {
+    fn();
+  } finally {
+    syncBatchDepth--;
+  }
+};
+
 export const getLocalDataUpdatedAt = (): number => {
   if (typeof window === "undefined") return 0;
 
@@ -73,7 +84,11 @@ export const setStorageItem = <T>(
     const scopedKey = getResolvedStorageKey(key);
     localStorage.setItem(scopedKey, JSON.stringify(value));
 
-    if (!options?.skipLocalDataUpdatedAt && key !== LOCAL_DATA_UPDATED_AT_KEY) {
+    if (
+      !options?.skipLocalDataUpdatedAt &&
+      syncBatchDepth === 0 &&
+      key !== LOCAL_DATA_UPDATED_AT_KEY
+    ) {
       setLocalDataUpdatedAt(Date.now());
     }
   } catch {
@@ -94,7 +109,11 @@ export const setUnscopedStorageItem = <T>(
       JSON.stringify(value),
     );
 
-    if (!options?.skipLocalDataUpdatedAt && key !== LOCAL_DATA_UPDATED_AT_KEY) {
+    if (
+      !options?.skipLocalDataUpdatedAt &&
+      syncBatchDepth === 0 &&
+      key !== LOCAL_DATA_UPDATED_AT_KEY
+    ) {
       setLocalDataUpdatedAt(Date.now());
     }
   } catch {
@@ -112,7 +131,11 @@ export const removeStorageItem = (
     const scopedKey = getResolvedStorageKey(key);
     localStorage.removeItem(scopedKey);
 
-    if (!options?.skipLocalDataUpdatedAt && key !== LOCAL_DATA_UPDATED_AT_KEY) {
+    if (
+      !options?.skipLocalDataUpdatedAt &&
+      syncBatchDepth === 0 &&
+      key !== LOCAL_DATA_UPDATED_AT_KEY
+    ) {
       setLocalDataUpdatedAt(Date.now());
     }
   } catch {
@@ -129,7 +152,11 @@ export const removeUnscopedStorageItem = (
   try {
     localStorage.removeItem(getResolvedStorageKey(key, false));
 
-    if (!options?.skipLocalDataUpdatedAt && key !== LOCAL_DATA_UPDATED_AT_KEY) {
+    if (
+      !options?.skipLocalDataUpdatedAt &&
+      syncBatchDepth === 0 &&
+      key !== LOCAL_DATA_UPDATED_AT_KEY
+    ) {
       setLocalDataUpdatedAt(Date.now());
     }
   } catch {

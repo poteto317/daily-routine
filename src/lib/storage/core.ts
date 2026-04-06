@@ -15,6 +15,7 @@ export {
   setLocalDataUpdatedAt,
   setStorageItem,
   setUnscopedStorageItem,
+  withSyncBatch,
 } from "./core-modules/storageIO";
 
 export {

@@ -1,30 +1,12 @@
-import { RoutinePreset } from "@/types/routine";
-import { getUserScopedKey } from "@/lib/storage/core";
+import type { RoutinePreset } from "@/types/routine";
+import { getStorageItem, setStorageItem } from "@/lib/storage/core";
 
 const STORAGE_KEY = "routine-presets";
 
 export const getPresets = (): RoutinePreset[] => {
-  if (typeof window === "undefined") return [];
-
-  try {
-    const data = localStorage.getItem(getUserScopedKey(STORAGE_KEY));
-    if (!data) return [];
-    return JSON.parse(data);
-  } catch (error) {
-    console.error("プリセット取得エラー:", error);
-    return [];
-  }
+  return getStorageItem<RoutinePreset[]>(STORAGE_KEY, []);
 };
 
 export const savePresets = (presets: RoutinePreset[]): void => {
-  if (typeof window === "undefined") return;
-
-  try {
-    localStorage.setItem(
-      getUserScopedKey(STORAGE_KEY),
-      JSON.stringify(presets),
-    );
-  } catch (error) {
-    console.error("プリセット保存エラー:", error);
-  }
+  setStorageItem(STORAGE_KEY, presets);
 };
