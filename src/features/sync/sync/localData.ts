@@ -42,7 +42,22 @@ import { collectLatestTimestamp } from "./timestamp";
 import type { SyncData } from "./types";
 
 export const getDeviceId = (): string => {
+  // JSON 形式で保存された値を試みる
   let deviceId = getUnscopedStorageItem<string>(DEVICE_ID_KEY, "");
+
+  // 後方互換: 旧形式（生文字列）が残っている場合はそのまま採用して JSON 形式へ移行
+  if (!deviceId) {
+    const raw =
+      typeof window !== "undefined"
+        ? localStorage.getItem(DEVICE_ID_KEY)
+        : null;
+    if (raw && !raw.startsWith('"')) {
+      deviceId = raw;
+      setUnscopedStorageItem(DEVICE_ID_KEY, deviceId, {
+        skipLocalDataUpdatedAt: true,
+      });
+    }
+  }
 
   if (!deviceId) {
     deviceId = createDeviceId();

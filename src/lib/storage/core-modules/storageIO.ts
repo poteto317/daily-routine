@@ -13,14 +13,22 @@ type SetStorageItemOptions = {
 
 let syncBatchDepth = 0;
 
-export const withSyncBatch = (fn: () => void): void => {
+// async 関数（Promise を返す関数）を渡すと型エラーになるようオーバーロードで制約する
+export function withSyncBatch(fn: () => Promise<unknown>): never;
+export function withSyncBatch(fn: () => void): void;
+export function withSyncBatch(fn: () => unknown): void {
   syncBatchDepth++;
   try {
-    fn();
+    const result = fn();
+    if (result instanceof Promise) {
+      // 誤って async 関数を渡した場合はバッチ深度を戻して例外とする（ランタイム保護）
+      syncBatchDepth--;
+      throw new Error("withSyncBatch には同期関数のみ渡してください");
+    }
   } finally {
-    syncBatchDepth--;
+    if (syncBatchDepth > 0) syncBatchDepth--;
   }
-};
+}
 
 export const getLocalDataUpdatedAt = (): number => {
   if (typeof window === "undefined") return 0;
