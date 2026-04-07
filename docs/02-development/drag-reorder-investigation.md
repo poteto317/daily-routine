@@ -134,7 +134,7 @@ NormalDragItem はカード側の `touchAction: "pan-y"` を維持したまま `
 
 ```diff
  useSensor(TouchSensor, {
--  activationConstraint: { delay: 300, tolerance: 10 },
+-  activationConstraint: { delay: 300, tolerance: 5 },
 +  activationConstraint: { distance: 5 },  // ハンドルからの明示的操作のため遅延不要
  }),
  useSensor(PointerSensor, {
