@@ -55,10 +55,13 @@ export const useTodoListDragAndDrop = ({
     (event: DragEndEvent) => {
       setActiveId(null);
       const { active, over } = event;
-      if (!over || active.id === over.id) return;
+      if (!over) return;
+      const activeStrId = String(active.id);
+      const overStrId = String(over.id);
+      if (activeStrId === overStrId) return;
 
-      const fromIndex = items.findIndex((i) => i.id === active.id);
-      const toIndex = items.findIndex((i) => i.id === over.id);
+      const fromIndex = items.findIndex((i) => i.id === activeStrId);
+      const toIndex = items.findIndex((i) => i.id === overStrId);
       if (fromIndex === -1 || toIndex === -1) return;
 
       onReorderItems(listId, fromIndex, toIndex);

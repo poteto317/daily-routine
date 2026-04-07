@@ -105,7 +105,6 @@ describe("todoListDetailItemHandlers", () => {
       lists: [baseList],
       listId: "list-1",
       title: "New Task",
-      insertAfterIndex: undefined,
       persist,
     });
     expect(toggleTodoItemAndPersist).toHaveBeenCalledWith({
