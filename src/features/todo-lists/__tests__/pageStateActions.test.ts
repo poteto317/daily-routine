@@ -46,6 +46,21 @@ describe("todo-lists pageStateActions", () => {
     expect(persist).toHaveBeenCalledWith(nextLists);
   });
 
+  it("insertAfterIndex を指定すると指定位置に挿入して永続化する", () => {
+    const persist = jest.fn();
+
+    const nextLists = addTodoItemAndPersist({
+      lists: [baseList],
+      listId: "list-1",
+      title: "After Task",
+      insertAfterIndex: 0,
+      persist,
+    });
+
+    expect(nextLists[0].items[1]).toMatchObject({ title: "After Task" });
+    expect(persist).toHaveBeenCalledWith(nextLists);
+  });
+
   it("Todo完了切替後に永続化する", () => {
     const persist = jest.fn();
 

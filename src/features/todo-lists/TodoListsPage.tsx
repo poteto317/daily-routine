@@ -1,21 +1,9 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import {
-  DndContext,
-  closestCenter,
-  type DragEndEvent,
-  type DragStartEvent,
-  KeyboardSensor,
-  PointerSensor,
-  TouchSensor,
-  useSensor,
-  useSensors,
-  DragOverlay,
-} from "@dnd-kit/core";
+import { Fragment } from "react";
+import { DndContext, closestCenter, DragOverlay } from "@dnd-kit/core";
 import {
   SortableContext,
-  sortableKeyboardCoordinates,
   useSortable,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
@@ -36,7 +24,69 @@ import {
 import { useTodoListDetailViewState } from "./useTodoListDetailViewState";
 import { useTodoListDetailSelection } from "./useTodoListDetailSelection";
 import { useTodoListDetailClipboard } from "./useTodoListDetailClipboard";
+import { useColorPickerController } from "./useColorPickerController";
+import { useTodoListDragAndDrop } from "./useTodoListDragAndDrop";
+import { useTodoListInlineInsert } from "./useTodoListInlineInsert";
 import texts from "./locales/ja.json";
+
+// ============================================================
+// インライン挿入フォーム（アイテムの直後に表示）
+// ============================================================
+type InlineInsertFormProps = {
+  inputText: string;
+  onChangeText: (text: string) => void;
+  onAdd: () => void;
+  onCancel: () => void;
+};
+
+const InlineInsertForm = ({
+  inputText,
+  onChangeText,
+  onAdd,
+  onCancel,
+}: InlineInsertFormProps) => (
+  <li>
+    <div
+      role="form"
+      aria-label="アイテムを挿入"
+      className="flex gap-2 py-1.5 pl-2"
+    >
+      <input
+        type="text"
+        autoFocus
+        aria-label={texts.list.itemPlaceholder}
+        value={inputText}
+        onChange={(e) => onChangeText(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" && !isImeComposingKeyDown(e)) {
+            onAdd();
+          }
+          if (e.key === "Escape") {
+            onCancel();
+          }
+        }}
+        placeholder={texts.list.itemPlaceholder}
+        className="flex-1 text-sm px-3 py-1.5 border border-teal-300 dark:border-teal-500 rounded-lg dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-400"
+      />
+      <button
+        type="button"
+        onClick={onAdd}
+        disabled={!inputText.trim()}
+        className="text-sm bg-teal-500 hover:bg-teal-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white px-3 py-1.5 rounded-lg font-medium transition-colors shrink-0"
+      >
+        {texts.list.addButton}
+      </button>
+      <button
+        type="button"
+        onClick={onCancel}
+        className="text-sm text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 px-2 transition-colors"
+        aria-label="キャンセル"
+      >
+        ✕
+      </button>
+    </div>
+  </li>
+);
 
 // ============================================================
 // ソート可能な個別 Todo アイテム（dnd-kit + 全機能版）
@@ -59,8 +109,8 @@ type SortableTodoListItemProps = {
   isCollapsed: boolean;
   toggleCollapseItem: (id: string) => void;
   colorPickerItemId: string | null;
-  setColorPickerItemId: (id: string | null) => void;
-  setShowBulkColorPicker: (v: boolean) => void;
+  toggleItemColorPicker: (id: string) => void;
+  closeItemColorPicker: () => void;
   onUpdateItemBgColor: (
     listId: string,
     itemId: string,
@@ -70,6 +120,8 @@ type SortableTodoListItemProps = {
   onDeleteItem: (listId: string, itemId: string, title: string) => void;
   onIndentItem: (listId: string, itemId: string) => void;
   onOutdentItem: (listId: string, itemId: string) => void;
+  isInlineInsertOpen: boolean;
+  onInsertAfter: () => void;
 };
 
 const SortableTodoListItem = ({
@@ -90,13 +142,15 @@ const SortableTodoListItem = ({
   isCollapsed,
   toggleCollapseItem,
   colorPickerItemId,
-  setColorPickerItemId,
-  setShowBulkColorPicker,
+  toggleItemColorPicker,
+  closeItemColorPicker,
   onUpdateItemBgColor,
   onToggleItem,
   onDeleteItem,
   onIndentItem,
   onOutdentItem,
+  isInlineInsertOpen,
+  onInsertAfter,
 }: SortableTodoListItemProps) => {
   const {
     attributes,
@@ -253,12 +307,7 @@ const SortableTodoListItem = ({
               <div className="relative" data-color-picker>
                 <button
                   type="button"
-                  onClick={() => {
-                    setShowBulkColorPicker(false);
-                    setColorPickerItemId(
-                      colorPickerItemId === item.id ? null : item.id,
-                    );
-                  }}
+                  onClick={() => toggleItemColorPicker(item.id)}
                   className="shrink-0 text-gray-300 hover:text-teal-500 dark:text-gray-500 dark:hover:text-teal-400 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 focus-visible:opacity-100 transition-opacity"
                   aria-label="背景色を変更"
                   aria-expanded={colorPickerItemId === item.id}
@@ -279,7 +328,7 @@ const SortableTodoListItem = ({
                         type="button"
                         onClick={() => {
                           onUpdateItemBgColor(list.id, item.id, color.value);
-                          setColorPickerItemId(null);
+                          closeItemColorPicker();
                         }}
                         className={`w-6 h-6 rounded-full border-2 transition-all ${color.class} ${
                           item.bgColor === color.value
@@ -309,6 +358,17 @@ const SortableTodoListItem = ({
               >
                 🗑️
               </button>
+              <button
+                type="button"
+                onClick={onInsertAfter}
+                aria-expanded={isInlineInsertOpen}
+                className="shrink-0 flex items-center gap-0.5 text-gray-300 hover:text-teal-500 dark:text-gray-500 dark:hover:text-teal-400 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 focus-visible:opacity-100 transition-opacity"
+                aria-label={texts.list.insertAfterLabel}
+                title={texts.list.insertAfterLabel}
+              >
+                <span className="text-xs leading-none">＋</span>
+                <span className="text-[10px] leading-none">↓</span>
+              </button>
             </>
           )}
         </div>
@@ -323,7 +383,7 @@ const SortableTodoListItem = ({
 type DetailViewProps = {
   list: TodoList;
   clipboardItems: TodoListItem[];
-  onAddItem: (listId: string, title: string) => void;
+  onAddItem: (listId: string, title: string, insertAfterIndex?: number) => void;
   onToggleItem: (listId: string, itemId: string) => void;
   onDeleteItem: (listId: string, itemId: string, title: string) => void;
   onDeleteList: (list: TodoList) => void;
@@ -423,75 +483,38 @@ const DetailView = ({
     itemsForParentDetection.map((item, index) => [item.id, index]),
   );
 
-  const [colorPickerItemId, setColorPickerItemId] = useState<string | null>(
-    null,
-  );
-  const [showBulkColorPicker, setShowBulkColorPicker] = useState(false);
+  const {
+    colorPickerItemId,
+    showBulkColorPicker,
+    toggleItemColorPicker,
+    closeItemColorPicker,
+    toggleBulkColorPicker,
+    closeBulkColorPicker,
+  } = useColorPickerController();
 
-  useEffect(() => {
-    if (!colorPickerItemId && !showBulkColorPicker) return;
+  const {
+    insertAfterId,
+    inlineInputText,
+    setInlineInputText,
+    openInlineInsert,
+    closeInlineInsert,
+    handleInlineAdd,
+  } = useTodoListInlineInsert({ listId: list.id, onAddItem });
 
-    const handleMouseDown = (e: MouseEvent) => {
-      if (
-        !(e.target instanceof Element) ||
-        !e.target.closest("[data-color-picker]")
-      ) {
-        setColorPickerItemId(null);
-        setShowBulkColorPicker(false);
-      }
-    };
+  const {
+    activeId,
+    sensors,
+    handleDragStart,
+    handleDragEnd,
+    handleDragCancel,
+  } = useTodoListDragAndDrop({
+    items: list.items,
+    listId: list.id,
+    onReorderItems,
+    onDragStarted: closeInlineInsert,
+  });
 
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        setColorPickerItemId(null);
-        setShowBulkColorPicker(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleMouseDown);
-    document.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      document.removeEventListener("mousedown", handleMouseDown);
-      document.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [colorPickerItemId, showBulkColorPicker]);
-
-  const [activeId, setActiveId] = useState<string | null>(null);
   const activeItem = list.items.find((i) => i.id === activeId) ?? null;
-
-  const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
-    useSensor(TouchSensor, {
-      activationConstraint: { delay: 300, tolerance: 5 },
-    }),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    }),
-  );
-
-  const handleDragStart = useCallback((event: DragStartEvent) => {
-    setActiveId(String(event.active.id));
-  }, []);
-
-  const handleDragEnd = useCallback(
-    (event: DragEndEvent) => {
-      setActiveId(null);
-      const { active, over } = event;
-      if (!over || active.id === over.id) return;
-
-      const fromIndex = list.items.findIndex((i) => i.id === active.id);
-      const toIndex = list.items.findIndex((i) => i.id === over.id);
-      if (fromIndex === -1 || toIndex === -1) return;
-
-      onReorderItems(list.id, fromIndex, toIndex);
-    },
-    [list.items, list.id, onReorderItems],
-  );
-
-  const handleDragCancel = useCallback(() => {
-    setActiveId(null);
-  }, []);
 
   return (
     <div className="min-h-screen bg-linear-to-br from-teal-50 to-cyan-100 dark:from-slate-400 dark:to-slate-300">
@@ -564,10 +587,7 @@ const DetailView = ({
             <div className="relative" data-color-picker>
               <button
                 type="button"
-                onClick={() => {
-                  setColorPickerItemId(null);
-                  setShowBulkColorPicker((v) => !v);
-                }}
+                onClick={toggleBulkColorPicker}
                 className="text-xs text-gray-500 dark:text-gray-600 hover:text-teal-600 dark:hover:text-teal-700 transition-colors"
                 aria-label="一括背景色変更"
                 aria-expanded={showBulkColorPicker}
@@ -600,7 +620,7 @@ const DetailView = ({
                         type="button"
                         onClick={() => {
                           onUpdateAllItemsBgColor(list.id, color.value);
-                          setShowBulkColorPicker(false);
+                          closeBulkColorPicker();
                         }}
                         className={`w-6 h-6 rounded-full border-2 transition-all ${color.class} ${
                           bulkSelected === color.value
@@ -714,6 +734,8 @@ const DetailView = ({
               >
                 <ul className="space-y-2 mb-6">
                   {visibleItems.map((item) => {
+                    // origIndex は hideCompleted によるフィルタとは無関係に
+                    // list.items（フィルタ前の完全配列）内でのインデックス
                     const origIndex = itemIndexById.get(item.id);
                     if (origIndex === undefined) return null;
 
@@ -729,33 +751,44 @@ const DetailView = ({
                     const isCollapsed = collapsedItemIds.has(item.id);
                     const isSelected = selectedItemIds.has(item.id);
                     return (
-                      <SortableTodoListItem
-                        key={item.id}
-                        item={item}
-                        list={list}
-                        origIndex={origIndex}
-                        hideCompleted={hideCompleted}
-                        isDragActive={activeId !== null}
-                        editingItemId={editingItemId}
-                        editingItemTitle={editingItemTitle}
-                        setEditingItemTitle={setEditingItemTitle}
-                        commitEditItem={commitEditItem}
-                        cancelEditItem={cancelEditItem}
-                        startEditItem={startEditItem}
-                        isSelected={isSelected}
-                        toggleSelectItem={toggleSelectItem}
-                        isParent={isParent}
-                        isCollapsed={isCollapsed}
-                        toggleCollapseItem={toggleCollapseItem}
-                        colorPickerItemId={colorPickerItemId}
-                        setColorPickerItemId={setColorPickerItemId}
-                        setShowBulkColorPicker={setShowBulkColorPicker}
-                        onUpdateItemBgColor={onUpdateItemBgColor}
-                        onToggleItem={onToggleItem}
-                        onDeleteItem={onDeleteItem}
-                        onIndentItem={onIndentItem}
-                        onOutdentItem={onOutdentItem}
-                      />
+                      <Fragment key={item.id}>
+                        <SortableTodoListItem
+                          item={item}
+                          list={list}
+                          origIndex={origIndex}
+                          hideCompleted={hideCompleted}
+                          isDragActive={activeId !== null}
+                          editingItemId={editingItemId}
+                          editingItemTitle={editingItemTitle}
+                          setEditingItemTitle={setEditingItemTitle}
+                          commitEditItem={commitEditItem}
+                          cancelEditItem={cancelEditItem}
+                          startEditItem={startEditItem}
+                          isSelected={isSelected}
+                          toggleSelectItem={toggleSelectItem}
+                          isParent={isParent}
+                          isCollapsed={isCollapsed}
+                          toggleCollapseItem={toggleCollapseItem}
+                          colorPickerItemId={colorPickerItemId}
+                          toggleItemColorPicker={toggleItemColorPicker}
+                          closeItemColorPicker={closeItemColorPicker}
+                          onUpdateItemBgColor={onUpdateItemBgColor}
+                          onToggleItem={onToggleItem}
+                          onDeleteItem={onDeleteItem}
+                          onIndentItem={onIndentItem}
+                          onOutdentItem={onOutdentItem}
+                          isInlineInsertOpen={insertAfterId === item.id}
+                          onInsertAfter={() => openInlineInsert(item.id)}
+                        />
+                        {insertAfterId === item.id && (
+                          <InlineInsertForm
+                            inputText={inlineInputText}
+                            onChangeText={setInlineInputText}
+                            onAdd={() => handleInlineAdd(origIndex)}
+                            onCancel={closeInlineInsert}
+                          />
+                        )}
+                      </Fragment>
                     );
                   })}
                 </ul>

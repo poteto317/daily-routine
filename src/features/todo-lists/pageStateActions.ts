@@ -12,6 +12,7 @@ type AddTodoItemArgs = {
   lists: TodoList[];
   listId: string;
   title: string;
+  insertAfterIndex?: number;
   persist: PersistTodoLists;
 };
 
@@ -33,9 +34,15 @@ export const addTodoItemAndPersist = ({
   lists,
   listId,
   title,
+  insertAfterIndex,
   persist,
 }: AddTodoItemArgs): TodoList[] => {
-  const nextLists = addTodoItemToLists({ lists, listId, title });
+  const nextLists = addTodoItemToLists({
+    lists,
+    listId,
+    title,
+    insertAfterIndex,
+  });
   persist(nextLists);
   return nextLists;
 };

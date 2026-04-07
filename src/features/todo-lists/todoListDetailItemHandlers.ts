@@ -23,8 +23,14 @@ export const createAddTodoItemHandler = ({
   lists,
   persist,
 }: TodoListsHandlerArgs) => {
-  return (listId: string, title: string) => {
-    addTodoItemAndPersist({ lists, listId, title, persist });
+  return (listId: string, title: string, insertAfterIndex?: number) => {
+    addTodoItemAndPersist({
+      lists,
+      listId,
+      title,
+      ...(insertAfterIndex !== undefined && { insertAfterIndex }),
+      persist,
+    });
   };
 };
 

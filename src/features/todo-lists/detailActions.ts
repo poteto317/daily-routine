@@ -14,10 +14,16 @@ export const addTodoItemToLists = (params: {
   lists: TodoList[];
   listId: string;
   title: string;
+  insertAfterIndex?: number;
 }): TodoList[] => {
-  const { lists, listId, title } = params;
+  const { lists, listId, title, insertAfterIndex } = params;
 
-  return addItemToList(lists, listId, createTodoListItem(title));
+  return addItemToList(
+    lists,
+    listId,
+    createTodoListItem(title),
+    insertAfterIndex,
+  );
 };
 
 export const toggleTodoItemInLists = (params: {

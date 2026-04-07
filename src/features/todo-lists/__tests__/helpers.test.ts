@@ -57,6 +57,37 @@ describe("todo list helpers", () => {
     expect(result[0].updatedAt).toBe("2026-03-07T12:00:00.000Z");
   });
 
+  it("insertAfterIndex を指定すると指定位置の直後に挿入される", () => {
+    const itemA = createItem({ id: "a", title: "A" });
+    const itemB = createItem({ id: "b", title: "B" });
+    const newItem = createItem({ id: "new", title: "New" });
+    const list = createList({ items: [itemA, itemB] });
+
+    const result = addItemToList([list], "list-1", newItem, 0);
+
+    expect(result[0].items.map((i) => i.id)).toEqual(["a", "new", "b"]);
+  });
+
+  it("insertAfterIndex が範囲外の場合は末尾に追加される", () => {
+    const itemA = createItem({ id: "a" });
+    const newItem = createItem({ id: "new", title: "New" });
+    const list = createList({ items: [itemA] });
+
+    const result = addItemToList([list], "list-1", newItem, 99);
+
+    expect(result[0].items.map((i) => i.id)).toEqual(["a", "new"]);
+  });
+
+  it("insertAfterIndex が負の値の場合は末尾に追加される", () => {
+    const itemA = createItem({ id: "a" });
+    const newItem = createItem({ id: "new", title: "New" });
+    const list = createList({ items: [itemA] });
+
+    const result = addItemToList([list], "list-1", newItem, -1);
+
+    expect(result[0].items.map((i) => i.id)).toEqual(["a", "new"]);
+  });
+
   it("指定アイテムの完了状態を切り替える", () => {
     const result = toggleItemInList(
       [createList({ items: [createItem()] })],
