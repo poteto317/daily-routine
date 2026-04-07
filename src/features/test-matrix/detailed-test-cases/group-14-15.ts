@@ -1,6 +1,6 @@
 import type { DetailTestCaseMap } from "./types";
 
-export const DETAILED_TEST_CASES_GROUP_14_18: DetailTestCaseMap = {
+export const DETAILED_TEST_CASES_GROUP_14_15: DetailTestCaseMap = {
   "14-1": [
     {
       id: "14-1-1",

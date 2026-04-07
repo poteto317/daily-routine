@@ -1,9 +1,9 @@
 import type { DetailTestCaseMap } from "./types";
 
 export const DETAILED_TEST_CASES_GROUP_16_20_21: DetailTestCaseMap = {
-  "16-1": [
+  "todo-lists-1": [
     {
-      id: "16-1-1",
+      id: "todo-lists-1-1",
       scenario: "新しいTodoリストを作成",
       expected: "リストが追加され、選択状態になる",
       pc: "unchecked",
@@ -11,9 +11,9 @@ export const DETAILED_TEST_CASES_GROUP_16_20_21: DetailTestCaseMap = {
       note: "",
     },
   ],
-  "16-2": [
+  "todo-lists-2": [
     {
-      id: "16-2-1",
+      id: "todo-lists-2-1",
       scenario: "Todoリストを削除（確認ダイアログ承認）",
       expected: "リストとその中のアイテムが全て削除される",
       pc: "unchecked",
@@ -21,7 +21,7 @@ export const DETAILED_TEST_CASES_GROUP_16_20_21: DetailTestCaseMap = {
       note: "",
     },
     {
-      id: "16-2-2",
+      id: "todo-lists-2-2",
       scenario: "Todoリストの削除ダイアログで拒否",
       expected: "リストが削除されない",
       pc: "unchecked",
@@ -29,9 +29,9 @@ export const DETAILED_TEST_CASES_GROUP_16_20_21: DetailTestCaseMap = {
       note: "",
     },
   ],
-  "16-3": [
+  "todo-lists-3": [
     {
-      id: "16-3-1",
+      id: "todo-lists-3-1",
       scenario: "Todoリストのタイトルを編集してEnterで確定",
       expected: "タイトルが更新される",
       pc: "unchecked",
@@ -39,7 +39,7 @@ export const DETAILED_TEST_CASES_GROUP_16_20_21: DetailTestCaseMap = {
       note: "",
     },
     {
-      id: "16-3-2",
+      id: "todo-lists-3-2",
       scenario: "タイトル編集中にEscapeキーを押す",
       expected: "編集がキャンセルされ、元のタイトルが維持される",
       pc: "unchecked",
@@ -47,7 +47,7 @@ export const DETAILED_TEST_CASES_GROUP_16_20_21: DetailTestCaseMap = {
       note: "",
     },
     {
-      id: "16-3-3",
+      id: "todo-lists-3-3",
       scenario: "タイトルを空にして確定",
       expected: "保存されない（元のタイトルが維持される）",
       pc: "unchecked",
@@ -55,9 +55,9 @@ export const DETAILED_TEST_CASES_GROUP_16_20_21: DetailTestCaseMap = {
       note: "",
     },
   ],
-  "16-4": [
+  "todo-lists-4": [
     {
-      id: "16-4-1",
+      id: "todo-lists-4-1",
       scenario: "別のTodoリストを選択",
       expected: "選択したリストのアイテムが表示される",
       pc: "unchecked",
@@ -65,9 +65,9 @@ export const DETAILED_TEST_CASES_GROUP_16_20_21: DetailTestCaseMap = {
       note: "",
     },
   ],
-  "16-5": [
+  "todo-lists-5": [
     {
-      id: "16-5-1",
+      id: "todo-lists-5-1",
       scenario: "テキストを入力してTodoアイテムを追加",
       expected: "リストにアイテムが追加される",
       pc: "unchecked",
@@ -75,7 +75,7 @@ export const DETAILED_TEST_CASES_GROUP_16_20_21: DetailTestCaseMap = {
       note: "",
     },
     {
-      id: "16-5-2",
+      id: "todo-lists-5-2",
       scenario: "空テキストで追加を試みる",
       expected: "追加されない",
       pc: "unchecked",
@@ -83,7 +83,7 @@ export const DETAILED_TEST_CASES_GROUP_16_20_21: DetailTestCaseMap = {
       note: "",
     },
     {
-      id: "16-5-3",
+      id: "todo-lists-5-3",
       scenario: "空白のみのテキストで追加を試みる",
       expected: "追加されない",
       pc: "unchecked",
@@ -91,9 +91,9 @@ export const DETAILED_TEST_CASES_GROUP_16_20_21: DetailTestCaseMap = {
       note: "",
     },
   ],
-  "16-6": [
+  "todo-lists-6": [
     {
-      id: "16-6-1",
+      id: "todo-lists-6-1",
       scenario: "Todoアイテムのテキストを編集してEnterで確定",
       expected: "テキストが更新される",
       pc: "unchecked",
@@ -101,7 +101,7 @@ export const DETAILED_TEST_CASES_GROUP_16_20_21: DetailTestCaseMap = {
       note: "",
     },
     {
-      id: "16-6-2",
+      id: "todo-lists-6-2",
       scenario: "アイテム編集中にEscapeキーを押す",
       expected: "編集がキャンセルされ、元のテキストが維持される",
       pc: "unchecked",
@@ -109,9 +109,9 @@ export const DETAILED_TEST_CASES_GROUP_16_20_21: DetailTestCaseMap = {
       note: "",
     },
   ],
-  "16-7": [
+  "todo-lists-7": [
     {
-      id: "16-7-1",
+      id: "todo-lists-7-1",
       scenario: "Todoアイテムを削除（確認ダイアログ承認）",
       expected: "アイテムがリストから削除される",
       pc: "unchecked",
@@ -119,7 +119,7 @@ export const DETAILED_TEST_CASES_GROUP_16_20_21: DetailTestCaseMap = {
       note: "",
     },
     {
-      id: "16-7-2",
+      id: "todo-lists-7-2",
       scenario: "Todoアイテムの削除ダイアログで拒否",
       expected: "アイテムが削除されない",
       pc: "unchecked",
@@ -127,9 +127,9 @@ export const DETAILED_TEST_CASES_GROUP_16_20_21: DetailTestCaseMap = {
       note: "",
     },
   ],
-  "16-8": [
+  "todo-lists-8": [
     {
-      id: "16-8-1",
+      id: "todo-lists-8-1",
       scenario: "未完了アイテムのチェックボックスをクリック",
       expected: "完了状態になり、チェックマークが表示される",
       pc: "unchecked",
@@ -137,7 +137,7 @@ export const DETAILED_TEST_CASES_GROUP_16_20_21: DetailTestCaseMap = {
       note: "",
     },
     {
-      id: "16-8-2",
+      id: "todo-lists-8-2",
       scenario: "完了アイテムのチェックボックスをクリック",
       expected: "未完了状態に戻る",
       pc: "unchecked",
@@ -145,9 +145,9 @@ export const DETAILED_TEST_CASES_GROUP_16_20_21: DetailTestCaseMap = {
       note: "",
     },
   ],
-  "16-9": [
+  "todo-lists-9": [
     {
-      id: "16-9-1",
+      id: "todo-lists-9-1",
       scenario: "完了アイテムの表示/非表示を切り替え",
       expected: "完了アイテムが表示/非表示になる",
       pc: "unchecked",
@@ -155,7 +155,7 @@ export const DETAILED_TEST_CASES_GROUP_16_20_21: DetailTestCaseMap = {
       note: "",
     },
     {
-      id: "16-9-2",
+      id: "todo-lists-9-2",
       scenario: "完了アイテムが0件の状態で詳細ビューを確認",
       expected: "表示切替ボタンが表示されない",
       pc: "unchecked",
@@ -163,9 +163,9 @@ export const DETAILED_TEST_CASES_GROUP_16_20_21: DetailTestCaseMap = {
       note: "",
     },
   ],
-  "16-10": [
+  "todo-lists-10": [
     {
-      id: "16-10-1",
+      id: "todo-lists-10-1",
       scenario: "アイテムをインデント（右にずらす）",
       expected: "インデントレベルが1つ増える（最大3）",
       pc: "unchecked",
@@ -173,7 +173,7 @@ export const DETAILED_TEST_CASES_GROUP_16_20_21: DetailTestCaseMap = {
       note: "",
     },
     {
-      id: "16-10-2",
+      id: "todo-lists-10-2",
       scenario: "最大インデントのアイテムをさらにインデント",
       expected: "それ以上インデントされない",
       pc: "unchecked",
@@ -181,7 +181,7 @@ export const DETAILED_TEST_CASES_GROUP_16_20_21: DetailTestCaseMap = {
       note: "",
     },
     {
-      id: "16-10-3",
+      id: "todo-lists-10-3",
       scenario: "アイテムをアウトデント（左にずらす）",
       expected: "インデントレベルが1つ減る（最小0）",
       pc: "unchecked",
@@ -189,17 +189,17 @@ export const DETAILED_TEST_CASES_GROUP_16_20_21: DetailTestCaseMap = {
       note: "",
     },
     {
-      id: "16-10-4",
-      scenario: "インデン0のアイテムをさらにアウトデント",
+      id: "todo-lists-10-4",
+      scenario: "インデント0のアイテムをさらにアウトデント",
       expected: "アウトデントボタンが無効化されており操作できない",
       pc: "unchecked",
       sp: "unchecked",
       note: "",
     },
   ],
-  "16-11": [
+  "todo-lists-11": [
     {
-      id: "16-11-1",
+      id: "todo-lists-11-1",
       scenario: "複数のTodoリストを作成して一覧表示",
       expected: "全リストが一覧に表示される",
       pc: "unchecked",
@@ -207,9 +207,9 @@ export const DETAILED_TEST_CASES_GROUP_16_20_21: DetailTestCaseMap = {
       note: "",
     },
   ],
-  "16-12": [
+  "todo-lists-12": [
     {
-      id: "16-12-1",
+      id: "todo-lists-12-1",
       scenario: "アイテムの並び替えハンドルをドラッグして別の位置に移動",
       expected: "アイテムの順序が変わる",
       pc: "unchecked",
@@ -217,7 +217,7 @@ export const DETAILED_TEST_CASES_GROUP_16_20_21: DetailTestCaseMap = {
       note: "",
     },
     {
-      id: "16-12-2",
+      id: "todo-lists-12-2",
       scenario: "子アイテムを持つ親アイテムをドラッグして移動",
       expected: "子アイテムも一緒に移動する",
       pc: "unchecked",
@@ -225,7 +225,7 @@ export const DETAILED_TEST_CASES_GROUP_16_20_21: DetailTestCaseMap = {
       note: "",
     },
     {
-      id: "16-12-3",
+      id: "todo-lists-12-3",
       scenario: "ドラッグ開始時にインライン挿入フォームが表示されている",
       expected: "ドラッグ開始でインライン挿入フォームが自動的に閉じる",
       pc: "unchecked",
@@ -233,7 +233,7 @@ export const DETAILED_TEST_CASES_GROUP_16_20_21: DetailTestCaseMap = {
       note: "",
     },
     {
-      id: "16-12-4",
+      id: "todo-lists-12-4",
       scenario: "完了アイテム非表示モード中にドラッグを試みる",
       expected: "ドラッグハンドルが非表示になっており並び替えできない",
       pc: "unchecked",
@@ -241,9 +241,9 @@ export const DETAILED_TEST_CASES_GROUP_16_20_21: DetailTestCaseMap = {
       note: "",
     },
   ],
-  "16-13": [
+  "todo-lists-13": [
     {
-      id: "16-13-1",
+      id: "todo-lists-13-1",
       scenario: "アイテムの「下に追加」ボタンをクリック",
       expected: "そのアイテムの直下にインライン挿入フォームが表示される",
       pc: "unchecked",
@@ -251,7 +251,7 @@ export const DETAILED_TEST_CASES_GROUP_16_20_21: DetailTestCaseMap = {
       note: "",
     },
     {
-      id: "16-13-2",
+      id: "todo-lists-13-2",
       scenario: "インライン挿入フォームにテキストを入力して追加",
       expected: "指定アイテムの直後に新しいアイテムが挿入される",
       pc: "unchecked",
@@ -259,7 +259,7 @@ export const DETAILED_TEST_CASES_GROUP_16_20_21: DetailTestCaseMap = {
       note: "",
     },
     {
-      id: "16-13-3",
+      id: "todo-lists-13-3",
       scenario: "同じアイテムの「下に追加」ボタンを再クリック",
       expected: "インライン挿入フォームが閉じる（トグル動作）",
       pc: "unchecked",
@@ -267,7 +267,7 @@ export const DETAILED_TEST_CASES_GROUP_16_20_21: DetailTestCaseMap = {
       note: "",
     },
     {
-      id: "16-13-4",
+      id: "todo-lists-13-4",
       scenario: "別のアイテムの「下に追加」ボタンをクリック",
       expected: "フォームが別のアイテムの直下に切り替わる",
       pc: "unchecked",
@@ -275,7 +275,7 @@ export const DETAILED_TEST_CASES_GROUP_16_20_21: DetailTestCaseMap = {
       note: "",
     },
     {
-      id: "16-13-5",
+      id: "todo-lists-13-5",
       scenario: "インライン挿入フォームのキャンセルボタンをクリック",
       expected: "フォームが閉じる",
       pc: "unchecked",
@@ -283,9 +283,9 @@ export const DETAILED_TEST_CASES_GROUP_16_20_21: DetailTestCaseMap = {
       note: "",
     },
   ],
-  "16-14": [
+  "todo-lists-14": [
     {
-      id: "16-14-1",
+      id: "todo-lists-14-1",
       scenario: "アイテムの「背景色を変更」ボタンをクリック",
       expected: "カラーピッカーが表示される",
       pc: "unchecked",
@@ -293,7 +293,7 @@ export const DETAILED_TEST_CASES_GROUP_16_20_21: DetailTestCaseMap = {
       note: "",
     },
     {
-      id: "16-14-2",
+      id: "todo-lists-14-2",
       scenario: "カラーピッカーから色を選択",
       expected: "アイテムの背景色が選択した色に変わる",
       pc: "unchecked",
@@ -301,7 +301,7 @@ export const DETAILED_TEST_CASES_GROUP_16_20_21: DetailTestCaseMap = {
       note: "",
     },
     {
-      id: "16-14-3",
+      id: "todo-lists-14-3",
       scenario: "カラーピッカーの外側をクリック",
       expected: "カラーピッカーが閉じる",
       pc: "unchecked",
@@ -309,7 +309,7 @@ export const DETAILED_TEST_CASES_GROUP_16_20_21: DetailTestCaseMap = {
       note: "",
     },
     {
-      id: "16-14-4",
+      id: "todo-lists-14-4",
       scenario: "別のアイテムの背景色ボタンをクリック",
       expected: "前のカラーピッカーが閉じ、新しいカラーピッカーが開く",
       pc: "unchecked",
@@ -317,9 +317,9 @@ export const DETAILED_TEST_CASES_GROUP_16_20_21: DetailTestCaseMap = {
       note: "",
     },
   ],
-  "16-15": [
+  "todo-lists-15": [
     {
-      id: "16-15-1",
+      id: "todo-lists-15-1",
       scenario: "「一括背景色変更」ボタンをクリック",
       expected: "一括カラーピッカーが表示される",
       pc: "unchecked",
@@ -327,7 +327,7 @@ export const DETAILED_TEST_CASES_GROUP_16_20_21: DetailTestCaseMap = {
       note: "",
     },
     {
-      id: "16-15-2",
+      id: "todo-lists-15-2",
       scenario: "一括カラーピッカーから色を選択",
       expected: "リスト内の全アイテムの背景色が変わる",
       pc: "unchecked",
@@ -335,7 +335,7 @@ export const DETAILED_TEST_CASES_GROUP_16_20_21: DetailTestCaseMap = {
       note: "",
     },
     {
-      id: "16-15-3",
+      id: "todo-lists-15-3",
       scenario: "一括カラーピッカーの外側をクリック",
       expected: "一括カラーピッカーが閉じる",
       pc: "unchecked",
@@ -343,9 +343,9 @@ export const DETAILED_TEST_CASES_GROUP_16_20_21: DetailTestCaseMap = {
       note: "",
     },
   ],
-  "16-16": [
+  "todo-lists-16": [
     {
-      id: "16-16-1",
+      id: "todo-lists-16-1",
       scenario: "アイテムのカットを実行",
       expected: "アイテムがリストから取り除かれ、クリップボードに保持される",
       pc: "unchecked",
@@ -353,7 +353,7 @@ export const DETAILED_TEST_CASES_GROUP_16_20_21: DetailTestCaseMap = {
       note: "",
     },
     {
-      id: "16-16-2",
+      id: "todo-lists-16-2",
       scenario: "別のリストへペーストを実行",
       expected: "カットしたアイテムが別のリストの末尾に追加される",
       pc: "unchecked",
@@ -361,7 +361,7 @@ export const DETAILED_TEST_CASES_GROUP_16_20_21: DetailTestCaseMap = {
       note: "",
     },
     {
-      id: "16-16-3",
+      id: "todo-lists-16-3",
       scenario: "同じリストへペーストを実行",
       expected: "カットしたアイテムが同じリストの末尾に追加される",
       pc: "unchecked",
@@ -369,7 +369,7 @@ export const DETAILED_TEST_CASES_GROUP_16_20_21: DetailTestCaseMap = {
       note: "",
     },
     {
-      id: "16-16-4",
+      id: "todo-lists-16-4",
       scenario: "複数アイテムを選択してカット",
       expected: "選択した全アイテムが一括でカットされる",
       pc: "unchecked",
@@ -377,7 +377,7 @@ export const DETAILED_TEST_CASES_GROUP_16_20_21: DetailTestCaseMap = {
       note: "",
     },
     {
-      id: "16-16-5",
+      id: "todo-lists-16-5",
       scenario: "クリップボードバーのキャンセルボタンをクリック",
       expected: "クリップボードがクリアされ、ペーストバーが非表示になる",
       pc: "unchecked",
@@ -385,9 +385,9 @@ export const DETAILED_TEST_CASES_GROUP_16_20_21: DetailTestCaseMap = {
       note: "",
     },
   ],
-  "16-17": [
+  "todo-lists-17": [
     {
-      id: "16-17-1",
+      id: "todo-lists-17-1",
       scenario: "子アイテムを持つ親アイテムの折りたたみボタンをクリック",
       expected: "子アイテムが非表示になる",
       pc: "unchecked",
@@ -395,7 +395,7 @@ export const DETAILED_TEST_CASES_GROUP_16_20_21: DetailTestCaseMap = {
       note: "",
     },
     {
-      id: "16-17-2",
+      id: "todo-lists-17-2",
       scenario: "折りたたまれた親アイテムの展開ボタンをクリック",
       expected: "子アイテムが表示される",
       pc: "unchecked",
@@ -403,9 +403,9 @@ export const DETAILED_TEST_CASES_GROUP_16_20_21: DetailTestCaseMap = {
       note: "",
     },
   ],
-  "16-18": [
+  "todo-lists-18": [
     {
-      id: "16-18-1",
+      id: "todo-lists-18-1",
       scenario: "アイテムが存在する状態で詳細ビューを確認",
       expected: "完了数/全体数とパーセンテージが進捗バーと共に表示される",
       pc: "unchecked",
@@ -413,7 +413,7 @@ export const DETAILED_TEST_CASES_GROUP_16_20_21: DetailTestCaseMap = {
       note: "",
     },
     {
-      id: "16-18-2",
+      id: "todo-lists-18-2",
       scenario: "アイテムが0件の状態で詳細ビューを確認",
       expected: "進捗バーが表示されない",
       pc: "unchecked",
@@ -421,7 +421,7 @@ export const DETAILED_TEST_CASES_GROUP_16_20_21: DetailTestCaseMap = {
       note: "",
     },
     {
-      id: "16-18-3",
+      id: "todo-lists-18-3",
       scenario: "アイテムを完了にすると進捗バーがリアルタイムで更新",
       expected: "パーセンテージと完了数が増える",
       pc: "unchecked",
@@ -429,9 +429,9 @@ export const DETAILED_TEST_CASES_GROUP_16_20_21: DetailTestCaseMap = {
       note: "",
     },
   ],
-  "16-19": [
+  "todo-lists-19": [
     {
-      id: "16-19-1",
+      id: "todo-lists-19-1",
       scenario: "アイテムの左端チェックボックスをクリック",
       expected: "アイテムが選択状態になり、選択アクションバーが表示される",
       pc: "unchecked",
@@ -439,7 +439,7 @@ export const DETAILED_TEST_CASES_GROUP_16_20_21: DetailTestCaseMap = {
       note: "",
     },
     {
-      id: "16-19-2",
+      id: "todo-lists-19-2",
       scenario: "複数アイテムのチェックボックスをクリック",
       expected: "選択数が選択バーに表示される",
       pc: "unchecked",
@@ -447,7 +447,7 @@ export const DETAILED_TEST_CASES_GROUP_16_20_21: DetailTestCaseMap = {
       note: "",
     },
     {
-      id: "16-19-3",
+      id: "todo-lists-19-3",
       scenario: "選択バーの「選択解除」ボタンをクリック",
       expected: "全選択が解除され、選択バーが非表示になる",
       pc: "unchecked",
@@ -455,9 +455,9 @@ export const DETAILED_TEST_CASES_GROUP_16_20_21: DetailTestCaseMap = {
       note: "",
     },
   ],
-  "16-20": [
+  "todo-lists-20": [
     {
-      id: "16-20-1",
+      id: "todo-lists-20-1",
       scenario: "SP: アイテムを右スワイプ（インデントが上がれる状態）",
       expected: "インデントが1つ上がる",
       pc: "unchecked",
@@ -465,7 +465,7 @@ export const DETAILED_TEST_CASES_GROUP_16_20_21: DetailTestCaseMap = {
       note: "",
     },
     {
-      id: "16-20-2",
+      id: "todo-lists-20-2",
       scenario: "SP: 最大インデント（3）のアイテムを右スワイプ",
       expected: "スワイプが無効のためインデントは変化しない",
       pc: "unchecked",
