@@ -105,6 +105,7 @@ describe("todoListDetailItemHandlers", () => {
       lists: [baseList],
       listId: "list-1",
       title: "New Task",
+      insertAfterIndex: undefined,
       persist,
     });
     expect(toggleTodoItemAndPersist).toHaveBeenCalledWith({
@@ -226,6 +227,24 @@ describe("todoListDetailItemHandlers", () => {
       lists: [baseList],
       listId: "list-1",
       items,
+      persist,
+    });
+  });
+
+  it("add handler が insertAfterIndex の値を addTodoItemAndPersist に渡す", () => {
+    const persist = jest.fn();
+
+    createAddTodoItemHandler({ lists: [baseList], persist })(
+      "list-1",
+      "New Task",
+      2,
+    );
+
+    expect(addTodoItemAndPersist).toHaveBeenCalledWith({
+      lists: [baseList],
+      listId: "list-1",
+      title: "New Task",
+      insertAfterIndex: 2,
       persist,
     });
   });

@@ -56,6 +56,22 @@ describe("todo detailActions", () => {
     expect(toggled[0].items[0].isCompleted).toBe(true);
   });
 
+  it("insertAfterIndex を指定すると指定位置に挿入される", () => {
+    const itemA = createItem({ id: "a", title: "A" });
+    const itemB = createItem({ id: "b", title: "B" });
+    const lists = [createList({ items: [itemA, itemB] })];
+
+    const result = addTodoItemToLists({
+      lists,
+      listId: "list-1",
+      title: "Middle",
+      insertAfterIndex: 0,
+    });
+
+    expect(result[0].items[1]).toMatchObject({ title: "Middle" });
+    expect(result[0].items.length).toBe(3);
+  });
+
   it("インデント操作を委譲する", () => {
     const lists = [createList({ items: [createItem({ indent: 1 })] })];
 
