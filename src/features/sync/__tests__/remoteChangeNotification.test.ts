@@ -1,33 +1,30 @@
 import { notifyRemoteChange } from "../sync/remoteChangeNotification";
 
 describe("notifyRemoteChange", () => {
-  const originalNotification = global.Notification;
+  const originalDescriptor = Object.getOwnPropertyDescriptor(
+    window,
+    "Notification",
+  );
 
   afterEach(() => {
-    // Notification を元に戻す
-    Object.defineProperty(global, "Notification", {
-      value: originalNotification,
-      writable: true,
-      configurable: true,
-    });
+    // window.Notification を元に戻す
+    if (originalDescriptor) {
+      Object.defineProperty(window, "Notification", originalDescriptor);
+    } else {
+      delete (window as unknown as Record<string, unknown>).Notification;
+    }
   });
 
   it("Notification が window に存在しない場合は何もしない", () => {
     // プロパティ自体を削除することで "Notification" in window === false にする
-    const descriptor = Object.getOwnPropertyDescriptor(global, "Notification");
-    delete (global as Record<string, unknown>).Notification;
+    delete (window as unknown as Record<string, unknown>).Notification;
 
     expect(() => notifyRemoteChange()).not.toThrow();
-
-    // テスト後に戻す
-    if (descriptor) {
-      Object.defineProperty(global, "Notification", descriptor);
-    }
   });
 
   it("permission が denied の場合は Notification を生成しない", () => {
     const mockNotificationConstructor = jest.fn();
-    Object.defineProperty(global, "Notification", {
+    Object.defineProperty(window, "Notification", {
       value: Object.assign(mockNotificationConstructor, {
         permission: "denied",
       }),
@@ -42,7 +39,7 @@ describe("notifyRemoteChange", () => {
 
   it("permission が default の場合は Notification を生成しない", () => {
     const mockNotificationConstructor = jest.fn();
-    Object.defineProperty(global, "Notification", {
+    Object.defineProperty(window, "Notification", {
       value: Object.assign(mockNotificationConstructor, {
         permission: "default",
       }),
@@ -57,7 +54,7 @@ describe("notifyRemoteChange", () => {
 
   it("permission が granted の場合は正しいタイトルとボディで Notification を生成する", () => {
     const mockNotificationConstructor = jest.fn();
-    Object.defineProperty(global, "Notification", {
+    Object.defineProperty(window, "Notification", {
       value: Object.assign(mockNotificationConstructor, {
         permission: "granted",
       }),
@@ -76,5 +73,20 @@ describe("notifyRemoteChange", () => {
         icon: "/icon-192x192.png",
       }),
     );
+  });
+
+  it("Notification コンストラクタが例外を投げても notifyRemoteChange は throw しない", () => {
+    const mockNotificationConstructor = jest.fn(() => {
+      throw new Error("Notification failed");
+    });
+    Object.defineProperty(window, "Notification", {
+      value: Object.assign(mockNotificationConstructor, {
+        permission: "granted",
+      }),
+      writable: true,
+      configurable: true,
+    });
+
+    expect(() => notifyRemoteChange()).not.toThrow();
   });
 });
