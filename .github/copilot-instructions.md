@@ -64,6 +64,16 @@ const routines = JSON.parse(localStorage.getItem("daily-routines") || "[]");
 
 主要な型の詳細は `src/types/routine/` 配下の各ファイルを参照。
 
+型としてのみ使用する import は必ず `import type` を使用する。これにより実行時バンドルへの不要な依存混入を防ぎ、意図が明確になる。
+
+```typescript
+// ✅ 正しい — 型のみ使用する場合
+import type { Routine } from "@/types/routine";
+
+// ❌ 間違い — 型のみ使うのに値 import になっている
+import { Routine } from "@/types/routine";
+```
+
 ### 3. 祝日・曜日判定
 
 祝日や曜日に基づくルーティン表示判定は、共通関数を使用する:

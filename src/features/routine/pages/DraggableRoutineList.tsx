@@ -18,7 +18,7 @@ import {
 import { SortableRoutineItem } from "@/features/routine";
 import { SortableRoutineNormalDragItem } from "@/features/routine/components/SortableRoutineNormalDragItem";
 import { RoutineDragOverlay } from "@/features/routine/components/RoutineDragOverlay";
-import { Routine } from "@/types/routine";
+import type { Routine } from "@/types/routine";
 import { useRoutineDragState } from "./useRoutineDragState";
 
 interface DraggableRoutineListProps {
