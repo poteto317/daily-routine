@@ -1,7 +1,8 @@
 import { doc, onSnapshot, type Unsubscribe } from "firebase/firestore";
 import { getAuthInstance, getFirestoreInstance } from "@/lib/firebase";
 import { getSyncErrorMessage } from "./errorMessage";
-import { getDeviceId } from "./localData";
+import { getDeviceId } from "./deviceId";
+import { notifyRemoteChange } from "./remoteChangeNotification";
 import { setSyncStatusFromComparison } from "./remoteStatus";
 import { setSyncStatus } from "./statusStore";
 import { extractTimestamp } from "./timestamp";
@@ -32,24 +33,12 @@ export const watchRemoteChanges = (
         const remoteLastModified = extractTimestamp(data.lastModified);
         setSyncStatusFromComparison(remoteLastModified);
 
-        const hasChanges =
-          data.deviceId !== deviceId &&
-          remoteLastModified > 0 &&
-          Boolean(snapshot.exists());
+        const hasChanges = data.deviceId !== deviceId && remoteLastModified > 0;
 
-        callback(hasChanges && data.deviceId !== deviceId);
+        callback(hasChanges);
 
-        if (hasChanges && data.deviceId !== deviceId) {
-          if (
-            "Notification" in window &&
-            Notification.permission === "granted"
-          ) {
-            new Notification(texts.syncNotification.title, {
-              body: texts.syncNotification.body,
-              icon: "/icon-192x192.png",
-              tag: "sync-notification",
-            });
-          }
+        if (hasChanges) {
+          notifyRemoteChange();
         }
       },
       (error) =>

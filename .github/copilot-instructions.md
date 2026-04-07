@@ -64,6 +64,16 @@ const routines = JSON.parse(localStorage.getItem("daily-routines") || "[]");
 
 主要な型の詳細は `src/types/routine/` 配下の各ファイルを参照。
 
+型としてのみ使用する import は必ず `import type` を使用する。これにより実行時バンドルへの不要な依存混入を防ぎ、意図が明確になる。
+
+```typescript
+// ✅ 正しい — 型のみ使用する場合
+import type { Routine } from "@/types/routine";
+
+// ❌ 間違い — 型のみ使うのに値 import になっている
+import { Routine } from "@/types/routine";
+```
+
 ### 3. 祝日・曜日判定
 
 祝日や曜日に基づくルーティン表示判定は、共通関数を使用する:
@@ -133,6 +143,31 @@ import { AuthGuard } from "@/components/AuthGuard";
 ```
 
 ### 7. コンポーネント設計
+
+- **ドラッグハンドルとスワイプの競合防止**: `SwipeableRoutineItem` など `onTouchStart` / `onMouseDown` でジェスチャーを検知する祖先コンポーネントの内部にドラッグハンドルを配置する場合、ハンドルの `button` に `onTouchStartCapture` と `onMouseDownCapture` で `e.stopPropagation()` を設定する。これにより、ハンドルへのタッチ・クリックがスワイプ検知に到達しなくなる。`onPointerDownCapture` は `{...listeners}` の `onPointerDown`（dnd-kit の PointerSensor）を無効化するため追加してはならない。
+
+```tsx
+// ❌ 悪い例 — ハンドルを触るとスワイプも同時に開始してしまう
+<SwipeableRoutineItem ...>
+  <div {...listeners}>
+    <button aria-label="並び替え">⨿</button>
+  </div>
+</SwipeableRoutineItem>
+
+// ✅ 良い例 — capture で伝播を止め、スワイプと干渉しない
+<SwipeableRoutineItem ...>
+  <button
+    {...attributes}
+    {...listeners}
+    style={{ touchAction: "none" }}
+    aria-label="並び替え"
+    onTouchStartCapture={(e) => e.stopPropagation()}
+    onMouseDownCapture={(e) => e.stopPropagation()}
+  >
+    ⨿
+  </button>
+</SwipeableRoutineItem>
+```
 
 - **'use client'**: クライアントコンポーネントには必ず宣言
 - **ダークモード対応**: Tailwindの `dark:` プレフィックスを使用

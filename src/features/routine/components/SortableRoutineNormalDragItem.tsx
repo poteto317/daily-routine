@@ -15,7 +15,7 @@ type Props = {
 
 /**
  * 通常表示モードのソート可能ルーティンアイテム
- * ロングプレスでドラッグ並び替えを開始し、タップで完了トグルを行う
+ * 左端のドラッグハンドル（⨿）をタップして並び替えを開始し、カード本体のタップで完了トグルを行う
  */
 export const SortableRoutineNormalDragItem = ({
   routine,
@@ -44,11 +44,9 @@ export const SortableRoutineNormalDragItem = ({
         transform: CSS.Transform.toString(transform),
         transition,
         opacity: isDragging ? 0.3 : 1,
-        // ドラッグ中にスクロールと競合しないようにする
+        // ハンドル以外の領域でスクロールを許可する
         touchAction: "pan-y",
       }}
-      {...attributes}
-      {...listeners}
       onClick={handleClick}
       className={getRoutineItemCardClassName({
         routine,
@@ -56,6 +54,17 @@ export const SortableRoutineNormalDragItem = ({
         isDraggable: false,
       })}
     >
+      <button
+        type="button"
+        {...attributes}
+        {...listeners}
+        style={{ touchAction: "none" }}
+        className="shrink-0 cursor-grab active:cursor-grabbing text-gray-300 dark:text-gray-500 hover:text-gray-400 dark:hover:text-gray-400 select-none"
+        aria-label="並び替え"
+        onClick={(e) => e.stopPropagation()}
+      >
+        ⨿
+      </button>
       <RoutineCardContent routine={routine} showDuration />
     </div>
   );

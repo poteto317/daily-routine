@@ -5,7 +5,8 @@ import {
   getOrCreateUser,
 } from "@/lib/firebase";
 import { setLocalDataUpdatedAt } from "@/lib/storage/core";
-import { collectLocalSyncData, getDeviceId } from "./localData";
+import { collectLocalSyncData } from "./localData";
+import { getDeviceId } from "./deviceId";
 import { getSyncErrorMessage } from "./errorMessage";
 import { saveSyncSnapshot } from "./snapshots";
 import { setSyncStatus } from "./statusStore";
