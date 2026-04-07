@@ -126,15 +126,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: ["20.x", "22.x"]
+        node-version: ["22.x", "24.x"]
 ```
 
-| 設定                     | 意味                                                                          |
-| ------------------------ | ----------------------------------------------------------------------------- |
-| `ci:`                    | ジョブID（内部的な識別子）                                                    |
-| `name:`                  | GitHub UI に表示されるジョブ名。Node バージョンも表示して判別しやすくする     |
-| `runs-on: ubuntu-latest` | Ubuntu Linux の最新版で実行（GitHub が無料提供）                              |
-| `strategy.matrix`        | Node 20.x / 22.x の2系統で並列実行し、README に書いた対応範囲を CI で担保する |
+| 設定                     | 意味                                                                                                                                  |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------- |
+| `ci:`                    | ジョブID（内部的な識別子）                                                                                                            |
+| `name:`                  | GitHub UI に表示されるジョブ名。Node バージョンも表示して判別しやすくする                                                             |
+| `runs-on: ubuntu-latest` | Ubuntu Linux の最新版で実行（GitHub が無料提供）                                                                                      |
+| `strategy.matrix`        | Node 22.x (Maintenance LTS) / 24.x (Active LTS) の2系統で並列実行し、Cloud Functions でも使用している 24.x との互換性を含めて担保する |
 
 ---
 
@@ -164,7 +164,7 @@ jobs:
 | `node-version: ${{ matrix.node-version }}` | matrix で定義した Node.js バージョンを使う                |
 | `cache: npm`                               | npm キャッシュを有効化。2回目以降の `npm ci` が高速になる |
 
-**Node.js 20.x / 22.x を使う理由**: README ではフロントエンドを「Node.js 20 以上を推奨」としているため、CI でも 20 系と 22 系の両方で実行し、サポート範囲の互換性を確認する。
+**Node.js 22.x / 24.x を使う理由**: 22.x は Maintenance LTS（EOL 2027-04）、24.x は Active LTS（EOL 2028-04）かつ Cloud Functions でも使用しているバージョン。両系統で実行することでバージョン間の互換性を確認する。
 
 ---
 
@@ -251,7 +251,7 @@ Next.js のプロダクションビルドを実行。ビルドが成功するこ
          ↓
 GitHub が .github/workflows/ci.yml を検出
          ↓
-Ubuntu サーバー（Runner）が Node 20.x / 22.x で並列起動
+Ubuntu サーバー（Runner）が Node 22.x / 24.x で並列起動
          ↓
 [Checkout] → [Node.js Setup] → [npm ci] → [tailwind:scan] → [lint] → [typecheck] → [test] → [build]
          ↓
@@ -291,7 +291,7 @@ CI が通らない PR のマージを防ぐため、GitHub のリポジトリ設
 2. 「Add branch ruleset」または「Add classic branch protection rule」
 3. Branch name pattern: `main`
 4. 「Require status checks to pass before merging」を有効化
-5. 必須チェックに Node 20.x / 22.x の `CI` ジョブを追加
+5. 必須チェックに Node 22.x / 24.x の `CI` ジョブを追加
 
 これにより、CI が Pass しないと main へのマージができなくなる。
 
@@ -325,7 +325,7 @@ A: 実行される内容はほぼ同じ。違いは以下:
 | ---------------- | ---------------- | ----------------------------- |
 | 実行場所         | ローカル PC      | GitHub のサーバー             |
 | 実行タイミング   | 手動             | Push / PR 時に自動            |
-| Node.js          | ローカル環境依存 | Node 20.x / 22.x              |
+| Node.js          | ローカル環境依存 | Node 22.x / 24.x              |
 | OS               | macOS            | Ubuntu Linux                  |
 | テストモード     | 通常             | シリアル実行（`--runInBand`） |
 | ビルドの環境変数 | `.env.local`     | ダミー値                      |

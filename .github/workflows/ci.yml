@@ -39,8 +39,8 @@ jobs:
       fail-fast: false
       matrix:
         # 20.x: EOL 2026-04-30 のため削除
-        # 22.x: Active LTS (EOL 2027-04-30)
-        # 24.x: Current → LTS予定 (EOL 2028-04-30)、Cloud Functions でも使用
+        # 22.x: Maintenance LTS (EOL 2027-04-30)
+        # 24.x: Active LTS (EOL 2028-04-30)、Cloud Functions でも使用
         node-version: ["22.x", "24.x"]
 
     steps:
