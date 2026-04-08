@@ -44,6 +44,8 @@ const LEGACY_DETAIL_ITEM_ID_MAP: Record<string, string> = {
   ...LEGACY_CATEGORY_ITEM_ID_MAPS["pwa"],
   ...LEGACY_CATEGORY_ITEM_ID_MAPS["lib"],
   // todo-lists 旧ID のうち、common-ui と重複しない 16-12〜16-20 (9件) のみ
+  // （16-1〜16-11 は現行 common-ui と重複するため除外）
+  // 生成範囲: i=0→16-12, i=1→16-13, ..., i=8→16-20
   ...Object.fromEntries(
     Array.from({ length: 9 }, (_, i) => [`16-${i + 12}`, `todo-lists-${i + 12}`]),
   ),

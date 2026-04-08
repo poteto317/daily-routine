@@ -275,11 +275,15 @@ describe("legacy ID migration", () => {
       const data: StoredDetailData = {
         "17-5": [],  // broken version 検出用
         "16-12": [{ id: "16-12-1", pc: "ok", sp: "ok", note: "" }],
+        "16-20": [{ id: "16-20-1", pc: "ng", sp: "unchecked", note: "" }],
       };
       const result = migrateLegacyDetailData(data);
       expect(result["todo-lists-12"]).toBeDefined();
       expect(result["todo-lists-12"][0].id).toBe("todo-lists-12-1");
+      expect(result["todo-lists-20"]).toBeDefined();
+      expect(result["todo-lists-20"][0].id).toBe("todo-lists-20-1");
       expect(result["16-12"]).toBeUndefined();
+      expect(result["16-20"]).toBeUndefined();
     });
 
     it("broken version でも 16-1〜16-11 は common-ui として保持する", () => {
