@@ -36,11 +36,17 @@ const LEGACY_CATEGORY_ITEM_ID_MAPS: Record<string, Record<string, string>> = {
 };
 
 // 詳細データ用フラットマップ（全カテゴリ分を結合）
+// todo-lists の旧ID は 16-12〜16-20 のみを対象とする。
+// 16-1〜16-11 は現行 common-ui 詳細キーと重複するため除外し、
+// common-ui として扱う（カテゴリデータと異なり詳細データにはコンテキストがないため）。
 const LEGACY_DETAIL_ITEM_ID_MAP: Record<string, string> = {
   ...LEGACY_CATEGORY_ITEM_ID_MAPS["common-ui"],
   ...LEGACY_CATEGORY_ITEM_ID_MAPS["pwa"],
   ...LEGACY_CATEGORY_ITEM_ID_MAPS["lib"],
-  ...LEGACY_CATEGORY_ITEM_ID_MAPS["todo-lists"],
+  // todo-lists 旧ID のうち、common-ui と重複しない 16-12〜16-20 (9件) のみ
+  ...Object.fromEntries(
+    Array.from({ length: 9 }, (_, i) => [`16-${i + 12}`, `todo-lists-${i + 12}`]),
+  ),
 };
 
 /**
@@ -78,11 +84,11 @@ export const migrateLegacyCategories = (
  *   16-(?:1[2-9]|20)  todo-lists 旧ID (16-12〜16-19, 16-20)
  *   17-[5-9]          common-ui 旧ID (17-5〜17-9)
  *   17-1[01]          common-ui 旧ID (17-10〜17-11)
- *   19-\d+            lib 旧ID (19-1〜19-5)
+ *   19-[1-5]          lib 旧ID (19-1〜19-5) — lib は 5件のみ
  */
 export const hasBrokenVersionDetailData = (data: StoredDetailData): boolean => {
   return Object.keys(data).some((key) =>
-    /^(?:16-(?:1[2-9]|20)|17-[5-9]|17-1[01]|19-\d+)$/.test(key),
+    /^(?:16-(?:1[2-9]|20)|17-[5-9]|17-1[01]|19-[1-5])$/.test(key),
   );
 };
 
@@ -98,8 +104,9 @@ export const hasBrokenVersionDetailData = (data: StoredDetailData): boolean => {
  * キー単位の変換条件:
  * - 17-* → 16-* (common-ui): 17-5+ が存在する場合のみ実施
  *   （17-1〜17-4 は pre-PR/現行 pwa IDのため、17-5+ がなければ pwa として扱う）
- * - 19-* → 18-* (lib): 常に変換
- * - 16-* → todo-lists-* (todo-lists): 常に変換
+ * - 19-[1-5] → 18-[1-5] (lib): 常に変換
+ * - 16-12〜16-20 → todo-lists-12〜todo-lists-20 (todo-lists): 常に変換
+ *   （16-1〜16-11 は現行 common-ui 詳細キーと重複するため変換しない）
  * - 18-* → 17-* (pwa): 常に変換
  */
 export const migrateLegacyDetailData = (data: StoredDetailData): StoredDetailData => {

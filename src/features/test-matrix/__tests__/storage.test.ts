@@ -271,15 +271,26 @@ describe("legacy ID migration", () => {
       expect(result["18-1"][0].pc).toBe("ng");
     });
 
-    it("broken version の todo-lists (16-*) を todo-lists-* へ変換する", () => {
+    it("broken version の todo-lists (16-12〜16-20) を todo-lists-* へ変換する", () => {
+      const data: StoredDetailData = {
+        "17-5": [],  // broken version 検出用
+        "16-12": [{ id: "16-12-1", pc: "ok", sp: "ok", note: "" }],
+      };
+      const result = migrateLegacyDetailData(data);
+      expect(result["todo-lists-12"]).toBeDefined();
+      expect(result["todo-lists-12"][0].id).toBe("todo-lists-12-1");
+      expect(result["16-12"]).toBeUndefined();
+    });
+
+    it("broken version でも 16-1〜16-11 は common-ui として保持する", () => {
+      // 16-1〜16-11 は現行 common-ui 詳細キーと重複するため変換しない
       const data: StoredDetailData = {
         "17-5": [],  // broken version 検出用
         "16-1": [{ id: "16-1-1", pc: "ok", sp: "ok", note: "" }],
       };
       const result = migrateLegacyDetailData(data);
-      expect(result["todo-lists-1"]).toBeDefined();
-      expect(result["todo-lists-1"][0].id).toBe("todo-lists-1-1");
-      expect(result["16-1"]).toBeUndefined();
+      expect(result["16-1"]).toBeDefined();
+      expect(result["todo-lists-1"]).toBeUndefined();
     });
 
     it("pre-PR データ (broken version 非検出) は変換しない", () => {
