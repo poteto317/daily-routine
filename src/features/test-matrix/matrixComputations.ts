@@ -7,12 +7,8 @@ export type DetailData = Record<string, DetailTestCase[]>;
 /**
  * 詳細ケースの保存用形式。
  * scenario / expected は DETAILED_TEST_CASES から補完できるため、
- * 保存データから除外する候補として定義している。
- *
- * 現在は完全な DetailTestCase（scenario / expected を含む）を保存しているが、
- * 将来的に保存サイズを削減するための形式として定義。
- * 実際に localStorage へ保存する際は保存処理側で明示的に
- * StoredDetailData へ変換する必要がある。
+ * saveTestMatrixDetailData が保存前にこの形式へ正規化して localStorage へ書き込む。
+ * 読み込み時は mergeStoredDetailData で DETAILED_TEST_CASES の値を補完して DetailData へ復元する。
  */
 export type StoredDetailCase = Pick<DetailTestCase, "id" | "pc" | "sp" | "note">;
 export type StoredDetailData = Record<string, StoredDetailCase[]>;

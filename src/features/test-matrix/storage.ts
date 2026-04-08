@@ -256,8 +256,15 @@ export const saveTestMatrixCategories = (categories: TestCategory[]): void => {
 };
 
 export const saveTestMatrixDetailData = (detailData: DetailData): void => {
+  // scenario / expected は DETAILED_TEST_CASES から補完できるため、保存前に除外して軽量化
+  const toStore: StoredDetailData = Object.fromEntries(
+    Object.entries(detailData).map(([key, cases]) => [
+      key,
+      cases.map(({ id, pc, sp, note }) => ({ id, pc, sp, note })),
+    ]),
+  );
   localStorage.setItem(
     testMatrixTexts.page.storageKeys.detail,
-    JSON.stringify(detailData),
+    JSON.stringify(toStore),
   );
 };
