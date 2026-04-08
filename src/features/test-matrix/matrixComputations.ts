@@ -4,6 +4,13 @@ import type { CheckStatus, TestCategory, TestItem } from "./types";
 
 export type DetailData = Record<string, DetailTestCase[]>;
 
+/**
+ * localStorage に保存される詳細ケースの形式。
+ * scenario / expected は DETAILED_TEST_CASES から補完されるため保存不要。
+ */
+export type StoredDetailCase = Pick<DetailTestCase, "id" | "pc" | "sp" | "note">;
+export type StoredDetailData = Record<string, StoredDetailCase[]>;
+
 export type ResolvedItemStatus = {
   detailCases: DetailTestCase[];
   hasDetail: boolean;

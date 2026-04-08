@@ -10,7 +10,7 @@ import {
   saveTestMatrixDetailData,
 } from "../storage";
 import { DETAILED_TEST_CASES } from "../detailedTestCases";
-import type { DetailData } from "../matrixComputations";
+import type { StoredDetailData } from "../matrixComputations";
 import type { TestCategory } from "../types";
 
 jest.mock("../initialData", () => ({
@@ -70,9 +70,10 @@ describe("test matrix storage", () => {
   });
 
   it("保存済み詳細を定義へマージする", () => {
-    const merged = mergeStoredDetailData({
+    const stored: StoredDetailData = {
       [detailItemId]: [{ id: detailCaseId, pc: "ok", sp: "ng", note: "detail" }],
-    } as unknown as DetailData);
+    };
+    const merged = mergeStoredDetailData(stored);
 
     expect(merged[detailItemId][0]).toEqual(
       expect.objectContaining({ pc: "ok", sp: "ng", note: "detail" }),
@@ -237,9 +238,9 @@ describe("legacy ID migration", () => {
   describe("migrateLegacyDetailData", () => {
     it("broken version 検出時にアイテムIDキーを変換する", () => {
       // broken version には 17-5 (common-ui) がある
-      const data = {
-        "17-1": [{ id: "17-1-1", scenario: "s", expected: "e", pc: "ok" as const, sp: "ng" as const, note: "" }],
-        "17-5": [{ id: "17-5-1", scenario: "s", expected: "e", pc: "ok" as const, sp: "ok" as const, note: "" }],
+      const data: StoredDetailData = {
+        "17-1": [{ id: "17-1-1", pc: "ok", sp: "ng", note: "" }],
+        "17-5": [{ id: "17-5-1", pc: "ok", sp: "ok", note: "" }],
       };
       const result = migrateLegacyDetailData(data);
       expect(result["16-1"]).toBeDefined();
@@ -249,9 +250,9 @@ describe("legacy ID migration", () => {
     });
 
     it("broken version のケースIDのプレフィックスも変換する", () => {
-      const data = {
-        "17-5": [{ id: "17-5-1", scenario: "s", expected: "e", pc: "ok" as const, sp: "unchecked" as const, note: "n" }],
-        "19-1": [{ id: "19-1-1", scenario: "s", expected: "e", pc: "ng" as const, sp: "unchecked" as const, note: "" }],
+      const data: StoredDetailData = {
+        "17-5": [{ id: "17-5-1", pc: "ok", sp: "unchecked", note: "n" }],
+        "19-1": [{ id: "19-1-1", pc: "ng", sp: "unchecked", note: "" }],
       };
       const result = migrateLegacyDetailData(data);
       expect(result["16-5"][0].id).toBe("16-5-1");
@@ -261,9 +262,9 @@ describe("legacy ID migration", () => {
     });
 
     it("broken version の todo-lists (16-*) を todo-lists-* へ変換する", () => {
-      const data = {
+      const data: StoredDetailData = {
         "17-5": [],  // broken version 検出用
-        "16-1": [{ id: "16-1-1", scenario: "s", expected: "e", pc: "ok" as const, sp: "ok" as const, note: "" }],
+        "16-1": [{ id: "16-1-1", pc: "ok", sp: "ok", note: "" }],
       };
       const result = migrateLegacyDetailData(data);
       expect(result["todo-lists-1"]).toBeDefined();
@@ -272,14 +273,29 @@ describe("legacy ID migration", () => {
     });
 
     it("pre-PR データ (broken version 非検出) は変換しない", () => {
-      const data = {
-        "16-1": [{ id: "16-1-1", scenario: "s", expected: "e", pc: "ok" as const, sp: "ok" as const, note: "" }],
-        "17-1": [{ id: "17-1-1", scenario: "s", expected: "e", pc: "ok" as const, sp: "ok" as const, note: "" }],
+      const data: StoredDetailData = {
+        "16-1": [{ id: "16-1-1", pc: "ok", sp: "ok", note: "" }],
+        "17-1": [{ id: "17-1-1", pc: "ok", sp: "ok", note: "" }],
       };
       const result = migrateLegacyDetailData(data);
       expect(result["16-1"]).toBeDefined();
       expect(result["17-1"]).toBeDefined();
       expect(result["todo-lists-1"]).toBeUndefined();
+    });
+
+    it("現行IDと旧IDが共存する場合は現行IDのデータを優先する", () => {
+      // "19-5" (broken版 lib item5) と "18-5" (pre-PR/現行 lib item5) が共存するケース
+      // 19-5 → 18-5 へのマイグレーションより現行ID "18-5" のデータが優先される
+      // （"18-5" は LEGACY_DETAIL_ITEM_ID_MAP のソースキーではないため現行IDとして扱われる）
+      const data: StoredDetailData = {
+        "19-5": [{ id: "19-5-1", pc: "ng", sp: "ng", note: "legacy" }],
+        "18-5": [{ id: "18-5-1", pc: "ok", sp: "ok", note: "current" }],
+      };
+      const result = migrateLegacyDetailData(data);
+      expect(result["18-5"]).toBeDefined();
+      // 現行 ID のデータが優先される
+      expect(result["18-5"][0].note).toBe("current");
+      expect(result["18-5"][0].pc).toBe("ok");
     });
   });
 
@@ -313,10 +329,10 @@ describe("legacy ID migration", () => {
   describe("mergeStoredDetailData with legacy data", () => {
     it("broken version の詳細データをマイグレーションしてマージする", () => {
       // 17-5 の存在で broken version と検出される
-      const stored = {
-        "17-5": [{ id: "17-5-1", scenario: "s", expected: "e", pc: "ok" as const, sp: "ng" as const, note: "migrated" }],
+      const stored: StoredDetailData = {
+        "17-5": [{ id: "17-5-1", pc: "ok", sp: "ng", note: "migrated" }],
       };
-      const result = mergeStoredDetailData(stored as DetailData);
+      const result = mergeStoredDetailData(stored);
       // 17-5 → 16-5 へ変換されてマージされるはず
       const key16_5 = result["16-5"];
       expect(key16_5).toBeDefined();

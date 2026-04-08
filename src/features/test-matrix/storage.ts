@@ -1,6 +1,6 @@
 import { DETAILED_TEST_CASES } from "./detailedTestCases";
 import { buildInitialData } from "./initialData";
-import type { DetailData } from "./matrixComputations";
+import type { DetailData, StoredDetailData } from "./matrixComputations";
 import testMatrixTexts from "./locales/ja.json";
 import type { TestCategory } from "./types";
 
@@ -72,7 +72,7 @@ export const migrateLegacyCategories = (
  * common-ui が 17-5 以降（pre-PR の pwa は 17-1〜17-4 のみ）または
  * lib が 19-* で保存されていれば確実に broken version のデータ。
  */
-export const hasBrokenVersionDetailData = (data: DetailData): boolean => {
+export const hasBrokenVersionDetailData = (data: StoredDetailData): boolean => {
   return Object.keys(data).some((key) =>
     /^17-[5-9]$|^17-1[01]$|^19-\d+$/.test(key),
   );
@@ -81,14 +81,21 @@ export const hasBrokenVersionDetailData = (data: DetailData): boolean => {
 /**
  * broken version のIDで保存された詳細データを現在のIDへ変換する。
  * アイテムIDキーとその配下のケースIDのプレフィックスを同時に変換する。
+ *
+ * 衝突回避: 旧ID（legacy）と現行IDが同一データ内に共存する場合は
+ * 現行IDのデータを優先して保持する。
+ * - Pass 1: legacy キーを新キーへ移行（低優先度）
+ * - Pass 2: 現行キーで上書き（高優先度）
  */
-export const migrateLegacyDetailData = (data: DetailData): DetailData => {
+export const migrateLegacyDetailData = (data: StoredDetailData): StoredDetailData => {
   if (!hasBrokenVersionDetailData(data)) return data;
 
-  const result: DetailData = {};
+  const result: StoredDetailData = {};
+
+  // Pass 1: legacy ID を新 ID へマイグレーション（低優先度）
   for (const [key, cases] of Object.entries(data)) {
-    const newKey = LEGACY_DETAIL_ITEM_ID_MAP[key] ?? key;
-    if (newKey !== key) {
+    const newKey = LEGACY_DETAIL_ITEM_ID_MAP[key];
+    if (newKey !== undefined) {
       result[newKey] = cases.map((c) => ({
         ...c,
         // ケースID は "{itemId}-{caseNumber}" の形式なので、
@@ -98,10 +105,17 @@ export const migrateLegacyDetailData = (data: DetailData): DetailData => {
           ? `${newKey}-${c.id.slice(key.length + 1)}`
           : c.id,
       }));
-    } else {
+    }
+  }
+
+  // Pass 2: 現行 ID のデータで上書き（高優先度）
+  // 旧ID→新IDでマイグレーションした内容より現行フォーマットのデータを優先する。
+  for (const [key, cases] of Object.entries(data)) {
+    if (!(key in LEGACY_DETAIL_ITEM_ID_MAP)) {
       result[key] = cases;
     }
   }
+
   return result;
 };
 
@@ -127,7 +141,7 @@ export const mergeStoredTestMatrixCategories = (
 };
 
 export const mergeStoredDetailData = (
-  storedDetailData: DetailData,
+  storedDetailData: StoredDetailData,
 ): DetailData => {
   const migratedData = migrateLegacyDetailData(storedDetailData);
   const merged: DetailData = {};
@@ -185,7 +199,7 @@ export const getStoredTestMatrixDetailData = (): DetailData => {
   }
 
   try {
-    return mergeStoredDetailData(JSON.parse(saved) as DetailData);
+    return mergeStoredDetailData(JSON.parse(saved) as StoredDetailData);
   } catch {
     return { ...DETAILED_TEST_CASES };
   }
