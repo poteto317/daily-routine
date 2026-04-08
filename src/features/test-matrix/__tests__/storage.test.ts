@@ -72,7 +72,7 @@ describe("test matrix storage", () => {
   it("保存済み詳細を定義へマージする", () => {
     const merged = mergeStoredDetailData({
       [detailItemId]: [{ id: detailCaseId, pc: "ok", sp: "ng", note: "detail" }],
-    } as DetailData);
+    } as unknown as DetailData);
 
     expect(merged[detailItemId][0]).toEqual(
       expect.objectContaining({ pc: "ok", sp: "ng", note: "detail" }),
