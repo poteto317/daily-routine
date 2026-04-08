@@ -109,7 +109,8 @@ export const hasBrokenVersionDetailData = (data: StoredDetailData): boolean => {
  * - 19-[1-5] → 18-[1-5] (lib): 常に変換
  * - 16-12〜16-20 → todo-lists-12〜todo-lists-20 (todo-lists): 常に変換
  *   （16-1〜16-11 は現行 common-ui 詳細キーと重複するため変換しない）
- * - 18-* → 17-* (pwa): 常に変換
+ * - 18-* → 17-* (pwa): 18-5 が存在しない場合のみ実施
+ *   （18-5 は現行 lib の 5番目アイテムIDのため、18-5 があれば 18-* は現行 lib として扱う）
  */
 export const migrateLegacyDetailData = (data: StoredDetailData): StoredDetailData => {
   if (!hasBrokenVersionDetailData(data)) return data;
@@ -117,6 +118,8 @@ export const migrateLegacyDetailData = (data: StoredDetailData): StoredDetailDat
   const keys = Object.keys(data);
   // 17-5+ の存在で common-ui の broken version と確定 (pwa は 17-1〜17-4 のみ)
   const hasCommonUiBroken = keys.some((k) => /^17-(?:[5-9]|1[01])$/.test(k));
+  // 18-5 の存在で現行 lib と確定 (broken version の pwa は 18-1〜18-4 のみ)
+  const hasLibMarker18_5 = keys.includes("18-5");
 
   const result: StoredDetailData = {};
   // Pass1 で実際に変換したキーを記録（Pass2 で重複追加しないため）
@@ -130,6 +133,10 @@ export const migrateLegacyDetailData = (data: StoredDetailData): StoredDetailDat
     // 17-* → 16-* (common-ui) の変換は 17-5+ が存在する場合のみ実施
     // 17-1〜17-4 は現行 pwa IDと重複するため、17-5+ がない場合は変換しない
     if (/^17-\d+$/.test(key) && !hasCommonUiBroken) continue;
+
+    // 18-* → 17-* (pwa) の変換は 18-5 が存在しない場合のみ実施
+    // 18-5 があれば 18-* は現行 lib データなので変換しない
+    if (/^18-\d+$/.test(key) && hasLibMarker18_5) continue;
 
     result[newKey] = cases.map((c) => ({
       ...c,

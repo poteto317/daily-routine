@@ -355,6 +355,37 @@ describe("legacy ID migration", () => {
       expect(result["16-12"]).toBeUndefined();
       expect(result["16-20"]).toBeUndefined();
     });
+
+    it("現行 lib (18-5 存在) と broken data が共存する場合は 18-1〜18-4 を変換しない", () => {
+      // 19-1 (broken lib) と 18-1〜18-5 (current lib) が共存するケース
+      // 18-5 の存在で 18-* は現行 lib データと確定するため、18-1〜18-4 を 17-* に誤変換しない
+      const data: StoredDetailData = {
+        "19-1": [{ id: "19-1-1", pc: "ok", sp: "ok", note: "lib broken" }],
+        "18-1": [{ id: "18-1-1", pc: "ok", sp: "ok", note: "current lib1" }],
+        "18-2": [{ id: "18-2-1", pc: "ok", sp: "ok", note: "current lib2" }],
+        "18-3": [{ id: "18-3-1", pc: "ng", sp: "ok", note: "current lib3" }],
+        "18-4": [{ id: "18-4-1", pc: "ok", sp: "ng", note: "current lib4" }],
+        "18-5": [{ id: "18-5-1", pc: "ng", sp: "unchecked", note: "current lib5" }],
+      };
+      const result = migrateLegacyDetailData(data);
+      // 現行 lib1〜lib4 データが保持される（17-* に誤変換されない）
+      expect(result["18-1"]).toBeDefined();
+      expect(result["18-1"][0].note).toBe("current lib1");
+      expect(result["18-2"]).toBeDefined();
+      expect(result["18-2"][0].note).toBe("current lib2");
+      expect(result["18-3"]).toBeDefined();
+      expect(result["18-3"][0].note).toBe("current lib3");
+      expect(result["18-4"]).toBeDefined();
+      expect(result["18-4"][0].note).toBe("current lib4");
+      // 現行 lib5 データが保持される
+      expect(result["18-5"]).toBeDefined();
+      expect(result["18-5"][0].note).toBe("current lib5");
+      // 17-1〜17-4 には誤変換されない
+      expect(result["17-1"]).toBeUndefined();
+      expect(result["17-2"]).toBeUndefined();
+      expect(result["17-3"]).toBeUndefined();
+      expect(result["17-4"]).toBeUndefined();
+    });
   });
 
   describe("mergeStoredTestMatrixCategories with legacy data", () => {
