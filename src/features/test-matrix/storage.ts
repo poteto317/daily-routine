@@ -73,6 +73,12 @@ export const migrateLegacyCategories = (
  * - lib が 19-*
  * - todo-lists の旧IDとしてしか現れない 16-12〜16-20
  * のいずれかが含まれていれば確実に broken version のデータ。
+ *
+ * パターン内訳:
+ *   16-(?:1[2-9]|20)  todo-lists 旧ID (16-12〜16-19, 16-20)
+ *   17-[5-9]          common-ui 旧ID (17-5〜17-9)
+ *   17-1[01]          common-ui 旧ID (17-10〜17-11)
+ *   19-\d+            lib 旧ID (19-1〜19-5)
  */
 export const hasBrokenVersionDetailData = (data: StoredDetailData): boolean => {
   return Object.keys(data).some((key) =>

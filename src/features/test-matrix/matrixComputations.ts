@@ -9,7 +9,8 @@ export type DetailData = Record<string, DetailTestCase[]>;
  * scenario / expected は DETAILED_TEST_CASES から補完できるため、
  * 保存データから除外する候補として定義している。
  *
- * ただし、この型を定義しているだけでは永続化時に自動で正規化されないため、
+ * 現在は完全な DetailTestCase（scenario / expected を含む）を保存しているが、
+ * 将来的に保存サイズを削減するための形式として定義。
  * 実際に localStorage へ保存する際は保存処理側で明示的に
  * StoredDetailData へ変換する必要がある。
  */
