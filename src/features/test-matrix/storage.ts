@@ -69,12 +69,14 @@ export const migrateLegacyCategories = (
 
 /**
  * 保存済み詳細データが broken version (9d3a8a5) のものか検出する。
- * common-ui が 17-5 以降（pre-PR の pwa は 17-1〜17-4 のみ）または
- * lib が 19-* で保存されていれば確実に broken version のデータ。
+ * - common-ui が 17-5 以降（pre-PR の pwa は 17-1〜17-4 のみ）
+ * - lib が 19-*
+ * - todo-lists の旧IDとしてしか現れない 16-12〜16-20
+ * のいずれかが含まれていれば確実に broken version のデータ。
  */
 export const hasBrokenVersionDetailData = (data: StoredDetailData): boolean => {
   return Object.keys(data).some((key) =>
-    /^17-[5-9]$|^17-1[01]$|^19-\d+$/.test(key),
+    /^(?:16-(?:1[2-9]|20)|17-[5-9]|17-1[01]|19-\d+)$/.test(key),
   );
 };
 
@@ -86,32 +88,51 @@ export const hasBrokenVersionDetailData = (data: StoredDetailData): boolean => {
  * 現行IDのデータを優先して保持する。
  * - Pass 1: legacy キーを新キーへ移行（低優先度）
  * - Pass 2: 現行キーで上書き（高優先度）
+ *
+ * キー単位の変換条件:
+ * - 17-* → 16-* (common-ui): 17-5+ が存在する場合のみ実施
+ *   （17-1〜17-4 は pre-PR/現行 pwa IDのため、17-5+ がなければ pwa として扱う）
+ * - 19-* → 18-* (lib): 常に変換
+ * - 16-* → todo-lists-* (todo-lists): 常に変換
+ * - 18-* → 17-* (pwa): 常に変換
  */
 export const migrateLegacyDetailData = (data: StoredDetailData): StoredDetailData => {
   if (!hasBrokenVersionDetailData(data)) return data;
 
+  const keys = Object.keys(data);
+  // 17-5+ の存在で common-ui の broken version と確定 (pwa は 17-1〜17-4 のみ)
+  const hasCommonUiBroken = keys.some((k) => /^17-(?:[5-9]|1[01])$/.test(k));
+
   const result: StoredDetailData = {};
+  // Pass1 で実際に変換したキーを記録（Pass2 で重複追加しないため）
+  const migratedSourceKeys = new Set<string>();
 
   // Pass 1: legacy ID を新 ID へマイグレーション（低優先度）
   for (const [key, cases] of Object.entries(data)) {
     const newKey = LEGACY_DETAIL_ITEM_ID_MAP[key];
-    if (newKey !== undefined) {
-      result[newKey] = cases.map((c) => ({
-        ...c,
-        // ケースID は "{itemId}-{caseNumber}" の形式なので、
-        // itemId 部分のプレフィックスを新 ID に置き換える。
-        // 例: "17-5-1" → suffix="1" → "16-5-1"
-        id: c.id.startsWith(`${key}-`)
-          ? `${newKey}-${c.id.slice(key.length + 1)}`
-          : c.id,
-      }));
-    }
+    if (newKey === undefined) continue;
+
+    // 17-* → 16-* (common-ui) の変換は 17-5+ が存在する場合のみ実施
+    // 17-1〜17-4 は現行 pwa IDと重複するため、17-5+ がない場合は変換しない
+    if (/^17-\d+$/.test(key) && !hasCommonUiBroken) continue;
+
+    result[newKey] = cases.map((c) => ({
+      ...c,
+      // ケースID は "{itemId}-{caseNumber}" の形式なので、
+      // itemId 部分のプレフィックスを新 ID に置き換える。
+      // 例: "17-5-1" → suffix="1" → "16-5-1"
+      id: c.id.startsWith(`${key}-`)
+        ? `${newKey}-${c.id.slice(key.length + 1)}`
+        : c.id,
+    }));
+    migratedSourceKeys.add(key);
   }
 
   // Pass 2: 現行 ID のデータで上書き（高優先度）
+  // Pass1 で変換しなかったキー（変換条件外・現行IDのデータ両方）をそのまま保持する。
   // 旧ID→新IDでマイグレーションした内容より現行フォーマットのデータを優先する。
   for (const [key, cases] of Object.entries(data)) {
-    if (LEGACY_DETAIL_ITEM_ID_MAP[key] === undefined) {
+    if (!migratedSourceKeys.has(key)) {
       result[key] = cases;
     }
   }

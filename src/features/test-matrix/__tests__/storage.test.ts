@@ -226,8 +226,18 @@ describe("legacy ID migration", () => {
       expect(hasBrokenVersionDetailData({ "19-5": [] })).toBe(true);
     });
 
+    it("todo-lists の旧ID 16-12〜16-20 があれば true を返す", () => {
+      expect(hasBrokenVersionDetailData({ "16-12": [] })).toBe(true);
+      expect(hasBrokenVersionDetailData({ "16-15": [] })).toBe(true);
+      expect(hasBrokenVersionDetailData({ "16-20": [] })).toBe(true);
+    });
+
     it("pre-PR のデータ (17-1〜17-4 のみ) は false を返す", () => {
       expect(hasBrokenVersionDetailData({ "17-1": [], "17-4": [] })).toBe(false);
+    });
+
+    it("pre-PR のデータ (16-1〜16-11 のみ) は false を返す", () => {
+      expect(hasBrokenVersionDetailData({ "16-1": [], "16-11": [] })).toBe(false);
     });
 
     it("空データは false を返す", () => {
@@ -296,6 +306,39 @@ describe("legacy ID migration", () => {
       // 現行 ID のデータが優先される
       expect(result["18-5"][0].note).toBe("current");
       expect(result["18-5"][0].pc).toBe("ok");
+    });
+
+    it("lib broken (19-*) のみで 17-1〜17-4 が共存する場合は 17-* を pwa 現行IDとして保持する", () => {
+      // 17-5+ がないため 17-1〜17-4 は現行 pwa データとして扱い変換しない
+      const data: StoredDetailData = {
+        "19-1": [{ id: "19-1-1", pc: "ok", sp: "ok", note: "lib broken" }],
+        "17-1": [{ id: "17-1-1", pc: "ok", sp: "ok", note: "pwa current" }],
+        "17-4": [{ id: "17-4-1", pc: "ng", sp: "unchecked", note: "" }],
+      };
+      const result = migrateLegacyDetailData(data);
+      // lib broken は変換される
+      expect(result["18-1"]).toBeDefined();
+      expect(result["18-1"][0].note).toBe("lib broken");
+      // pwa 現行データは変換されずそのまま保持
+      expect(result["17-1"]).toBeDefined();
+      expect(result["17-1"][0].note).toBe("pwa current");
+      expect(result["17-4"]).toBeDefined();
+      // 16-1 には誤変換されない
+      expect(result["16-1"]).toBeUndefined();
+    });
+
+    it("todo-lists の旧ID 16-12〜16-20 のみで broken version を検出して変換する", () => {
+      // 17-5+ や 19-* がなくても 16-12+ があれば broken version と判定される
+      const data: StoredDetailData = {
+        "16-12": [{ id: "16-12-1", pc: "ok", sp: "ok", note: "" }],
+        "16-20": [{ id: "16-20-1", pc: "ng", sp: "unchecked", note: "" }],
+      };
+      const result = migrateLegacyDetailData(data);
+      expect(result["todo-lists-12"]).toBeDefined();
+      expect(result["todo-lists-12"][0].id).toBe("todo-lists-12-1");
+      expect(result["todo-lists-20"]).toBeDefined();
+      expect(result["16-12"]).toBeUndefined();
+      expect(result["16-20"]).toBeUndefined();
     });
   });
 

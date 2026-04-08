@@ -5,8 +5,13 @@ import type { CheckStatus, TestCategory, TestItem } from "./types";
 export type DetailData = Record<string, DetailTestCase[]>;
 
 /**
- * localStorage に保存される詳細ケースの形式。
- * scenario / expected は DETAILED_TEST_CASES から補完されるため保存不要。
+ * 詳細ケースの保存用形式。
+ * scenario / expected は DETAILED_TEST_CASES から補完できるため、
+ * 保存データから除外する候補として定義している。
+ *
+ * ただし、この型を定義しているだけでは永続化時に自動で正規化されないため、
+ * 実際に localStorage へ保存する際は保存処理側で明示的に
+ * StoredDetailData へ変換する必要がある。
  */
 export type StoredDetailCase = Pick<DetailTestCase, "id" | "pc" | "sp" | "note">;
 export type StoredDetailData = Record<string, StoredDetailCase[]>;
