@@ -111,7 +111,7 @@ export const migrateLegacyDetailData = (data: StoredDetailData): StoredDetailDat
   // Pass 2: 現行 ID のデータで上書き（高優先度）
   // 旧ID→新IDでマイグレーションした内容より現行フォーマットのデータを優先する。
   for (const [key, cases] of Object.entries(data)) {
-    if (!(key in LEGACY_DETAIL_ITEM_ID_MAP)) {
+    if (LEGACY_DETAIL_ITEM_ID_MAP[key] === undefined) {
       result[key] = cases;
     }
   }

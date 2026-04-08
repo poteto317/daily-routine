@@ -285,8 +285,8 @@ describe("legacy ID migration", () => {
 
     it("現行IDと旧IDが共存する場合は現行IDのデータを優先する", () => {
       // "19-5" (broken版 lib item5) と "18-5" (pre-PR/現行 lib item5) が共存するケース
-      // 19-5 → 18-5 へのマイグレーションより現行ID "18-5" のデータが優先される
-      // （"18-5" は LEGACY_DETAIL_ITEM_ID_MAP のソースキーではないため現行IDとして扱われる）
+      // "18-5" はマイグレーション対象外の現行IDであるため、
+      // "19-5" → "18-5" へのマイグレーション結果より優先される
       const data: StoredDetailData = {
         "19-5": [{ id: "19-5-1", pc: "ng", sp: "ng", note: "legacy" }],
         "18-5": [{ id: "18-5-1", pc: "ok", sp: "ok", note: "current" }],
