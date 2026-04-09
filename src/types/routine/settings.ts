@@ -26,4 +26,6 @@ export interface AppSettings {
   };
   /** ハンバーガーメニューの機能項目の並び順（メニュー項目 ID の配列） */
   menuOrder?: string[];
+  /** バックグラウンド復帰時のフォールバックリフレッシュ間隔（分）。0 で無効 */
+  backgroundRefreshIntervalMinutes?: number;
 }

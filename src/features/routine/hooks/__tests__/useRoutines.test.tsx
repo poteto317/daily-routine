@@ -26,6 +26,10 @@ jest.mock("../useRoutinesResult", () => ({
   createUseRoutinesResult: jest.fn(),
 }));
 
+jest.mock("@/features/settings/storage", () => ({
+  getSettings: jest.fn(() => ({ backgroundRefreshIntervalMinutes: 30 })),
+}));
+
 import { initializeRoutineState } from "../routineLifecycleState";
 import {
   saveAndSyncRoutines,
@@ -93,6 +97,8 @@ describe("useRoutines", () => {
     expect(useRoutineStateSync).toHaveBeenCalledWith(
       true,
       expect.any(Function),
+      mockRoutines,
+      1800000,
     );
     expect(useRoutineMutations).toHaveBeenCalledWith(
       expect.any(Function),

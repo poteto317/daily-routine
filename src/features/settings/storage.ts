@@ -33,6 +33,7 @@ const DEFAULT_SETTINGS: AppSettings = {
     testMatrix: true,
     accountAdmin: true,
   },
+  backgroundRefreshIntervalMinutes: 30,
 };
 
 export { DEFAULT_SETTINGS };

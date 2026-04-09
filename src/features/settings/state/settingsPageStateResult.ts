@@ -22,6 +22,8 @@ type SettingsFormState = {
   setPomodoroFocusInput: Dispatch<SetStateAction<string>>;
   pomodoroBreakInput: string;
   setPomodoroBreakInput: Dispatch<SetStateAction<string>>;
+  backgroundRefreshIntervalInput: string;
+  setBackgroundRefreshIntervalInput: Dispatch<SetStateAction<string>>;
   handleThemeChange: (theme: AppSettings["theme"]) => void;
 };
 
@@ -89,6 +91,8 @@ export const createSettingsPageStateResult = ({
     setPomodoroFocusInput: form.setPomodoroFocusInput,
     pomodoroBreakInput: form.pomodoroBreakInput,
     setPomodoroBreakInput: form.setPomodoroBreakInput,
+    backgroundRefreshIntervalInput: form.backgroundRefreshIntervalInput,
+    setBackgroundRefreshIntervalInput: form.setBackgroundRefreshIntervalInput,
     handleThemeChange: form.handleThemeChange,
     trainDelayEnabled: trainDelay.trainDelayEnabled,
     setTrainDelayEnabled: trainDelay.setTrainDelayEnabled,

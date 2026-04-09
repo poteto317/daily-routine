@@ -43,17 +43,18 @@ describe("settingsPageStateActions", () => {
     expect(parseSettingNumber("abc", 1, 1440)).toBeNull();
   });
 
-  it("4項目の設定値をまとめてパースする", () => {
-    expect(parseSettingsNumbers("45", "10", "30", "5")).toEqual({
+  it("5項目の設定値をまとめてパースする", () => {
+    expect(parseSettingsNumbers("45", "10", "30", "5", "30")).toEqual({
       defaultDurationMinutes: 45,
       defaultNotificationMinutes: 10,
       pomodoroFocusMinutes: 30,
       pomodoroBreakMinutes: 5,
+      backgroundRefreshIntervalMinutes: 30,
     });
   });
 
   it("いずれかが不正ならまとめて null を返す", () => {
-    expect(parseSettingsNumbers("45", "200", "30", "5")).toBeNull();
+    expect(parseSettingsNumbers("45", "200", "30", "5", "30")).toBeNull();
   });
 
   it("保存用settingsを組み立てる", () => {
@@ -64,6 +65,7 @@ describe("settingsPageStateActions", () => {
         notificationInput: "10",
         pomodoroFocusInput: "30",
         pomodoroBreakInput: "5",
+        backgroundRefreshIntervalInput: "30",
         trainDelayEnabled: true,
         monitoredLines: [
           {
@@ -80,6 +82,7 @@ describe("settingsPageStateActions", () => {
       defaultNotificationMinutes: 10,
       pomodoroFocusMinutes: 30,
       pomodoroBreakMinutes: 5,
+      backgroundRefreshIntervalMinutes: 30,
       trainDelay: {
         enabled: true,
         monitoredLines: [
@@ -102,6 +105,7 @@ describe("settingsPageStateActions", () => {
         notificationInput: "10",
         pomodoroFocusInput: "30",
         pomodoroBreakInput: "5",
+        backgroundRefreshIntervalInput: "30",
         trainDelayEnabled: false,
         monitoredLines: [],
         visibleFeatures,

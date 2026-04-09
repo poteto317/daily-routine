@@ -83,7 +83,8 @@ describe("SettingsPage features", () => {
     render(<SettingsPage />);
     expect(screen.getByDisplayValue("45")).toBeInTheDocument();
     expect(screen.getByDisplayValue("15")).toBeInTheDocument();
-    expect(screen.getByDisplayValue("30")).toBeInTheDocument();
+    // pomodoroFocusMinutes(30) と backgroundRefreshIntervalMinutes(30 デフォルト) の 2 フィールドが表示される
+    expect(screen.getAllByDisplayValue("30")).toHaveLength(2);
     expect(screen.getByDisplayValue("10")).toBeInTheDocument();
   });
 });

@@ -12,12 +12,24 @@ import { useRoutineMutations } from "./useRoutineMutations";
 import { useRoutineQueries } from "./useRoutineQueries";
 import type { UseRoutinesResult } from "./routineHookContract";
 import { createUseRoutinesResult } from "./useRoutinesResult";
+import { getSettings } from "@/features/settings/storage";
+
+const initializeBackgroundRefreshIntervalMs = (): number =>
+  (getSettings().backgroundRefreshIntervalMinutes ?? 30) * 60 * 1000;
 
 export const useRoutines = (): UseRoutinesResult => {
   const [routines, setRoutines] = useState<Routine[]>(initializeRoutineState);
   const [isLoaded] = useState(true);
+  const [backgroundRefreshIntervalMs] = useState(
+    initializeBackgroundRefreshIntervalMs,
+  );
 
-  useRoutineStateSync(isLoaded, setRoutines);
+  useRoutineStateSync(
+    isLoaded,
+    setRoutines,
+    routines,
+    backgroundRefreshIntervalMs,
+  );
 
   // 通知はService Workerに一元化（クライアント側での直接送信は行わない）
 

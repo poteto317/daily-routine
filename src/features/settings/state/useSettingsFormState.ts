@@ -14,6 +14,9 @@ const createInitialSettingsFormState = () => {
     notificationInput: String(initialSettings.defaultNotificationMinutes),
     pomodoroFocusInput: String(initialSettings.pomodoroFocusMinutes),
     pomodoroBreakInput: String(initialSettings.pomodoroBreakMinutes),
+    backgroundRefreshIntervalInput: String(
+      initialSettings.backgroundRefreshIntervalMinutes ?? 30,
+    ),
   };
 };
 
@@ -29,6 +32,8 @@ export const useSettingsFormState = () => {
     setNotificationInput,
     setPomodoroBreakInput,
     setPomodoroFocusInput,
+    backgroundRefreshIntervalInput,
+    setBackgroundRefreshIntervalInput,
   } = useSettingsInputState(initialState);
   const handleThemeChange = useSettingsThemeAction({ setSettings });
 
@@ -43,6 +48,8 @@ export const useSettingsFormState = () => {
     setPomodoroFocusInput,
     pomodoroBreakInput,
     setPomodoroBreakInput,
+    backgroundRefreshIntervalInput,
+    setBackgroundRefreshIntervalInput,
     handleThemeChange,
   });
 };

@@ -6,6 +6,7 @@ type SettingsInputInitialState = {
   notificationInput: string;
   pomodoroFocusInput: string;
   pomodoroBreakInput: string;
+  backgroundRefreshIntervalInput: string;
 };
 
 export const useSettingsInputState = (
@@ -23,6 +24,8 @@ export const useSettingsInputState = (
   const [pomodoroBreakInput, setPomodoroBreakInput] = useState<string>(
     initialState.pomodoroBreakInput,
   );
+  const [backgroundRefreshIntervalInput, setBackgroundRefreshIntervalInput] =
+    useState<string>(initialState.backgroundRefreshIntervalInput);
 
   return createSettingsInputStateResult({
     durationInput,
@@ -33,5 +36,7 @@ export const useSettingsInputState = (
     setNotificationInput,
     setPomodoroBreakInput,
     setPomodoroFocusInput,
+    backgroundRefreshIntervalInput,
+    setBackgroundRefreshIntervalInput,
   });
 };

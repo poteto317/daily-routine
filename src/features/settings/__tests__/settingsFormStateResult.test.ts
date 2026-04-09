@@ -16,6 +16,7 @@ describe("createSettingsFormStateResult", () => {
     const setNotificationInput = jest.fn();
     const setPomodoroFocusInput = jest.fn();
     const setPomodoroBreakInput = jest.fn();
+    const setBackgroundRefreshIntervalInput = jest.fn();
     const handleThemeChange = jest.fn();
 
     expect(
@@ -30,6 +31,8 @@ describe("createSettingsFormStateResult", () => {
         setPomodoroFocusInput,
         pomodoroBreakInput: "5",
         setPomodoroBreakInput,
+        backgroundRefreshIntervalInput: "30",
+        setBackgroundRefreshIntervalInput,
         handleThemeChange,
       }),
     ).toEqual({
@@ -43,6 +46,8 @@ describe("createSettingsFormStateResult", () => {
       setPomodoroFocusInput,
       pomodoroBreakInput: "5",
       setPomodoroBreakInput,
+      backgroundRefreshIntervalInput: "30",
+      setBackgroundRefreshIntervalInput,
       handleThemeChange,
     });
   });

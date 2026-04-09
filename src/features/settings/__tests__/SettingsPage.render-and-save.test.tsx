@@ -12,7 +12,8 @@ describe("SettingsPage render/autosave", () => {
 
   it("デフォルト値とポモドーロ設定が表示される", () => {
     render(<SettingsPage />);
-    expect(screen.getByDisplayValue("30")).toBeInTheDocument();
+    // defaultDurationMinutes(30) と backgroundRefreshIntervalMinutes(30 デフォルト) の 2 フィールドが表示される
+    expect(screen.getAllByDisplayValue("30")).toHaveLength(2);
     expect(screen.getByDisplayValue("0")).toBeInTheDocument();
     expect(screen.getByText("🍅 ポモドーロタイマー設定")).toBeInTheDocument();
     expect(screen.getByDisplayValue("25")).toBeInTheDocument();

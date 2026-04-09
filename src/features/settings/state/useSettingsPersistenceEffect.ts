@@ -17,6 +17,7 @@ type UseSettingsPersistenceEffectArgs = {
     | "notificationInput"
     | "pomodoroFocusInput"
     | "pomodoroBreakInput"
+    | "backgroundRefreshIntervalInput"
   >;
   trainDelay: Pick<TrainDelayState, "trainDelayEnabled" | "monitoredLines">;
   visibleFeatures: VisibleFeaturesState;

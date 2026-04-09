@@ -32,6 +32,12 @@ export const SettingsPage = () => {
               setPomodoroFocusInput={state.setPomodoroFocusInput}
               pomodoroBreakInput={state.pomodoroBreakInput}
               setPomodoroBreakInput={state.setPomodoroBreakInput}
+              backgroundRefreshIntervalInput={
+                state.backgroundRefreshIntervalInput
+              }
+              setBackgroundRefreshIntervalInput={
+                state.setBackgroundRefreshIntervalInput
+              }
             />
             <NotificationTestSection
               notificationStatus={state.notificationStatus}

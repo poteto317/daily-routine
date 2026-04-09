@@ -26,6 +26,7 @@ describe("useSettingsPersistenceEffect", () => {
     notificationInput: "0",
     pomodoroFocusInput: "25",
     pomodoroBreakInput: "5",
+    backgroundRefreshIntervalInput: "30",
   };
 
   const trainDelay = {

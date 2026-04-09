@@ -20,6 +20,7 @@ describe("settingsPageStateSnapshot", () => {
           notificationInput: "10",
           pomodoroFocusInput: "30",
           pomodoroBreakInput: "7",
+          backgroundRefreshIntervalInput: "30",
         },
         trainDelay: {
           trainDelayEnabled: true,
@@ -50,6 +51,7 @@ describe("settingsPageStateSnapshot", () => {
       defaultNotificationMinutes: 10,
       pomodoroFocusMinutes: 30,
       pomodoroBreakMinutes: 7,
+      backgroundRefreshIntervalMinutes: 30,
       trainDelay: {
         enabled: true,
         monitoredLines: [

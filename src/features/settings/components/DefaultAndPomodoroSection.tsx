@@ -1,5 +1,6 @@
 import { NumberInputField } from "./NumberInputField";
 import {
+  BACKGROUND_REFRESH_FIELD,
   DEFAULT_DURATION_FIELD,
   DEFAULT_NOTIFICATION_FIELD,
   POMODORO_FIELDS,
@@ -15,6 +16,8 @@ type Props = {
   setPomodoroFocusInput: (value: string) => void;
   pomodoroBreakInput: string;
   setPomodoroBreakInput: (value: string) => void;
+  backgroundRefreshIntervalInput: string;
+  setBackgroundRefreshIntervalInput: (value: string) => void;
 };
 
 export const DefaultAndPomodoroSection = ({
@@ -26,6 +29,8 @@ export const DefaultAndPomodoroSection = ({
   setPomodoroFocusInput,
   pomodoroBreakInput,
   setPomodoroBreakInput,
+  backgroundRefreshIntervalInput,
+  setBackgroundRefreshIntervalInput,
 }: Props) => {
   return (
     <>
@@ -65,6 +70,13 @@ export const DefaultAndPomodoroSection = ({
             />
           ))}
         </div>
+      </div>
+      <div className="border-t dark:border-gray-600 pt-6">
+        <NumberInputField
+          value={backgroundRefreshIntervalInput}
+          onChange={setBackgroundRefreshIntervalInput}
+          {...BACKGROUND_REFRESH_FIELD}
+        />
       </div>
     </>
   );

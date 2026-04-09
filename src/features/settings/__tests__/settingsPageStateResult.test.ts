@@ -24,6 +24,8 @@ describe("settingsPageStateResult", () => {
         setPomodoroFocusInput: jest.fn(),
         pomodoroBreakInput: "5",
         setPomodoroBreakInput: jest.fn(),
+        backgroundRefreshIntervalInput: "30",
+        setBackgroundRefreshIntervalInput: jest.fn(),
         handleThemeChange: jest.fn(),
       },
       trainDelay: {
