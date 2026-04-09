@@ -2,10 +2,13 @@
  * 通知スケジュール作成の共通ロジック
  * useRoutines と PWAInstaller の両方で使用される
  */
-import type { Routine} from "@/types/routine";
+import type { Routine } from "@/types/routine";
 import { HOLIDAY_DAY_VALUE } from "@/types/routine";
 import type { NotificationSchedule } from "./notification-types";
-import { NOTIFICATION_SCHEDULE_TITLE, getNotificationScheduleBody } from "./texts";
+import {
+  NOTIFICATION_SCHEDULE_TITLE,
+  getNotificationScheduleBody,
+} from "./texts";
 
 /**
  * ルーティン配列から通知スケジュールを生成する

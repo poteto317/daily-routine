@@ -22,7 +22,9 @@ export const getAccountRowClassName = (
 };
 
 export const getAccountRoleLabel = (isAdmin: boolean): string => {
-  return isAdmin ? ACCOUNT_DISPLAY_LABELS.roleAdmin : ACCOUNT_DISPLAY_LABELS.roleUser;
+  return isAdmin
+    ? ACCOUNT_DISPLAY_LABELS.roleAdmin
+    : ACCOUNT_DISPLAY_LABELS.roleUser;
 };
 
 export const getAccountTypeLabel = (account: Account): string => {
@@ -35,4 +37,3 @@ export const getAccountCreatedDateLabel = (createdAt?: string): string => {
   if (!createdAt) return ACCOUNT_COMMON_EMPTY_LABEL;
   return new Date(createdAt).toLocaleDateString("ja-JP");
 };
-

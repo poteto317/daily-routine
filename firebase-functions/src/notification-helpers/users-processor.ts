@@ -12,6 +12,10 @@ export const processAllUsersNotifications = async (
   const usersSnapshot = await db.collection("users").get();
 
   for (const userDoc of usersSnapshot.docs) {
-    await processUserNotifications({ userData: userDoc.data(), db, ...context });
+    await processUserNotifications({
+      userData: userDoc.data(),
+      db,
+      ...context,
+    });
   }
 };

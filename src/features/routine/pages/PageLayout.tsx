@@ -38,7 +38,9 @@ export const PageLayout = ({
         <NavigationContextProvider value={onNavigateAction}>
           <PageComponent />
         </NavigationContextProvider>
-      ) : children}
+      ) : (
+        children
+      )}
     </>
   );
 };

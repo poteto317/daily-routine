@@ -1,4 +1,4 @@
-import type { Routine, RoutinePreset} from "@/types/routine";
+import type { Routine, RoutinePreset } from "@/types/routine";
 import { ROUTINE_CATEGORIES } from "@/types/routine";
 import { DAY_LABELS } from "@/features/preset/presetConstants";
 import {
@@ -53,7 +53,10 @@ export const PresetCard = ({
   onChangeEditDescription,
   onToggleEditRoutine,
 }: PresetCardProps) => (
-  <div className={getPresetCardClassName(isSelected || isEditing)} onClick={onSelect}>
+  <div
+    className={getPresetCardClassName(isSelected || isEditing)}
+    onClick={onSelect}
+  >
     <div className="flex items-start justify-between">
       <div className="flex-1">
         <h4 className="font-semibold text-gray-900 dark:text-white">
@@ -139,7 +142,10 @@ export const PresetCard = ({
                 event.stopPropagation();
                 onToggleDay(day);
               }}
-              className={getDayButtonClassName(selectedDays.has(day), day === 7)}
+              className={getDayButtonClassName(
+                selectedDays.has(day),
+                day === 7,
+              )}
             >
               {label}
             </button>
