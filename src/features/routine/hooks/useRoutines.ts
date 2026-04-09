@@ -12,10 +12,14 @@ import { useRoutineMutations } from "./useRoutineMutations";
 import { useRoutineQueries } from "./useRoutineQueries";
 import type { UseRoutinesResult } from "./routineHookContract";
 import { createUseRoutinesResult } from "./useRoutinesResult";
-import { getSettings } from "@/features/settings/storage";
+import { DEFAULT_SETTINGS, getSettings } from "@/features/settings";
 
 const initializeBackgroundRefreshIntervalMs = (): number =>
-  (getSettings().backgroundRefreshIntervalMinutes ?? 30) * 60 * 1000;
+  // getSettings() は DEFAULT_SETTINGS とマージ済みのため backgroundRefreshIntervalMinutes は常に数値で返る
+  (getSettings().backgroundRefreshIntervalMinutes ??
+    DEFAULT_SETTINGS.backgroundRefreshIntervalMinutes!) *
+  60 *
+  1000;
 
 export const useRoutines = (): UseRoutinesResult => {
   const [routines, setRoutines] = useState<Routine[]>(initializeRoutineState);

@@ -27,6 +27,7 @@ jest.mock("../useRoutinesResult", () => ({
 }));
 
 jest.mock("@/features/settings/storage", () => ({
+  DEFAULT_SETTINGS: { backgroundRefreshIntervalMinutes: 30 },
   getSettings: jest.fn(() => ({ backgroundRefreshIntervalMinutes: 30 })),
 }));
 

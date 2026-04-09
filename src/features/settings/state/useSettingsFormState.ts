@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { getSettings } from "@/features/settings/storage";
+import { getSettings } from "@/features/settings";
 import { createSettingsFormStateResult } from "./settingsFormStateResult";
 import { useSettingsInputState } from "./useSettingsInputState";
 import { useSettingsObjectState } from "./useSettingsObjectState";
@@ -15,7 +15,7 @@ const createInitialSettingsFormState = () => {
     pomodoroFocusInput: String(initialSettings.pomodoroFocusMinutes),
     pomodoroBreakInput: String(initialSettings.pomodoroBreakMinutes),
     backgroundRefreshIntervalInput: String(
-      initialSettings.backgroundRefreshIntervalMinutes ?? 30,
+      initialSettings.backgroundRefreshIntervalMinutes,
     ),
   };
 };
