@@ -30,7 +30,7 @@ const eslintConfig = defineConfig([
         "error",
         {
           prefer: "type-imports",
-          fixStyle: "separate-type-imports",
+          fixStyle: "inline-type-imports",
           disallowTypeAnnotations: false,
         },
       ],
