@@ -7,8 +7,8 @@ import {
   saveMonthlyHistory,
 } from "@/features/routine/storage";
 import { getSettings, saveSettings } from "@/features/settings/storage";
-import { TransferOptions } from "./constants";
-import { AppSettings, DailyProgress, MonthlyHistory } from "@/types/routine";
+import type { TransferOptions } from "./constants";
+import type { AppSettings, DailyProgress, MonthlyHistory } from "@/types/routine";
 import { DATA_TRANSFER_ERROR_MESSAGES } from "./errorMessages";
 
 export type ImportPayload = {

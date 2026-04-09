@@ -1,4 +1,4 @@
-import { WeatherForecast } from "@/types/routine";
+import type { WeatherForecast } from "@/types/routine";
 import { WEATHER_LABELS } from "../texts";
 
 export const getWeatherIcon = (weather: WeatherForecast["weather"]) => {

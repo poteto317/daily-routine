@@ -1,4 +1,4 @@
-import * as admin from "firebase-admin";
+import type * as admin from "firebase-admin";
 
 /**
  * 閾値日付より古い通知履歴を Firestore から一括削除する

@@ -6,7 +6,7 @@ import {
   saveRoutines,
   saveSettings,
 } from "../storage";
-import { DailyProgress } from "@/types/routine";
+import type { DailyProgress } from "@/types/routine";
 import { createRoutine } from "./storage.test-utils";
 
 describe("storage persistence", () => {

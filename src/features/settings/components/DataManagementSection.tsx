@@ -1,5 +1,5 @@
-import { ChangeEvent, RefObject } from "react";
-import { TransferOptions, TransferStatus } from "../state/constants";
+import type { ChangeEvent, RefObject } from "react";
+import type { TransferOptions, TransferStatus } from "../state/constants";
 import {
   getExportButtonViewState,
   getImportButtonViewState,

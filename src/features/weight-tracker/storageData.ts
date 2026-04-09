@@ -1,4 +1,4 @@
-import { WeightHistory } from "@/types/routine";
+import type { WeightHistory } from "@/types/routine";
 import { getStorageItem, setStorageItem } from "@/lib/storage/core";
 
 export const STORAGE_KEY_WEIGHT = "weight-history";

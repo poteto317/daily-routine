@@ -1,4 +1,4 @@
-import { JournalEntry } from "@/types/routine";
+import type { JournalEntry } from "@/types/routine";
 import { getJournalHistory } from "./storageData";
 
 const getAllJournalEntries = (): JournalEntry[] => {

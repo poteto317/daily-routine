@@ -1,4 +1,4 @@
-import { Routine } from "@/types/routine";
+import type { Routine } from "@/types/routine";
 import { usePresetCreationState } from "./usePresetCreationState";
 import { usePresetEditState } from "./usePresetEditState";
 import { usePresetManagerActionHandlers } from "./usePresetManagerActionHandlers";

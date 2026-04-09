@@ -6,7 +6,7 @@
  * 統合テストやE2Eテストでより詳細なテストを行うことを推奨。
  */
 
-import {
+import type {
   NotificationSchedule,
 } from '../notification-types';
 

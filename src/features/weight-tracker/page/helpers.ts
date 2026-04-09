@@ -1,4 +1,4 @@
-import { WeightHistory, WeightRecord } from "@/types/routine";
+import type { WeightHistory, WeightRecord } from "@/types/routine";
 import texts from "../locales/ja.json";
 
 export const getTodayDateKey = (): string => {

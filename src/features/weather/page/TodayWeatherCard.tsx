@@ -1,4 +1,4 @@
-import { WeatherForecast } from "@/types/routine";
+import type { WeatherForecast } from "@/types/routine";
 import { getWeatherIcon, getWeatherLabel } from "./format";
 import { TODAY_WEATHER_CARD_TEXT } from "../texts";
 

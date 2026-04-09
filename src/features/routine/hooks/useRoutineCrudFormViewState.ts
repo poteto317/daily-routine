@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Routine } from "@/types/routine";
+import type { Routine } from "@/types/routine";
 import { createRoutineCrudFormViewStateResult } from "./routineCrudFormViewStateResult";
 
 export const useRoutineCrudFormViewState = () => {

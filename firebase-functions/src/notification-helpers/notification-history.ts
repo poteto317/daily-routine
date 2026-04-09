@@ -1,5 +1,5 @@
 import * as admin from "firebase-admin";
-import { Routine } from "../types";
+import type { Routine } from "../types";
 
 /**
  * 指定の通知が本日すでに送信済みか確認する

@@ -1,9 +1,9 @@
-import {
+import type {
   CategoryStats,
   MonthlyStats,
   WeeklyStats,
 } from "../../statistics/types";
-import { ViewMode } from "../types";
+import type { ViewMode } from "../types";
 import {
   getCategoryCountLabel,
   getCategorySummaryLabel,

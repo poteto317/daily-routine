@@ -1,4 +1,4 @@
-import { ViewMode } from "../types";
+import type { ViewMode } from "../types";
 import { STATISTICS_MODE_OPTIONS } from "../../helpers";
 
 type Props = {

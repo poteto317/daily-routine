@@ -1,4 +1,4 @@
-import { DailyHistory } from "@/types/routine";
+import type { DailyHistory } from "@/types/routine";
 
 export interface DailyStats {
   date: string;

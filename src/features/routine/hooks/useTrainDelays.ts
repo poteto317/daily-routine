@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { TrainDelayInfo } from "@/types/routine";
+import type { TrainDelayInfo } from "@/types/routine";
 import { getSettings } from "@/features/settings/storage";
 
 /** 電車遅延情報の取得（モックデータ） */

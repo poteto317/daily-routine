@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { DailyHistory } from "@/types/routine";
+import type { DailyHistory } from "@/types/routine";
 import { createAchievementCalendarSelectionStateResult } from "./achievementCalendarSelectionStateResult";
 
 export const useAchievementCalendarSelectionState = () => {

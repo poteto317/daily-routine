@@ -1,6 +1,6 @@
 import { getHistoryForMonth } from "@/features/routine/storage";
 import { buildMonthlyDailyStats, buildMonthlyStats } from "./monthlyAggregation";
-import { MonthlyStats } from "./types";
+import type { MonthlyStats } from "./types";
 
 export const calculateMonthlyStats = (
   year: number,

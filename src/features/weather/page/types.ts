@@ -1,4 +1,4 @@
-import { WeatherData } from "../api";
+import type { WeatherData } from "../api";
 
 export interface WeatherPageState {
   weatherData: WeatherData | null;

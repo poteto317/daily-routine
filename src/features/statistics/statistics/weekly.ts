@@ -5,7 +5,7 @@ import {
   summarizeDailyStats,
 } from "./dailyAggregation";
 import { calculateRate, formatDate, getWeekEnd, getWeekStart } from "./helpers";
-import { DailyStats, WeeklyStats } from "./types";
+import type { DailyStats, WeeklyStats } from "./types";
 
 export const calculateWeeklyStats = (startDate: Date): WeeklyStats => {
   const weekStart = getWeekStart(startDate);

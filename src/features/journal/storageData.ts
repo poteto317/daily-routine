@@ -1,4 +1,4 @@
-import { JournalEntry, JournalHistory } from "@/types/routine";
+import type { JournalEntry, JournalHistory } from "@/types/routine";
 import { getStorageItem, setStorageItem } from "@/lib/storage/core";
 
 const STORAGE_KEY_JOURNAL = "journal-history";

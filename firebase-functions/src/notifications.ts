@@ -1,6 +1,6 @@
 import { onSchedule } from "firebase-functions/v2/scheduler";
 import * as logger from "firebase-functions/logger";
-import * as admin from "firebase-admin";
+import type * as admin from "firebase-admin";
 import { getCurrentNotificationContext } from "./date-utils";
 import { processAllUsersNotifications } from "./notification-helpers";
 

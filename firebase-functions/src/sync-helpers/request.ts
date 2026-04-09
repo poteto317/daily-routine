@@ -1,4 +1,4 @@
-import { Request } from "firebase-functions/https";
+import type { Request } from "firebase-functions/https";
 import type { SyncRequestBody, ValidSyncRequestBody } from "./types";
 
 export const parseSyncRequestBody = (req: Request): SyncRequestBody => {

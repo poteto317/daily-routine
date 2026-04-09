@@ -2,7 +2,7 @@ import * as settingsStorage from "@/features/settings/storage";
 import * as routineStorage from "@/features/routine/storage";
 import * as sync from "@/features/sync/sync";
 import * as todoListsStorage from "@/features/todo-lists/storage";
-import { AppSettings } from "@/types/routine";
+import type { AppSettings } from "@/types/routine";
 
 jest.mock("@/features/settings/storage", () => ({
   getSettings: jest.fn(),

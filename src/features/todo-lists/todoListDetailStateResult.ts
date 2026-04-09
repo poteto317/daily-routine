@@ -1,4 +1,4 @@
-import { createTodoListDetailHandlers } from "./todoListDetailCrudHandlerFactory";
+import type { createTodoListDetailHandlers } from "./todoListDetailCrudHandlerFactory";
 import type { TodoList } from "./types";
 
 type TodoListDetailHandlers = ReturnType<

@@ -1,7 +1,7 @@
 "use client";
 
 import { Header } from "@/layouts";
-import { PageType } from "./types";
+import type { PageType } from "./types";
 import { PAGE_COMPONENTS } from "./pageComponentResolver";
 import { NavigationContextProvider } from "./NavigationContext";
 

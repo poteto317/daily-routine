@@ -1,6 +1,6 @@
 "use client";
 
-import { Routine } from "@/types/routine";
+import type { Routine } from "@/types/routine";
 import { getCategoryInfo } from "../helpers";
 import {
   getDurationLabel,

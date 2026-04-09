@@ -1,4 +1,4 @@
-import { Account } from "./types";
+import type { Account } from "./types";
 import {
   ACCOUNT_TABLE_DELETE_LABEL,
   ACCOUNT_TABLE_EDIT_LABEL,

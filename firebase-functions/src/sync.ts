@@ -1,5 +1,5 @@
 import { onRequest } from "firebase-functions/https";
-import * as admin from "firebase-admin";
+import type * as admin from "firebase-admin";
 import { handleSyncRoutinesRequest } from "./sync-helpers";
 
 /**

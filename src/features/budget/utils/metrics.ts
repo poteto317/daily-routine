@@ -1,4 +1,4 @@
-import { Expense } from "@/types/routine";
+import type { Expense } from "@/types/routine";
 import { daysInMonth, isCurrentMonthDate } from "./date";
 
 type BudgetMetrics = {

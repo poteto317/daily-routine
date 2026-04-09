@@ -1,4 +1,4 @@
-import { HourlyWeatherForecast, WeatherForecast } from "@/types/routine";
+import type { HourlyWeatherForecast, WeatherForecast } from "@/types/routine";
 
 export interface OpenMeteoResponse {
   latitude: number;

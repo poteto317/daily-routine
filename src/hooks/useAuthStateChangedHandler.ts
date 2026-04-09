@@ -1,11 +1,12 @@
-import {
+import type {
   Dispatch,
-  SetStateAction,
+  SetStateAction} from "react";
+import {
   useCallback,
   useEffect,
   useRef,
 } from "react";
-import { User } from "firebase/auth";
+import type { User } from "firebase/auth";
 import { migrateToUserStorage, setCurrentUserId } from "@/lib/storage/core";
 import {
   checkIsAdmin,

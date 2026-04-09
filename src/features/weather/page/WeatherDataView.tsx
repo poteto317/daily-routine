@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { WeatherData } from "../api";
+import type { WeatherData } from "../api";
 import { HourlyForecastSection } from "./HourlyForecastSection";
 import { TodayWeatherCard } from "./TodayWeatherCard";
 import { WeatherFooter } from "./WeatherFooter";

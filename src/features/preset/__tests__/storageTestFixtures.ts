@@ -1,4 +1,4 @@
-import { Routine, RoutinePreset } from "@/types/routine";
+import type { Routine, RoutinePreset } from "@/types/routine";
 
 export const createPreset = (
   overrides?: Partial<RoutinePreset>,

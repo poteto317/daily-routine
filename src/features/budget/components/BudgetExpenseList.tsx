@@ -1,4 +1,4 @@
-import { Expense } from "@/types/routine";
+import type { Expense } from "@/types/routine";
 import { sortExpensesByDateDesc } from "../helpers";
 import { formatExpenseDate } from "../utils/date";
 import { formatCurrency } from "../utils/format";

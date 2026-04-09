@@ -1,4 +1,5 @@
-import { MOOD_OPTIONS, WorkSession } from "@/types/routine";
+import type { WorkSession } from "@/types/routine";
+import { MOOD_OPTIONS } from "@/types/routine";
 
 type SessionStats = {
   count: number;

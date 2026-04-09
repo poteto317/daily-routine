@@ -5,7 +5,7 @@
 
 "use client";
 
-import { Routine } from "@/types/routine";
+import type { Routine } from "@/types/routine";
 import { PresetCreateSection } from "./components/PresetCreateSection";
 import { PresetListSection } from "./components/PresetListSection";
 import { usePresetManagerState } from "./usePresetManagerState";

@@ -1,5 +1,5 @@
-import { Routine } from "@/types/routine";
-import { NotificationStatus } from "../state/constants";
+import type { Routine } from "@/types/routine";
+import type { NotificationStatus } from "../state/constants";
 
 type NotificationButtonViewModel = {
   disabled: boolean;

@@ -1,4 +1,4 @@
-import { Routine, RoutinePreset } from "@/types/routine";
+import type { Routine, RoutinePreset } from "@/types/routine";
 import { PresetCard } from "./PresetCard";
 import { PRESET_LIST_SECTION_TEXT } from "../helpers";
 

@@ -1,4 +1,4 @@
-import { RoutineCrudOps } from "../pages/types";
+import type { RoutineCrudOps } from "../pages/types";
 import { createRoutineCrudActionBindings } from "./routineCrudActionBindings";
 import { createRoutineCrudResult } from "./routineCrudResult";
 import { useRoutineCrudActionHandlers } from "./useRoutineCrudActionHandlers";

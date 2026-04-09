@@ -1,7 +1,7 @@
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { deleteDoc, setDoc, updateDoc } from "firebase/firestore";
 import { getAuthInstance } from "@/lib/firebase";
-import { CreateAccountInput, UpdateAccountInput } from "./types";
+import type { CreateAccountInput, UpdateAccountInput } from "./types";
 import { createTimestamp, getAccountDocRef, TEST_USER_EMAIL } from "./accountServiceCore";
 import { getAccount } from "./accountServiceQueries";
 import { getDefaultDisplayNameFromEmail, ANONYMOUS_USER_DEFAULT_DISPLAY_NAME } from "./accountUtils";

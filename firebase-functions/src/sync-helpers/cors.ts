@@ -1,5 +1,5 @@
-import { Request } from "firebase-functions/https";
-import { Response } from "express";
+import type { Request } from "firebase-functions/https";
+import type { Response } from "express";
 
 export const applyCorsHeaders = (res: Response): void => {
   res.set("Access-Control-Allow-Origin", "*");

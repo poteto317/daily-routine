@@ -1,4 +1,5 @@
-import { Routine, ROUTINE_CATEGORIES } from "@/types/routine";
+import type { Routine} from "@/types/routine";
+import { ROUTINE_CATEGORIES } from "@/types/routine";
 import {
   isPresetEditSaveDisabled,
   PRESET_EDIT_CANCEL_LABEL,

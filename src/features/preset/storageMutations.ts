@@ -1,4 +1,4 @@
-import { RoutinePreset } from "@/types/routine";
+import type { RoutinePreset } from "@/types/routine";
 import { getPresets, savePresets } from "./storageData";
 
 export const addPreset = (preset: RoutinePreset): void => {

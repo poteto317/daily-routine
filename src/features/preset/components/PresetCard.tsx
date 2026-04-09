@@ -1,4 +1,5 @@
-import { Routine, RoutinePreset, ROUTINE_CATEGORIES } from "@/types/routine";
+import type { Routine, RoutinePreset} from "@/types/routine";
+import { ROUTINE_CATEGORIES } from "@/types/routine";
 import { DAY_LABELS } from "@/features/preset/presetConstants";
 import {
   formatRoutineTemplateSummary,
