@@ -91,4 +91,53 @@ describe("useRoutineLastUpdateTracker", () => {
 
     expect(result.current).toBe(firstRef);
   });
+
+  it("要素参照が全て同一の配列コピー（[...previous] 相当）は lastUpdateAt を更新しない", () => {
+    // refreshRoutineState が日付未変更時に返す [...previous] を模倣するテスト
+    jest.setSystemTime(1000);
+    const r = makeRoutine("a");
+    const initialRoutines = [r];
+
+    const { rerender, result } = renderHook(
+      ({ routines }: { routines: Routine[] }) =>
+        useRoutineLastUpdateTracker(routines),
+      { initialProps: { routines: initialRoutines } },
+    );
+
+    act(() => jest.advanceTimersByTime(0));
+    expect(result.current.current).toBe(1000); // 初期ロードはデータ変化
+
+    jest.setSystemTime(9000);
+    // 新しい配列インスタンスだが要素の参照は同一（= [...previous] と等価）
+    act(() => {
+      rerender({ routines: [r] });
+      jest.advanceTimersByTime(0);
+    });
+
+    expect(result.current.current).toBe(1000); // 要素変化なし → 更新されない
+  });
+
+  it("同じ長さでも要素が置換されていれば lastUpdateAt を更新する", () => {
+    jest.setSystemTime(1000);
+    const r = makeRoutine("a");
+
+    const { rerender, result } = renderHook(
+      ({ routines }: { routines: Routine[] }) =>
+        useRoutineLastUpdateTracker(routines),
+      { initialProps: { routines: [r] } },
+    );
+
+    act(() => jest.advanceTimersByTime(0));
+    expect(result.current.current).toBe(1000);
+
+    jest.setSystemTime(5000);
+    // isCompleted が変わった別オブジェクト（要素参照が変化）
+    const rUpdated = { ...r, isCompleted: true } as Routine;
+    act(() => {
+      rerender({ routines: [rUpdated] });
+      jest.advanceTimersByTime(0);
+    });
+
+    expect(result.current.current).toBe(5000);
+  });
 });
