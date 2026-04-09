@@ -1,4 +1,4 @@
-import { WorkSession } from "@/types/routine";
+import { type WorkSession } from "@/types/routine";
 import { WorkTrackerSessionHistoryItem } from "./WorkTrackerSessionHistoryItem";
 import workTrackerTexts from "../../locales/ja.json";
 

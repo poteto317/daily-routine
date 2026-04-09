@@ -1,4 +1,4 @@
-import { SyncStatus } from "@/features/sync";
+import { type SyncStatus } from "@/features/sync";
 
 type SyncActionKind = "upload" | "download";
 

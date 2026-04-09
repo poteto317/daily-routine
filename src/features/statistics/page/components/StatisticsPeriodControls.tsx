@@ -1,4 +1,4 @@
-import { ViewMode } from "../types";
+import { type ViewMode } from "../types";
 import { getCurrentPeriodLabel } from "../../helpers";
 
 type Props = {

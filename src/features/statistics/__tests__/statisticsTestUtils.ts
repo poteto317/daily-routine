@@ -1,4 +1,4 @@
-import { DailyHistory } from "@/types/routine";
+import { type DailyHistory } from "@/types/routine";
 
 jest.mock("@/features/routine/storage", () => ({
   getMonthlyHistory: jest.fn(),

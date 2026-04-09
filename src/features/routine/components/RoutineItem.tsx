@@ -1,6 +1,6 @@
 "use client";
 
-import { Routine } from "@/types/routine";
+import { type Routine } from "@/types/routine";
 import { getSettings } from "@/features/settings/storage";
 import { SwipeableRoutineItem } from "@/components/SwipeableRoutineItem";
 import { RoutineCardContent } from "./RoutineCardContent";

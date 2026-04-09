@@ -1,6 +1,6 @@
 import { getHistoryForMonth } from "@/features/routine/storage";
 import { aggregateCategoryHistory, buildCategoryStats } from "./categoryAggregation";
-import { CategoryStats } from "./types";
+import { type CategoryStats } from "./types";
 
 export const calculateCategoryStats = (
   year: number,

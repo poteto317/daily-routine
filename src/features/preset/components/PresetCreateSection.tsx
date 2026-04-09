@@ -1,4 +1,4 @@
-import { Routine, ROUTINE_CATEGORIES } from "@/types/routine";
+import { type Routine, ROUTINE_CATEGORIES } from "@/types/routine";
 import { DAY_LABELS } from "@/features/preset/presetConstants";
 import {
   getDayButtonClassName,

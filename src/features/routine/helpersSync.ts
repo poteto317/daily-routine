@@ -1,4 +1,4 @@
-import { Routine } from "@/types/routine";
+import { type Routine } from "@/types/routine";
 import { getFCMToken } from "@/lib/firebase";
 
 export const syncRoutinesToFirebase = async (

@@ -1,4 +1,4 @@
-import { JournalEntry } from "@/types/routine";
+import { type JournalEntry } from "@/types/routine";
 import { CardPanel } from "@/components";
 import { formatJournalDate, formatUpdatedAt } from "../utils/journalDate";
 import journalTexts from "../locales/ja.json";

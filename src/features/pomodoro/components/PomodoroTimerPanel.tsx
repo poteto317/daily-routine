@@ -1,5 +1,5 @@
 import { getPomodoroPrimaryButtonLabel, getStateColor } from "../helpers";
-import { formatPomodoroTimer, getStateText, TimerState } from "../pomodoroDisplay";
+import { formatPomodoroTimer, getStateText, type TimerState } from "../pomodoroDisplay";
 import { POMODORO_TIMER_PANEL_TEXT } from "../texts";
 
 type PomodoroTimerPanelProps = {

@@ -1,5 +1,5 @@
 import { isHoliday } from "@/lib/holidays";
-import { DailyHistory, PomodoroHistory } from "@/types/routine";
+import { type DailyHistory, type PomodoroHistory } from "@/types/routine";
 import {
   buildDateString,
   getDaysInMonth,

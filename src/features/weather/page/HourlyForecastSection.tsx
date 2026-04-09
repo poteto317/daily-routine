@@ -1,4 +1,4 @@
-import { HourlyWeatherForecast } from "@/types/routine";
+import { type HourlyWeatherForecast } from "@/types/routine";
 import { formatHourlyTime, getWeatherIcon } from "./format";
 import { HOURLY_FORECAST_SECTION_TEXT } from "../texts";
 

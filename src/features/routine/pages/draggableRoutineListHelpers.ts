@@ -1,5 +1,5 @@
 import { arrayMove } from "@dnd-kit/sortable";
-import { Routine } from "@/types/routine";
+import { type Routine } from "@/types/routine";
 
 export const reorderRoutinesWithOriginalTimes = (
   routines: Routine[],

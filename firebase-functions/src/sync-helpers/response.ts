@@ -1,4 +1,4 @@
-import { Response } from "express";
+import { type Response } from "express";
 
 export const sendMethodNotAllowed = (res: Response): void => {
   res.status(405).send({ error: "Method Not Allowed" });

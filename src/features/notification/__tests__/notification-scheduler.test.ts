@@ -7,7 +7,7 @@
  */
 
 import {
-  NotificationSchedule,
+  type NotificationSchedule,
 } from '../notification-types';
 
 describe('notification-scheduler', () => {

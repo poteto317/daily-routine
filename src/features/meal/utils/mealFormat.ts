@@ -1,4 +1,4 @@
-import { MealRecord, MealType } from "@/types/routine";
+import { type MealRecord, type MealType } from "@/types/routine";
 
 export const getTodayDateString = (): string => {
   return new Date().toISOString().split("T")[0];

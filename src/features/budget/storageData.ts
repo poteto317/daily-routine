@@ -1,4 +1,4 @@
-import { BudgetData } from "@/types/routine";
+import { type BudgetData } from "@/types/routine";
 import { getStorageItem, setStorageItem } from "@/lib/storage/core";
 
 const STORAGE_KEY_BUDGET = "budget-data";

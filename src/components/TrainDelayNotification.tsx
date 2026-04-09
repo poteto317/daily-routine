@@ -1,6 +1,6 @@
 "use client";
 
-import { TrainDelayInfo } from "@/types/routine";
+import { type TrainDelayInfo } from "@/types/routine";
 import texts from "./locales/ja.json";
 import {
   formatDelayLastUpdatedTime,

@@ -1,6 +1,6 @@
 import * as logger from "firebase-functions/logger";
 import * as admin from "firebase-admin";
-import { Routine } from "../types";
+import { type Routine } from "../types";
 import { createNotificationId } from "./notification-id";
 import {
   hasNotificationBeenSent,

@@ -1,7 +1,7 @@
 /**
  * ポモドーロ関連のストレージ操作
  */
-import { PomodoroHistory } from "@/types/routine";
+import { type PomodoroHistory } from "@/types/routine";
 import { getStorageItem, setStorageItem, getTodayString } from "@/lib/storage/core";
 
 const STORAGE_KEY_POMODORO = "pomodoro-history";

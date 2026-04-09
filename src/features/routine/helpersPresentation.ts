@@ -1,4 +1,4 @@
-import { Routine, ROUTINE_CATEGORIES } from "@/types/routine";
+import { type Routine, ROUTINE_CATEGORIES } from "@/types/routine";
 import { getCurrentTime, timeToMinutes } from "@/lib/storage/core";
 import { getSettings } from "@/features/settings/storage";
 

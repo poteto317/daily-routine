@@ -1,4 +1,4 @@
-import { WorkSession, WorkTemplate } from "@/types/routine";
+import { type WorkSession, type WorkTemplate } from "@/types/routine";
 import {
   getSessionsByTemplateId,
   getTemplateStats,

@@ -1,4 +1,4 @@
-import { MoodType } from "@/types/routine";
+import { type MoodType } from "@/types/routine";
 import {
   addWorkSession,
   getOrCreateWorkTemplate,

@@ -1,6 +1,6 @@
 import { deleteAccountRecord, updateAccountRecord } from "./accountService";
 import { isAccountSelf } from "./accountUtils";
-import { Account, UpdateAccountInput } from "./types";
+import { type Account, type UpdateAccountInput } from "./types";
 
 interface UpdateParams {
   editingAccount: Account;

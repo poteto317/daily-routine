@@ -1,5 +1,5 @@
-import * as admin from "firebase-admin";
-import { NotificationContext } from "../date-utils";
+import type * as admin from "firebase-admin";
+import { type NotificationContext } from "../date-utils";
 import { processUserNotifications } from "./process-user-notifications";
 
 /**

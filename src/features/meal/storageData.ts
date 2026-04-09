@@ -1,4 +1,4 @@
-import { MealHistory } from "@/types/routine";
+import { type MealHistory } from "@/types/routine";
 import { getStorageItem, setStorageItem } from "@/lib/storage/core";
 
 const STORAGE_KEY_MEAL = "meal-history";

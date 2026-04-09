@@ -1,9 +1,9 @@
-import { User } from "firebase/auth";
-import { syncAdminStatus, SyncAdminStatusArgs } from "./authSyncAdminActions";
+import { type User } from "firebase/auth";
+import { syncAdminStatus, type SyncAdminStatusArgs } from "./authSyncAdminActions";
 import {
   applyAuthenticatedUserState,
   applySignedOutUserState,
-  AuthSyncSetters,
+  type AuthSyncSetters,
 } from "./authSyncStateActions";
 import { createAuthenticatedAuthStateHandler } from "./authSyncAuthenticatedHandler";
 import { createSignedOutAuthStateHandler } from "./authSyncSignedOutHandler";

@@ -1,4 +1,4 @@
-import { WorkTemplate } from "@/types/routine";
+import { type WorkTemplate } from "@/types/routine";
 import { formatTimerLong, getTemplateStats } from "@/lib/storage";
 import {
   getFilteredTemplates,

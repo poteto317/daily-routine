@@ -1,6 +1,6 @@
 "use client";
 
-import { Routine } from "@/types/routine";
+import { type Routine } from "@/types/routine";
 import { useRoutineFormState } from "./useRoutineFormState";
 import { RoutineFormHeader } from "./RoutineFormHeader";
 import { RoutineFormCoreFields } from "./RoutineFormCoreFields";

@@ -1,4 +1,4 @@
-import { WeightRecord } from "@/types/routine";
+import { type WeightRecord } from "@/types/routine";
 import { WEIGHT_TRACKER_HISTORY_LIST_TEXT } from "../helpers";
 import { WeightTrackerHistoryItem } from "./WeightTrackerHistoryItem";
 

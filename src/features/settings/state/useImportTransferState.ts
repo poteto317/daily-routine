@@ -1,8 +1,8 @@
 import { useState } from "react";
 import {
   ALL_TRANSFER_OPTIONS,
-  TransferOptions,
-  TransferStatus,
+  type TransferOptions,
+  type TransferStatus,
 } from "./constants";
 import { createImportTransferStateResult } from "./importTransferStateResult";
 import { useImportTransferAction } from "./useImportTransferAction";

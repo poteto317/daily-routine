@@ -1,4 +1,4 @@
-import { DailyHistory } from "@/types/routine";
+import { type DailyHistory } from "@/types/routine";
 import calendarTexts from "../locales/ja.json";
 import {
   formatCalendarDetailRate,

@@ -1,4 +1,4 @@
-import { MealRecord, MealType } from "@/types/routine";
+import { type MealRecord, type MealType } from "@/types/routine";
 import { generateId } from "@/lib/storage/core";
 import { getMealHistory, saveMealHistory } from "./storageData";
 

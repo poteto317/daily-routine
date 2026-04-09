@@ -1,5 +1,5 @@
 import {
-  AuthSyncSetters,
+  type AuthSyncSetters,
   applySignedOutUserState,
 } from "./authSyncStateActions";
 

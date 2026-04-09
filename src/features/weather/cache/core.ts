@@ -1,11 +1,11 @@
-import { WeatherData } from "../api";
+import { type WeatherData } from "../api";
 import {
   LOCATION_DIFF_THRESHOLD,
   WEATHER_CACHE_DURATION,
   WEATHER_CACHE_KEY,
   WEATHER_PREFERRED_LOCATION_KEY,
 } from "./constants";
-import { CachedWeatherData } from "./types";
+import { type CachedWeatherData } from "./types";
 import { WEATHER_CONSOLE_MESSAGES } from "../texts";
 
 type PreferredWeatherLocation = {

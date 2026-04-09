@@ -1,4 +1,4 @@
-import { MealType } from "@/types/routine";
+import { type MealType } from "@/types/routine";
 import mealTexts from "./locales/ja.json";
 
 /**

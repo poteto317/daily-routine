@@ -1,4 +1,4 @@
-import { User } from "firebase/auth";
+import { type User } from "firebase/auth";
 
 type SyncAdminStatusArgs = {
   user: Pick<User, "uid" | "email" | "isAnonymous">;

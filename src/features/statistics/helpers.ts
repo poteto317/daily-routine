@@ -1,9 +1,9 @@
 import {
-  CategoryStats,
-  MonthlyStats,
-  WeeklyStats,
+  type CategoryStats,
+  type MonthlyStats,
+  type WeeklyStats,
 } from "./statistics/types";
-import { ViewMode } from "./page/types";
+import { type ViewMode } from "./page/types";
 import textsJson from "./locales/ja.json";
 
 // ========================================

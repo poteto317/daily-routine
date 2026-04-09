@@ -1,4 +1,4 @@
-import { MoodType, WorkTemplate } from "@/types/routine";
+import { type MoodType, type WorkTemplate } from "@/types/routine";
 import { WorkTrackerMoodSelector } from "./WorkTrackerMoodSelector";
 import { WorkTrackerNotesField } from "./WorkTrackerNotesField";
 import { WorkTrackerTemplateInput } from "./WorkTrackerTemplateInput";

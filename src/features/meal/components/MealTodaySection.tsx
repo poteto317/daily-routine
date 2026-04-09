@@ -1,4 +1,4 @@
-import { MealRecord } from "@/types/routine";
+import { type MealRecord } from "@/types/routine";
 import {
   formatMealDate,
   getMealTypeIcon,

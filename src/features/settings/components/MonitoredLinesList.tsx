@@ -1,4 +1,4 @@
-import { MonitoredLine } from "../state/constants";
+import { type MonitoredLine } from "../state/constants";
 import { getMonitoredLinesCountLabel } from "../helpers/trainDelay";
 import texts from "../locales/ja.json";
 
