@@ -22,6 +22,7 @@ const eslintConfig = defineConfig([
     "coverage/**",
   ]),
   {
+    files: ["**/*.{ts,tsx,mts,cts}"],
     rules: {
       // 型としてのみ使用する import は必ず `import type` にする（コーディングルール §2 を自動強制）。
       // disallowTypeAnnotations: false は ReturnType<typeof import(...)> 形式を許容するため。
