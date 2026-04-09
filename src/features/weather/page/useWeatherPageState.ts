@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import type { WeatherPageState } from "./types";
+import { type WeatherPageState } from "./types";
 import { createWeatherPageLoadAction } from "./weatherPageLoadAction";
 import { createWeatherPageStateResult } from "./weatherPageStateResult";
 import { useInitialWeatherState } from "./useInitialWeatherState";

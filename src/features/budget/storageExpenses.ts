@@ -1,5 +1,5 @@
 import { generateId } from "@/lib/storage/core";
-import type { Expense } from "@/types/routine";
+import { type Expense } from "@/types/routine";
 import { getBudgetData, saveBudgetData } from "./storageData";
 
 export const getMonthlyExpenses = (month: string): Expense[] => {

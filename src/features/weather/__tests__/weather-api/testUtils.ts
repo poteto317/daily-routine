@@ -1,4 +1,4 @@
-import type { OpenMeteoResponse } from "../../weather-api";
+import { type OpenMeteoResponse } from "../../weather-api";
 
 global.fetch = jest.fn();
 

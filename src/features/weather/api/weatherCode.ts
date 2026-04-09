@@ -1,4 +1,4 @@
-import type { WeatherForecast } from "@/types/routine";
+import { type WeatherForecast } from "@/types/routine";
 import { WEATHER_DESCRIPTIONS } from "../texts";
 
 export const mapWeatherCodeToType = (

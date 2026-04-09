@@ -1,4 +1,4 @@
-import type { WorkSession } from "@/types/routine";
+import { type WorkSession } from "@/types/routine";
 import { getTodayString } from "@/lib/storage/core";
 import { getWorkSessionHistory, saveWorkSessionHistory } from "./storageData";
 

@@ -1,5 +1,4 @@
-import type { MoodType } from "@/types/routine";
-import { MOOD_OPTIONS } from "@/types/routine";
+import { MOOD_OPTIONS, type MoodType } from "@/types/routine";
 import workTrackerTexts from "../../locales/ja.json";
 
 type Props = {

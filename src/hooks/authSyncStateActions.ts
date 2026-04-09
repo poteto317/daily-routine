@@ -1,5 +1,5 @@
-import type { Dispatch, SetStateAction } from "react";
-import type { User } from "firebase/auth";
+import { type Dispatch, type SetStateAction } from "react";
+import { type User } from "firebase/auth";
 
 type SetUser = Dispatch<SetStateAction<User | null>>;
 type SetIsAdmin = Dispatch<SetStateAction<boolean>>;

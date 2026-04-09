@@ -1,4 +1,4 @@
-import type { WorkTemplate } from "@/types/routine";
+import { type WorkTemplate } from "@/types/routine";
 import { generateId } from "@/lib/storage/core";
 import { getWorkTemplates, saveWorkTemplates } from "./storageData";
 

@@ -1,7 +1,7 @@
 import type { ChangeEvent, Dispatch, SetStateAction } from "react";
 import type { AppSettings } from "@/types/routine";
 import type { VisibleFeaturesState } from "./featureVisibility";
-import type { AVAILABLE_LINES } from "./constants";
+import { type AVAILABLE_LINES } from "./constants";
 import type {
   MonitoredLine,
   NotificationStatus,

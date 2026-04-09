@@ -1,5 +1,5 @@
 import texts from "../locales/ja.json";
-import type { Routine } from "@/types/routine";
+import { type Routine } from "@/types/routine";
 
 // ===============================
 // Routine Card Content

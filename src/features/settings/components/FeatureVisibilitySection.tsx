@@ -1,4 +1,4 @@
-import type { VisibleFeaturesState } from "../state/featureVisibility";
+import { type VisibleFeaturesState } from "../state/featureVisibility";
 import {
   FEATURE_VISIBILITY_ITEMS,
   getFeatureThumbClassName,

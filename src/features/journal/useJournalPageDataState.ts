@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { JournalEntry } from "@/types/routine";
+import { type JournalEntry } from "@/types/routine";
 import { getJournalHistory, getTodayJournalEntry } from "./storage";
 import { createInitialJournalViewState } from "./journalViewStateActions";
 

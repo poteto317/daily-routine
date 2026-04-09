@@ -1,6 +1,6 @@
-import type { DailyHistory } from "@/types/routine";
+import { type DailyHistory } from "@/types/routine";
 import { calculateRate } from "./helpers";
-import type { DailyStats } from "./types";
+import { type DailyStats } from "./types";
 
 export const calculateDailyStats = (
   date: string,

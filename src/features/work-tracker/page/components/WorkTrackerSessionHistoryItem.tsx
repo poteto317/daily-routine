@@ -1,4 +1,4 @@
-import type { WorkSession } from "@/types/routine";
+import { type WorkSession } from "@/types/routine";
 import { formatTimerLong } from "@/lib/storage";
 import { WorkTrackerSessionDeleteButton } from "./WorkTrackerSessionDeleteButton";
 import {

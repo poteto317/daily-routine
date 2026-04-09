@@ -1,4 +1,4 @@
-import type { SyncStatus } from "@/features/sync";
+import { type SyncStatus } from "@/features/sync";
 import {
   getFormattedLastSyncTime,
   getSyncActionButtonClassName,

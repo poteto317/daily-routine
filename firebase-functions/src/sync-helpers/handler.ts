@@ -1,5 +1,5 @@
-import type { Request } from "firebase-functions/https";
-import type { Response } from "express";
+import { type Request } from "firebase-functions/https";
+import { type Response } from "express";
 import * as logger from "firebase-functions/logger";
 import type * as admin from "firebase-admin";
 import { applyCorsHeaders, handlePreflightRequest } from "./cors";

@@ -1,5 +1,4 @@
-import type { Routine } from "@/types/routine";
-import { ROUTINE_CATEGORIES } from "@/types/routine";
+import { type Routine, ROUTINE_CATEGORIES } from "@/types/routine";
 import { DAY_LABELS } from "@/features/preset/presetConstants";
 import {
   getDayButtonClassName,
@@ -76,10 +75,7 @@ export const PresetCreateSection = ({
                 key={day}
                 type="button"
                 onClick={() => onToggleCreateFilterDay(day)}
-                className={getDayButtonClassName(
-                  createFilterDays.has(day),
-                  day === 7,
-                )}
+                className={getDayButtonClassName(createFilterDays.has(day), day === 7)}
               >
                 {label}
               </button>

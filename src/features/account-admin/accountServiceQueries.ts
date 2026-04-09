@@ -6,7 +6,7 @@ import {
   query,
 } from "firebase/firestore";
 import { getFirestoreInstance } from "@/lib/firebase";
-import type { Account } from "./types";
+import { type Account } from "./types";
 import { ACCOUNTS_COLLECTION, getAccountDocRef } from "./accountServiceCore";
 
 export const getAccounts = async (): Promise<Account[]> => {

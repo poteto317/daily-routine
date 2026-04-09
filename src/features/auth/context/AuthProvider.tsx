@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import type { User } from "firebase/auth";
+import { type User } from "firebase/auth";
 import { useAuthSync } from "@/hooks/useAuthSync";
 import { AuthContext } from "./AuthContextInstance";
 import { useAuthActions } from "./useAuthActions";

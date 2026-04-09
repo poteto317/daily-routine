@@ -1,4 +1,4 @@
-import type { createInitialWorkTrackerPageState } from "./viewStateActions";
+import { type createInitialWorkTrackerPageState } from "./viewStateActions";
 import { useWorkTrackerSessionInputState } from "./useWorkTrackerSessionInputState";
 import { useWorkTrackerSessionVisibilityState } from "./useWorkTrackerSessionVisibilityState";
 import { createWorkTrackerSessionFormStateResult } from "./workTrackerSessionFormStateResult";

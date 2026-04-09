@@ -1,8 +1,8 @@
 import { getCategoryInfo } from "@/features/routine";
-import type { RoutineCategory } from "@/types/routine";
-import type { ChartData } from "chart.js";
+import { type RoutineCategory } from "@/types/routine";
+import { type ChartData } from "chart.js";
 import { categoryChartColors } from "./chartOptions";
-import type { useStatisticsPageState } from "./useStatisticsPageState";
+import { type useStatisticsPageState } from "./useStatisticsPageState";
 
 type StatisticsState = ReturnType<typeof useStatisticsPageState>;
 

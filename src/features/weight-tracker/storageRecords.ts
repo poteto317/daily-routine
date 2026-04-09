@@ -1,4 +1,4 @@
-import type { WeightRecord } from "@/types/routine";
+import { type WeightRecord } from "@/types/routine";
 import { generateId } from "@/lib/storage/core";
 import { getWeightHistory, saveWeightHistory } from "./storageData";
 

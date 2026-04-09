@@ -1,7 +1,7 @@
 import { buildForecastUrl } from "./request";
 import { getLocationName } from "./location";
 import { mapDailyForecasts, mapHourlyForecasts } from "./mapForecasts";
-import type { OpenMeteoResponse, WeatherData } from "./types";
+import { type OpenMeteoResponse, type WeatherData } from "./types";
 import { getWeatherFetchErrorMessage } from "./error";
 
 export const fetchWeatherData = async (

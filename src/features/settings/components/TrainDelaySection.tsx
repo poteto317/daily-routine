@@ -1,4 +1,4 @@
-import type { MonitoredLine } from "../state/constants";
+import { type MonitoredLine } from "../state/constants";
 import { MonitoredLinesList } from "./MonitoredLinesList";
 import {
   getLineOptionLabel,

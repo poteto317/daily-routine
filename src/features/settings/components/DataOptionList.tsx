@@ -1,5 +1,5 @@
-import type { TransferOptions } from "../state/constants";
 import {
+  type TransferOptions,
   ALL_TRANSFER_OPTIONS,
   EMPTY_TRANSFER_OPTIONS,
 } from "../state/constants";

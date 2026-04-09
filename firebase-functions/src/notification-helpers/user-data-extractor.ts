@@ -1,5 +1,5 @@
 import type * as admin from "firebase-admin";
-import type { Routine } from "../types";
+import { type Routine } from "../types";
 import type { UserNotificationData } from "./types";
 
 export type { UserNotificationData };

@@ -1,4 +1,4 @@
-import type { AppSettings } from "@/types/routine";
+import { type AppSettings } from "@/types/routine";
 
 type ThemeMode = AppSettings["theme"];
 type SwipeAction = AppSettings["swipeAction"];

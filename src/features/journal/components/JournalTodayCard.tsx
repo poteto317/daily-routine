@@ -1,4 +1,4 @@
-import type { JournalEntry } from "@/types/routine";
+import { type JournalEntry } from "@/types/routine";
 import { formatJournalDate } from "../utils/journalDate";
 import journalTexts from "../locales/ja.json";
 import { getJournalFormOpenButtonLabel } from "../helpers";

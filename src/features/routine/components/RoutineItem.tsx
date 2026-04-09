@@ -1,6 +1,6 @@
 "use client";
 
-import type { Routine } from "@/types/routine";
+import { type Routine } from "@/types/routine";
 import { getSettings } from "@/features/settings/storage";
 import { SwipeableRoutineItem } from "@/components/SwipeableRoutineItem";
 import { RoutineCardContent } from "./RoutineCardContent";
@@ -8,7 +8,10 @@ import {
   createRoutineItemHandlers,
   getRoutineItemCardClassName,
 } from "./routineItemModel";
-import { ROUTINE_ITEM_DELETE_LABEL, ROUTINE_ITEM_EDIT_LABEL } from "./helpers";
+import {
+  ROUTINE_ITEM_DELETE_LABEL,
+  ROUTINE_ITEM_EDIT_LABEL,
+} from "./helpers";
 
 interface RoutineItemProps {
   routine: Routine;

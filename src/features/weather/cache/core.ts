@@ -1,11 +1,11 @@
-import type { WeatherData } from "../api";
+import { type WeatherData } from "../api";
 import {
   LOCATION_DIFF_THRESHOLD,
   WEATHER_CACHE_DURATION,
   WEATHER_CACHE_KEY,
   WEATHER_PREFERRED_LOCATION_KEY,
 } from "./constants";
-import type { CachedWeatherData } from "./types";
+import { type CachedWeatherData } from "./types";
 import { WEATHER_CONSOLE_MESSAGES } from "../texts";
 
 type PreferredWeatherLocation = {
@@ -91,30 +91,29 @@ export const savePreferredWeatherLocation = (
   }
 };
 
-export const getPreferredWeatherLocation =
-  (): PreferredWeatherLocation | null => {
-    try {
-      const stored = localStorage.getItem(WEATHER_PREFERRED_LOCATION_KEY);
-      if (!stored) return null;
+export const getPreferredWeatherLocation = (): PreferredWeatherLocation | null => {
+  try {
+    const stored = localStorage.getItem(WEATHER_PREFERRED_LOCATION_KEY);
+    if (!stored) return null;
 
-      const parsed = JSON.parse(stored) as Partial<PreferredWeatherLocation>;
-      if (
-        typeof parsed.latitude !== "number" ||
-        typeof parsed.longitude !== "number"
-      ) {
-        localStorage.removeItem(WEATHER_PREFERRED_LOCATION_KEY);
-        return null;
-      }
-
-      return {
-        latitude: parsed.latitude,
-        longitude: parsed.longitude,
-      };
-    } catch (error) {
-      console.warn(WEATHER_CONSOLE_MESSAGES.preferredLocationLoadFailed, error);
+    const parsed = JSON.parse(stored) as Partial<PreferredWeatherLocation>;
+    if (
+      typeof parsed.latitude !== "number" ||
+      typeof parsed.longitude !== "number"
+    ) {
+      localStorage.removeItem(WEATHER_PREFERRED_LOCATION_KEY);
       return null;
     }
-  };
+
+    return {
+      latitude: parsed.latitude,
+      longitude: parsed.longitude,
+    };
+  } catch (error) {
+    console.warn(WEATHER_CONSOLE_MESSAGES.preferredLocationLoadFailed, error);
+    return null;
+  }
+};
 
 export const clearPreferredWeatherLocation = (): void => {
   try {

@@ -1,5 +1,5 @@
 import type * as admin from "firebase-admin";
-import type { NotificationContext } from "../date-utils";
+import { type NotificationContext } from "../date-utils";
 import { calculateNotificationTime } from "./notification-time";
 import { sendRoutineNotification } from "./notification-delivery";
 import { shouldNotifyRoutine } from "./notification-filter";

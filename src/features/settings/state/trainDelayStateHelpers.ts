@@ -1,4 +1,4 @@
-import type { MonitoredLine } from "./constants";
+import { type MonitoredLine } from "./constants";
 
 type LineOption = { id: string; name: string; company: string };
 

@@ -1,7 +1,7 @@
 import { Bar, Doughnut, Line } from "react-chartjs-2";
-import type { ChartData } from "chart.js";
+import { type ChartData } from "chart.js";
 import { doughnutOptions, chartOptions } from "../chartOptions";
-import type { ViewMode } from "../types";
+import { type ViewMode } from "../types";
 import { STATISTICS_CHART_PANEL_TEXT } from "../../helpers";
 
 type Props = {

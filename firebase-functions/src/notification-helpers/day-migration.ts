@@ -1,5 +1,5 @@
 import { HOLIDAY_DAY_VALUE } from "../constants";
-import type { Routine } from "../types";
+import { type Routine } from "../types";
 
 /**
  * 旧 holidayMode フィールドを新しい daysOfWeek 形式に変換する（後方互換）

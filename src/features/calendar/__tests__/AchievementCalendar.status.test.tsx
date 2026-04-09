@@ -1,5 +1,5 @@
 import { screen } from "@testing-library/react";
-import type { DailyHistory } from "@/types/routine";
+import { type DailyHistory } from "@/types/routine";
 import {
   mockGetHistoryForMonth,
   mockGetPomodoroHistory,

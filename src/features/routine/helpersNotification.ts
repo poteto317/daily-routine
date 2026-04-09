@@ -1,4 +1,4 @@
-import type { Routine } from "@/types/routine";
+import { type Routine } from "@/types/routine";
 import { getTodayString } from "@/lib/storage/core";
 import {
   ROUTINE_NOTIFICATION_MESSAGES,

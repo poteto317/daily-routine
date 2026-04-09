@@ -1,10 +1,8 @@
-import type { User } from "firebase/auth";
-import type { SyncAdminStatusArgs } from "./authSyncAdminActions";
-import { syncAdminStatus } from "./authSyncAdminActions";
-import type {
-  AuthSyncSetters} from "./authSyncStateActions";
+import { type User } from "firebase/auth";
+import { syncAdminStatus, type SyncAdminStatusArgs } from "./authSyncAdminActions";
 import {
-  applyAuthenticatedUserState
+  applyAuthenticatedUserState,
+  type AuthSyncSetters,
 } from "./authSyncStateActions";
 
 type AuthStateStorageActions = {

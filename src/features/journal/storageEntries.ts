@@ -1,4 +1,4 @@
-import type { JournalEntry } from "@/types/routine";
+import { type JournalEntry } from "@/types/routine";
 import { generateId } from "@/lib/storage/core";
 import { getJournalHistory, saveJournalHistory } from "./storageData";
 import { getTodayDateString } from "./utils/journalDate";

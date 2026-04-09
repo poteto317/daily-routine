@@ -1,5 +1,5 @@
 import { getRoutines } from "@/features/routine/storage";
-import type { NotificationStatus } from "../state/constants";
+import { type NotificationStatus } from "../state/constants";
 import {
   getDebugMessageClassName,
   getNotificationButtonViewModel,

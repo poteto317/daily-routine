@@ -1,5 +1,4 @@
-import type { RefObject } from "react";
-import { useEffect } from "react";
+import { type RefObject, useEffect } from "react";
 import { shouldFocusTodoListForm } from "./managementPageStateActions";
 
 type UseTodoListManagementFormFocusParams = {

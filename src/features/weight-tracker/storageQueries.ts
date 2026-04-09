@@ -1,4 +1,4 @@
-import type { WeightRecord } from "@/types/routine";
+import { type WeightRecord } from "@/types/routine";
 import { getWeightHistory } from "./storageData";
 
 export const getWeightRecordsByPeriod = (

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { getFCMToken } from "@/lib/firebase";
-import type { NotificationStatus } from "./constants";
+import { type NotificationStatus } from "./constants";
 import { createNotificationTestActionResult } from "./notificationTestActionResult";
 import {
   getDeniedNotificationResult,

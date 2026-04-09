@@ -1,4 +1,4 @@
-import type { Routine, RoutineCategory } from "@/types/routine";
+import { type Routine, type RoutineCategory } from "@/types/routine";
 import { createRoutineDisplayResult } from "./routineDisplayResult";
 import { useRoutineDisplayProgress } from "./useRoutineDisplayProgress";
 import { useRoutineDisplayRoutines } from "./useRoutineDisplayRoutines";

@@ -1,6 +1,6 @@
 import { useCallback } from "react";
-import type { Routine } from "@/types/routine";
-import type { RoutineData, RoutineCrudOps } from "../pages/types";
+import { type Routine } from "@/types/routine";
+import { type RoutineData, type RoutineCrudOps } from "../pages/types";
 import { confirmDeleteRoutine } from "./deleteConfirm";
 import {
   applyRoutineSubmitPlan,

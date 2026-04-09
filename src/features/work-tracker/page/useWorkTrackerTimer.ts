@@ -1,5 +1,4 @@
-import type { Dispatch, MutableRefObject, SetStateAction} from "react";
-import { useEffect } from "react";
+import { type Dispatch, type MutableRefObject, type SetStateAction, useEffect } from "react";
 
 type Params = {
   isRunning: boolean;

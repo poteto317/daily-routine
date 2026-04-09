@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import type { Routine, RoutineCategory } from "@/types/routine";
+import { type Routine, type RoutineCategory } from "@/types/routine";
 import {
   filterRoutineDisplayByCategory,
   getDisplayRoutinesForViewMode,

@@ -1,4 +1,4 @@
-import type { Account } from "./types";
+import { type Account } from "./types";
 import {
   ACCOUNT_TABLE_DELETE_LABEL,
   ACCOUNT_TABLE_EDIT_LABEL,
@@ -80,10 +80,7 @@ export const AccountsTable = ({
                       </button>
                       <button
                         onClick={() => onDelete(account)}
-                        disabled={
-                          isAccountSelf(account.uid, currentUid) ||
-                          actionLoading
-                        }
+                        disabled={isAccountSelf(account.uid, currentUid) || actionLoading}
                         className="px-2 py-1 text-xs rounded bg-red-50 text-red-600 disabled:opacity-30"
                       >
                         {ACCOUNT_TABLE_DELETE_LABEL}

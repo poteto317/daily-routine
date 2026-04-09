@@ -1,4 +1,4 @@
-import type { Routine } from "../types";
+import { type Routine } from "../types";
 
 export const calculateNotificationTime = (
   routine: Routine,

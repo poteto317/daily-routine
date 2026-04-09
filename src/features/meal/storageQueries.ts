@@ -1,4 +1,4 @@
-import type { MealRecord } from "@/types/routine";
+import { type MealRecord } from "@/types/routine";
 import { getMealHistory } from "./storageData";
 
 export const getMealRecordsByDate = (date: string): MealRecord[] => {

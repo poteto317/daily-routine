@@ -1,6 +1,9 @@
 import { useState } from "react";
-import type { TransferOptions, TransferStatus } from "./constants";
-import { ALL_TRANSFER_OPTIONS } from "./constants";
+import {
+  ALL_TRANSFER_OPTIONS,
+  type TransferOptions,
+  type TransferStatus,
+} from "./constants";
 import { createImportTransferStateResult } from "./importTransferStateResult";
 import { useImportTransferAction } from "./useImportTransferAction";
 import { useImportTransferFileInput } from "./useImportTransferFileInput";

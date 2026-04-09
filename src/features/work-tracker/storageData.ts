@@ -1,4 +1,4 @@
-import type { WorkSessionHistory, WorkTemplate } from "@/types/routine";
+import { type WorkSessionHistory, type WorkTemplate } from "@/types/routine";
 import { getStorageItem, setStorageItem } from "@/lib/storage/core";
 import {
   STORAGE_KEY_WORK_SESSIONS,

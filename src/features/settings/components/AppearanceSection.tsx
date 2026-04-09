@@ -1,4 +1,4 @@
-import type { AppSettings } from "@/types/routine";
+import { type AppSettings } from "@/types/routine";
 import {
   getUpdatedSettingsForSwipeAction,
   SWIPE_ACTION_OPTIONS,

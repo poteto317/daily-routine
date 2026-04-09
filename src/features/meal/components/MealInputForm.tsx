@@ -1,4 +1,4 @@
-import type { MealType } from "@/types/routine";
+import { type MealType } from "@/types/routine";
 import {
   MEAL_CANCEL_LABEL,
   MEAL_DESCRIPTION_LABEL,

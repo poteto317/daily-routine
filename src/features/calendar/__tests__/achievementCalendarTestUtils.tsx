@@ -2,7 +2,7 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import * as holidays from "@/lib/holidays";
 import * as pomodoroStorage from "@/features/pomodoro/storage";
 import * as routineStorage from "@/features/routine/storage";
-import type { DailyHistory } from "@/types/routine";
+import { type DailyHistory } from "@/types/routine";
 import { AchievementCalendar } from "../AchievementCalendar";
 
 jest.mock("@/features/routine/storage", () => ({

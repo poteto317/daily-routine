@@ -1,5 +1,5 @@
 import { VISIBLE_FEATURE_ITEMS } from "../state/constants";
-import type { VisibleFeaturesState } from "../state/featureVisibility";
+import { type VisibleFeaturesState } from "../state/featureVisibility";
 
 export const FEATURE_VISIBILITY_ITEMS = VISIBLE_FEATURE_ITEMS;
 

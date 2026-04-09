@@ -1,4 +1,4 @@
-import type { Routine } from "../types";
+import { type Routine } from "../types";
 
 /**
  * 通知処理に使用するユーザーデータの型

@@ -1,5 +1,5 @@
 import { calculateRoutineDisplayProgress } from "./routineDisplayActions";
-import type { Routine } from "@/types/routine";
+import { type Routine } from "@/types/routine";
 import { createRoutineDisplayProgressResult } from "./routineDisplayProgressResult";
 
 type UseRoutineDisplayProgressParams = {

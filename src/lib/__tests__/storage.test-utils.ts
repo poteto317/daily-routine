@@ -1,4 +1,4 @@
-import type { Routine } from "@/types/routine";
+import { type Routine } from "@/types/routine";
 
 export const createRoutine = (overrides: Partial<Routine> = {}): Routine => ({
   id: "1",

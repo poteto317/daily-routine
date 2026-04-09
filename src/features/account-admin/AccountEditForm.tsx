@@ -1,5 +1,5 @@
 import { isAccountSelf } from "./accountUtils";
-import type { Account } from "./types";
+import { type Account } from "./types";
 import {
   ACCOUNT_EDIT_ADMIN_LABEL,
   ACCOUNT_EDIT_CANCEL_LABEL,

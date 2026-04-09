@@ -1,4 +1,4 @@
-import type { MealRecord } from "@/types/routine";
+import { type MealRecord } from "@/types/routine";
 import { CardPanel } from "@/components";
 import {
   formatMealDate,

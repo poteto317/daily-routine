@@ -1,5 +1,5 @@
 import { HOLIDAY_DAY_VALUE } from "../constants";
-import type { Routine } from "../types";
+import { type Routine } from "../types";
 import { getMigratedDaysOfWeek } from "./day-migration";
 
 /**
