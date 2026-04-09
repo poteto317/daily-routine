@@ -13,6 +13,15 @@ jest.mock("../state/useSettingsObjectState", () => ({
 }));
 
 jest.mock("@/features/settings/storage", () => ({
+  DEFAULT_SETTINGS: {
+    defaultDurationMinutes: 30,
+    defaultNotificationMinutes: 0,
+    theme: "light",
+    swipeAction: "delete",
+    pomodoroFocusMinutes: 25,
+    pomodoroBreakMinutes: 5,
+    backgroundRefreshIntervalMinutes: 30,
+  },
   getSettings: jest.fn(() => ({
     defaultDurationMinutes: 30,
     defaultNotificationMinutes: 0,

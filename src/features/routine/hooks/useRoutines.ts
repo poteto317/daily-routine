@@ -17,15 +17,19 @@ import { LOCAL_DATA_UPDATED_AT_EVENT } from "@/lib/storage/core";
 
 const BG_REFRESH_MIN_MS = 0;
 const BG_REFRESH_MAX_MS = 60 * 60 * 1000; // 60分
+const BG_REFRESH_DEFAULT_MS =
+  (DEFAULT_SETTINGS.backgroundRefreshIntervalMinutes ?? 30) * 60 * 1000;
 
 /**
  * localStorage から読んだ値は型崩れ（string/null/NaN）している可能性があるため
- * Number.isFinite + 範囲クランプで安全な ms 値に変換する。
+ * null/undefined・非有限数・負値を明示的にデフォルトへフォールバックし、
+ * 上限をクランプして安全な ms 値に変換する。
  */
 const resolveBackgroundRefreshIntervalMs = (raw: unknown): number => {
+  if (raw == null) return BG_REFRESH_DEFAULT_MS;
   const minutes = Number(raw);
-  if (!Number.isFinite(minutes)) {
-    return DEFAULT_SETTINGS.backgroundRefreshIntervalMinutes! * 60 * 1000;
+  if (!Number.isFinite(minutes) || minutes < 0) {
+    return BG_REFRESH_DEFAULT_MS;
   }
   const ms = minutes * 60 * 1000;
   return Math.min(Math.max(ms, BG_REFRESH_MIN_MS), BG_REFRESH_MAX_MS);

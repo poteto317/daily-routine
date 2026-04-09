@@ -29,15 +29,18 @@ const FALLBACK_INTERVAL_MS = 30 * 60 * 1000;
 
 // start() の呼び出しを実際に実行させるヘルパー
 // モック内で onTick コールバックを受け取り、setInterval でそのまま実行する
+// 戻り値の ID を afterEach で clearInterval するために保持する
+let activeIntervalId: ReturnType<typeof setInterval> | null = null;
 const activateRealTimer = () => {
   (mockStart as jest.Mock).mockImplementation((onTick: () => void) => {
-    setInterval(onTick, FALLBACK_INTERVAL_MS);
+    activeIntervalId = setInterval(onTick, FALLBACK_INTERVAL_MS);
   });
 };
 
 describe("useRoutineForegroundSync", () => {
   beforeEach(() => {
     jest.useFakeTimers();
+    activeIntervalId = null;
     (refreshRoutineState as jest.Mock).mockClear();
     mockStart.mockReset();
     mockStop.mockReset();
@@ -49,6 +52,10 @@ describe("useRoutineForegroundSync", () => {
   });
 
   afterEach(() => {
+    if (activeIntervalId !== null) {
+      clearInterval(activeIntervalId);
+      activeIntervalId = null;
+    }
     jest.useRealTimers();
   });
 

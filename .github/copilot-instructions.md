@@ -226,6 +226,26 @@ export const MyComponent = () => {
 - テストフレームワーク: Jest + React Testing Library
 - テストファイルは各機能の `__tests__/` ディレクトリに配置
 - ファイル名: `*.test.ts` または `*.test.tsx`
+- **タイマーリークの防止**: テスト内で `setInterval` / `setTimeout` を使ったモック実装（例: `mockStart.mockImplementation((onTick) => { setInterval(onTick, ms) })`）を書く場合は、返ってくる ID を変数に保持し、`afterEach` で必ず `clearInterval` / `clearTimeout` すること。`jest.useFakeTimers()` 下でも interval はテスト間をまたいで残る場合があり、予期せぬ tick / open handle の原因になる。
+
+```typescript
+// ❌ 悪い例 — interval ID を捨てているためテスト間をまたいでリークする
+const activateTimer = () => {
+  mockStart.mockImplementation((onTick: () => void) => {
+    setInterval(onTick, INTERVAL_MS);
+  });
+};
+
+// ✅ 良い例 — ID を保持して afterEach で確実にクリアする
+let activeIntervalId: ReturnType<typeof setInterval> | null = null;
+const activateTimer = () => {
+  mockStart.mockImplementation((onTick: () => void) => {
+    activeIntervalId = setInterval(onTick, INTERVAL_MS);
+  });
+};
+// beforeEach で activeIntervalId = null にリセット
+// afterEach で clearInterval(activeIntervalId) してから jest.useRealTimers()
+```
 
 ```bash
 npm run test        # watchモード
