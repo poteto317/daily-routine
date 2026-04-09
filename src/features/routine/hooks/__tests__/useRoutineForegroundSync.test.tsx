@@ -4,114 +4,264 @@ jest.mock("../routineStateSync", () => ({
   refreshRoutineState: jest.fn(),
 }));
 
+// useRoutineLastUpdateTracker は useRef(0) + useEffect で lastUpdateAt を管理する。
+// ここでは ref を直接制御できるようモックして、スキップ判定のテストを分離する。
+const mockLastUpdateRef = { current: 0 };
+jest.mock("../useRoutineLastUpdateTracker", () => ({
+  useRoutineLastUpdateTracker: jest.fn(() => mockLastUpdateRef),
+}));
+
+// useRoutineFallbackTimer は start/stop を返す。
+// compose ロジック（何の引数で start が呼ばれるか等）を検証するためモックする。
+const mockStart = jest.fn();
+const mockStop = jest.fn();
+jest.mock("../useRoutineFallbackTimer", () => ({
+  useRoutineFallbackTimer: jest.fn(() => ({
+    start: mockStart,
+    stop: mockStop,
+  })),
+}));
+
 import { refreshRoutineState } from "../routineStateSync";
 import { useRoutineForegroundSync } from "../useRoutineForegroundSync";
+
+const FALLBACK_INTERVAL_MS = 30 * 60 * 1000;
+
+// start() の呼び出しを実際に実行させるヘルパー
+// モック内で onTick コールバックを受け取り、setInterval でそのまま実行する
+// 戻り値の ID を afterEach で clearInterval するために保持する
+let activeIntervalId: ReturnType<typeof setInterval> | null = null;
+const activateRealTimer = () => {
+  (mockStart as jest.Mock).mockImplementation((onTick: () => void) => {
+    activeIntervalId = setInterval(onTick, FALLBACK_INTERVAL_MS);
+  });
+};
 
 describe("useRoutineForegroundSync", () => {
   beforeEach(() => {
     jest.useFakeTimers();
+    activeIntervalId = null;
     (refreshRoutineState as jest.Mock).mockClear();
+    mockStart.mockReset();
+    mockStop.mockReset();
+    mockLastUpdateRef.current = 0;
+    Object.defineProperty(document, "visibilityState", {
+      configurable: true,
+      get: () => "visible",
+    });
   });
 
   afterEach(() => {
+    if (activeIntervalId !== null) {
+      clearInterval(activeIntervalId);
+      activeIntervalId = null;
+    }
     jest.useRealTimers();
   });
 
-  it("visibilitychange が visible のとき refresh をスケジュールする", () => {
-    const setRoutines = jest.fn();
-    Object.defineProperty(document, "visibilityState", {
-      configurable: true,
-      get: () => "visible",
-    });
+  // ── イベント購読 ─────────────────────────────────────────────
 
-    renderHook(() => useRoutineForegroundSync(true, setRoutines));
+  it("visibilitychange(visible) で refreshRoutineState をスケジュールする", () => {
+    const setRoutines = jest.fn();
+    renderHook(() =>
+      useRoutineForegroundSync(true, setRoutines, [], FALLBACK_INTERVAL_MS),
+    );
 
     act(() => {
       document.dispatchEvent(new Event("visibilitychange"));
-      jest.runAllTimers();
+      jest.advanceTimersByTime(0);
     });
 
     expect(refreshRoutineState).toHaveBeenCalledWith(setRoutines);
   });
 
-  it("pageshow 発火で refresh をスケジュールする（visible なら実行される）", () => {
+  it("pageshow で refreshRoutineState をスケジュールする", () => {
     const setRoutines = jest.fn();
-    Object.defineProperty(document, "visibilityState", {
-      configurable: true,
-      get: () => "visible",
-    });
-
-    renderHook(() => useRoutineForegroundSync(true, setRoutines));
+    renderHook(() =>
+      useRoutineForegroundSync(true, setRoutines, [], FALLBACK_INTERVAL_MS),
+    );
 
     act(() => {
       window.dispatchEvent(new Event("pageshow"));
-      jest.runAllTimers();
+      jest.advanceTimersByTime(0);
     });
 
     expect(refreshRoutineState).toHaveBeenCalledWith(setRoutines);
   });
 
-  it("focus イベントで refresh をスケジュールする", () => {
+  it("focus で refreshRoutineState をスケジュールする", () => {
     const setRoutines = jest.fn();
-    Object.defineProperty(document, "visibilityState", {
-      configurable: true,
-      get: () => "visible",
-    });
-
-    renderHook(() => useRoutineForegroundSync(true, setRoutines));
+    renderHook(() =>
+      useRoutineForegroundSync(true, setRoutines, [], FALLBACK_INTERVAL_MS),
+    );
 
     act(() => {
       window.dispatchEvent(new Event("focus"));
-      jest.runAllTimers();
+      jest.advanceTimersByTime(0);
     });
 
     expect(refreshRoutineState).toHaveBeenCalledWith(setRoutines);
   });
 
-  it("タイマー実行前に hidden に戻った場合は refresh しない", () => {
+  // ── coalesce（同一 tick の重複排除）─────────────────────────
+
+  it("同一 tick で複数イベントが発火しても refresh は 1 回だけ呼ばれる", () => {
+    const setRoutines = jest.fn();
+    renderHook(() =>
+      useRoutineForegroundSync(true, setRoutines, [], FALLBACK_INTERVAL_MS),
+    );
+
+    act(() => {
+      document.dispatchEvent(new Event("visibilitychange"));
+      window.dispatchEvent(new Event("pageshow"));
+      window.dispatchEvent(new Event("focus"));
+      jest.advanceTimersByTime(0);
+    });
+
+    expect(refreshRoutineState).toHaveBeenCalledTimes(1);
+  });
+
+  // ── hidden 時のキャンセル ────────────────────────────────────
+
+  it("スケジュール登録後に hidden になると refresh しない", () => {
     const setRoutines = jest.fn();
     let visibilityState: DocumentVisibilityState = "visible";
     Object.defineProperty(document, "visibilityState", {
       configurable: true,
       get: () => visibilityState,
     });
-    renderHook(() => useRoutineForegroundSync(true, setRoutines));
+
+    renderHook(() =>
+      useRoutineForegroundSync(true, setRoutines, [], FALLBACK_INTERVAL_MS),
+    );
 
     act(() => {
-      // visible でスケジュール登録
       document.dispatchEvent(new Event("visibilitychange"));
-      // タイマー実行前に hidden に遷移
       visibilityState = "hidden";
-      jest.runAllTimers();
+      jest.advanceTimersByTime(0);
     });
 
     expect(refreshRoutineState).not.toHaveBeenCalled();
   });
 
-  it("複数イベントが同一 tick で発火しても refresh は 1 回だけ呼ばれる", () => {
-    const setRoutines = jest.fn();
+  it("visibilitychange(hidden) で stopFallbackTimer を呼ぶ", () => {
+    let visibilityState: DocumentVisibilityState = "visible";
     Object.defineProperty(document, "visibilityState", {
       configurable: true,
-      get: () => "visible",
+      get: () => visibilityState,
     });
 
-    renderHook(() => useRoutineForegroundSync(true, setRoutines));
+    renderHook(() =>
+      useRoutineForegroundSync(true, jest.fn(), [], FALLBACK_INTERVAL_MS),
+    );
+    mockStop.mockClear();
+
+    act(() => {
+      visibilityState = "hidden";
+      document.dispatchEvent(new Event("visibilitychange"));
+    });
+
+    expect(mockStop).toHaveBeenCalled();
+  });
+
+  // ── フォールバックタイマーの compose ─────────────────────────
+
+  it("マウント時に startFallbackTimer を呼ぶ", () => {
+    renderHook(() =>
+      useRoutineForegroundSync(true, jest.fn(), [], FALLBACK_INTERVAL_MS),
+    );
+
+    expect(mockStart).toHaveBeenCalledWith(expect.any(Function));
+  });
+
+  it("visibilitychange(visible) 後に startFallbackTimer を呼ぶ", () => {
+    renderHook(() =>
+      useRoutineForegroundSync(true, jest.fn(), [], FALLBACK_INTERVAL_MS),
+    );
+    mockStart.mockClear();
 
     act(() => {
       document.dispatchEvent(new Event("visibilitychange"));
-      window.dispatchEvent(new Event("pageshow"));
-      window.dispatchEvent(new Event("focus"));
-      jest.runAllTimers();
     });
 
-    expect(refreshRoutineState).toHaveBeenCalledTimes(1);
+    expect(mockStart).toHaveBeenCalledWith(expect.any(Function));
   });
 
-  it("未ロードなら listener を登録しない", () => {
+  it("pageshow 後に startFallbackTimer を呼ぶ", () => {
+    renderHook(() =>
+      useRoutineForegroundSync(true, jest.fn(), [], FALLBACK_INTERVAL_MS),
+    );
+    mockStart.mockClear();
+
+    act(() => {
+      window.dispatchEvent(new Event("pageshow"));
+    });
+
+    expect(mockStart).toHaveBeenCalledWith(expect.any(Function));
+  });
+
+  it("focus 後に startFallbackTimer を呼ぶ", () => {
+    renderHook(() =>
+      useRoutineForegroundSync(true, jest.fn(), [], FALLBACK_INTERVAL_MS),
+    );
+    mockStart.mockClear();
+
+    act(() => {
+      window.dispatchEvent(new Event("focus"));
+    });
+
+    expect(mockStart).toHaveBeenCalledWith(expect.any(Function));
+  });
+
+  // ── フォールバック tick のスキップ判定 ───────────────────────
+
+  it("フォールバック tick: visible かつ十分に時間が経過していれば refresh する", () => {
+    const setRoutines = jest.fn();
+    activateRealTimer();
+
+    mockLastUpdateRef.current = 0; // 遠い過去
+    renderHook(() =>
+      useRoutineForegroundSync(true, setRoutines, [], FALLBACK_INTERVAL_MS),
+    );
+
+    act(() => {
+      jest.setSystemTime(FALLBACK_INTERVAL_MS + 1);
+      jest.advanceTimersByTime(FALLBACK_INTERVAL_MS);
+    });
+
+    expect(refreshRoutineState).toHaveBeenCalledWith(setRoutines);
+  });
+
+  it("フォールバック tick: 直近でルーティン更新があればスキップする", () => {
+    const setRoutines = jest.fn();
+    activateRealTimer();
+
+    renderHook(() =>
+      useRoutineForegroundSync(true, setRoutines, [], FALLBACK_INTERVAL_MS),
+    );
+
+    // 間隔の直前にルーティン更新があった状況をシミュレート
+    act(() => {
+      jest.advanceTimersByTime(FALLBACK_INTERVAL_MS - 60_000);
+    });
+    mockLastUpdateRef.current = Date.now(); // 直近更新
+
+    act(() => {
+      jest.advanceTimersByTime(60_000);
+    });
+
+    expect(refreshRoutineState).not.toHaveBeenCalled();
+  });
+
+  // ── isLoaded フラグ ──────────────────────────────────────────
+
+  it("isLoaded=false のとき listener を登録しない", () => {
     const addSpy = jest.spyOn(window, "addEventListener");
     const docAddSpy = jest.spyOn(document, "addEventListener");
 
-    renderHook(() => useRoutineForegroundSync(false, jest.fn()));
+    renderHook(() =>
+      useRoutineForegroundSync(false, jest.fn(), [], FALLBACK_INTERVAL_MS),
+    );
 
     expect(addSpy).not.toHaveBeenCalledWith("pageshow", expect.any(Function));
     expect(addSpy).not.toHaveBeenCalledWith("focus", expect.any(Function));
@@ -124,12 +274,14 @@ describe("useRoutineForegroundSync", () => {
     docAddSpy.mockRestore();
   });
 
+  // ── クリーンアップ ───────────────────────────────────────────
+
   it("アンマウント時に listener を解除する", () => {
     const removeSpy = jest.spyOn(window, "removeEventListener");
     const docRemoveSpy = jest.spyOn(document, "removeEventListener");
 
     const { unmount } = renderHook(() =>
-      useRoutineForegroundSync(true, jest.fn()),
+      useRoutineForegroundSync(true, jest.fn(), [], FALLBACK_INTERVAL_MS),
     );
     unmount();
 
@@ -144,20 +296,30 @@ describe("useRoutineForegroundSync", () => {
     docRemoveSpy.mockRestore();
   });
 
-  it("アンマウント時にペンディング中のタイマーをキャンセルする", () => {
+  it("アンマウント時にペンディング中の setTimeout をキャンセルする", () => {
     const clearTimeoutSpy = jest.spyOn(globalThis, "clearTimeout");
 
     const { unmount } = renderHook(() =>
-      useRoutineForegroundSync(true, jest.fn()),
+      useRoutineForegroundSync(true, jest.fn(), [], FALLBACK_INTERVAL_MS),
     );
 
     act(() => {
       window.dispatchEvent(new Event("focus"));
     });
-
     unmount();
 
     expect(clearTimeoutSpy).toHaveBeenCalled();
     clearTimeoutSpy.mockRestore();
+  });
+
+  it("アンマウント時に stopFallbackTimer を呼ぶ", () => {
+    const { unmount } = renderHook(() =>
+      useRoutineForegroundSync(true, jest.fn(), [], FALLBACK_INTERVAL_MS),
+    );
+    mockStop.mockClear();
+
+    unmount();
+
+    expect(mockStop).toHaveBeenCalled();
   });
 });

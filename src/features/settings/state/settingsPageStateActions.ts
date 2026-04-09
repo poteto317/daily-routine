@@ -7,6 +7,7 @@ type ParsedSettingsNumbers = {
   defaultNotificationMinutes: number;
   pomodoroFocusMinutes: number;
   pomodoroBreakMinutes: number;
+  backgroundRefreshIntervalMinutes: number;
 };
 
 type BuildUpdatedSettingsArgs = {
@@ -15,6 +16,7 @@ type BuildUpdatedSettingsArgs = {
   notificationInput: string;
   pomodoroFocusInput: string;
   pomodoroBreakInput: string;
+  backgroundRefreshIntervalInput: string;
   trainDelayEnabled: boolean;
   monitoredLines: MonitoredLine[];
   visibleFeatures: VisibleFeaturesState;
@@ -44,17 +46,28 @@ export const parseSettingsNumbers = (
   notificationInput: string,
   pomodoroFocusInput: string,
   pomodoroBreakInput: string,
+  backgroundRefreshIntervalInput: string,
 ): ParsedSettingsNumbers | null => {
   const defaultDurationMinutes = parseSettingNumber(durationInput, 1, 1440);
-  const defaultNotificationMinutes = parseSettingNumber(notificationInput, 0, 120);
+  const defaultNotificationMinutes = parseSettingNumber(
+    notificationInput,
+    0,
+    120,
+  );
   const pomodoroFocusMinutes = parseSettingNumber(pomodoroFocusInput, 1, 90);
   const pomodoroBreakMinutes = parseSettingNumber(pomodoroBreakInput, 1, 30);
+  const backgroundRefreshIntervalMinutes = parseSettingNumber(
+    backgroundRefreshIntervalInput,
+    0,
+    60,
+  );
 
   if (
     defaultDurationMinutes === null ||
     defaultNotificationMinutes === null ||
     pomodoroFocusMinutes === null ||
-    pomodoroBreakMinutes === null
+    pomodoroBreakMinutes === null ||
+    backgroundRefreshIntervalMinutes === null
   ) {
     return null;
   }
@@ -64,6 +77,7 @@ export const parseSettingsNumbers = (
     defaultNotificationMinutes,
     pomodoroFocusMinutes,
     pomodoroBreakMinutes,
+    backgroundRefreshIntervalMinutes,
   };
 };
 
@@ -73,6 +87,7 @@ export const buildUpdatedSettings = ({
   notificationInput,
   pomodoroFocusInput,
   pomodoroBreakInput,
+  backgroundRefreshIntervalInput,
   trainDelayEnabled,
   monitoredLines,
   visibleFeatures,
@@ -83,6 +98,7 @@ export const buildUpdatedSettings = ({
     notificationInput,
     pomodoroFocusInput,
     pomodoroBreakInput,
+    backgroundRefreshIntervalInput,
   );
 
   if (!parsedNumbers) {

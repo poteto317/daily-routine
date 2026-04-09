@@ -12,6 +12,8 @@ jest.mock("@/features/routine/storage", () => ({
 
 jest.mock("@/lib/storage/core", () => ({
   getTodayString: jest.fn(() => "2024-01-15"),
+  getUserScopedKey: jest.fn((key: string) => key),
+  setStorageItem: jest.fn(),
 }));
 
 jest.mock("@/lib/holidays", () => ({

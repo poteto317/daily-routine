@@ -1,4 +1,10 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  within,
+} from "@testing-library/react";
 import { setupSettingsPageMocks } from "./SettingsPage.test.utils";
 import { SettingsPage } from "../SettingsPage";
 
@@ -12,7 +18,14 @@ describe("SettingsPage render/autosave", () => {
 
   it("デフォルト値とポモドーロ設定が表示される", () => {
     render(<SettingsPage />);
-    expect(screen.getByDisplayValue("30")).toBeInTheDocument();
+    const durationSection = screen
+      .getByText("デフォルト所要時間（分）")
+      .closest("div")!;
+    expect(within(durationSection).getByRole("spinbutton")).toHaveValue(30);
+    const bgRefreshSection = screen
+      .getByText("バックグラウンド復帰リフレッシュ間隔（分）")
+      .closest("div")!;
+    expect(within(bgRefreshSection).getByRole("spinbutton")).toHaveValue(30);
     expect(screen.getByDisplayValue("0")).toBeInTheDocument();
     expect(screen.getByText("🍅 ポモドーロタイマー設定")).toBeInTheDocument();
     expect(screen.getByDisplayValue("25")).toBeInTheDocument();

@@ -21,6 +21,7 @@ describe("useSettingsInputState", () => {
         notificationInput: "0",
         pomodoroFocusInput: "25",
         pomodoroBreakInput: "5",
+        backgroundRefreshIntervalInput: "30",
       }),
     );
 
@@ -29,10 +30,12 @@ describe("useSettingsInputState", () => {
       notificationInput: "0",
       pomodoroFocusInput: "25",
       pomodoroBreakInput: "5",
+      backgroundRefreshIntervalInput: "30",
       setDurationInput: expect.any(Function),
       setNotificationInput: expect.any(Function),
       setPomodoroFocusInput: expect.any(Function),
       setPomodoroBreakInput: expect.any(Function),
+      setBackgroundRefreshIntervalInput: expect.any(Function),
     });
 
     act(() => {
@@ -51,10 +54,12 @@ describe("useSettingsInputState", () => {
       notificationInput: "10",
       pomodoroFocusInput: "50",
       pomodoroBreakInput: "15",
+      backgroundRefreshIntervalInput: "30",
       setDurationInput: expect.any(Function),
       setNotificationInput: expect.any(Function),
       setPomodoroFocusInput: expect.any(Function),
       setPomodoroBreakInput: expect.any(Function),
+      setBackgroundRefreshIntervalInput: expect.any(Function),
     });
   });
 });

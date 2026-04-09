@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { getSettings } from "@/features/settings/storage";
+import { DEFAULT_SETTINGS, getSettings } from "@/features/settings/storage";
 import { createSettingsFormStateResult } from "./settingsFormStateResult";
 import { useSettingsInputState } from "./useSettingsInputState";
 import { useSettingsObjectState } from "./useSettingsObjectState";
@@ -14,6 +14,10 @@ const createInitialSettingsFormState = () => {
     notificationInput: String(initialSettings.defaultNotificationMinutes),
     pomodoroFocusInput: String(initialSettings.pomodoroFocusMinutes),
     pomodoroBreakInput: String(initialSettings.pomodoroBreakMinutes),
+    backgroundRefreshIntervalInput: String(
+      initialSettings.backgroundRefreshIntervalMinutes ??
+        DEFAULT_SETTINGS.backgroundRefreshIntervalMinutes,
+    ),
   };
 };
 
@@ -29,6 +33,8 @@ export const useSettingsFormState = () => {
     setNotificationInput,
     setPomodoroBreakInput,
     setPomodoroFocusInput,
+    backgroundRefreshIntervalInput,
+    setBackgroundRefreshIntervalInput,
   } = useSettingsInputState(initialState);
   const handleThemeChange = useSettingsThemeAction({ setSettings });
 
@@ -43,6 +49,8 @@ export const useSettingsFormState = () => {
     setPomodoroFocusInput,
     pomodoroBreakInput,
     setPomodoroBreakInput,
+    backgroundRefreshIntervalInput,
+    setBackgroundRefreshIntervalInput,
     handleThemeChange,
   });
 };

@@ -30,6 +30,16 @@ export const DEFAULT_NOTIFICATION_FIELD: NumberFieldViewModel = {
     "dark:bg-white dark:text-gray-900 border-gray-300 dark:border-gray-400",
 };
 
+export const BACKGROUND_REFRESH_FIELD: NumberFieldViewModel = {
+  label: "バックグラウンド復帰リフレッシュ間隔（分）",
+  description:
+    "アプリをバックグラウンドから戻した際に、ルーティンの背景色（経過色）を再評価するまでの最大待機時間です。0を設定すると定期的な再評価は行われません。",
+  min: 0,
+  max: 60,
+  errorText: "0～60分の範囲で入力してください（0で定期更新なし）",
+  hint: "推奨: 30分",
+};
+
 export const POMODORO_FIELDS: NumberFieldViewModel[] = [
   {
     label: "集中時間（分）",

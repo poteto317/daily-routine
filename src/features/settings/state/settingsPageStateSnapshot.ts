@@ -10,6 +10,7 @@ type CreateUpdatedSettingsSnapshotArgs = {
     notificationInput: string;
     pomodoroFocusInput: string;
     pomodoroBreakInput: string;
+    backgroundRefreshIntervalInput: string;
   };
   trainDelay: {
     trainDelayEnabled: boolean;
@@ -31,6 +32,7 @@ export const createUpdatedSettingsSnapshot = ({
     notificationInput: form.notificationInput,
     pomodoroFocusInput: form.pomodoroFocusInput,
     pomodoroBreakInput: form.pomodoroBreakInput,
+    backgroundRefreshIntervalInput: form.backgroundRefreshIntervalInput,
     trainDelayEnabled: trainDelay.trainDelayEnabled,
     monitoredLines: trainDelay.monitoredLines,
     visibleFeatures,

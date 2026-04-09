@@ -1,4 +1,10 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  within,
+} from "@testing-library/react";
 import {
   defaultSettings,
   setupSettingsPageMocks,
@@ -83,7 +89,12 @@ describe("SettingsPage features", () => {
     render(<SettingsPage />);
     expect(screen.getByDisplayValue("45")).toBeInTheDocument();
     expect(screen.getByDisplayValue("15")).toBeInTheDocument();
-    expect(screen.getByDisplayValue("30")).toBeInTheDocument();
+    const focusSection = screen.getByText("集中時間（分）").closest("div")!;
+    expect(within(focusSection).getByRole("spinbutton")).toHaveValue(30);
+    const bgRefreshSection = screen
+      .getByText("バックグラウンド復帰リフレッシュ間隔（分）")
+      .closest("div")!;
+    expect(within(bgRefreshSection).getByRole("spinbutton")).toHaveValue(30);
     expect(screen.getByDisplayValue("10")).toBeInTheDocument();
   });
 });

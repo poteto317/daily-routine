@@ -53,6 +53,7 @@ export const defaultSettings: AppSettings = {
   swipeAction: "delete",
   pomodoroFocusMinutes: 25,
   pomodoroBreakMinutes: 5,
+  backgroundRefreshIntervalMinutes: 30,
 };
 
 export const setupSettingsPageMocks = () => {
