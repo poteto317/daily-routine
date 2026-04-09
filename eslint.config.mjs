@@ -21,6 +21,20 @@ const eslintConfig = defineConfig([
     // Ignore test coverage reports:
     "coverage/**",
   ]),
+  {
+    rules: {
+      // 型としてのみ使用する import は必ず `import type` にする（コーディングルール §2 を自動強制）。
+      // disallowTypeAnnotations: false は ReturnType<typeof import(...)> 形式を許容するため。
+      "@typescript-eslint/consistent-type-imports": [
+        "error",
+        {
+          prefer: "type-imports",
+          fixStyle: "separate-type-imports",
+          disallowTypeAnnotations: false,
+        },
+      ],
+    },
+  },
 ]);
 
 export default eslintConfig;
