@@ -42,8 +42,8 @@ export const useRoutines = (): UseRoutinesResult => {
   const [backgroundRefreshIntervalMs, setBackgroundRefreshIntervalMs] =
     useState(readBackgroundRefreshIntervalMs);
 
-  // 設定画面で backgroundRefreshIntervalMinutes が変更されたとき
-  // LOCAL_DATA_UPDATED_AT_EVENT が発火するので、そのタイミングで再読み込みする
+  // LOCAL_DATA_UPDATED_AT_EVENT はあらゆるローカル更新（settings 変更・ルーティン保存等）で発火する。
+  // ここでは設定変更のタイミングで backgroundRefreshIntervalMinutes を再読み込みするために利用する。
   useEffect(() => {
     const handleSettingsChange = () => {
       setBackgroundRefreshIntervalMs(readBackgroundRefreshIntervalMs());

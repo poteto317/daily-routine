@@ -1,4 +1,10 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  within,
+} from "@testing-library/react";
 import {
   defaultSettings,
   setupSettingsPageMocks,
@@ -83,8 +89,12 @@ describe("SettingsPage features", () => {
     render(<SettingsPage />);
     expect(screen.getByDisplayValue("45")).toBeInTheDocument();
     expect(screen.getByDisplayValue("15")).toBeInTheDocument();
-    // pomodoroFocusMinutes(30) と backgroundRefreshIntervalMinutes(30 デフォルト) の 2 フィールドが表示される
-    expect(screen.getAllByDisplayValue("30")).toHaveLength(2);
+    const focusSection = screen.getByText("集中時間（分）").closest("div")!;
+    expect(within(focusSection).getByRole("spinbutton")).toHaveValue(30);
+    const bgRefreshSection = screen
+      .getByText("バックグラウンド復帰リフレッシュ間隔（分）")
+      .closest("div")!;
+    expect(within(bgRefreshSection).getByRole("spinbutton")).toHaveValue(30);
     expect(screen.getByDisplayValue("10")).toBeInTheDocument();
   });
 });
