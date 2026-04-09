@@ -29,10 +29,7 @@ jest.mock("../useRoutinesResult", () => ({
 jest.mock("@/features/settings", () => ({
   DEFAULT_SETTINGS: { backgroundRefreshIntervalMinutes: 30 },
   getSettings: jest.fn(() => ({ backgroundRefreshIntervalMinutes: 30 })),
-}));
-
-jest.mock("@/lib/storage/core", () => ({
-  LOCAL_DATA_UPDATED_AT_EVENT: "local-data-updated-at-changed",
+  SETTINGS_UPDATED_EVENT: "settings-updated",
 }));
 
 import { initializeRoutineState } from "../routineLifecycleState";
@@ -165,7 +162,7 @@ describe("useRoutines", () => {
     );
   });
 
-  it("LOCAL_DATA_UPDATED_AT_EVENT 発火後に backgroundRefreshIntervalMs が更新される", () => {
+  it("SETTINGS_UPDATED_EVENT 発火後に backgroundRefreshIntervalMs が更新される", () => {
     renderHook(() => useRoutines());
 
     // 初期ロード時のコールを確認
@@ -181,7 +178,7 @@ describe("useRoutines", () => {
       backgroundRefreshIntervalMinutes: 15,
     });
     act(() => {
-      window.dispatchEvent(new Event("local-data-updated-at-changed"));
+      window.dispatchEvent(new Event("settings-updated"));
     });
 
     expect(useRoutineStateSync).toHaveBeenLastCalledWith(

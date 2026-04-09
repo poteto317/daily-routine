@@ -12,8 +12,11 @@ import { useRoutineMutations } from "./useRoutineMutations";
 import { useRoutineQueries } from "./useRoutineQueries";
 import type { UseRoutinesResult } from "./routineHookContract";
 import { createUseRoutinesResult } from "./useRoutinesResult";
-import { DEFAULT_SETTINGS, getSettings } from "@/features/settings";
-import { LOCAL_DATA_UPDATED_AT_EVENT } from "@/lib/storage/core";
+import {
+  DEFAULT_SETTINGS,
+  getSettings,
+  SETTINGS_UPDATED_EVENT,
+} from "@/features/settings";
 
 const BG_REFRESH_MIN_MS = 0;
 const BG_REFRESH_MAX_MS = 60 * 60 * 1000; // 60分
@@ -46,18 +49,15 @@ export const useRoutines = (): UseRoutinesResult => {
   const [backgroundRefreshIntervalMs, setBackgroundRefreshIntervalMs] =
     useState(readBackgroundRefreshIntervalMs);
 
-  // LOCAL_DATA_UPDATED_AT_EVENT はあらゆるローカル更新（settings 変更・ルーティン保存等）で発火する。
-  // ここでは設定変更のタイミングで backgroundRefreshIntervalMinutes を再読み込みするために利用する。
+  // SETTINGS_UPDATED_EVENT は saveSettings が呼ばれたときのみ発火する。
+  // ルーティン保存など高頻度な操作では発火されないため、不要な getSettings() 呼び出しを防ぐ。
   useEffect(() => {
     const handleSettingsChange = () => {
       setBackgroundRefreshIntervalMs(readBackgroundRefreshIntervalMs());
     };
-    window.addEventListener(LOCAL_DATA_UPDATED_AT_EVENT, handleSettingsChange);
+    window.addEventListener(SETTINGS_UPDATED_EVENT, handleSettingsChange);
     return () => {
-      window.removeEventListener(
-        LOCAL_DATA_UPDATED_AT_EVENT,
-        handleSettingsChange,
-      );
+      window.removeEventListener(SETTINGS_UPDATED_EVENT, handleSettingsChange);
     };
   }, []);
 

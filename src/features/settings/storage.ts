@@ -4,6 +4,9 @@
 import { AppSettings } from "@/types/routine";
 import { setStorageItem, getUserScopedKey } from "@/lib/storage/core";
 
+/** saveSettings が呼ばれたときに window で発火する CustomEvent 名 */
+export const SETTINGS_UPDATED_EVENT = "settings-updated";
+
 const STORAGE_KEY_SETTINGS = "app-settings";
 
 const DEFAULT_SETTINGS: AppSettings = {
@@ -61,4 +64,7 @@ export const getSettings = (): AppSettings => {
  */
 export const saveSettings = (settings: AppSettings): void => {
   setStorageItem(STORAGE_KEY_SETTINGS, settings);
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new CustomEvent(SETTINGS_UPDATED_EVENT));
+  }
 };
