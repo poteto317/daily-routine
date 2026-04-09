@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, type MutableRefObject } from "react";
 import type { Routine } from "@/types/routine";
 
 /**
@@ -20,7 +20,7 @@ const hasElementChange = (prev: Routine[], next: Routine[]): boolean => {
  */
 export const useRoutineLastUpdateTracker = (
   routines: Routine[],
-): React.RefObject<number> => {
+): MutableRefObject<number> => {
   const lastUpdateAtRef = useRef<number>(0);
   const prevRoutinesRef = useRef<Routine[]>([]);
 
