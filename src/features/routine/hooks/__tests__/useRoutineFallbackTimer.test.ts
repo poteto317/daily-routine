@@ -106,6 +106,21 @@ describe("useRoutineFallbackTimer", () => {
     // エラーが発生しないことを確認
   });
 
+  it("intervalMs が変わると実行中のタイマーが停止する", () => {
+    const onTick = jest.fn();
+    const { result, rerender } = renderHook(
+      ({ ms }: { ms: number }) => useRoutineFallbackTimer(ms),
+      { initialProps: { ms: 1000 } },
+    );
+
+    act(() => result.current.start(onTick));
+    act(() => jest.advanceTimersByTime(1000)); // 1 回発火
+    rerender({ ms: 2000 }); // intervalMs 変更 → 自動停止
+    act(() => jest.advanceTimersByTime(5000)); // 停止しているので追加発火なし
+
+    expect(onTick).toHaveBeenCalledTimes(1);
+  });
+
   it("intervalMs が変わると start/stop 参照が更新される", () => {
     const { result, rerender } = renderHook(
       ({ ms }: { ms: number }) => useRoutineFallbackTimer(ms),

@@ -1,7 +1,7 @@
 /**
  * 設定関連のストレージ操作
  */
-import { AppSettings } from "@/types/routine";
+import type { AppSettings } from "@/types/routine";
 import { setStorageItem, getUserScopedKey } from "@/lib/storage/core";
 
 /** saveSettings が呼ばれたときに window で発火する CustomEvent 名 */

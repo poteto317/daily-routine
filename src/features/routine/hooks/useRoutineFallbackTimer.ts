@@ -38,6 +38,10 @@ export const useRoutineFallbackTimer = (
   );
 
   useEffect(() => {
+    stop();
+  }, [intervalMs, stop]);
+
+  useEffect(() => {
     return () => stop();
   }, [stop]);
 

@@ -16,7 +16,7 @@ import {
   DEFAULT_SETTINGS,
   getSettings,
   SETTINGS_UPDATED_EVENT,
-} from "@/features/settings";
+} from "@/features/settings/storage";
 
 const BG_REFRESH_MIN_MS = 0;
 const BG_REFRESH_MAX_MS = 60 * 60 * 1000; // 60分

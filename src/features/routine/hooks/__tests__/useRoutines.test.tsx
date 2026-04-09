@@ -26,7 +26,7 @@ jest.mock("../useRoutinesResult", () => ({
   createUseRoutinesResult: jest.fn(),
 }));
 
-jest.mock("@/features/settings", () => ({
+jest.mock("@/features/settings/storage", () => ({
   DEFAULT_SETTINGS: { backgroundRefreshIntervalMinutes: 30 },
   getSettings: jest.fn(() => ({ backgroundRefreshIntervalMinutes: 30 })),
   SETTINGS_UPDATED_EVENT: "settings-updated",
@@ -41,7 +41,7 @@ import { createUseRoutinesResult } from "../useRoutinesResult";
 import { useRoutineMutations } from "../useRoutineMutations";
 import { useRoutineQueries } from "../useRoutineQueries";
 import { useRoutineStateSync } from "../useRoutineStateSync";
-import { getSettings } from "@/features/settings";
+import { getSettings } from "@/features/settings/storage";
 import { useRoutines } from "../useRoutines";
 
 const mockRoutines: Routine[] = [
