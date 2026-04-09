@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { type Routine } from "@/types/routine";
 import { initializeRoutineState } from "./routineLifecycleState";
 import {
@@ -13,20 +13,49 @@ import { useRoutineQueries } from "./useRoutineQueries";
 import type { UseRoutinesResult } from "./routineHookContract";
 import { createUseRoutinesResult } from "./useRoutinesResult";
 import { DEFAULT_SETTINGS, getSettings } from "@/features/settings";
+import { LOCAL_DATA_UPDATED_AT_EVENT } from "@/lib/storage/core";
 
-const initializeBackgroundRefreshIntervalMs = (): number =>
-  // getSettings() は DEFAULT_SETTINGS とマージ済みのため backgroundRefreshIntervalMinutes は常に数値で返る
-  (getSettings().backgroundRefreshIntervalMinutes ??
-    DEFAULT_SETTINGS.backgroundRefreshIntervalMinutes!) *
-  60 *
-  1000;
+const BG_REFRESH_MIN_MS = 0;
+const BG_REFRESH_MAX_MS = 60 * 60 * 1000; // 60分
+
+/**
+ * localStorage から読んだ値は型崩れ（string/null/NaN）している可能性があるため
+ * Number.isFinite + 範囲クランプで安全な ms 値に変換する。
+ */
+const resolveBackgroundRefreshIntervalMs = (raw: unknown): number => {
+  const minutes = Number(raw);
+  if (!Number.isFinite(minutes)) {
+    return DEFAULT_SETTINGS.backgroundRefreshIntervalMinutes! * 60 * 1000;
+  }
+  const ms = minutes * 60 * 1000;
+  return Math.min(Math.max(ms, BG_REFRESH_MIN_MS), BG_REFRESH_MAX_MS);
+};
+
+const readBackgroundRefreshIntervalMs = (): number =>
+  resolveBackgroundRefreshIntervalMs(
+    getSettings().backgroundRefreshIntervalMinutes,
+  );
 
 export const useRoutines = (): UseRoutinesResult => {
   const [routines, setRoutines] = useState<Routine[]>(initializeRoutineState);
   const [isLoaded] = useState(true);
-  const [backgroundRefreshIntervalMs] = useState(
-    initializeBackgroundRefreshIntervalMs,
-  );
+  const [backgroundRefreshIntervalMs, setBackgroundRefreshIntervalMs] =
+    useState(readBackgroundRefreshIntervalMs);
+
+  // 設定画面で backgroundRefreshIntervalMinutes が変更されたとき
+  // LOCAL_DATA_UPDATED_AT_EVENT が発火するので、そのタイミングで再読み込みする
+  useEffect(() => {
+    const handleSettingsChange = () => {
+      setBackgroundRefreshIntervalMs(readBackgroundRefreshIntervalMs());
+    };
+    window.addEventListener(LOCAL_DATA_UPDATED_AT_EVENT, handleSettingsChange);
+    return () => {
+      window.removeEventListener(
+        LOCAL_DATA_UPDATED_AT_EVENT,
+        handleSettingsChange,
+      );
+    };
+  }, []);
 
   useRoutineStateSync(
     isLoaded,

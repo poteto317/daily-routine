@@ -26,9 +26,13 @@ jest.mock("../useRoutinesResult", () => ({
   createUseRoutinesResult: jest.fn(),
 }));
 
-jest.mock("@/features/settings/storage", () => ({
+jest.mock("@/features/settings", () => ({
   DEFAULT_SETTINGS: { backgroundRefreshIntervalMinutes: 30 },
   getSettings: jest.fn(() => ({ backgroundRefreshIntervalMinutes: 30 })),
+}));
+
+jest.mock("@/lib/storage/core", () => ({
+  LOCAL_DATA_UPDATED_AT_EVENT: "local-data-updated-at-changed",
 }));
 
 import { initializeRoutineState } from "../routineLifecycleState";
@@ -40,6 +44,7 @@ import { createUseRoutinesResult } from "../useRoutinesResult";
 import { useRoutineMutations } from "../useRoutineMutations";
 import { useRoutineQueries } from "../useRoutineQueries";
 import { useRoutineStateSync } from "../useRoutineStateSync";
+import { getSettings } from "@/features/settings";
 import { useRoutines } from "../useRoutines";
 
 const mockRoutines: Routine[] = [
@@ -157,6 +162,64 @@ describe("useRoutines", () => {
     expect(saveAndSyncRoutines).toHaveBeenCalledWith(
       mockRoutines,
       process.env.NEXT_PUBLIC_FUNCTIONS_URL,
+    );
+  });
+
+  it("LOCAL_DATA_UPDATED_AT_EVENT 発火後に backgroundRefreshIntervalMs が更新される", () => {
+    renderHook(() => useRoutines());
+
+    // 初期ロード時のコールを確認
+    expect(useRoutineStateSync).toHaveBeenLastCalledWith(
+      true,
+      expect.any(Function),
+      mockRoutines,
+      1800000, // 30分 × 60 × 1000
+    );
+
+    // 設定が 15分 に変更されたとシミュレート
+    (getSettings as jest.Mock).mockReturnValue({
+      backgroundRefreshIntervalMinutes: 15,
+    });
+    act(() => {
+      window.dispatchEvent(new Event("local-data-updated-at-changed"));
+    });
+
+    expect(useRoutineStateSync).toHaveBeenLastCalledWith(
+      true,
+      expect.any(Function),
+      mockRoutines,
+      900000, // 15分 × 60 × 1000
+    );
+  });
+
+  it("backgroundRefreshIntervalMinutes が NaN 相当の値のときデフォルト値にフォールバックする", () => {
+    (getSettings as jest.Mock).mockReturnValue({
+      backgroundRefreshIntervalMinutes: "broken",
+    });
+
+    renderHook(() => useRoutines());
+
+    // DEFAULT_SETTINGS.backgroundRefreshIntervalMinutes = 30 → 1800000ms
+    expect(useRoutineStateSync).toHaveBeenCalledWith(
+      true,
+      expect.any(Function),
+      mockRoutines,
+      1800000,
+    );
+  });
+
+  it("backgroundRefreshIntervalMinutes が範囲上限（60分）を超えるときクランプされる", () => {
+    (getSettings as jest.Mock).mockReturnValue({
+      backgroundRefreshIntervalMinutes: 999,
+    });
+
+    renderHook(() => useRoutines());
+
+    expect(useRoutineStateSync).toHaveBeenCalledWith(
+      true,
+      expect.any(Function),
+      mockRoutines,
+      3600000, // 60分 × 60 × 1000（上限）
     );
   });
 });
