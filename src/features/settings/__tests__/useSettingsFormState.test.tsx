@@ -29,6 +29,7 @@ jest.mock("@/features/settings/storage", () => ({
     swipeAction: "delete",
     pomodoroFocusMinutes: 25,
     pomodoroBreakMinutes: 5,
+    backgroundRefreshIntervalMinutes: 15,
     menuOrder: [],
   })),
 }));
@@ -70,10 +71,12 @@ describe("useSettingsFormState", () => {
       notificationInput: "0",
       pomodoroFocusInput: "25",
       pomodoroBreakInput: "5",
+      backgroundRefreshIntervalInput: "15",
       setDurationInput: jest.fn(),
       setNotificationInput: jest.fn(),
       setPomodoroFocusInput: jest.fn(),
       setPomodoroBreakInput: jest.fn(),
+      setBackgroundRefreshIntervalInput: jest.fn(),
     };
     const handleThemeChange = jest.fn();
     (useSettingsObjectState as jest.Mock).mockReturnValue(objectState);
@@ -94,6 +97,7 @@ describe("useSettingsFormState", () => {
         notificationInput: "0",
         pomodoroFocusInput: "25",
         pomodoroBreakInput: "5",
+        backgroundRefreshIntervalInput: "15",
       }),
     );
     expect(useSettingsThemeAction).toHaveBeenCalledWith({
@@ -110,6 +114,9 @@ describe("useSettingsFormState", () => {
       setPomodoroFocusInput: inputState.setPomodoroFocusInput,
       pomodoroBreakInput: "5",
       setPomodoroBreakInput: inputState.setPomodoroBreakInput,
+      backgroundRefreshIntervalInput: "15",
+      setBackgroundRefreshIntervalInput:
+        inputState.setBackgroundRefreshIntervalInput,
       handleThemeChange,
     });
     expect(result.current).toEqual({
@@ -123,6 +130,9 @@ describe("useSettingsFormState", () => {
       setPomodoroFocusInput: inputState.setPomodoroFocusInput,
       pomodoroBreakInput: "5",
       setPomodoroBreakInput: inputState.setPomodoroBreakInput,
+      backgroundRefreshIntervalInput: "15",
+      setBackgroundRefreshIntervalInput:
+        inputState.setBackgroundRefreshIntervalInput,
       handleThemeChange,
     });
   });

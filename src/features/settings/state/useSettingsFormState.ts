@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { DEFAULT_SETTINGS, getSettings } from "@/features/settings";
+import { DEFAULT_SETTINGS, getSettings } from "@/features/settings/storage";
 import { createSettingsFormStateResult } from "./settingsFormStateResult";
 import { useSettingsInputState } from "./useSettingsInputState";
 import { useSettingsObjectState } from "./useSettingsObjectState";
