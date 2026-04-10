@@ -41,6 +41,7 @@ describe("useRoutineFormDerivedContext", () => {
       currentDayOfWeek: 2,
       existingRoutines,
       defaultDurationMinutes: 45,
+      groupDaysOfWeek: [1, 3, 5],
     });
     expect(getGroupRoutines).toHaveBeenCalledWith(existingRoutines, routine);
     expect(getGroupDaysOfWeek).toHaveBeenCalledWith([{ id: "g1" }]);

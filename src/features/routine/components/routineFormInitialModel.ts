@@ -16,6 +16,7 @@ type ResolveInitialStateParams = {
   currentDayOfWeek?: number;
   existingRoutines: Routine[];
   defaultDurationMinutes: number;
+  groupDaysOfWeek?: number[];
 };
 
 export const getGroupRoutines = (
@@ -47,9 +48,12 @@ export const resolveRoutineFormInitialState = (
     currentDayOfWeek,
     existingRoutines,
     defaultDurationMinutes,
+    groupDaysOfWeek,
   } = params;
   const initialDays = routine
-    ? routine.daysOfWeek
+    ? (groupDaysOfWeek && groupDaysOfWeek.length > 0
+        ? groupDaysOfWeek
+        : routine.daysOfWeek)
     : currentDayOfWeek !== undefined
       ? [currentDayOfWeek]
       : [];
