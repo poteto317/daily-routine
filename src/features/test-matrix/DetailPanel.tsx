@@ -1,9 +1,6 @@
 import type { DetailTestCase } from "./detailedTestCases";
 import testMatrixTexts from "./locales/ja.json";
-import {
-  getTotalCasesLabel,
-  getDeviceTitleText,
-} from "./helpers";
+import { getTotalCasesLabel, getDeviceTitleText } from "./helpers";
 import { STATUS_DISPLAY } from "./statusHelpers";
 import type { TestField } from "./types";
 

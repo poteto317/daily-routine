@@ -1,9 +1,6 @@
 import type { Expense } from "@/types/routine";
 import type { MonthStateSnapshot } from "./budgetPageStateHelpers";
-import type {
-  BudgetSavePayload,
-  ExpensePayload,
-} from "./budgetPageStateLogic";
+import type { BudgetSavePayload, ExpensePayload } from "./budgetPageStateLogic";
 
 type SetValue<T> = (value: T) => void;
 
@@ -56,7 +53,8 @@ export const closeExpenseInputForm = (params: {
   setExpenseAmount: SetValue<string>;
   setExpenseDescription: SetValue<string>;
 }): void => {
-  const { setShowExpenseForm, setExpenseAmount, setExpenseDescription } = params;
+  const { setShowExpenseForm, setExpenseAmount, setExpenseDescription } =
+    params;
 
   setShowExpenseForm(false);
   setExpenseAmount("");

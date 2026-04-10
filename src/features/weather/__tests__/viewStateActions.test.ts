@@ -82,7 +82,9 @@ describe("weather viewStateActions", () => {
       isLocationLoading: false,
     });
 
-    expect(createCurrentLocationErrorState("位置情報の取得に失敗しました")).toEqual({
+    expect(
+      createCurrentLocationErrorState("位置情報の取得に失敗しました"),
+    ).toEqual({
       locationStatus: "",
       locationError: "位置情報の取得に失敗しました",
       isLocationLoading: false,

@@ -60,7 +60,9 @@ export const PomodoroPage = () => {
               </p>
               <p className="text-2xl font-bold text-gray-900 dark:text-black">
                 {timer.focusMinutes}{" "}
-                <span className="text-sm">{POMODORO_PAGE_TEXT.minutesUnit}</span>
+                <span className="text-sm">
+                  {POMODORO_PAGE_TEXT.minutesUnit}
+                </span>
               </p>
             </div>
             <div className="bg-gray-50 dark:bg-gray-200 rounded-xl p-4">
@@ -69,7 +71,9 @@ export const PomodoroPage = () => {
               </p>
               <p className="text-2xl font-bold text-gray-900 dark:text-black">
                 {timer.breakMinutes}{" "}
-                <span className="text-sm">{POMODORO_PAGE_TEXT.minutesUnit}</span>
+                <span className="text-sm">
+                  {POMODORO_PAGE_TEXT.minutesUnit}
+                </span>
               </p>
             </div>
           </div>

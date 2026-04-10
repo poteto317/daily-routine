@@ -37,7 +37,9 @@ describe("useAchievementCalendarState", () => {
     jest.clearAllMocks();
     jest.useFakeTimers();
     jest.setSystemTime(new Date("2024-06-15T00:00:00.000Z"));
-    (getHistoryForMonth as jest.Mock).mockReturnValue({ [history.date]: history });
+    (getHistoryForMonth as jest.Mock).mockReturnValue({
+      [history.date]: history,
+    });
     (getPomodoroHistory as jest.Mock).mockReturnValue(pomodoroHistory);
     (getDailyHistory as jest.Mock).mockReturnValue(history);
   });

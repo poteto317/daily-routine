@@ -1,7 +1,4 @@
-import {
-  ROUTINE_FORM_HEADER_TEXT,
-  getRoutineFormHeaderTitle,
-} from "./helpers";
+import { ROUTINE_FORM_HEADER_TEXT, getRoutineFormHeaderTitle } from "./helpers";
 
 type RoutineFormHeaderProps = {
   isEditMode: boolean;

@@ -42,7 +42,9 @@ describe("accountAdminPageActionHandlers", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     alertSpy = jest.spyOn(window, "alert").mockImplementation(() => undefined);
-    consoleErrorSpy = jest.spyOn(console, "error").mockImplementation(() => undefined);
+    consoleErrorSpy = jest
+      .spyOn(console, "error")
+      .mockImplementation(() => undefined);
   });
 
   afterEach(() => {
@@ -57,7 +59,9 @@ describe("accountAdminPageActionHandlers", () => {
   });
 
   it("アカウント作成後に一覧を再読込する", async () => {
-    (executeCreateAccount as jest.Mock).mockResolvedValue({ needsPageReload: false });
+    (executeCreateAccount as jest.Mock).mockResolvedValue({
+      needsPageReload: false,
+    });
     const loadAccounts = jest.fn().mockResolvedValue(undefined);
     const resetCreateForm = jest.fn();
     const setActionLoading = jest.fn();
@@ -83,7 +87,9 @@ describe("accountAdminPageActionHandlers", () => {
   });
 
   it("リロードが必要な作成を処理する", async () => {
-    (executeCreateAccount as jest.Mock).mockResolvedValue({ needsPageReload: true });
+    (executeCreateAccount as jest.Mock).mockResolvedValue({
+      needsPageReload: true,
+    });
     const reloadPage = jest.fn();
 
     await submitCreateAccount({
@@ -136,11 +142,16 @@ describe("accountAdminPageActionHandlers", () => {
       confirmFn: jest.fn(() => true),
     });
 
-    expect(executeDeleteAccount).toHaveBeenCalledWith({ account, currentUid: "u2" });
+    expect(executeDeleteAccount).toHaveBeenCalledWith({
+      account,
+      currentUid: "u2",
+    });
   });
 
   it("削除失敗時にエラーを報告する", async () => {
-    (executeDeleteAccount as jest.Mock).mockRejectedValueOnce(new Error("failed"));
+    (executeDeleteAccount as jest.Mock).mockRejectedValueOnce(
+      new Error("failed"),
+    );
     const reportError = jest.fn();
 
     await submitDeleteAccount({
@@ -168,7 +179,9 @@ describe("accountAdminPageActionHandlers", () => {
       setActionLoading: jest.fn(),
     });
 
-    expect(reportError).toHaveBeenCalledWith("自分自身のアカウントは削除できません");
+    expect(reportError).toHaveBeenCalledWith(
+      "自分自身のアカウントは削除できません",
+    );
 
     await submitDeleteAccount({
       account,

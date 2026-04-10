@@ -1,4 +1,8 @@
-import { type Routine, type RoutinePreset, type RoutineTemplate } from "@/types/routine";
+import {
+  type Routine,
+  type RoutinePreset,
+  type RoutineTemplate,
+} from "@/types/routine";
 
 const createPresetId = () =>
   `preset-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;

@@ -2,7 +2,9 @@ import type { WeatherPageState } from "./types";
 
 type WeatherPageViewState = Omit<
   WeatherPageState,
-  "clearLocationError" | "handleUseCurrentLocation" | "handleResetPreferredLocation"
+  | "clearLocationError"
+  | "handleUseCurrentLocation"
+  | "handleResetPreferredLocation"
 >;
 
 type WeatherLoadResult = {
@@ -24,13 +26,14 @@ export const createInitialWeatherPageState = (): WeatherPageViewState => {
   };
 };
 
-export const createLocationWeatherStartState = (): Partial<WeatherPageViewState> => {
-  return {
-    error: null,
-    locationError: null,
-    isLocationLoading: true,
+export const createLocationWeatherStartState =
+  (): Partial<WeatherPageViewState> => {
+    return {
+      error: null,
+      locationError: null,
+      isLocationLoading: true,
+    };
   };
-};
 
 export const createInitialWeatherSuccessState = (
   result: WeatherLoadResult,
@@ -85,8 +88,9 @@ export const createPreferredLocationResetErrorState = (
   };
 };
 
-export const createLocationErrorClearedState = (): Partial<WeatherPageViewState> => {
-  return {
-    locationError: null,
+export const createLocationErrorClearedState =
+  (): Partial<WeatherPageViewState> => {
+    return {
+      locationError: null,
+    };
   };
-};

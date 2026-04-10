@@ -4,7 +4,10 @@
  */
 import { type Routine, HOLIDAY_DAY_VALUE } from "@/types/routine";
 import type { NotificationSchedule } from "./notification-types";
-import { NOTIFICATION_SCHEDULE_TITLE, getNotificationScheduleBody } from "./texts";
+import {
+  NOTIFICATION_SCHEDULE_TITLE,
+  getNotificationScheduleBody,
+} from "./texts";
 
 /**
  * ルーティン配列から通知スケジュールを生成する

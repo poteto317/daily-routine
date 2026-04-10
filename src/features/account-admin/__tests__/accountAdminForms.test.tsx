@@ -49,7 +49,9 @@ describe("account-admin forms and table", () => {
       target: { value: "新ユーザー" },
     });
     fireEvent.click(screen.getByLabelText("管理者権限を付与"));
-    fireEvent.submit(screen.getByRole("button", { name: "作成" }).closest("form")!);
+    fireEvent.submit(
+      screen.getByRole("button", { name: "作成" }).closest("form")!,
+    );
     fireEvent.click(screen.getByRole("button", { name: "キャンセル" }));
 
     expect(setCreateEmail).toHaveBeenCalledWith("next@example.com");
@@ -100,7 +102,9 @@ describe("account-admin forms and table", () => {
       />,
     );
 
-    expect(screen.getByText("（自分自身の権限は変更できません）")).toBeInTheDocument();
+    expect(
+      screen.getByText("（自分自身の権限は変更できません）"),
+    ).toBeInTheDocument();
     expect(screen.getByRole("checkbox")).toBeDisabled();
 
     rerender(
@@ -121,7 +125,9 @@ describe("account-admin forms and table", () => {
       target: { value: "更新後" },
     });
     fireEvent.click(screen.getByRole("checkbox"));
-    fireEvent.submit(screen.getByRole("button", { name: "更新" }).closest("form")!);
+    fireEvent.submit(
+      screen.getByRole("button", { name: "更新" }).closest("form")!,
+    );
     fireEvent.click(screen.getByRole("button", { name: "キャンセル" }));
 
     expect(setEditDisplayName).toHaveBeenCalledWith("更新後");
@@ -144,7 +150,9 @@ describe("account-admin forms and table", () => {
       />,
     );
 
-    expect(screen.getByText("アカウントが登録されていません")).toBeInTheDocument();
+    expect(
+      screen.getByText("アカウントが登録されていません"),
+    ).toBeInTheDocument();
 
     rerender(
       <AccountsTable

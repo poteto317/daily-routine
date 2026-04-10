@@ -3,10 +3,7 @@
  * どの Todo リストを表示するかを管理するモジュールレベルの状態
  */
 
-import {
-  getStoredSelectedTodoListId,
-  saveSelectedTodoListId,
-} from "./storage";
+import { getStoredSelectedTodoListId, saveSelectedTodoListId } from "./storage";
 
 let _selectedTodoListId: string | null | undefined;
 const _listeners = new Set<() => void>();

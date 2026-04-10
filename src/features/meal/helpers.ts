@@ -46,8 +46,8 @@ type MealTypeOption = {
   label: string;
 };
 
-export const MEAL_TYPE_OPTIONS: MealTypeOption[] =
-  mealTexts.inputForm.typeOptions as MealTypeOption[];
+export const MEAL_TYPE_OPTIONS: MealTypeOption[] = mealTexts.inputForm
+  .typeOptions as MealTypeOption[];
 
 // Recent section
 export const MEAL_RECENT_TITLE = mealTexts.recentSection.title;

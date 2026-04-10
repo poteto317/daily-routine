@@ -1,4 +1,4 @@
-export { WorkTrackerPage } from './WorkTrackerPage';
+export { WorkTrackerPage } from "./WorkTrackerPage";
 export {
   getWorkTemplates,
   saveWorkTemplates,
@@ -18,4 +18,4 @@ export {
   getSessionsByWorkName,
   getTemplateStats,
   getWorkNameStats,
-} from './storage';
+} from "./storage";

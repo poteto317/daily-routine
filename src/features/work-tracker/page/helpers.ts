@@ -1,8 +1,5 @@
 import { type WorkSession, type WorkTemplate } from "@/types/routine";
-import {
-  getSessionsByTemplateId,
-  getTemplateStats,
-} from "@/lib/storage";
+import { getSessionsByTemplateId, getTemplateStats } from "@/lib/storage";
 import workTrackerTexts from "../locales/ja.json";
 import {
   findMoodOption,

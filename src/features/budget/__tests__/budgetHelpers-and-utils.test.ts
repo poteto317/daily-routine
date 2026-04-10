@@ -97,7 +97,9 @@ describe("budget helpers and utils", () => {
 
     expect(toMonthKey(date)).toBe("2026-03");
     expect(shiftMonth(date, 1).getMonth()).toBe(3);
-    expect(isCurrentMonthDate(new Date("2026-03-01T00:00:00+09:00"))).toBe(true);
+    expect(isCurrentMonthDate(new Date("2026-03-01T00:00:00+09:00"))).toBe(
+      true,
+    );
     expect(daysInMonth(date)).toBe(31);
     expect(getDefaultExpenseDate(date)).toBe("2026-03-07");
     expect(getDefaultExpenseDate(new Date("2026-04-01T00:00:00+09:00"))).toBe(
@@ -148,7 +150,9 @@ describe("budget helpers and utils", () => {
       },
     ] as never);
 
-    expect(getMonthStateSnapshot(new Date("2026-03-03T00:00:00+09:00"))).toEqual({
+    expect(
+      getMonthStateSnapshot(new Date("2026-03-03T00:00:00+09:00")),
+    ).toEqual({
       monthKey: "2026-03",
       monthBudget: 42000,
       expenses: [expect.objectContaining({ id: "e1", amount: 800 })],

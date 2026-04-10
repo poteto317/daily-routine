@@ -34,7 +34,9 @@ describe("storageDailyHistory", () => {
   });
 
   it("平日は曜日番号を返す", () => {
-    expect(resolveHistoryDayValue(new Date("2026-03-02T00:00:00.000Z"))).toBe(1);
+    expect(resolveHistoryDayValue(new Date("2026-03-02T00:00:00.000Z"))).toBe(
+      1,
+    );
   });
 
   it("祝日は祝日用の曜日値を返す", () => {

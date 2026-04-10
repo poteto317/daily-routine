@@ -74,7 +74,10 @@ describe("todoListManagementPageActions", () => {
   it("作成 handler が成功時のみ close を呼ぶ", () => {
     const persist = jest.fn();
     const closeForm = jest.fn();
-    const nextLists = [baseList, { ...baseList, id: "list-2", title: "買い物" }];
+    const nextLists = [
+      baseList,
+      { ...baseList, id: "list-2", title: "買い物" },
+    ];
     (createTodoListAndPersist as jest.Mock).mockReturnValueOnce(nextLists);
 
     expect(

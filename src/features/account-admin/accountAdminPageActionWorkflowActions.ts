@@ -1,5 +1,8 @@
 import { getAccountIdentifierLabel, isAccountSelf } from "./accountUtils";
-import { ACCOUNT_ADMIN_ERROR_MESSAGES, ACCOUNT_ADMIN_MESSAGES } from "./helpers";
+import {
+  ACCOUNT_ADMIN_ERROR_MESSAGES,
+  ACCOUNT_ADMIN_MESSAGES,
+} from "./helpers";
 import type { Account } from "./types";
 
 type RunAccountAdminActionArgs = {
@@ -84,6 +87,8 @@ export const confirmAccountDeletion = ({
   confirmFn,
 }: DeleteConfirmationArgs): boolean => {
   return confirmFn(
-    ACCOUNT_ADMIN_MESSAGES.confirmDeleteAccount(getAccountIdentifierLabel(account)),
+    ACCOUNT_ADMIN_MESSAGES.confirmDeleteAccount(
+      getAccountIdentifierLabel(account),
+    ),
   );
 };

@@ -90,35 +90,40 @@ export const setupSyncTestEnvironment = (): void => {
     const path = args.slice(1).join("/");
     return { path } as never;
   });
-  mockDoc.mockImplementation((refOrFirestore: unknown, ...segments: string[]) => {
-    if (
-      typeof refOrFirestore === "object" &&
-      refOrFirestore !== null &&
-      "path" in refOrFirestore
-    ) {
-      const basePath = String((refOrFirestore as { path: string }).path);
-      if (segments.length === 0) {
+  mockDoc.mockImplementation(
+    (refOrFirestore: unknown, ...segments: string[]) => {
+      if (
+        typeof refOrFirestore === "object" &&
+        refOrFirestore !== null &&
+        "path" in refOrFirestore
+      ) {
+        const basePath = String((refOrFirestore as { path: string }).path);
+        if (segments.length === 0) {
+          return {
+            id: "generated-snapshot-id",
+            path: `${basePath}/generated-snapshot-id`,
+          } as never;
+        }
+
         return {
-          id: "generated-snapshot-id",
-          path: `${basePath}/generated-snapshot-id`,
+          id: segments[segments.length - 1],
+          path: `${basePath}/${segments.join("/")}`,
         } as never;
       }
 
       return {
-        id: segments[segments.length - 1],
-        path: `${basePath}/${segments.join("/")}`,
+        id: segments[segments.length - 1] ?? "user-1",
+        path: segments.join("/"),
       } as never;
-    }
-
-    return {
-      id: segments[segments.length - 1] ?? "user-1",
-      path: segments.join("/"),
-    } as never;
-  });
-  mockOrderBy.mockImplementation((fieldPath, directionStr) => ({
-    fieldPath,
-    directionStr,
-  }) as never);
+    },
+  );
+  mockOrderBy.mockImplementation(
+    (fieldPath, directionStr) =>
+      ({
+        fieldPath,
+        directionStr,
+      }) as never,
+  );
   mockQuery.mockImplementation((queryRef, ...constraints) => {
     const path =
       typeof queryRef === "object" && queryRef !== null && "path" in queryRef

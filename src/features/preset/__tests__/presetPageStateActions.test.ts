@@ -53,7 +53,12 @@ const preset = {
   name: "朝ルーティン",
   description: "desc",
   routineTemplates: [
-    { title: "朝食", startTime: "07:00", duration: 30, category: "life" as const },
+    {
+      title: "朝食",
+      startTime: "07:00",
+      duration: 30,
+      category: "life" as const,
+    },
   ],
   createdAt: "2026-03-07T00:00:00.000Z",
   updatedAt: "2026-03-07T00:00:00.000Z",
@@ -144,8 +149,14 @@ describe("presetPageStateActions", () => {
       nextSelectedRoutines: new Set(["r1"]),
     });
 
-    createPresetSelectionToggleHandler(new Set<string>(), setStringSelection)("r1");
-    createPresetDaySelectionToggleHandler(new Set<number>(), setDaySelection)(1);
+    createPresetSelectionToggleHandler(
+      new Set<string>(),
+      setStringSelection,
+    )("r1");
+    createPresetDaySelectionToggleHandler(
+      new Set<number>(),
+      setDaySelection,
+    )(1);
     createPresetFilterDayToggleHandler({
       currentRoutines,
       createFilterDays: new Set<number>(),

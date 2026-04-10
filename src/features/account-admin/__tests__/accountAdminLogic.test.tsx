@@ -28,15 +28,22 @@ import {
   updateAccountRecord,
 } from "../accountService";
 
-const mockCheckIsAdmin = checkIsAdmin as jest.MockedFunction<typeof checkIsAdmin>;
-const mockCreateAccountRecord =
-  createAccountRecord as jest.MockedFunction<typeof createAccountRecord>;
-const mockCreateAuthUser = createAuthUser as jest.MockedFunction<typeof createAuthUser>;
-const mockDeleteAccountRecord =
-  deleteAccountRecord as jest.MockedFunction<typeof deleteAccountRecord>;
+const mockCheckIsAdmin = checkIsAdmin as jest.MockedFunction<
+  typeof checkIsAdmin
+>;
+const mockCreateAccountRecord = createAccountRecord as jest.MockedFunction<
+  typeof createAccountRecord
+>;
+const mockCreateAuthUser = createAuthUser as jest.MockedFunction<
+  typeof createAuthUser
+>;
+const mockDeleteAccountRecord = deleteAccountRecord as jest.MockedFunction<
+  typeof deleteAccountRecord
+>;
 const mockGetAccounts = getAccounts as jest.MockedFunction<typeof getAccounts>;
-const mockUpdateAccountRecord =
-  updateAccountRecord as jest.MockedFunction<typeof updateAccountRecord>;
+const mockUpdateAccountRecord = updateAccountRecord as jest.MockedFunction<
+  typeof updateAccountRecord
+>;
 
 const account = {
   uid: "u1",
@@ -97,7 +104,9 @@ describe("account-admin logic", () => {
       expect(failed.result.current.loading).toBe(false);
     });
 
-    expect(failed.result.current.error).toBe("アカウント一覧の取得に失敗しました");
+    expect(failed.result.current.error).toBe(
+      "アカウント一覧の取得に失敗しました",
+    );
     (console.error as jest.Mock).mockRestore();
   });
 
@@ -117,7 +126,10 @@ describe("account-admin logic", () => {
       }),
     ).resolves.toEqual({ needsPageReload: true });
 
-    expect(mockCreateAuthUser).toHaveBeenCalledWith("new@example.com", "secret123");
+    expect(mockCreateAuthUser).toHaveBeenCalledWith(
+      "new@example.com",
+      "secret123",
+    );
     expect(mockCreateAccountRecord).toHaveBeenCalledWith("u9", {
       email: "new@example.com",
       password: "secret123",
@@ -143,18 +155,18 @@ describe("account-admin logic", () => {
   });
 
   it("create error messageをコード別に返す", () => {
-    expect(getCreateAccountErrorMessage({ code: "auth/email-already-in-use" })).toBe(
-      "このメールアドレスは既に使用されています",
-    );
+    expect(
+      getCreateAccountErrorMessage({ code: "auth/email-already-in-use" }),
+    ).toBe("このメールアドレスは既に使用されています");
     expect(getCreateAccountErrorMessage({ code: "auth/weak-password" })).toBe(
       "パスワードは6文字以上で入力してください",
     );
     expect(getCreateAccountErrorMessage({ code: "auth/invalid-email" })).toBe(
       "メールアドレスの形式が正しくありません",
     );
-    expect(getCreateAccountErrorMessage({ code: "network-request-failed" })).toBe(
-      "通信エラーが発生しました。電波の良い場所で再度お試しください",
-    );
+    expect(
+      getCreateAccountErrorMessage({ code: "network-request-failed" }),
+    ).toBe("通信エラーが発生しました。電波の良い場所で再度お試しください");
     expect(getCreateAccountErrorMessage({ code: "other" })).toBe(
       "アカウントの作成に失敗しました。時間をおいて再度お試しください",
     );

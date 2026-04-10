@@ -21,7 +21,8 @@ export const executeCreateAccount = async ({
   await createAccountRecord(createdUser.uid, {
     email: createEmail,
     password: createPassword,
-    displayName: createDisplayName || getDefaultDisplayNameFromEmail(createEmail),
+    displayName:
+      createDisplayName || getDefaultDisplayNameFromEmail(createEmail),
     isAdmin: createIsAdmin,
   });
 

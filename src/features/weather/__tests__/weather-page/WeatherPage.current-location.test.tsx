@@ -123,7 +123,11 @@ describe("WeatherPage current location", () => {
 
     await waitFor(() => {
       expect(mockClearPreferredWeatherLocation).toHaveBeenCalledTimes(1);
-      expect(mockFetchWeatherData).toHaveBeenCalledWith(35.6762, 139.6503, true);
+      expect(mockFetchWeatherData).toHaveBeenCalledWith(
+        35.6762,
+        139.6503,
+        true,
+      );
     });
   });
 });

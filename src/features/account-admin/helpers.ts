@@ -41,20 +41,24 @@ export const ACCOUNT_ADMIN_MESSAGES = {
 // Create Form
 export const ACCOUNT_CREATE_TITLE = texts.createForm.title;
 export const ACCOUNT_EMAIL_PLACEHOLDER = texts.createForm.emailPlaceholder;
-export const ACCOUNT_PASSWORD_PLACEHOLDER = texts.createForm.passwordPlaceholder;
+export const ACCOUNT_PASSWORD_PLACEHOLDER =
+  texts.createForm.passwordPlaceholder;
 export const ACCOUNT_NAME_PLACEHOLDER = texts.createForm.namePlaceholder;
 export const ACCOUNT_ADMIN_CHECKBOX_LABEL = texts.createForm.adminCheckboxLabel;
 export const ACCOUNT_CREATE_SUBMIT_LABEL = texts.createForm.submitLabel;
-export const ACCOUNT_CREATE_SUBMIT_LOADING_LABEL = texts.createForm.submitLoadingLabel;
+export const ACCOUNT_CREATE_SUBMIT_LOADING_LABEL =
+  texts.createForm.submitLoadingLabel;
 export const ACCOUNT_CREATE_CANCEL_LABEL = texts.createForm.cancelLabel;
 
 // Edit Form
 export const ACCOUNT_EDIT_TITLE_PREFIX = texts.editForm.titlePrefix;
 export const ACCOUNT_EDIT_NAME_PLACEHOLDER = texts.editForm.namePlaceholder;
 export const ACCOUNT_EDIT_ADMIN_LABEL = texts.editForm.adminLabel;
-export const ACCOUNT_EDIT_SELF_DISABLED_LABEL = texts.editForm.selfDisabledLabel;
+export const ACCOUNT_EDIT_SELF_DISABLED_LABEL =
+  texts.editForm.selfDisabledLabel;
 export const ACCOUNT_EDIT_SUBMIT_LABEL = texts.editForm.submitLabel;
-export const ACCOUNT_EDIT_SUBMIT_LOADING_LABEL = texts.editForm.submitLoadingLabel;
+export const ACCOUNT_EDIT_SUBMIT_LOADING_LABEL =
+  texts.editForm.submitLoadingLabel;
 export const ACCOUNT_EDIT_CANCEL_LABEL = texts.editForm.cancelLabel;
 
 // Table
@@ -92,4 +96,3 @@ export const ACCOUNT_FIREBASE_ERROR_MESSAGES = {
   networkError: texts.errors.firebase.networkError,
   createAccountGeneric: texts.errors.firebase.createAccountGeneric,
 } as const;
-

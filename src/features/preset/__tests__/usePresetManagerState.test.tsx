@@ -21,12 +21,20 @@ import {
 
 const mockAddPreset = addPreset as jest.MockedFunction<typeof addPreset>;
 const mockCreatePresetFromRoutines =
-  createPresetFromRoutines as jest.MockedFunction<typeof createPresetFromRoutines>;
+  createPresetFromRoutines as jest.MockedFunction<
+    typeof createPresetFromRoutines
+  >;
 const mockCreateRoutinesFromPreset =
-  createRoutinesFromPreset as jest.MockedFunction<typeof createRoutinesFromPreset>;
-const mockDeletePreset = deletePreset as jest.MockedFunction<typeof deletePreset>;
+  createRoutinesFromPreset as jest.MockedFunction<
+    typeof createRoutinesFromPreset
+  >;
+const mockDeletePreset = deletePreset as jest.MockedFunction<
+  typeof deletePreset
+>;
 const mockGetPresets = getPresets as jest.MockedFunction<typeof getPresets>;
-const mockUpdatePreset = updatePreset as jest.MockedFunction<typeof updatePreset>;
+const mockUpdatePreset = updatePreset as jest.MockedFunction<
+  typeof updatePreset
+>;
 
 const currentRoutines = [
   {

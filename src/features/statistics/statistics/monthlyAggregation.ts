@@ -23,7 +23,10 @@ export const buildMonthlyDailyStats = (
 
 export const accumulateMonthlyTotals = (
   days: DailyStats[],
-): Pick<MonthlyStats, "totalCompleted" | "totalRoutines" | "averageAchievementRate"> => {
+): Pick<
+  MonthlyStats,
+  "totalCompleted" | "totalRoutines" | "averageAchievementRate"
+> => {
   return {
     ...summarizeDailyStats(days),
   };

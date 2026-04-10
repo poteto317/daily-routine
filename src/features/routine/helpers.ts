@@ -21,5 +21,8 @@ export const ROUTINE_NOTIFICATION_MESSAGES = {
 } as const;
 
 export const getRoutineNotificationBody = (routineTitle: string): string => {
-  return texts.notification.bodyTemplate.replace("{routineTitle}", routineTitle);
+  return texts.notification.bodyTemplate.replace(
+    "{routineTitle}",
+    routineTitle,
+  );
 };

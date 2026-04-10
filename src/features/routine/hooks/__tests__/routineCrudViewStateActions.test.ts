@@ -155,7 +155,8 @@ describe("routineCrudViewStateActions", () => {
 
     const deleteRoutine = jest.fn();
     const deleteRoutineGroup = jest.fn();
-    const confirmDelete = jest.fn()
+    const confirmDelete = jest
+      .fn()
       .mockReturnValueOnce(false)
       .mockReturnValueOnce(true)
       .mockReturnValueOnce(true);

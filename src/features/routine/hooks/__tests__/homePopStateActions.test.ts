@@ -1,4 +1,7 @@
-import { handleHomePopState, syncHomePopStateRefs } from "../homePopStateActions";
+import {
+  handleHomePopState,
+  syncHomePopStateRefs,
+} from "../homePopStateActions";
 
 describe("homePopStateActions", () => {
   it("最新 callback refs を同期する", () => {

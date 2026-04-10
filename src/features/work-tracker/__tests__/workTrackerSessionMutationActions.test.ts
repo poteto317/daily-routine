@@ -93,7 +93,9 @@ describe("workTrackerSessionMutationActions", () => {
 
   it("delete handler が確認と削除を束ねる", () => {
     const confirmDelete = jest.fn();
-    (createDeleteSessionConfirmation as jest.Mock).mockReturnValue(confirmDelete);
+    (createDeleteSessionConfirmation as jest.Mock).mockReturnValue(
+      confirmDelete,
+    );
     const setSessions = jest.fn();
 
     createWorkTrackerDeleteSessionHandler({ setSessions })("s1");

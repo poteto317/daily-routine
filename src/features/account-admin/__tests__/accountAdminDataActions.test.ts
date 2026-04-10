@@ -113,7 +113,8 @@ describe("accountAdminDataActions", () => {
 
   it("error action が clear/report を返す", () => {
     const setError = jest.fn();
-    const { clearError, reportError } = createAccountAdminErrorActions(setError);
+    const { clearError, reportError } =
+      createAccountAdminErrorActions(setError);
 
     reportError("err");
     clearError();

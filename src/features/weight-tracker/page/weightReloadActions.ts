@@ -1,6 +1,9 @@
 import type { Dispatch, SetStateAction } from "react";
 import type { WeightHistory, WeightRecord } from "@/types/routine";
-import { createWeightPageData, resetWeightFormInputs } from "./pageStateActions";
+import {
+  createWeightPageData,
+  resetWeightFormInputs,
+} from "./pageStateActions";
 
 type WeightStateSetters = {
   setTodayRecord: Dispatch<SetStateAction<WeightRecord | null>>;

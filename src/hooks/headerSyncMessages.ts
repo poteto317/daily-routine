@@ -6,7 +6,8 @@ import type { HeaderSyncResult } from "./useHeaderSync";
 
 export const HEADER_SYNC_MESSAGES = {
   uploaded: "現在のローカルデータをクラウドへアップロードしました。",
-  downloaded: "最後にアップロードされたクラウドデータをダウンロードして反映します。",
+  downloaded:
+    "最後にアップロードされたクラウドデータをダウンロードして反映します。",
   error: "同期に失敗しました。通信状況を確認して再試行してください。",
 } as const;
 

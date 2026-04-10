@@ -27,14 +27,18 @@ import {
   executeUpdateAccount,
 } from "../accountAdminMutationActions";
 
-const mockUseAccountAdminData =
-  useAccountAdminData as jest.MockedFunction<typeof useAccountAdminData>;
-const mockExecuteCreateAccount =
-  executeCreateAccount as jest.MockedFunction<typeof executeCreateAccount>;
-const mockExecuteDeleteAccount =
-  executeDeleteAccount as jest.MockedFunction<typeof executeDeleteAccount>;
-const mockExecuteUpdateAccount =
-  executeUpdateAccount as jest.MockedFunction<typeof executeUpdateAccount>;
+const mockUseAccountAdminData = useAccountAdminData as jest.MockedFunction<
+  typeof useAccountAdminData
+>;
+const mockExecuteCreateAccount = executeCreateAccount as jest.MockedFunction<
+  typeof executeCreateAccount
+>;
+const mockExecuteDeleteAccount = executeDeleteAccount as jest.MockedFunction<
+  typeof executeDeleteAccount
+>;
+const mockExecuteUpdateAccount = executeUpdateAccount as jest.MockedFunction<
+  typeof executeUpdateAccount
+>;
 
 const account = {
   uid: "u1",
@@ -56,7 +60,9 @@ describe("account-admin hooks", () => {
     jest.clearAllMocks();
     alertSpy = jest.spyOn(window, "alert").mockImplementation(() => undefined);
     confirmSpy = jest.spyOn(window, "confirm").mockReturnValue(true);
-    consoleErrorSpy = jest.spyOn(console, "error").mockImplementation(() => undefined);
+    consoleErrorSpy = jest
+      .spyOn(console, "error")
+      .mockImplementation(() => undefined);
   });
 
   afterEach(() => {
@@ -208,7 +214,9 @@ describe("account-admin hooks", () => {
     await act(async () => {
       await result.current.handleDelete(account);
     });
-    expect(reportError).toHaveBeenCalledWith("自分自身のアカウントは削除できません");
+    expect(reportError).toHaveBeenCalledWith(
+      "自分自身のアカウントは削除できません",
+    );
   });
 
   it("入力不足や削除キャンセルを扱う", async () => {

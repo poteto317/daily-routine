@@ -39,7 +39,10 @@ describe("account-admin helpers", () => {
     expect(isAccountSelf("u1", "u2")).toBe(false);
     expect(getDefaultDisplayNameFromEmail("user@example.com")).toBe("user");
     expect(
-      getAccountIdentifierLabel({ displayName: "表示名", email: "user@example.com" }),
+      getAccountIdentifierLabel({
+        displayName: "表示名",
+        email: "user@example.com",
+      }),
     ).toBe("表示名");
     expect(
       getAccountIdentifierLabel({ displayName: "", email: "user@example.com" }),
@@ -52,7 +55,9 @@ describe("account-admin helpers", () => {
     expect(getAccountDisplayNameLabel("名前")).toBe("名前");
     expect(getAccountDisplayNameLabel("")).toBe(ACCOUNT_COMMON_EMPTY_LABEL);
     expect(getAccountRowClassName("u1", "u1")).toContain("bg-blue-50/50");
-    expect(getAccountRowClassName("u1", "u2")).toBe("border-b border-gray-100 ");
+    expect(getAccountRowClassName("u1", "u2")).toBe(
+      "border-b border-gray-100 ",
+    );
     expect(getAccountRoleLabel(true)).toBe(ACCOUNT_DISPLAY_LABELS.roleAdmin);
     expect(getAccountRoleLabel(false)).toBe(ACCOUNT_DISPLAY_LABELS.roleUser);
     expect(
@@ -102,11 +107,13 @@ describe("account-admin helpers", () => {
     expect(ACCOUNT_ADMIN_HEADER_TEXT.loading).toBe("読み込み中...");
     expect(ACCOUNT_ADMIN_ACCESS_DENIED_TEXT.icon).toBe("🔒");
     expect(ACCOUNT_ADMIN_ERROR_ALERT_TEXT.close).toBe("閉じる");
-    expect(ACCOUNT_ADMIN_TOOLBAR_TEXT.createAccount).toBe("➕ 新規アカウント作成");
-    expect(ACCOUNT_ADMIN_LEGEND_TEXT.items).toHaveLength(4);
-    expect(ACCOUNT_ADMIN_MESSAGES.confirmDeleteAccount("a@example.com")).toContain(
-      '"a@example.com"',
+    expect(ACCOUNT_ADMIN_TOOLBAR_TEXT.createAccount).toBe(
+      "➕ 新規アカウント作成",
     );
+    expect(ACCOUNT_ADMIN_LEGEND_TEXT.items).toHaveLength(4);
+    expect(
+      ACCOUNT_ADMIN_MESSAGES.confirmDeleteAccount("a@example.com"),
+    ).toContain('"a@example.com"');
     expect(ACCOUNT_ADMIN_MESSAGES.alertAccountCreated).toContain(
       "アカウントが作成されました",
     );

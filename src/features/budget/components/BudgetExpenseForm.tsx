@@ -48,7 +48,9 @@ export const BudgetExpenseForm = ({
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-900 mb-1">
             {budgetTexts.expenseForm.amountLabel}{" "}
-            <span className="text-red-500">{budgetTexts.expenseForm.requiredMark}</span>
+            <span className="text-red-500">
+              {budgetTexts.expenseForm.requiredMark}
+            </span>
           </label>
           <input
             type="number"

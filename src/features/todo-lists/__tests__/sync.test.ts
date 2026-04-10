@@ -37,7 +37,9 @@ describe("todo-lists sync", () => {
 
   it("クラウド同期失敗でもローカル保存は維持する", async () => {
     const rejectSpy = jest.spyOn(Promise, "resolve");
-    (uploadToFirestore as jest.Mock).mockRejectedValue(new Error("sync failed"));
+    (uploadToFirestore as jest.Mock).mockRejectedValue(
+      new Error("sync failed"),
+    );
 
     expect(() => saveAndSyncTodoLists([])).not.toThrow();
     await Promise.resolve();

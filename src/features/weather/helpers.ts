@@ -1,7 +1,4 @@
-import {
-  WEATHER_FOOTER_TEXT,
-  WEATHER_HEADER_TEXT,
-} from "./texts";
+import { WEATHER_FOOTER_TEXT, WEATHER_HEADER_TEXT } from "./texts";
 
 /**
  * Weather location button label generator

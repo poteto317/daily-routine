@@ -18,7 +18,9 @@ describe("trainDelayHelpers", () => {
   });
 
   it("時刻・遅延分・理由テキストを整形する", () => {
-    expect(formatDelayLastUpdatedTime("2026-03-07T09:05:00+09:00")).toBe("09:05");
+    expect(formatDelayLastUpdatedTime("2026-03-07T09:05:00+09:00")).toBe(
+      "09:05",
+    );
     expect(getDelayMinutesText(12)).toContain("12");
     expect(getDelayReasonText("車両点検")).toContain("車両点検");
   });

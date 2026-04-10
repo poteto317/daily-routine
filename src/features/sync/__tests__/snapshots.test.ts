@@ -57,7 +57,9 @@ describe("sync snapshots", () => {
     });
     expect(mockSetDoc).toHaveBeenCalledTimes(2);
     expect(mockSetDoc).toHaveBeenLastCalledWith(
-      expect.objectContaining({ path: "users/user-1/syncSnapshots/generated-snapshot-id" }),
+      expect.objectContaining({
+        path: "users/user-1/syncSnapshots/generated-snapshot-id",
+      }),
       expect.objectContaining({
         id: "generated-snapshot-id",
         data: expect.objectContaining({ todoLists: [] }),
@@ -70,11 +72,47 @@ describe("sync snapshots", () => {
       docs: [
         {
           id: "snapshot-2",
-          data: () => ({ uploadedAt: 2, deviceId: "device-2", data: { routines: [], dailyProgress: null, dailyHistory: {}, settings: {}, pomodoroHistory: {}, workSessionHistory: {}, workTemplates: [], weightHistory: {}, journalHistory: {}, budgetData: { budgets: {}, expenses: {} }, mealHistory: {}, presets: [], todoLists: [] } }),
+          data: () => ({
+            uploadedAt: 2,
+            deviceId: "device-2",
+            data: {
+              routines: [],
+              dailyProgress: null,
+              dailyHistory: {},
+              settings: {},
+              pomodoroHistory: {},
+              workSessionHistory: {},
+              workTemplates: [],
+              weightHistory: {},
+              journalHistory: {},
+              budgetData: { budgets: {}, expenses: {} },
+              mealHistory: {},
+              presets: [],
+              todoLists: [],
+            },
+          }),
         },
         {
           id: "snapshot-1",
-          data: () => ({ uploadedAt: 1, deviceId: "device-1", data: { routines: [], dailyProgress: null, dailyHistory: {}, settings: {}, pomodoroHistory: {}, workSessionHistory: {}, workTemplates: [], weightHistory: {}, journalHistory: {}, budgetData: { budgets: {}, expenses: {} }, mealHistory: {}, presets: [], todoLists: [] } }),
+          data: () => ({
+            uploadedAt: 1,
+            deviceId: "device-1",
+            data: {
+              routines: [],
+              dailyProgress: null,
+              dailyHistory: {},
+              settings: {},
+              pomodoroHistory: {},
+              workSessionHistory: {},
+              workTemplates: [],
+              weightHistory: {},
+              journalHistory: {},
+              budgetData: { budgets: {}, expenses: {} },
+              mealHistory: {},
+              presets: [],
+              todoLists: [],
+            },
+          }),
         },
       ],
     } as never);
@@ -105,7 +143,15 @@ describe("sync snapshots", () => {
           budgetData: { budgets: {}, expenses: {} },
           mealHistory: {},
           presets: [],
-          todoLists: [{ id: "list-1", title: "買い物", items: [], createdAt: "2026-03-10T00:00:00.000Z", updatedAt: "2026-03-10T00:00:00.000Z" }],
+          todoLists: [
+            {
+              id: "list-1",
+              title: "買い物",
+              items: [],
+              createdAt: "2026-03-10T00:00:00.000Z",
+              updatedAt: "2026-03-10T00:00:00.000Z",
+            },
+          ],
         },
       }),
     } as never);
@@ -125,11 +171,63 @@ describe("sync snapshots", () => {
       docs: [
         {
           id: "snapshot-latest",
-          data: () => ({ uploadedAt: 20, deviceId: "device-2", data: { routines: [], dailyProgress: null, dailyHistory: {}, settings: {}, pomodoroHistory: {}, workSessionHistory: {}, workTemplates: [], weightHistory: {}, journalHistory: {}, budgetData: { budgets: {}, expenses: {} }, mealHistory: {}, presets: [], todoLists: [{ id: "latest", title: "latest", items: [], createdAt: "2026-03-10T00:00:00.000Z", updatedAt: "2026-03-10T00:00:00.000Z" }] } }),
+          data: () => ({
+            uploadedAt: 20,
+            deviceId: "device-2",
+            data: {
+              routines: [],
+              dailyProgress: null,
+              dailyHistory: {},
+              settings: {},
+              pomodoroHistory: {},
+              workSessionHistory: {},
+              workTemplates: [],
+              weightHistory: {},
+              journalHistory: {},
+              budgetData: { budgets: {}, expenses: {} },
+              mealHistory: {},
+              presets: [],
+              todoLists: [
+                {
+                  id: "latest",
+                  title: "latest",
+                  items: [],
+                  createdAt: "2026-03-10T00:00:00.000Z",
+                  updatedAt: "2026-03-10T00:00:00.000Z",
+                },
+              ],
+            },
+          }),
         },
         {
           id: "snapshot-next",
-          data: () => ({ uploadedAt: 10, deviceId: "device-1", data: { routines: [], dailyProgress: null, dailyHistory: {}, settings: {}, pomodoroHistory: {}, workSessionHistory: {}, workTemplates: [], weightHistory: {}, journalHistory: {}, budgetData: { budgets: {}, expenses: {} }, mealHistory: {}, presets: [], todoLists: [{ id: "next", title: "next", items: [], createdAt: "2026-03-10T00:00:00.000Z", updatedAt: "2026-03-10T00:00:00.000Z" }] } }),
+          data: () => ({
+            uploadedAt: 10,
+            deviceId: "device-1",
+            data: {
+              routines: [],
+              dailyProgress: null,
+              dailyHistory: {},
+              settings: {},
+              pomodoroHistory: {},
+              workSessionHistory: {},
+              workTemplates: [],
+              weightHistory: {},
+              journalHistory: {},
+              budgetData: { budgets: {}, expenses: {} },
+              mealHistory: {},
+              presets: [],
+              todoLists: [
+                {
+                  id: "next",
+                  title: "next",
+                  items: [],
+                  createdAt: "2026-03-10T00:00:00.000Z",
+                  updatedAt: "2026-03-10T00:00:00.000Z",
+                },
+              ],
+            },
+          }),
         },
       ],
     } as never);

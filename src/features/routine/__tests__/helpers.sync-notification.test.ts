@@ -20,12 +20,10 @@ describe("helpers sync and notification", () => {
     ).resolves.toBe(false);
 
     mockGetFCMToken.mockResolvedValueOnce("token");
-    global.fetch = jest
-      .fn()
-      .mockResolvedValue({
-        ok: true,
-        json: async () => ({ success: true }),
-      } as never);
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ success: true }),
+    } as never);
     await expect(
       syncRoutinesToFirebase([baseRoutine], "https://example.com"),
     ).resolves.toBe(true);

@@ -69,7 +69,8 @@ export const formatWeightTodayNote = (notes: string): string => {
 // History item texts and functions
 export const WEIGHT_HISTORY_TODAY_BADGE = texts.historyItem.todayBadge;
 export const WEIGHT_HISTORY_NOTE_PREFIX = texts.historyItem.notePrefix;
-export const WEIGHT_HISTORY_DELETE_ARIA_LABEL = texts.historyItem.deleteAriaLabel;
+export const WEIGHT_HISTORY_DELETE_ARIA_LABEL =
+  texts.historyItem.deleteAriaLabel;
 
 export const getWeightChangeClassName = (change: number): string => {
   if (change > 0) return "text-sm font-medium text-red-600";

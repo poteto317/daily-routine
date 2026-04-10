@@ -10,10 +10,7 @@ type Params = {
 const SWIPE_THRESHOLD = 100;
 const MAX_TRANSLATE = 120;
 
-export const useSwipeGesture = ({
-  isEditMode,
-  onSwipeAction,
-}: Params) => {
+export const useSwipeGesture = ({ isEditMode, onSwipeAction }: Params) => {
   const [translateX, setTranslateX] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);

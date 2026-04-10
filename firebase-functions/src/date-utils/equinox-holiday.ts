@@ -1,7 +1,4 @@
-import {
-  getSpringEquinoxDay,
-  getAutumnEquinoxDay,
-} from "./equinox-calculator";
+import { getSpringEquinoxDay, getAutumnEquinoxDay } from "./equinox-calculator";
 
 /**
  * 春分の日・秋分の日に該当するか判定する

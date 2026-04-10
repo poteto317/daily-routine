@@ -46,7 +46,9 @@ describe("useDataTransferState", () => {
   it("インポートボタン押下で file input をクリックする", () => {
     const { result } = renderHook(() => useDataTransferState());
     const click = jest.fn();
-    result.current.fileInputRef.current = { click } as unknown as HTMLInputElement;
+    result.current.fileInputRef.current = {
+      click,
+    } as unknown as HTMLInputElement;
 
     act(() => {
       result.current.handleImportClick();

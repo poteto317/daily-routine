@@ -10,7 +10,10 @@ export type DetailData = Record<string, DetailTestCase[]>;
  * saveTestMatrixDetailData が保存前にこの形式へ正規化して localStorage へ書き込む。
  * 読み込み時は mergeStoredDetailData で DETAILED_TEST_CASES の値を補完して DetailData へ復元する。
  */
-export type StoredDetailCase = Pick<DetailTestCase, "id" | "pc" | "sp" | "note">;
+export type StoredDetailCase = Pick<
+  DetailTestCase,
+  "id" | "pc" | "sp" | "note"
+>;
 export type StoredDetailData = Record<string, StoredDetailCase[]>;
 
 export type ResolvedItemStatus = {

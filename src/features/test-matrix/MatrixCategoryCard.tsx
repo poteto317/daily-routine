@@ -7,10 +7,7 @@ import {
   type DetailData,
 } from "./matrixComputations";
 import testMatrixTexts from "./locales/ja.json";
-import {
-  getCollapseIcon,
-  getStatusTitle,
-} from "./helpers";
+import { getCollapseIcon, getStatusTitle } from "./helpers";
 
 interface MatrixCategoryCardProps {
   category: TestCategory;
@@ -215,7 +212,9 @@ export const MatrixCategoryCard = ({
                         onChange={(event) =>
                           onUpdateNote(category.id, item.id, event.target.value)
                         }
-                        placeholder={testMatrixTexts.categoryCard.notePlaceholder}
+                        placeholder={
+                          testMatrixTexts.categoryCard.notePlaceholder
+                        }
                         className="w-full px-2 py-1 text-xs border border-gray-200 rounded focus:ring-1 focus:ring-blue-400 focus:border-blue-400 bg-transparent"
                       />
                     </td>

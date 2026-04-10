@@ -18,17 +18,20 @@ type AchievementCalendarData = {
 type BuildCalendarDataArgs = {
   year: number;
   month: number;
-  getHistoryForMonth: (year: number, month: number) => Record<string, DailyHistory>;
+  getHistoryForMonth: (
+    year: number,
+    month: number,
+  ) => Record<string, DailyHistory>;
   getPomodoroHistory: () => PomodoroHistory;
 };
 
-export const createEmptyAchievementCalendarSelection = ():
-AchievementCalendarSelection => {
-  return {
-    selectedDate: null,
-    selectedHistory: null,
+export const createEmptyAchievementCalendarSelection =
+  (): AchievementCalendarSelection => {
+    return {
+      selectedDate: null,
+      selectedHistory: null,
+    };
   };
-};
 
 export const createAchievementCalendarMonthNavigation = (
   year: number,

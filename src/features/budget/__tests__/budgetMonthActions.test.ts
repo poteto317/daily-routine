@@ -1,4 +1,7 @@
-import { createBudgetMonthNavigationHandler, createBudgetMonthSyncAction } from "../budgetMonthActions";
+import {
+  createBudgetMonthNavigationHandler,
+  createBudgetMonthSyncAction,
+} from "../budgetMonthActions";
 
 jest.mock("../budgetPageStateHelpers", () => ({
   getMonthStateSnapshot: jest.fn(),

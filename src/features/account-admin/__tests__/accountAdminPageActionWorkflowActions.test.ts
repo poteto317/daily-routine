@@ -95,7 +95,9 @@ describe("accountAdminPageActionWorkflowActions", () => {
         reportError,
       }),
     ).toBe(true);
-    expect(reportError).toHaveBeenCalledWith("自分自身のアカウントは削除できません");
+    expect(reportError).toHaveBeenCalledWith(
+      "自分自身のアカウントは削除できません",
+    );
 
     expect(
       blockSelfAccountDeletion({
