@@ -42,6 +42,7 @@ describe("authSyncHandlers", () => {
     const handleAuthStateChanged = createAuthStateChangedHandler({
       setUser: jest.fn(),
       setIsAdmin: jest.fn(),
+      setIsAdminLoading: jest.fn(),
       setLoading: jest.fn(),
       setCurrentUserId: jest.fn(),
       migrateToUserStorage: jest.fn(),
@@ -70,6 +71,7 @@ describe("authSyncHandlers", () => {
     const handleAuthStateChanged = createAuthStateChangedHandler({
       setUser: jest.fn(),
       setIsAdmin: jest.fn(),
+      setIsAdminLoading: jest.fn(),
       setLoading: jest.fn(),
       setCurrentUserId: jest.fn(),
       migrateToUserStorage: jest.fn(),

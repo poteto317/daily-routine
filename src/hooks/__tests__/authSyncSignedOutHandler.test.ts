@@ -5,12 +5,14 @@ describe("authSyncSignedOutHandler", () => {
     const setUser = jest.fn();
     const setIsAdmin = jest.fn();
     const setLoading = jest.fn();
+    const setIsAdminLoading = jest.fn();
     const setCurrentUserId = jest.fn();
 
     const handleSignedOutUser = createSignedOutAuthStateHandler({
       setUser,
       setIsAdmin,
       setLoading,
+      setIsAdminLoading,
       setCurrentUserId,
     });
 
@@ -20,5 +22,6 @@ describe("authSyncSignedOutHandler", () => {
     expect(setIsAdmin).toHaveBeenCalledWith(false);
     expect(setUser).toHaveBeenCalledWith(null);
     expect(setLoading).toHaveBeenCalledWith(false);
+    expect(setIsAdminLoading).toHaveBeenCalledWith(false);
   });
 });

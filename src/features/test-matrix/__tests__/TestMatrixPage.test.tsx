@@ -1,7 +1,11 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 
 jest.mock("@/features/auth", () => ({
-  useAuth: jest.fn(() => ({ isAdmin: true, loading: false })),
+  useAuth: jest.fn(() => ({
+    isAdmin: true,
+    loading: false,
+    isAdminLoading: false,
+  })),
 }));
 
 jest.mock("../initialData", () => ({
@@ -124,7 +128,11 @@ describe("TestMatrixPage", () => {
 
   it("管理者ではないユーザーにはアクセス拒否画面を表示する", () => {
     const { useAuth } = jest.requireMock("@/features/auth");
-    useAuth.mockReturnValueOnce({ isAdmin: false, loading: false });
+    useAuth.mockReturnValueOnce({
+      isAdmin: false,
+      loading: false,
+      isAdminLoading: false,
+    });
 
     render(<TestMatrixPage />);
 
@@ -139,7 +147,30 @@ describe("TestMatrixPage", () => {
 
   it("loading 中は非管理者でもローディング表示にとどまり本体を描画しない", () => {
     const { useAuth } = jest.requireMock("@/features/auth");
-    useAuth.mockReturnValueOnce({ isAdmin: false, loading: true });
+    useAuth.mockReturnValueOnce({
+      isAdmin: false,
+      loading: true,
+      isAdminLoading: false,
+    });
+
+    render(<TestMatrixPage />);
+
+    expect(screen.getByText("読み込み中...")).toBeInTheDocument();
+    expect(
+      screen.queryByText("アクセス権限がありません"),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("📋 機能テストマトリクス"),
+    ).not.toBeInTheDocument();
+  });
+
+  it("isAdminLoading 中は non-admin でもローディング表示にとどまりアクセス拒否を出さない", () => {
+    const { useAuth } = jest.requireMock("@/features/auth");
+    useAuth.mockReturnValueOnce({
+      isAdmin: false,
+      loading: false,
+      isAdminLoading: true,
+    });
 
     render(<TestMatrixPage />);
 

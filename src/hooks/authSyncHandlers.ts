@@ -26,6 +26,7 @@ type CreateAuthStateChangedHandlerArgs = AuthSyncSetters &
 export const createAuthStateChangedHandler = ({
   setUser,
   setIsAdmin,
+  setIsAdminLoading,
   setLoading,
   setCurrentUserId,
   migrateToUserStorage,
@@ -36,6 +37,7 @@ export const createAuthStateChangedHandler = ({
   const handleAuthenticatedUser = createAuthenticatedAuthStateHandler({
     setUser,
     setIsAdmin,
+    setIsAdminLoading,
     setLoading,
     setCurrentUserId,
     migrateToUserStorage,
@@ -46,6 +48,7 @@ export const createAuthStateChangedHandler = ({
   const handleSignedOutUser = createSignedOutAuthStateHandler({
     setUser,
     setIsAdmin,
+    setIsAdminLoading,
     setLoading,
     setCurrentUserId,
   });

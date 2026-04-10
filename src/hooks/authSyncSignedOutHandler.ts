@@ -11,11 +11,12 @@ export const createSignedOutAuthStateHandler = ({
   setUser,
   setIsAdmin,
   setLoading,
+  setIsAdminLoading,
   setCurrentUserId,
 }: CreateSignedOutAuthStateHandlerArgs) => {
   return () => {
     applySignedOutUserState(
-      { setUser, setIsAdmin, setLoading },
+      { setUser, setIsAdmin, setLoading, setIsAdminLoading },
       setCurrentUserId,
     );
   };

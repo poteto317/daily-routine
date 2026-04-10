@@ -4,11 +4,13 @@ import { type User } from "firebase/auth";
 type SetUser = Dispatch<SetStateAction<User | null>>;
 type SetIsAdmin = Dispatch<SetStateAction<boolean>>;
 type SetLoading = Dispatch<SetStateAction<boolean>>;
+type SetIsAdminLoading = Dispatch<SetStateAction<boolean>>;
 
 export type AuthSyncSetters = {
   setUser: SetUser;
   setIsAdmin: SetIsAdmin;
   setLoading: SetLoading;
+  setIsAdminLoading: SetIsAdminLoading;
 };
 
 type AuthStateStorageActions = {
@@ -35,4 +37,5 @@ export const applySignedOutUserState = (
   setters.setIsAdmin(false);
   setters.setUser(null);
   setters.setLoading(false);
+  setters.setIsAdminLoading(false);
 };

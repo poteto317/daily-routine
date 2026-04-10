@@ -8,11 +8,13 @@ import { subscribeLocalAuthUser } from "@/services/authService";
 type UseAuthSyncSubscriptionArgs = {
   handleAuthStateChanged: (user: User | null) => void;
   setLoading: (value: boolean) => void;
+  setIsAdminLoading: (value: boolean) => void;
 };
 
 export const useAuthSyncSubscription = ({
   handleAuthStateChanged,
   setLoading,
+  setIsAdminLoading,
 }: UseAuthSyncSubscriptionArgs) => {
   const initializedRef = useRef(false);
 
@@ -25,7 +27,10 @@ export const useAuthSyncSubscription = ({
     }
 
     if (!isFirebaseConfigured) {
-      const timer = setTimeout(() => setLoading(false), 0);
+      const timer = setTimeout(() => {
+        setLoading(false);
+        setIsAdminLoading(false);
+      }, 0);
       return () => {
         clearTimeout(timer);
       };
@@ -35,11 +40,14 @@ export const useAuthSyncSubscription = ({
       const auth = getAuthInstance();
       return onAuthStateChanged(auth, handleAuthStateChanged);
     } catch {
-      const timer = setTimeout(() => setLoading(false), 0);
+      const timer = setTimeout(() => {
+        setLoading(false);
+        setIsAdminLoading(false);
+      }, 0);
 
       return () => {
         clearTimeout(timer);
       };
     }
-  }, [handleAuthStateChanged, setLoading]);
+  }, [handleAuthStateChanged, setLoading, setIsAdminLoading]);
 };

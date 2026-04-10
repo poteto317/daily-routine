@@ -9,7 +9,7 @@ import { useTestMatrixPageState } from "./useTestMatrixPageState";
 import type { CheckStatus } from "./types";
 
 export const TestMatrixPage = () => {
-  const { isAdmin, loading } = useAuth();
+  const { isAdmin, loading, isAdminLoading } = useAuth();
   const {
     categories,
     collapseAll,
@@ -35,7 +35,7 @@ export const TestMatrixPage = () => {
   const { totalCount, okCount, ngCount, uncheckedCount, progressPct } =
     overviewStats;
 
-  if (loading) {
+  if (loading || isAdminLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <p className="text-gray-500">{testMatrixTexts.page.loading}</p>

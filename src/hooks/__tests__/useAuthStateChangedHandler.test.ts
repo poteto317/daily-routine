@@ -29,10 +29,16 @@ describe("useAuthStateChangedHandler", () => {
     const setUser = jest.fn();
     const setIsAdmin = jest.fn();
     const setLoading = jest.fn();
+    const setIsAdminLoading = jest.fn();
     const user = { uid: "user-1" } as never;
 
     const { result, unmount } = renderHook(() =>
-      useAuthStateChangedHandler({ setUser, setIsAdmin, setLoading }),
+      useAuthStateChangedHandler({
+        setUser,
+        setIsAdmin,
+        setLoading,
+        setIsAdminLoading,
+      }),
     );
 
     result.current(user);
@@ -43,6 +49,7 @@ describe("useAuthStateChangedHandler", () => {
         setUser,
         setIsAdmin,
         setLoading,
+        setIsAdminLoading,
         setCurrentUserId,
         migrateToUserStorage,
         ensureAccountRecord,

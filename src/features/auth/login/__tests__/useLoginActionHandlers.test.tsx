@@ -42,6 +42,7 @@ describe("useLoginActionHandlers", () => {
       user: null,
       loading: false,
       isAdmin: false,
+      isAdminLoading: false,
     });
   });
 

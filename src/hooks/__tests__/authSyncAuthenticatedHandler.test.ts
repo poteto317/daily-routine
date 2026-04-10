@@ -16,6 +16,7 @@ describe("authSyncAuthenticatedHandler", () => {
     const user = createUser();
     const setUser = jest.fn();
     const setIsAdmin = jest.fn();
+    const setIsAdminLoading = jest.fn();
     const setLoading = jest.fn();
     const setCurrentUserId = jest.fn();
     const migrateToUserStorage = jest.fn();
@@ -25,6 +26,7 @@ describe("authSyncAuthenticatedHandler", () => {
     const handleAuthenticatedUser = createAuthenticatedAuthStateHandler({
       setUser,
       setIsAdmin,
+      setIsAdminLoading,
       setLoading,
       setCurrentUserId,
       migrateToUserStorage,
@@ -42,5 +44,6 @@ describe("authSyncAuthenticatedHandler", () => {
     expect(setUser).toHaveBeenCalledWith(user);
     expect(setLoading).toHaveBeenCalledWith(false);
     expect(setIsAdmin).toHaveBeenCalledWith(false);
+    expect(setIsAdminLoading).toHaveBeenCalledWith(false);
   });
 });

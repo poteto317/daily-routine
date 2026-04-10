@@ -17,12 +17,14 @@ export type UseAuthSyncParams = {
   setUser: Dispatch<SetStateAction<User | null>>;
   setIsAdmin: Dispatch<SetStateAction<boolean>>;
   setLoading: Dispatch<SetStateAction<boolean>>;
+  setIsAdminLoading: Dispatch<SetStateAction<boolean>>;
 };
 
 export const useAuthStateChangedHandler = ({
   setUser,
   setIsAdmin,
   setLoading,
+  setIsAdminLoading,
 }: UseAuthSyncParams) => {
   const mountedRef = useRef(true);
   const isMounted = useCallback(() => mountedRef.current, []);
@@ -40,6 +42,7 @@ export const useAuthStateChangedHandler = ({
       createAuthStateChangedHandler({
         setUser,
         setIsAdmin,
+        setIsAdminLoading,
         setLoading,
         setCurrentUserId,
         migrateToUserStorage,
@@ -47,6 +50,6 @@ export const useAuthStateChangedHandler = ({
         checkIsAdmin,
         isMounted,
       })(user),
-    [isMounted, setIsAdmin, setLoading, setUser],
+    [isMounted, setIsAdmin, setIsAdminLoading, setLoading, setUser],
   );
 };

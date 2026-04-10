@@ -3,6 +3,7 @@ import { type User } from "firebase/auth";
 type SyncAdminStatusArgs = {
   user: Pick<User, "uid" | "email" | "isAnonymous">;
   setIsAdmin: (value: boolean) => void;
+  setIsAdminLoading: (value: boolean) => void;
   ensureAccountRecord: (
     uid: string,
     email: string | null,
@@ -15,6 +16,7 @@ type SyncAdminStatusArgs = {
 export const syncAdminStatus = async ({
   user,
   setIsAdmin,
+  setIsAdminLoading,
   ensureAccountRecord,
   checkIsAdmin,
   isMounted,
@@ -24,10 +26,12 @@ export const syncAdminStatus = async ({
     const adminStatus = await checkIsAdmin(user.uid);
     if (isMounted()) {
       setIsAdmin(adminStatus);
+      setIsAdminLoading(false);
     }
   } catch {
     if (isMounted()) {
       setIsAdmin(false);
+      setIsAdminLoading(false);
     }
   }
 };
