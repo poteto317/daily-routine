@@ -4,7 +4,12 @@ jest.mock("../storage", () => ({
   saveTodoLists: jest.fn(),
 }));
 
+jest.mock("@/features/sync", () => ({
+  uploadToFirestore: jest.fn(),
+}));
+
 import { saveTodoLists } from "../storage";
+import { uploadToFirestore } from "@/features/sync";
 
 describe("todo-lists sync", () => {
   beforeEach(() => {
@@ -25,10 +30,12 @@ describe("todo-lists sync", () => {
     saveAndSyncTodoLists(lists);
 
     expect(saveTodoLists).toHaveBeenCalledWith(lists);
+    expect(uploadToFirestore).not.toHaveBeenCalled();
   });
 
   it("例外を投げない", () => {
     expect(() => saveAndSyncTodoLists([])).not.toThrow();
     expect(saveTodoLists).toHaveBeenCalledWith([]);
+    expect(uploadToFirestore).not.toHaveBeenCalled();
   });
 });
