@@ -1,5 +1,9 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 
+jest.mock("@/features/auth", () => ({
+  useAuth: jest.fn(() => ({ isAdmin: true, loading: false })),
+}));
+
 jest.mock("../initialData", () => ({
   buildInitialData: jest.fn(() => [
     {
