@@ -35,10 +35,18 @@ export const TestMatrixPage = () => {
   const { totalCount, okCount, ngCount, uncheckedCount, progressPct } =
     overviewStats;
 
-  if (!loading && !isAdmin) {
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-gray-500">{testMatrixTexts.page.loading}</p>
+      </div>
+    );
+  }
+
+  if (!isAdmin) {
     return (
       <div className="max-w-5xl mx-auto px-4 py-6">
-        <div className="bg-red-50 dark:bg-red-100 border border-red-200 rounded-xl p-6 text-center">
+        <div className="bg-red-50 dark:bg-red-100 border border-red-200 dark:border-red-300 rounded-xl p-6 text-center">
           <span className="text-4xl mb-4 block">🔒</span>
           <h2 className="text-lg font-bold text-red-700 dark:text-red-800 mb-2">
             {testMatrixTexts.page.accessDeniedTitle}

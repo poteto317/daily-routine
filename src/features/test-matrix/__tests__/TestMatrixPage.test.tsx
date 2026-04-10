@@ -136,4 +136,19 @@ describe("TestMatrixPage", () => {
       screen.queryByText("📋 機能テストマトリクス"),
     ).not.toBeInTheDocument();
   });
+
+  it("loading 中は非管理者でもローディング表示にとどまり本体を描画しない", () => {
+    const { useAuth } = jest.requireMock("@/features/auth");
+    useAuth.mockReturnValueOnce({ isAdmin: false, loading: true });
+
+    render(<TestMatrixPage />);
+
+    expect(screen.getByText("読み込み中...")).toBeInTheDocument();
+    expect(
+      screen.queryByText("アクセス権限がありません"),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("📋 機能テストマトリクス"),
+    ).not.toBeInTheDocument();
+  });
 });
