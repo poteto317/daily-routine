@@ -68,6 +68,38 @@ describe("routineFormModel", () => {
     });
   });
 
+  it("グループ編集時は groupDaysOfWeek を daysOfWeek の初期値として使う", () => {
+    const state = resolveRoutineFormInitialState({
+      routine: baseRoutine,
+      existingRoutines: [],
+      defaultDurationMinutes: 30,
+      groupDaysOfWeek: [1, 2, 3],
+    });
+
+    expect(state.daysOfWeek).toEqual([1, 2, 3]);
+  });
+
+  it("groupDaysOfWeek が空の場合は routine.daysOfWeek を使う", () => {
+    const state = resolveRoutineFormInitialState({
+      routine: baseRoutine,
+      existingRoutines: [],
+      defaultDurationMinutes: 30,
+      groupDaysOfWeek: [],
+    });
+
+    expect(state.daysOfWeek).toEqual([1]);
+  });
+
+  it("groupDaysOfWeek が未指定の場合は routine.daysOfWeek を使う", () => {
+    const state = resolveRoutineFormInitialState({
+      routine: baseRoutine,
+      existingRoutines: [],
+      defaultDurationMinutes: 30,
+    });
+
+    expect(state.daysOfWeek).toEqual([1]);
+  });
+
   it("曜日トグルは追加/削除を行い昇順維持する", () => {
     expect(toggleDaySelection([1, 3], 2)).toEqual([1, 2, 3]);
     expect(toggleDaySelection([1, 2, 3], 2)).toEqual([1, 3]);
