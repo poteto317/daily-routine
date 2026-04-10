@@ -2,11 +2,11 @@ import type { Routine } from "@/types/routine";
 
 jest.mock("../routineStateModel", () => ({
   buildUpdatedRoutine: jest.fn(
-    (
-      routine: Routine,
-      updates: Partial<Routine>,
-      now: string,
-    ): Routine => ({ ...routine, ...updates, updatedAt: now }),
+    (routine: Routine, updates: Partial<Routine>, now: string): Routine => ({
+      ...routine,
+      ...updates,
+      updatedAt: now,
+    }),
   ),
   createRoutinesForBatchInput: jest.fn(() => []),
   createRoutinesForSingleInput: jest.fn(() => []),
@@ -168,7 +168,10 @@ describe("routineCrudActions", () => {
       ],
     );
 
-    expect(createRoutinesForBatchInput).toHaveBeenCalledWith([routines[1]], expect.any(Array));
+    expect(createRoutinesForBatchInput).toHaveBeenCalledWith(
+      [routines[1]],
+      expect.any(Array),
+    );
     expect(sortRoutinesByOrder).toHaveBeenCalledWith([routines[1], ...created]);
     expect(updated).toEqual([routines[1], ...created]);
   });

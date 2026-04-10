@@ -88,7 +88,9 @@ describe("weather pageStateActions", () => {
 
     await expect(
       loadCurrentLocationWeather({
-        getUserLocation: jest.fn().mockResolvedValue({ latitude: 34, longitude: 135 }),
+        getUserLocation: jest
+          .fn()
+          .mockResolvedValue({ latitude: 34, longitude: 135 }),
         setLocationStatus: jest.fn(),
         savePreferredWeatherLocation: savePreferred,
         loadWeatherByCoordinates: loadWeather,
@@ -122,6 +124,8 @@ describe("weather pageStateActions", () => {
 
   it("エラーメッセージを解決する", () => {
     expect(getWeatherErrorMessage(new Error("fail"))).toBe("fail");
-    expect(getWeatherErrorMessage("x")).toBe(WEATHER_STATUS_MESSAGES.fetchError);
+    expect(getWeatherErrorMessage("x")).toBe(
+      WEATHER_STATUS_MESSAGES.fetchError,
+    );
   });
 });

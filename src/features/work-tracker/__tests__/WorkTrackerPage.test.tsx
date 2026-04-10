@@ -30,7 +30,9 @@ jest.mock("@/lib/storage", () => ({
 import { useWorkTrackerPageState } from "../page/useWorkTrackerPageState";
 
 const mockUseWorkTrackerPageState =
-  useWorkTrackerPageState as jest.MockedFunction<typeof useWorkTrackerPageState>;
+  useWorkTrackerPageState as jest.MockedFunction<
+    typeof useWorkTrackerPageState
+  >;
 
 const template = {
   id: "t1",
@@ -91,7 +93,9 @@ describe("WorkTrackerPage", () => {
     expect(screen.getByText("3600秒")).toBeInTheDocument();
     expect(screen.getAllByText("120秒").length).toBeGreaterThan(0);
     expect(screen.getAllByText("設計").length).toBeGreaterThan(0);
-    expect(screen.getByText("改善傾向！ベスト記録に近づいています")).toBeInTheDocument();
+    expect(
+      screen.getByText("改善傾向！ベスト記録に近づいています"),
+    ).toBeInTheDocument();
     expect(screen.getByText(/集中/)).toBeInTheDocument();
 
     fireEvent.change(screen.getByPlaceholderText("例: プロジェクト資料作成"), {
@@ -104,9 +108,14 @@ describe("WorkTrackerPage", () => {
     expect(state.setSelectedTemplate).toHaveBeenCalledWith(template);
     expect(state.setShowTemplateDropdown).toHaveBeenLastCalledWith(false);
 
-    fireEvent.change(screen.getByPlaceholderText("例: 新しい方法を試した、集中できた、途中で中断があった など"), {
-      target: { value: "新メモ" },
-    });
+    fireEvent.change(
+      screen.getByPlaceholderText(
+        "例: 新しい方法を試した、集中できた、途中で中断があった など",
+      ),
+      {
+        target: { value: "新メモ" },
+      },
+    );
     expect(state.setNotes).toHaveBeenCalledWith("新メモ");
 
     fireEvent.click(screen.getByText("絶好調"));

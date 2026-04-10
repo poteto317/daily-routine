@@ -26,7 +26,10 @@ jest.mock("../storage", () => ({
 }));
 
 import { getMonthStateSnapshot } from "../budgetPageStateHelpers";
-import { buildBudgetSavePayload, buildExpensePayload } from "../budgetPageStateLogic";
+import {
+  buildBudgetSavePayload,
+  buildExpensePayload,
+} from "../budgetPageStateLogic";
 import {
   addExpenseFromInput,
   deleteExpenseAndRefresh,

@@ -6,7 +6,10 @@
 /** 匿名ユーザーのデフォルト表示名（DBに保存されるデータ値） */
 export const ANONYMOUS_USER_DEFAULT_DISPLAY_NAME = "匿名ユーザー";
 
-export const isAccountSelf = (accountUid: string, currentUid?: string): boolean => {
+export const isAccountSelf = (
+  accountUid: string,
+  currentUid?: string,
+): boolean => {
   return accountUid === currentUid;
 };
 

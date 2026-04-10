@@ -8,7 +8,11 @@ import {
 } from "@/features/routine/storage";
 import { getSettings, saveSettings } from "@/features/settings/storage";
 import { type TransferOptions } from "./constants";
-import { type AppSettings, type DailyProgress, type MonthlyHistory } from "@/types/routine";
+import {
+  type AppSettings,
+  type DailyProgress,
+  type MonthlyHistory,
+} from "@/types/routine";
 import { DATA_TRANSFER_ERROR_MESSAGES } from "./errorMessages";
 
 export type ImportPayload = {

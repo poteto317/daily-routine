@@ -14,15 +14,17 @@ describe("buildInitialData", () => {
     );
     expect(data.every((category) => category.items.length > 0)).toBe(true);
     expect(
-      data.flatMap((category) => category.items).every((item) => {
-        return (
-          typeof item.id === "string" &&
-          typeof item.label === "string" &&
-          item.pc === "unchecked" &&
-          item.sp === "unchecked" &&
-          item.note === ""
-        );
-      }),
+      data
+        .flatMap((category) => category.items)
+        .every((item) => {
+          return (
+            typeof item.id === "string" &&
+            typeof item.label === "string" &&
+            item.pc === "unchecked" &&
+            item.sp === "unchecked" &&
+            item.note === ""
+          );
+        }),
     ).toBe(true);
   });
 });

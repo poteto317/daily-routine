@@ -193,10 +193,7 @@ export const savePresetEditAndReload = (params: {
   return { presets: loadPresetList(), saved: true };
 };
 
-export const togglePresetSelection = <T>(
-  current: Set<T>,
-  value: T,
-): Set<T> => {
+export const togglePresetSelection = <T>(current: Set<T>, value: T): Set<T> => {
   return toggleSetSelection(current, value);
 };
 

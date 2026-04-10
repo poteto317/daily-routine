@@ -19,7 +19,9 @@ const createRoutine = (overrides: Partial<Routine> = {}): Routine => ({
   ...overrides,
 });
 
-const createPreset = (overrides: Partial<RoutinePreset> = {}): RoutinePreset => ({
+const createPreset = (
+  overrides: Partial<RoutinePreset> = {},
+): RoutinePreset => ({
   id: "preset-1",
   name: "朝ルーティン",
   description: "説明",

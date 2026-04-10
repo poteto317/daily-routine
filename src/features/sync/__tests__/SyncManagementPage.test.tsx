@@ -2,7 +2,9 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { SyncManagementPage } from "../SyncManagementPage";
 
 jest.mock("@/components", () => ({
-  CardPanel: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  CardPanel: ({ children }: { children: React.ReactNode }) => (
+    <div>{children}</div>
+  ),
 }));
 
 jest.mock("../sync", () => ({
@@ -15,7 +17,11 @@ jest.mock("@/hooks/headerSyncReload", () => ({
   reloadAfterDownload: jest.fn(),
 }));
 
-import { applySyncSnapshot, deleteSyncSnapshot, getSyncSnapshots } from "../sync";
+import {
+  applySyncSnapshot,
+  deleteSyncSnapshot,
+  getSyncSnapshots,
+} from "../sync";
 import { reloadAfterDownload } from "@/hooks/headerSyncReload";
 
 describe("SyncManagementPage", () => {

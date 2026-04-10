@@ -1,4 +1,4 @@
-export { BudgetPage } from './BudgetPage';
+export { BudgetPage } from "./BudgetPage";
 export {
   getBudgetData,
   saveBudgetData,
@@ -8,4 +8,4 @@ export {
   addExpense,
   deleteExpense,
   getMonthlyTotalExpense,
-} from './storage';
+} from "./storage";

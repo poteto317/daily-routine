@@ -1,7 +1,10 @@
 import { act, renderHook } from "@testing-library/react";
 
 jest.mock("@/features/settings", () => ({
-  getSettings: jest.fn(() => ({ pomodoroFocusMinutes: 25, pomodoroBreakMinutes: 5 })),
+  getSettings: jest.fn(() => ({
+    pomodoroFocusMinutes: 25,
+    pomodoroBreakMinutes: 5,
+  })),
 }));
 
 jest.mock("../storage", () => ({
@@ -21,11 +24,13 @@ jest.mock("../pomodoroTimerActions", () => ({
     nextTimerState: "break",
     nextTimeLeft: 300,
   })),
-  createStartTimerState: jest.fn((timerState: string, _focusMinutes: number, timeLeft: number) => ({
-    nextIsRunning: true,
-    nextTimerState: timerState === "idle" ? "focus" : timerState,
-    nextTimeLeft: timerState === "idle" ? 1500 : timeLeft,
-  })),
+  createStartTimerState: jest.fn(
+    (timerState: string, _focusMinutes: number, timeLeft: number) => ({
+      nextIsRunning: true,
+      nextTimerState: timerState === "idle" ? "focus" : timerState,
+      nextTimeLeft: timerState === "idle" ? 1500 : timeLeft,
+    }),
+  ),
 }));
 
 jest.mock("../pomodoroTimerRuntime", () => ({
@@ -34,8 +39,8 @@ jest.mock("../pomodoroTimerRuntime", () => ({
     nextTimeLeft: timeLeft - 1,
     shouldComplete: false,
   })),
-  shouldStartPomodoroInterval: jest.fn((isRunning: boolean, timeLeft: number) =>
-    isRunning && timeLeft > 0,
+  shouldStartPomodoroInterval: jest.fn(
+    (isRunning: boolean, timeLeft: number) => isRunning && timeLeft > 0,
   ),
 }));
 
@@ -57,7 +62,9 @@ describe("usePomodoroTimer", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    global.Audio = jest.fn(() => ({ play: jest.fn() })) as unknown as typeof Audio;
+    global.Audio = jest.fn(() => ({
+      play: jest.fn(),
+    })) as unknown as typeof Audio;
   });
 
   afterEach(() => {

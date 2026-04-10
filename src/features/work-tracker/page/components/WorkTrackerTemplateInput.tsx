@@ -35,7 +35,9 @@ export const WorkTrackerTemplateInput = ({
     <div className="mb-4">
       <label className="block text-sm font-medium text-gray-700 dark:text-gray-900 mb-2">
         {workTrackerTexts.templateInput.label}{" "}
-        <span className="text-red-500">{workTrackerTexts.templateInput.requiredMark}</span>
+        <span className="text-red-500">
+          {workTrackerTexts.templateInput.requiredMark}
+        </span>
       </label>
       <div className="relative">
         <input
@@ -88,7 +90,9 @@ export const WorkTrackerTemplateInput = ({
             })}
             {filteredTemplates.length === 0 && (
               <div className="px-4 py-3 text-sm text-gray-600 dark:text-gray-700">
-                <p className="font-medium">{workTrackerTexts.templateInput.newWorkHint}</p>
+                <p className="font-medium">
+                  {workTrackerTexts.templateInput.newWorkHint}
+                </p>
                 <p className="text-xs mt-1">
                   {formatNewWorkNameLabel(workName)}
                 </p>

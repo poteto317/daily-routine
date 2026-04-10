@@ -91,9 +91,9 @@ describe("test matrix logic", () => {
 
   it("フィルター条件に一致するアイテムだけを判定する", () => {
     expect(isItemMatchedByFilter(baseItem, detailData, "all")).toBe(true);
-    expect(isItemMatchedByFilter({ ...baseItem, id: "1-2" }, detailData, "ng")).toBe(
-      true,
-    );
+    expect(
+      isItemMatchedByFilter({ ...baseItem, id: "1-2" }, detailData, "ng"),
+    ).toBe(true);
     expect(isItemMatchedByFilter(baseItem, detailData, "ok")).toBe(false);
   });
 

@@ -14,9 +14,7 @@ describe("pageViewModelActions", () => {
     expect(isHomePageEditMode(createData(1))).toBe(true);
     expect(
       isHomePageEditMode({ ...createData(1), currentPage: "settings" }),
-    ).toBe(
-      false,
-    );
+    ).toBe(false);
     expect(
       isHomePageEditMode({
         ...createData(1),

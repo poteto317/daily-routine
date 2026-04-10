@@ -10,7 +10,9 @@ jest.mock("../selectedTodoList", () => ({
 }));
 
 jest.mock("@/components", () => ({
-  CardPanel: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  CardPanel: ({ children }: { children: React.ReactNode }) => (
+    <div>{children}</div>
+  ),
 }));
 
 jest.mock("@/lib/isImeComposingKeyDown", () => ({
@@ -30,13 +32,18 @@ import { saveAndSyncTodoLists } from "../sync";
 import { setSelectedTodoListId } from "../selectedTodoList";
 import { useNavigationContext } from "@/features/routine/pages/NavigationContext";
 
-const mockGetTodoLists = getTodoLists as jest.MockedFunction<typeof getTodoLists>;
-const mockSaveAndSyncTodoLists =
-  saveAndSyncTodoLists as jest.MockedFunction<typeof saveAndSyncTodoLists>;
-const mockSetSelectedTodoListId =
-  setSelectedTodoListId as jest.MockedFunction<typeof setSelectedTodoListId>;
-const mockUseNavigationContext =
-  useNavigationContext as jest.MockedFunction<typeof useNavigationContext>;
+const mockGetTodoLists = getTodoLists as jest.MockedFunction<
+  typeof getTodoLists
+>;
+const mockSaveAndSyncTodoLists = saveAndSyncTodoLists as jest.MockedFunction<
+  typeof saveAndSyncTodoLists
+>;
+const mockSetSelectedTodoListId = setSelectedTodoListId as jest.MockedFunction<
+  typeof setSelectedTodoListId
+>;
+const mockUseNavigationContext = useNavigationContext as jest.MockedFunction<
+  typeof useNavigationContext
+>;
 
 describe("TodoListManagementPage", () => {
   beforeEach(() => {
@@ -128,7 +135,9 @@ describe("TodoListManagementPage", () => {
     fireEvent.click(screen.getByLabelText("Inbox を削除"));
 
     await waitFor(() => {
-      expect(screen.getByText("Todoリストはまだありません")).toBeInTheDocument();
+      expect(
+        screen.getByText("Todoリストはまだありません"),
+      ).toBeInTheDocument();
     });
     expect(mockSaveAndSyncTodoLists).toHaveBeenCalledWith([]);
   });

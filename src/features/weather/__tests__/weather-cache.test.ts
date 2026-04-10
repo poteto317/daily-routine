@@ -86,10 +86,13 @@ describe("weather-cache", () => {
   });
 
   it("不正な優先地点データはnullを返して破棄する", () => {
-    localStorage.setItem("weather_preferred_location", JSON.stringify({
-      latitude: "invalid",
-      longitude: 139.76,
-    }));
+    localStorage.setItem(
+      "weather_preferred_location",
+      JSON.stringify({
+        latitude: "invalid",
+        longitude: 139.76,
+      }),
+    );
 
     const removeItemSpy = jest.spyOn(Storage.prototype, "removeItem");
 

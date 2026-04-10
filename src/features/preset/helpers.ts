@@ -17,9 +17,13 @@ export const PRESET_MANAGER_TEXT = {
 export const PRESET_MANAGER_MESSAGES = {
   alertMissingFields: presetTexts.manager.messages.alertMissingFields,
   confirmDeletePreset: presetTexts.manager.messages.confirmDeletePreset,
-  alertNoSelectionForApply: presetTexts.manager.messages.alertNoSelectionForApply,
+  alertNoSelectionForApply:
+    presetTexts.manager.messages.alertNoSelectionForApply,
   alertPresetApplied: (presetName: string) =>
-    presetTexts.manager.messages.alertPresetAppliedTemplate.replace("{presetName}", presetName),
+    presetTexts.manager.messages.alertPresetAppliedTemplate.replace(
+      "{presetName}",
+      presetName,
+    ),
 } as const;
 
 // List section constants
@@ -71,10 +75,14 @@ export const formatRoutineTemplateSummary = (
 // Create section constants
 export const PRESET_CREATE_OPEN_LABEL = presetTexts.createSection.openLabel;
 export const PRESET_CREATE_CANCEL_LABEL = presetTexts.createSection.cancelLabel;
-export const PRESET_CREATE_NAME_PLACEHOLDER = presetTexts.createSection.namePlaceholder;
-export const PRESET_CREATE_DESCRIPTION_PLACEHOLDER = presetTexts.createSection.descriptionPlaceholder;
-export const PRESET_CREATE_FILTER_DAYS_LABEL = presetTexts.createSection.filterDaysLabel;
-export const PRESET_CREATE_EMPTY_ROUTINES_LABEL = presetTexts.createSection.emptyRoutinesLabel;
+export const PRESET_CREATE_NAME_PLACEHOLDER =
+  presetTexts.createSection.namePlaceholder;
+export const PRESET_CREATE_DESCRIPTION_PLACEHOLDER =
+  presetTexts.createSection.descriptionPlaceholder;
+export const PRESET_CREATE_FILTER_DAYS_LABEL =
+  presetTexts.createSection.filterDaysLabel;
+export const PRESET_CREATE_EMPTY_ROUTINES_LABEL =
+  presetTexts.createSection.emptyRoutinesLabel;
 export const PRESET_CREATE_SUBMIT_LABEL = presetTexts.createSection.submitLabel;
 
 export const getPresetCreateToggleLabel = (isCreating: boolean): string => {
@@ -92,12 +100,17 @@ export const isPresetCreateDisabled = (
 export const PRESET_EDIT_LABEL = presetTexts.editSection.editLabel;
 export const PRESET_EDIT_CANCEL_LABEL = presetTexts.editSection.cancelLabel;
 export const PRESET_EDIT_SAVE_LABEL = presetTexts.editSection.saveLabel;
-export const PRESET_EDIT_NAME_PLACEHOLDER = presetTexts.editSection.namePlaceholder;
-export const PRESET_EDIT_DESCRIPTION_PLACEHOLDER = presetTexts.editSection.descriptionPlaceholder;
-export const PRESET_EDIT_ROUTINE_LIST_LABEL = presetTexts.editSection.routineListLabel;
-export const PRESET_EDIT_EMPTY_ROUTINES_LABEL = presetTexts.editSection.emptyRoutinesLabel;
+export const PRESET_EDIT_NAME_PLACEHOLDER =
+  presetTexts.editSection.namePlaceholder;
+export const PRESET_EDIT_DESCRIPTION_PLACEHOLDER =
+  presetTexts.editSection.descriptionPlaceholder;
+export const PRESET_EDIT_ROUTINE_LIST_LABEL =
+  presetTexts.editSection.routineListLabel;
+export const PRESET_EDIT_EMPTY_ROUTINES_LABEL =
+  presetTexts.editSection.emptyRoutinesLabel;
 export const PRESET_EDIT_SAVED_MESSAGE = presetTexts.editSection.savedMessage;
-export const PRESET_EDIT_ALERT_MISSING_NAME = presetTexts.editSection.alertMissingName;
+export const PRESET_EDIT_ALERT_MISSING_NAME =
+  presetTexts.editSection.alertMissingName;
 
 export const isPresetEditSaveDisabled = (name: string): boolean => {
   return !name.trim();

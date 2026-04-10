@@ -53,7 +53,10 @@ export const createCanceledMealFormState = (): Pick<
   };
 };
 
-export const createOpenedMealFormState = (): Pick<MealViewState, "showForm"> => {
+export const createOpenedMealFormState = (): Pick<
+  MealViewState,
+  "showForm"
+> => {
   return {
     showForm: true,
   };

@@ -9,7 +9,9 @@ describe("pomodoroTimerRuntime", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    global.Audio = jest.fn(() => ({ play: jest.fn() })) as unknown as typeof Audio;
+    global.Audio = jest.fn(() => ({
+      play: jest.fn(),
+    })) as unknown as typeof Audio;
   });
 
   afterEach(() => {

@@ -82,7 +82,9 @@ export const TOKYO_COORDINATES: WeatherCoordinates = {
 };
 
 export const getWeatherErrorMessage = (error: unknown): string => {
-  return error instanceof Error ? error.message : WEATHER_STATUS_MESSAGES.fetchError;
+  return error instanceof Error
+    ? error.message
+    : WEATHER_STATUS_MESSAGES.fetchError;
 };
 
 export const resolveInitialWeatherCoordinates = (
@@ -117,7 +119,10 @@ export const loadInitialWeatherState = async ({
 }: LoadInitialWeatherStateArgs): Promise<InitialWeatherState> => {
   const coordinates = resolveInitialWeatherCoordinates(preferredLocation);
   const hasPreferredLocation = Boolean(preferredLocation);
-  const cached = getCachedWeatherData(coordinates.latitude, coordinates.longitude);
+  const cached = getCachedWeatherData(
+    coordinates.latitude,
+    coordinates.longitude,
+  );
 
   if (cached) {
     return {

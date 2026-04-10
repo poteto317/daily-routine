@@ -1,4 +1,7 @@
-import { type HourlyWeatherForecast, type WeatherForecast } from "@/types/routine";
+import {
+  type HourlyWeatherForecast,
+  type WeatherForecast,
+} from "@/types/routine";
 import { WEATHER_DAY_NAMES } from "../texts";
 import { type OpenMeteoResponse } from "./types";
 import { getWeatherDescription, mapWeatherCodeToType } from "./weatherCode";

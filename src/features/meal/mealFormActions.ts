@@ -1,5 +1,8 @@
 import type { Dispatch, SetStateAction } from "react";
-import { createCanceledMealFormState, createOpenedMealFormState } from "./mealViewStateActions";
+import {
+  createCanceledMealFormState,
+  createOpenedMealFormState,
+} from "./mealViewStateActions";
 
 type MealStateSetters = {
   setShowForm: Dispatch<SetStateAction<boolean>>;

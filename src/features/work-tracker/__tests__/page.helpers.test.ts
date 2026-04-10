@@ -102,7 +102,10 @@ describe("work-tracker page helpers", () => {
       expect.objectContaining({ emoji: "😮‍💨", label: "疲れた" }),
     );
     expect(
-      isSessionImprovement(session as never, [{ id: "s1", duration: 160 }] as never),
+      isSessionImprovement(
+        session as never,
+        [{ id: "s1", duration: 160 }] as never,
+      ),
     ).toBe(false);
     expect(
       isSessionImprovement(
@@ -125,15 +128,12 @@ describe("work-tracker page helpers", () => {
     expect(
       isSessionImprovement(
         { ...session, id: "s3", duration: undefined } as never,
-        [
-          { id: "s1" },
-          { id: "s3", duration: undefined },
-        ] as never,
+        [{ id: "s1" }, { id: "s3", duration: undefined }] as never,
       ),
     ).toBe(true);
-    expect(isSessionNewRecord(session as never, { count: 1, bestDuration: 150 })).toBe(
-      false,
-    );
+    expect(
+      isSessionNewRecord(session as never, { count: 1, bestDuration: 150 }),
+    ).toBe(false);
     expect(
       isSessionNewRecord({ ...session, duration: undefined } as never, {
         count: 2,
@@ -149,9 +149,9 @@ describe("work-tracker page helpers", () => {
         "2026-02-12T10:30:00.000+09:00",
       ),
     ).toBe("09:00 - 10:30");
-    expect(
-      formatWorkSessionTimeRange("2026-02-12T09:00:00.000+09:00"),
-    ).toBe("09:00");
+    expect(formatWorkSessionTimeRange("2026-02-12T09:00:00.000+09:00")).toBe(
+      "09:00",
+    );
   });
 
   it("統計サマリー文言を整形できる", () => {
@@ -167,7 +167,9 @@ describe("work-tracker page helpers", () => {
   it("テンプレート入力関連のラベルを返す", () => {
     expect(shouldShowTemplateDropdown(true, "設計")).toBe(true);
     expect(shouldShowTemplateDropdown(true, "")).toBe(false);
-    expect(getTemplateStatsSummaryLabel(4, "01:20")).toBe("4回 | ベスト: 01:20");
+    expect(getTemplateStatsSummaryLabel(4, "01:20")).toBe(
+      "4回 | ベスト: 01:20",
+    );
     expect(formatNewWorkNameLabel("新規作業")).toBe("「新規作業」");
   });
 
@@ -175,7 +177,9 @@ describe("work-tracker page helpers", () => {
     expect(getTimerStatusLabel(true)).toBe("⏱️ 作業中...");
     expect(getTimerStatusLabel(false)).toBe("⏸️ 停止中");
     expect(getTimerGradientClassName(true)).toBe("from-green-500 to-teal-500");
-    expect(getTimerGradientClassName(false)).toBe("from-blue-500 to-indigo-500");
+    expect(getTimerGradientClassName(false)).toBe(
+      "from-blue-500 to-indigo-500",
+    );
     expect(getSessionCountLabel(2)).toBe("2 セッション");
   });
 
@@ -202,11 +206,18 @@ describe("work-tracker page helpers", () => {
   it("トレンドメッセージを条件ごとに返す", () => {
     expect(
       getTrendMessage({
-        stats: { ...EMPTY_TEMPLATE_STATS, trend: "improving", averageDuration: 120 },
+        stats: {
+          ...EMPTY_TEMPLATE_STATS,
+          trend: "improving",
+          averageDuration: 120,
+        },
         elapsedTime: 100,
       }),
     ).toEqual(
-      expect.objectContaining({ icon: "📈", message: "改善傾向！ベスト記録に近づいています" }),
+      expect.objectContaining({
+        icon: "📈",
+        message: "改善傾向！ベスト記録に近づいています",
+      }),
     );
 
     expect(
@@ -220,7 +231,10 @@ describe("work-tracker page helpers", () => {
         elapsedTime: 120,
       }),
     ).toEqual(
-      expect.objectContaining({ icon: "📉", message: "平均より時間がかかっています" }),
+      expect.objectContaining({
+        icon: "📉",
+        message: "平均より時間がかかっています",
+      }),
     );
 
     expect(

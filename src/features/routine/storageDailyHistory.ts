@@ -16,7 +16,9 @@ export const selectRoutinesForHistory = (
   date: Date,
 ): Routine[] => {
   const targetDayValue = resolveHistoryDayValue(date);
-  return routines.filter((routine) => routine.daysOfWeek.includes(targetDayValue));
+  return routines.filter((routine) =>
+    routine.daysOfWeek.includes(targetDayValue),
+  );
 };
 
 export const createRoutineSnapshots = (

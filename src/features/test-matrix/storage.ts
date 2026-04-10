@@ -19,7 +19,10 @@ import type { TestCategory } from "./types";
 const LEGACY_CATEGORY_ITEM_ID_MAPS: Record<string, Record<string, string>> = {
   // todo-lists アイテムは 20 件（todo-lists-1 〜 todo-lists-20）
   "todo-lists": Object.fromEntries(
-    Array.from({ length: 20 }, (_, i) => [`16-${i + 1}`, `todo-lists-${i + 1}`]),
+    Array.from({ length: 20 }, (_, i) => [
+      `16-${i + 1}`,
+      `todo-lists-${i + 1}`,
+    ]),
   ),
   // common-ui アイテムは 11 件（16-1 〜 16-11）
   "common-ui": Object.fromEntries(
@@ -47,7 +50,10 @@ const LEGACY_DETAIL_ITEM_ID_MAP: Record<string, string> = {
   // （16-1〜16-11 は現行 common-ui と重複するため除外）
   // 生成範囲: i=0→16-12, i=1→16-13, ..., i=8→16-20
   ...Object.fromEntries(
-    Array.from({ length: 9 }, (_, i) => [`16-${i + 12}`, `todo-lists-${i + 12}`]),
+    Array.from({ length: 9 }, (_, i) => [
+      `16-${i + 12}`,
+      `todo-lists-${i + 12}`,
+    ]),
   ),
 };
 
@@ -112,7 +118,9 @@ export const hasBrokenVersionDetailData = (data: StoredDetailData): boolean => {
  * - 18-* → 17-* (pwa): 18-5 が存在しない場合のみ実施
  *   （18-5 は現行 lib の 5番目アイテムIDのため、18-5 があれば 18-* は現行 lib として扱う）
  */
-export const migrateLegacyDetailData = (data: StoredDetailData): StoredDetailData => {
+export const migrateLegacyDetailData = (
+  data: StoredDetailData,
+): StoredDetailData => {
   if (!hasBrokenVersionDetailData(data)) return data;
 
   const keys = Object.keys(data);
@@ -168,7 +176,9 @@ export const mergeStoredTestMatrixCategories = (
 ): TestCategory[] => {
   const migratedCategories = migrateLegacyCategories(storedCategories);
   return initialCategories.map((category) => {
-    const savedCategory = migratedCategories.find((item) => item.id === category.id);
+    const savedCategory = migratedCategories.find(
+      (item) => item.id === category.id,
+    );
     if (!savedCategory) {
       return category;
     }
@@ -176,7 +186,9 @@ export const mergeStoredTestMatrixCategories = (
     return {
       ...category,
       items: category.items.map((item) => {
-        const savedItem = savedCategory.items.find((saved) => saved.id === item.id);
+        const savedItem = savedCategory.items.find(
+          (saved) => saved.id === item.id,
+        );
         return savedItem ? { ...item, ...savedItem } : item;
       }),
     };

@@ -65,8 +65,12 @@ const presets: RoutinePreset[] = [
 
 describe("preset helpers and state helpers", () => {
   it("Set 選択をトグルする", () => {
-    expect(Array.from(toggleSetSelection(new Set<string>(), "a"))).toEqual(["a"]);
-    expect(Array.from(toggleSetSelection(new Set<string>(["a"]), "a"))).toEqual([]);
+    expect(Array.from(toggleSetSelection(new Set<string>(), "a"))).toEqual([
+      "a",
+    ]);
+    expect(Array.from(toggleSetSelection(new Set<string>(["a"]), "a"))).toEqual(
+      [],
+    );
   });
 
   it("作成・適用条件を判定する", () => {
@@ -77,11 +81,15 @@ describe("preset helpers and state helpers", () => {
   });
 
   it("ルーティン抽出とプリセット検索と曜日絞り込みを行う", () => {
-    expect(getSelectedRoutinesForPreset(routines, new Set(["r2"]))).toEqual([routines[1]]);
+    expect(getSelectedRoutinesForPreset(routines, new Set(["r2"]))).toEqual([
+      routines[1],
+    ]);
     expect(findPresetById(presets, "p1")).toEqual(presets[0]);
     expect(findPresetById(presets, null)).toBeUndefined();
     expect(getRoutinesFilteredByDays(routines, new Set())).toEqual(routines);
-    expect(getRoutinesFilteredByDays(routines, new Set([1]))).toEqual([routines[0]]);
+    expect(getRoutinesFilteredByDays(routines, new Set([1]))).toEqual([
+      routines[0],
+    ]);
   });
 
   it("preset 表示用 helper と文言定数を返す", () => {
@@ -103,11 +111,13 @@ describe("preset helpers and state helpers", () => {
     expect(getPresetCreateToggleLabel(true)).toBe(PRESET_CREATE_CANCEL_LABEL);
     expect(getPresetCreateToggleLabel(false)).toBe(PRESET_CREATE_OPEN_LABEL);
     expect(isPresetEditSaveDisabled("   ")).toBe(true);
-    expect(formatRoutineTemplateSummary({
-      categoryEmoji: "🍽️",
-      title: "朝食",
-      startTime: "07:00",
-      duration: 30,
-    })).toBe("🍽️ 朝食 (07:00, 30分)");
+    expect(
+      formatRoutineTemplateSummary({
+        categoryEmoji: "🍽️",
+        title: "朝食",
+        startTime: "07:00",
+        duration: 30,
+      }),
+    ).toBe("🍽️ 朝食 (07:00, 30分)");
   });
 });

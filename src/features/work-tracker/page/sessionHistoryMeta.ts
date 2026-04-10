@@ -13,7 +13,9 @@ export const isSessionImprovement = (
   session: WorkSession,
   previousSessions: WorkSession[],
 ): boolean => {
-  const sessionIndex = previousSessions.findIndex((item) => item.id === session.id);
+  const sessionIndex = previousSessions.findIndex(
+    (item) => item.id === session.id,
+  );
 
   return (
     sessionIndex > 0 &&

@@ -55,20 +55,21 @@ describe("routineDisplayActions", () => {
   it("カテゴリで絞り込み、一覧順に並べ替える", () => {
     expect(filterRoutineDisplayByCategory(routines, "all")).toEqual(routines);
     expect(
-      filterRoutineDisplayByCategory(routines, "health").map((routine) => routine.id),
+      filterRoutineDisplayByCategory(routines, "health").map(
+        (routine) => routine.id,
+      ),
     ).toEqual(["r1"]);
 
-    expect(sortDisplayRoutinesForList(routines).map((routine) => routine.id)).toEqual([
-      "r1",
-      "r2",
-    ]);
+    expect(
+      sortDisplayRoutinesForList(routines).map((routine) => routine.id),
+    ).toEqual(["r1", "r2"]);
   });
 
   it("進捗を計算する", () => {
     expect(calculateRoutineDisplayProgress(routines)).toEqual({
       totalMinutes: 90,
       completedMinutes: 60,
-      progressPercentage: 60 / 90 * 100,
+      progressPercentage: (60 / 90) * 100,
     });
     expect(calculateRoutineDisplayProgress([])).toEqual({
       totalMinutes: 0,

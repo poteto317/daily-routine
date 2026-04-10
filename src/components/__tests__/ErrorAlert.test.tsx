@@ -12,7 +12,11 @@ describe("ErrorAlert", () => {
   it("再試行ボタンを表示して押下できる", () => {
     const onRetry = jest.fn();
     render(
-      <ErrorAlert error="失敗しました" onRetry={onRetry} retryButtonText="再実行" />,
+      <ErrorAlert
+        error="失敗しました"
+        onRetry={onRetry}
+        retryButtonText="再実行"
+      />,
     );
 
     fireEvent.click(screen.getByText("再実行"));

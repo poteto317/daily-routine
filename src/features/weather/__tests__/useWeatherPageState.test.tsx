@@ -37,8 +37,9 @@ const mockClearPreferredWeatherLocation =
   weatherCache.clearPreferredWeatherLocation as jest.MockedFunction<
     typeof weatherCache.clearPreferredWeatherLocation
   >;
-const mockGetUserLocation =
-  geolocation.getUserLocation as jest.MockedFunction<typeof geolocation.getUserLocation>;
+const mockGetUserLocation = geolocation.getUserLocation as jest.MockedFunction<
+  typeof geolocation.getUserLocation
+>;
 
 describe("useWeatherPageState", () => {
   beforeEach(() => {
@@ -153,7 +154,9 @@ describe("useWeatherPageState", () => {
       await result.current.handleUseCurrentLocation();
     });
 
-    expect(result.current.locationError).toBe(WEATHER_STATUS_MESSAGES.locationError);
+    expect(result.current.locationError).toBe(
+      WEATHER_STATUS_MESSAGES.locationError,
+    );
   });
 
   it("clearLocationError で locationError をクリアする", async () => {
@@ -166,7 +169,9 @@ describe("useWeatherPageState", () => {
       await result.current.handleUseCurrentLocation();
     });
 
-    expect(result.current.locationError).toBe(WEATHER_STATUS_MESSAGES.locationError);
+    expect(result.current.locationError).toBe(
+      WEATHER_STATUS_MESSAGES.locationError,
+    );
 
     act(() => {
       result.current.clearLocationError();

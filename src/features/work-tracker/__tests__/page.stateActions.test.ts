@@ -149,7 +149,9 @@ describe("work-tracker stateActions", () => {
       notes: "集中",
       startTime,
     });
-    expect(setSessions).toHaveBeenCalledWith(refreshSessions.mock.results[0].value);
+    expect(setSessions).toHaveBeenCalledWith(
+      refreshSessions.mock.results[0].value,
+    );
     expect(setTemplates).toHaveBeenCalledWith(
       refreshTemplates.mock.results[0].value,
     );
@@ -195,6 +197,8 @@ describe("work-tracker stateActions", () => {
     ).toBe(true);
 
     expect(removeSession).toHaveBeenCalledWith("s1");
-    expect(setSessions).toHaveBeenCalledWith(refreshSessions.mock.results[0].value);
+    expect(setSessions).toHaveBeenCalledWith(
+      refreshSessions.mock.results[0].value,
+    );
   });
 });

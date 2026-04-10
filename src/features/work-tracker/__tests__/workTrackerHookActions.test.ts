@@ -48,8 +48,12 @@ describe("workTrackerHookActions", () => {
     const resetAction = jest.fn();
     const startAction = jest.fn();
     const stopAction = jest.fn();
-    (createWorkTrackerResetFormAction as jest.Mock).mockReturnValue(resetAction);
-    (createWorkTrackerStartTimerAction as jest.Mock).mockReturnValue(startAction);
+    (createWorkTrackerResetFormAction as jest.Mock).mockReturnValue(
+      resetAction,
+    );
+    (createWorkTrackerStartTimerAction as jest.Mock).mockReturnValue(
+      startAction,
+    );
     (createWorkTrackerStopTimerAction as jest.Mock).mockReturnValue(stopAction);
 
     const resetParams = {
@@ -88,9 +92,15 @@ describe("workTrackerHookActions", () => {
     const saveAction = jest.fn();
     const cancelAction = jest.fn();
     const deleteAction = jest.fn();
-    (createWorkTrackerSaveSessionHandler as jest.Mock).mockReturnValue(saveAction);
-    (createWorkTrackerCancelSessionHandler as jest.Mock).mockReturnValue(cancelAction);
-    (createWorkTrackerDeleteSessionHandler as jest.Mock).mockReturnValue(deleteAction);
+    (createWorkTrackerSaveSessionHandler as jest.Mock).mockReturnValue(
+      saveAction,
+    );
+    (createWorkTrackerCancelSessionHandler as jest.Mock).mockReturnValue(
+      cancelAction,
+    );
+    (createWorkTrackerDeleteSessionHandler as jest.Mock).mockReturnValue(
+      deleteAction,
+    );
 
     const saveParams = {
       workName: "設計",
@@ -109,9 +119,15 @@ describe("workTrackerHookActions", () => {
     createWorkTrackerCancelSessionHookHandler(resetForm)();
     createWorkTrackerDeleteSessionHookHandler(deleteParams)("s1");
 
-    expect(createWorkTrackerSaveSessionHandler).toHaveBeenCalledWith(saveParams);
-    expect(createWorkTrackerCancelSessionHandler).toHaveBeenCalledWith(resetForm);
-    expect(createWorkTrackerDeleteSessionHandler).toHaveBeenCalledWith(deleteParams);
+    expect(createWorkTrackerSaveSessionHandler).toHaveBeenCalledWith(
+      saveParams,
+    );
+    expect(createWorkTrackerCancelSessionHandler).toHaveBeenCalledWith(
+      resetForm,
+    );
+    expect(createWorkTrackerDeleteSessionHandler).toHaveBeenCalledWith(
+      deleteParams,
+    );
     expect(saveAction).toHaveBeenCalled();
     expect(cancelAction).toHaveBeenCalled();
     expect(deleteAction).toHaveBeenCalledWith("s1");

@@ -1,4 +1,7 @@
-import { createMealAddHandler, createMealDeleteHandler } from "../mealMutationActions";
+import {
+  createMealAddHandler,
+  createMealDeleteHandler,
+} from "../mealMutationActions";
 
 describe("mealMutationActions", () => {
   it("追加 handler が保存・再読込・フォームクローズを行う", () => {
@@ -34,9 +37,15 @@ describe("mealMutationActions", () => {
       setNotesInput,
     })();
 
-    expect(addMeal).toHaveBeenCalledWith("2024-01-12", "lunch", "12:00", "ramen", {
-      notes: "spicy",
-    });
+    expect(addMeal).toHaveBeenCalledWith(
+      "2024-01-12",
+      "lunch",
+      "12:00",
+      "ramen",
+      {
+        notes: "spicy",
+      },
+    );
     expect(setTodayMeals).toHaveBeenCalledWith([addedMeal]);
     expect(setRecentMeals).toHaveBeenCalledWith([addedMeal]);
     expect(setShowForm).toHaveBeenCalledWith(false);

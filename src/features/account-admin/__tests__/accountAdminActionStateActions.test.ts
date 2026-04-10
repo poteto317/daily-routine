@@ -73,7 +73,10 @@ describe("accountAdminActionStateActions", () => {
 
     expect(preventDefault).toHaveBeenCalled();
     expect(submitUpdateAccount).toHaveBeenCalledWith(
-      expect.objectContaining({ editingAccount: account, editDisplayName: "更新後" }),
+      expect.objectContaining({
+        editingAccount: account,
+        editDisplayName: "更新後",
+      }),
     );
   });
 

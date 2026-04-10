@@ -2,9 +2,16 @@ import { createUserWithEmailAndPassword } from "firebase/auth";
 import { deleteDoc, setDoc, updateDoc } from "firebase/firestore";
 import { getAuthInstance } from "@/lib/firebase";
 import { type CreateAccountInput, type UpdateAccountInput } from "./types";
-import { createTimestamp, getAccountDocRef, TEST_USER_EMAIL } from "./accountServiceCore";
+import {
+  createTimestamp,
+  getAccountDocRef,
+  TEST_USER_EMAIL,
+} from "./accountServiceCore";
 import { getAccount } from "./accountServiceQueries";
-import { getDefaultDisplayNameFromEmail, ANONYMOUS_USER_DEFAULT_DISPLAY_NAME } from "./accountUtils";
+import {
+  getDefaultDisplayNameFromEmail,
+  ANONYMOUS_USER_DEFAULT_DISPLAY_NAME,
+} from "./accountUtils";
 
 export const createAuthUser = async (
   email: string,
@@ -70,7 +77,9 @@ export const ensureAccountRecord = async (
 
   await setDoc(getAccountDocRef(uid), {
     email: email || "",
-    displayName: (email && getDefaultDisplayNameFromEmail(email)) || (isAnonymous ? ANONYMOUS_USER_DEFAULT_DISPLAY_NAME : ""),
+    displayName:
+      (email && getDefaultDisplayNameFromEmail(email)) ||
+      (isAnonymous ? ANONYMOUS_USER_DEFAULT_DISPLAY_NAME : ""),
     isAdmin: !isAnonymous && !isTestUser,
     isAnonymous,
     isTestUser,

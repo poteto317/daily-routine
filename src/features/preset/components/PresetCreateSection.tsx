@@ -75,7 +75,10 @@ export const PresetCreateSection = ({
                 key={day}
                 type="button"
                 onClick={() => onToggleCreateFilterDay(day)}
-                className={getDayButtonClassName(createFilterDays.has(day), day === 7)}
+                className={getDayButtonClassName(
+                  createFilterDays.has(day),
+                  day === 7,
+                )}
               >
                 {label}
               </button>

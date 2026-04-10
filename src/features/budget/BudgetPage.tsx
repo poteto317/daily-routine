@@ -9,7 +9,6 @@ import { BudgetSummaryCards } from "@/features/budget/components/BudgetSummaryCa
 import { useBudgetPageState } from "@/features/budget/useBudgetPageState";
 import budgetTexts from "@/features/budget/locales/ja.json";
 
-
 export const BudgetPage = () => {
   const state = useBudgetPageState();
 

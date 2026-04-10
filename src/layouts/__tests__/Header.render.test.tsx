@@ -27,6 +27,8 @@ describe("Header render", () => {
   it("アップロード/ダウンロードボタンが表示される", () => {
     renderHeader();
     expect(screen.getByLabelText("クラウドへアップロード")).toBeInTheDocument();
-    expect(screen.getByLabelText("クラウドからダウンロード")).toBeInTheDocument();
+    expect(
+      screen.getByLabelText("クラウドからダウンロード"),
+    ).toBeInTheDocument();
   });
 });

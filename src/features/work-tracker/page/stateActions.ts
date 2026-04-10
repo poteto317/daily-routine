@@ -52,8 +52,12 @@ export const startWorkTrackerTimer = (params: {
   startTimeRef: MutableRefObject<Date | null>;
   now?: Date;
 }): void => {
-  const { setElapsedTime, setIsRunning, startTimeRef, now = new Date() } =
-    params;
+  const {
+    setElapsedTime,
+    setIsRunning,
+    startTimeRef,
+    now = new Date(),
+  } = params;
 
   startTimeRef.current = now;
   setElapsedTime(0);

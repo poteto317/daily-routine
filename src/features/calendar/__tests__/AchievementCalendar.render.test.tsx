@@ -11,9 +11,7 @@ describe("AchievementCalendar render", () => {
   it("初期表示が正しくレンダリングされる", () => {
     renderCalendar();
 
-    expect(
-      screen.getByText(calendarTexts.page.title),
-    ).toBeInTheDocument();
+    expect(screen.getByText(calendarTexts.page.title)).toBeInTheDocument();
     expect(screen.getByText("2024年 6月")).toBeInTheDocument();
     expect(
       screen.getByText(calendarTexts.monthNavigation.goToToday),

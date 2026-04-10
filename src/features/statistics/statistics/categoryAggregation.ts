@@ -24,7 +24,8 @@ export const accumulateCategoryHistory = (
     };
 
     accumulator[routine.category] = {
-      completed: currentStats.completed + (completedIds.has(routine.id) ? 1 : 0),
+      completed:
+        currentStats.completed + (completedIds.has(routine.id) ? 1 : 0),
       total: currentStats.total + 1,
     };
   });

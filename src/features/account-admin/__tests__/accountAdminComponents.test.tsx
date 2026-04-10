@@ -16,7 +16,9 @@ describe("account-admin components", () => {
     );
 
     expect(screen.getByText("👥 アカウント管理")).toBeInTheDocument();
-    expect(screen.getByText("ユーザーアカウントの作成・編集・削除を行います")).toBeInTheDocument();
+    expect(
+      screen.getByText("ユーザーアカウントの作成・編集・削除を行います"),
+    ).toBeInTheDocument();
     expect(screen.getByText("読み込み中...")).toBeInTheDocument();
   });
 
@@ -56,11 +58,17 @@ describe("account-admin components", () => {
     );
 
     expect(screen.getByText("アクセス権限がありません")).toBeInTheDocument();
-    expect(screen.getByText("このページは管理者のみアクセスできます。")).toBeInTheDocument();
+    expect(
+      screen.getByText("このページは管理者のみアクセスできます。"),
+    ).toBeInTheDocument();
     expect(screen.getByText("注意事項")).toBeInTheDocument();
     expect(
-      screen.getByText(/新規アカウント作成後はセッション切替のため再ログインが必要です/),
+      screen.getByText(
+        /新規アカウント作成後はセッション切替のため再ログインが必要です/,
+      ),
     ).toBeInTheDocument();
-    expect(screen.getByText(/自分自身のアカウントは削除できません/)).toBeInTheDocument();
+    expect(
+      screen.getByText(/自分自身のアカウントは削除できません/),
+    ).toBeInTheDocument();
   });
 });

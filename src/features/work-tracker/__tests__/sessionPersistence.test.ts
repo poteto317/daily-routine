@@ -12,17 +12,26 @@ import {
   updateWorkTemplateLastUsed,
 } from "@/lib/storage";
 
-const mockAddWorkSession = addWorkSession as jest.MockedFunction<typeof addWorkSession>;
+const mockAddWorkSession = addWorkSession as jest.MockedFunction<
+  typeof addWorkSession
+>;
 const mockGetOrCreateWorkTemplate =
-  getOrCreateWorkTemplate as jest.MockedFunction<typeof getOrCreateWorkTemplate>;
+  getOrCreateWorkTemplate as jest.MockedFunction<
+    typeof getOrCreateWorkTemplate
+  >;
 const mockUpdateWorkTemplateLastUsed =
-  updateWorkTemplateLastUsed as jest.MockedFunction<typeof updateWorkTemplateLastUsed>;
+  updateWorkTemplateLastUsed as jest.MockedFunction<
+    typeof updateWorkTemplateLastUsed
+  >;
 
 describe("persistWorkSession", () => {
   beforeEach(() => {
     jest.useFakeTimers().setSystemTime(new Date("2026-03-07T12:00:00.000Z"));
     jest.spyOn(Math, "random").mockReturnValue(0.123456);
-    mockGetOrCreateWorkTemplate.mockReturnValue({ id: "t1", name: "設計" } as never);
+    mockGetOrCreateWorkTemplate.mockReturnValue({
+      id: "t1",
+      name: "設計",
+    } as never);
   });
 
   afterEach(() => {

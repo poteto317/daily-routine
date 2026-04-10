@@ -99,9 +99,15 @@ describe("meal pageStateActions", () => {
     });
 
     expect(result).toBe(true);
-    expect(addMeal).toHaveBeenCalledWith("2024-01-12", "lunch", "12:00", "ramen", {
-      notes: "spicy",
-    });
+    expect(addMeal).toHaveBeenCalledWith(
+      "2024-01-12",
+      "lunch",
+      "12:00",
+      "ramen",
+      {
+        notes: "spicy",
+      },
+    );
     expect(reloadMeals).toHaveBeenCalled();
     expect(closeForm).toHaveBeenCalled();
     expect(resetForm).toHaveBeenCalled();

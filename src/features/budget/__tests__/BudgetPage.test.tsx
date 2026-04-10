@@ -7,8 +7,9 @@ jest.mock("../useBudgetPageState", () => ({
 
 import { useBudgetPageState } from "../useBudgetPageState";
 
-const mockUseBudgetPageState =
-  useBudgetPageState as jest.MockedFunction<typeof useBudgetPageState>;
+const mockUseBudgetPageState = useBudgetPageState as jest.MockedFunction<
+  typeof useBudgetPageState
+>;
 
 const createState = (overrides: Record<string, unknown> = {}) => ({
   budgetInputValue: "30000",
@@ -124,7 +125,10 @@ describe("BudgetPage", () => {
   it("削除確認の結果に応じて削除する", () => {
     const state = createState();
     mockUseBudgetPageState.mockReturnValue(state as never);
-    jest.spyOn(window, "confirm").mockReturnValueOnce(false).mockReturnValueOnce(true);
+    jest
+      .spyOn(window, "confirm")
+      .mockReturnValueOnce(false)
+      .mockReturnValueOnce(true);
 
     render(<BudgetPage />);
 

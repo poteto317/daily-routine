@@ -22,7 +22,9 @@ export const getBudgetExpenseDateBounds = (
 
 // Summary Cards Helpers
 export const getBudgetActionLabel = (monthBudget: number): string => {
-  return monthBudget > 0 ? budgetTexts.summary.changeLabel : budgetTexts.summary.setLabel;
+  return monthBudget > 0
+    ? budgetTexts.summary.changeLabel
+    : budgetTexts.summary.setLabel;
 };
 
 export const getRemainingTone = (remaining: number): BudgetCardTone => {

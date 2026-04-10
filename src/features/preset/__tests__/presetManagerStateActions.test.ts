@@ -73,7 +73,9 @@ describe("presetManagerStateActions", () => {
 
   it("一覧読み込みと選択切替を行う", () => {
     expect(loadPresetList()).toEqual([preset]);
-    expect(Array.from(togglePresetSelection(new Set<string>(), "r1"))).toEqual(["r1"]);
+    expect(Array.from(togglePresetSelection(new Set<string>(), "r1"))).toEqual([
+      "r1",
+    ]);
   });
 
   it("作成/削除を処理する", () => {

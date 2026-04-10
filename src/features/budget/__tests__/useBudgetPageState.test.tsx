@@ -20,12 +20,15 @@ import { addExpense, deleteExpense, setMonthlyBudget } from "../storage";
 import { getMonthStateSnapshot } from "../budgetPageStateHelpers";
 
 const mockAddExpense = addExpense as jest.MockedFunction<typeof addExpense>;
-const mockDeleteExpense = deleteExpense as jest.MockedFunction<typeof deleteExpense>;
+const mockDeleteExpense = deleteExpense as jest.MockedFunction<
+  typeof deleteExpense
+>;
 const mockSetMonthlyBudget = setMonthlyBudget as jest.MockedFunction<
   typeof setMonthlyBudget
 >;
-const mockGetMonthStateSnapshot =
-  getMonthStateSnapshot as jest.MockedFunction<typeof getMonthStateSnapshot>;
+const mockGetMonthStateSnapshot = getMonthStateSnapshot as jest.MockedFunction<
+  typeof getMonthStateSnapshot
+>;
 
 describe("useBudgetPageState", () => {
   beforeEach(() => {
@@ -141,7 +144,12 @@ describe("useBudgetPageState", () => {
       result.current.handleAddExpense();
     });
 
-    expect(mockAddExpense).toHaveBeenCalledWith("2026-03-05", 2500, undefined, "書籍");
+    expect(mockAddExpense).toHaveBeenCalledWith(
+      "2026-03-05",
+      2500,
+      undefined,
+      "書籍",
+    );
     expect(result.current.expenses).toEqual([
       expect.objectContaining({ id: "e-mar", amount: 1000 }),
     ]);

@@ -98,7 +98,11 @@ describe("dailyAggregation", () => {
       "2024-01-10",
       historyMap["2024-01-10"],
     );
-    expect(mockCalculateDailyStats).toHaveBeenNthCalledWith(2, "2024-01-11", null);
+    expect(mockCalculateDailyStats).toHaveBeenNthCalledWith(
+      2,
+      "2024-01-11",
+      null,
+    );
   });
 
   it("日別統計を合算して総数と平均達成率を返す", () => {

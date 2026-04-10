@@ -53,7 +53,11 @@ describe("routineCompletionActions", () => {
       lastResetTime: "2024-01-14T00:00:00.000Z",
     };
 
-    const progress = buildDailyProgressForToggle(routines, "2024-01-15", currentProgress);
+    const progress = buildDailyProgressForToggle(
+      routines,
+      "2024-01-15",
+      currentProgress,
+    );
 
     expect(progress).toEqual({
       date: "2024-01-15",

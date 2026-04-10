@@ -55,7 +55,9 @@ export const createWorkTrackerSaveSessionHandler = (params: {
   };
 };
 
-export const createWorkTrackerCancelSessionHandler = (resetForm: () => void) => {
+export const createWorkTrackerCancelSessionHandler = (
+  resetForm: () => void,
+) => {
   return () => resetForm();
 };
 

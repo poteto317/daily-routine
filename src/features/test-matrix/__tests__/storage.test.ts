@@ -64,14 +64,16 @@ describe("test matrix storage", () => {
       },
     ] as TestCategory[];
 
-    expect(mergeStoredTestMatrixCategories(initial, stored)[0].items[0]).toEqual(
-      expect.objectContaining({ pc: "ok", sp: "ng", note: "saved" }),
-    );
+    expect(
+      mergeStoredTestMatrixCategories(initial, stored)[0].items[0],
+    ).toEqual(expect.objectContaining({ pc: "ok", sp: "ng", note: "saved" }));
   });
 
   it("保存済み詳細を定義へマージする", () => {
     const stored: StoredDetailData = {
-      [detailItemId]: [{ id: detailCaseId, pc: "ok", sp: "ng", note: "detail" }],
+      [detailItemId]: [
+        { id: detailCaseId, pc: "ok", sp: "ng", note: "detail" },
+      ],
     };
     const merged = mergeStoredDetailData(stored);
 
@@ -93,7 +95,9 @@ describe("test matrix storage", () => {
     localStorage.setItem(
       "test-matrix-detail-data",
       JSON.stringify({
-        [detailItemId]: [{ id: detailCaseId, pc: "ng", sp: "ok", note: "detail note" }],
+        [detailItemId]: [
+          { id: detailCaseId, pc: "ng", sp: "ok", note: "detail note" },
+        ],
       }),
     );
 
@@ -128,8 +132,20 @@ describe("legacy ID migration", () => {
           id: "todo-lists",
           title: "Todoリスト",
           items: [
-            { id: "16-1", label: "作成", pc: "ok" as const, sp: "unchecked" as const, note: "" },
-            { id: "16-2", label: "削除", pc: "ng" as const, sp: "unchecked" as const, note: "memo" },
+            {
+              id: "16-1",
+              label: "作成",
+              pc: "ok" as const,
+              sp: "unchecked" as const,
+              note: "",
+            },
+            {
+              id: "16-2",
+              label: "削除",
+              pc: "ng" as const,
+              sp: "unchecked" as const,
+              note: "memo",
+            },
           ],
         },
       ];
@@ -146,7 +162,13 @@ describe("legacy ID migration", () => {
           id: "common-ui",
           title: "共通UI",
           items: [
-            { id: "17-1", label: "ヘッダー", pc: "ok" as const, sp: "ok" as const, note: "" },
+            {
+              id: "17-1",
+              label: "ヘッダー",
+              pc: "ok" as const,
+              sp: "ok" as const,
+              note: "",
+            },
           ],
         },
       ];
@@ -161,7 +183,13 @@ describe("legacy ID migration", () => {
           id: "pwa",
           title: "PWA",
           items: [
-            { id: "18-1", label: "SW登録", pc: "ok" as const, sp: "unchecked" as const, note: "" },
+            {
+              id: "18-1",
+              label: "SW登録",
+              pc: "ok" as const,
+              sp: "unchecked" as const,
+              note: "",
+            },
           ],
         },
       ];
@@ -175,7 +203,13 @@ describe("legacy ID migration", () => {
           id: "lib",
           title: "lib",
           items: [
-            { id: "19-1", label: "Firebase", pc: "ng" as const, sp: "unchecked" as const, note: "" },
+            {
+              id: "19-1",
+              label: "Firebase",
+              pc: "ng" as const,
+              sp: "unchecked" as const,
+              note: "",
+            },
           ],
         },
       ];
@@ -190,7 +224,13 @@ describe("legacy ID migration", () => {
           id: "common-ui",
           title: "共通UI",
           items: [
-            { id: "16-1", label: "ヘッダー", pc: "ok" as const, sp: "ok" as const, note: "" },
+            {
+              id: "16-1",
+              label: "ヘッダー",
+              pc: "ok" as const,
+              sp: "ok" as const,
+              note: "",
+            },
           ],
         },
       ];
@@ -204,7 +244,13 @@ describe("legacy ID migration", () => {
           id: "auth",
           title: "認証",
           items: [
-            { id: "1-1", label: "ログイン", pc: "ok" as const, sp: "ok" as const, note: "" },
+            {
+              id: "1-1",
+              label: "ログイン",
+              pc: "ok" as const,
+              sp: "ok" as const,
+              note: "",
+            },
           ],
         },
       ];
@@ -233,11 +279,15 @@ describe("legacy ID migration", () => {
     });
 
     it("pre-PR のデータ (17-1〜17-4 のみ) は false を返す", () => {
-      expect(hasBrokenVersionDetailData({ "17-1": [], "17-4": [] })).toBe(false);
+      expect(hasBrokenVersionDetailData({ "17-1": [], "17-4": [] })).toBe(
+        false,
+      );
     });
 
     it("pre-PR のデータ (16-1〜16-11 のみ) は false を返す", () => {
-      expect(hasBrokenVersionDetailData({ "16-1": [], "16-11": [] })).toBe(false);
+      expect(hasBrokenVersionDetailData({ "16-1": [], "16-11": [] })).toBe(
+        false,
+      );
     });
 
     it("空データは false を返す", () => {
@@ -273,7 +323,7 @@ describe("legacy ID migration", () => {
 
     it("broken version の todo-lists (16-12〜16-20) を todo-lists-* へ変換する", () => {
       const data: StoredDetailData = {
-        "17-5": [],  // broken version 検出用
+        "17-5": [], // broken version 検出用
         "16-12": [{ id: "16-12-1", pc: "ok", sp: "ok", note: "" }],
         "16-20": [{ id: "16-20-1", pc: "ng", sp: "unchecked", note: "" }],
       };
@@ -289,7 +339,7 @@ describe("legacy ID migration", () => {
     it("broken version でも 16-1〜16-11 は common-ui として保持する", () => {
       // 16-1〜16-11 は現行 common-ui 詳細キーと重複するため変換しない
       const data: StoredDetailData = {
-        "17-5": [],  // broken version 検出用
+        "17-5": [], // broken version 検出用
         "16-1": [{ id: "16-1-1", pc: "ok", sp: "ok", note: "" }],
       };
       const result = migrateLegacyDetailData(data);
@@ -365,7 +415,9 @@ describe("legacy ID migration", () => {
         "18-2": [{ id: "18-2-1", pc: "ok", sp: "ok", note: "current lib2" }],
         "18-3": [{ id: "18-3-1", pc: "ng", sp: "ok", note: "current lib3" }],
         "18-4": [{ id: "18-4-1", pc: "ok", sp: "ng", note: "current lib4" }],
-        "18-5": [{ id: "18-5-1", pc: "ng", sp: "unchecked", note: "current lib5" }],
+        "18-5": [
+          { id: "18-5-1", pc: "ng", sp: "unchecked", note: "current lib5" },
+        ],
       };
       const result = migrateLegacyDetailData(data);
       // 現行 lib1〜lib4 データが保持される（17-* に誤変換されない）
@@ -395,7 +447,13 @@ describe("legacy ID migration", () => {
           id: "common-ui",
           title: "共通UI",
           items: [
-            { id: "16-1", label: "ヘッダー", pc: "unchecked" as const, sp: "unchecked" as const, note: "" },
+            {
+              id: "16-1",
+              label: "ヘッダー",
+              pc: "unchecked" as const,
+              sp: "unchecked" as const,
+              note: "",
+            },
           ],
         },
       ];
@@ -404,7 +462,13 @@ describe("legacy ID migration", () => {
           id: "common-ui",
           title: "共通UI",
           items: [
-            { id: "17-1", label: "ヘッダー", pc: "ok" as const, sp: "na" as const, note: "legacy" },
+            {
+              id: "17-1",
+              label: "ヘッダー",
+              pc: "ok" as const,
+              sp: "na" as const,
+              note: "legacy",
+            },
           ],
         },
       ] as TestCategory[];

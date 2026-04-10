@@ -133,7 +133,10 @@ describe("dataTransferStateActions", () => {
       shouldReload: true,
       shouldClearInput: true,
     });
-    expect(importSelectedData).toHaveBeenCalledWith({ ok: true }, EMPTY_TRANSFER_OPTIONS);
+    expect(importSelectedData).toHaveBeenCalledWith(
+      { ok: true },
+      EMPTY_TRANSFER_OPTIONS,
+    );
   });
 
   it("例外時は error を返す", async () => {
