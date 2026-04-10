@@ -121,4 +121,19 @@ describe("TestMatrixPage", () => {
       expect(screen.getByText("進捗:")).toBeInTheDocument();
     });
   });
+
+  it("管理者ではないユーザーにはアクセス拒否画面を表示する", () => {
+    const { useAuth } = jest.requireMock("@/features/auth");
+    useAuth.mockReturnValueOnce({ isAdmin: false, loading: false });
+
+    render(<TestMatrixPage />);
+
+    expect(screen.getByText("アクセス権限がありません")).toBeInTheDocument();
+    expect(
+      screen.getByText("このページは管理者のみ閲覧できます。"),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText("📋 機能テストマトリクス"),
+    ).not.toBeInTheDocument();
+  });
 });
