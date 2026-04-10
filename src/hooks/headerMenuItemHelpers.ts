@@ -123,12 +123,16 @@ export const filterStaticHeaderMenuItems = ({
     if (item.id === "todo-lists") return false;
     if (item.id === "home" || item.id === "settings") return true;
     if (isFeatureMenuId(item.id) && visibleFeatures) {
-      if (item.id === "account-admin" && !isAdmin) {
+      if (
+        (item.id === "account-admin" || item.id === "test-matrix") &&
+        !isAdmin
+      ) {
         return false;
       }
       return visibleFeatures[FEATURE_KEY_MAP[item.id]] !== false;
     }
-    if (item.id === "account-admin") return isAdmin;
+    if (item.id === "account-admin" || item.id === "test-matrix")
+      return isAdmin;
     return true;
   });
 };
