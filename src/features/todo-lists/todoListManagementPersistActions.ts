@@ -1,5 +1,5 @@
 import type { TodoList } from "./types";
-import { saveAndSyncTodoLists } from "./sync";
+import { saveTodoListsToLocal } from "./sync";
 import { persistManagedTodoLists } from "./managementPageStateActions";
 
 type SetValue<T> = (value: T) => void;
@@ -13,7 +13,7 @@ export const createManagedTodoListsPersistAction = (params: {
     persistManagedTodoLists({
       nextLists,
       setLists,
-      saveLists: saveAndSyncTodoLists,
+      saveLists: saveTodoListsToLocal,
     });
   };
 };

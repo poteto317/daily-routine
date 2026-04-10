@@ -1,4 +1,4 @@
-import { saveAndSyncTodoLists } from "../sync";
+import { saveTodoListsToLocal } from "../sync";
 
 jest.mock("../storage", () => ({
   saveTodoLists: jest.fn(),
@@ -16,8 +16,7 @@ describe("todo-lists sync", () => {
     jest.clearAllMocks();
   });
 
-  it("ローカル保存後にクラウド同期を開始する", async () => {
-    (uploadToFirestore as jest.Mock).mockResolvedValue(undefined);
+  it("ローカル保存のみを行い自動クラウド同期は実行しない", () => {
     const lists = [
       {
         id: "list-1",
@@ -28,25 +27,15 @@ describe("todo-lists sync", () => {
       },
     ];
 
-    saveAndSyncTodoLists(lists);
-    await Promise.resolve();
+    saveTodoListsToLocal(lists);
 
     expect(saveTodoLists).toHaveBeenCalledWith(lists);
-    expect(uploadToFirestore).toHaveBeenCalled();
+    expect(uploadToFirestore).not.toHaveBeenCalled();
   });
 
-  it("クラウド同期失敗でもローカル保存は維持する", async () => {
-    const rejectSpy = jest.spyOn(Promise, "resolve");
-    (uploadToFirestore as jest.Mock).mockRejectedValue(
-      new Error("sync failed"),
-    );
-
-    expect(() => saveAndSyncTodoLists([])).not.toThrow();
-    await Promise.resolve();
-
+  it("例外を投げない", () => {
+    expect(() => saveTodoListsToLocal([])).not.toThrow();
     expect(saveTodoLists).toHaveBeenCalledWith([]);
-    expect(uploadToFirestore).toHaveBeenCalled();
-
-    rejectSpy.mockRestore();
+    expect(uploadToFirestore).not.toHaveBeenCalled();
   });
 });

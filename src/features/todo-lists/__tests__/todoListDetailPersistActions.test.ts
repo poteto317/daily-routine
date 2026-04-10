@@ -1,14 +1,14 @@
 import type { TodoList } from "../types";
 import { persistTodoLists } from "../todoListPersistence";
 import { createPersistTodoListsAction } from "../todoListDetailPersistActions";
-import { saveAndSyncTodoLists } from "../sync";
+import { saveTodoListsToLocal } from "../sync";
 
 jest.mock("../todoListPersistence", () => ({
   persistTodoLists: jest.fn(),
 }));
 
 jest.mock("../sync", () => ({
-  saveAndSyncTodoLists: jest.fn(),
+  saveTodoListsToLocal: jest.fn(),
 }));
 
 const baseList: TodoList = {
@@ -32,7 +32,7 @@ describe("todoListDetailPersistActions", () => {
     expect(persistTodoLists).toHaveBeenCalledWith({
       nextLists: [baseList],
       setLists,
-      saveLists: saveAndSyncTodoLists,
+      saveLists: saveTodoListsToLocal,
     });
   });
 });
