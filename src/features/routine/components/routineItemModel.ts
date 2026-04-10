@@ -15,6 +15,8 @@ type RoutineItemCardClassParams = {
   routine: Routine;
   isEditMode: boolean;
   isDraggable: boolean;
+  /** ドラッグ中（このアイテム自身がドラッグされている）か否か */
+  isDragging?: boolean;
 };
 
 const BASE_CARD_CLASS =
@@ -41,8 +43,20 @@ export const getRoutineItemCardClassName = ({
   routine,
   isEditMode,
   isDraggable,
+  isDragging = false,
 }: RoutineItemCardClassParams): string => {
   const isPast = isRoutinePast(routine);
+
+  // ドラッグ中のプレースホルダーは背景を維持しつつ枠線をハイライト
+  if (isDragging) {
+    const bgClass = routine.isCompleted
+      ? "bg-green-50 dark:bg-green-100"
+      : isPast
+        ? "bg-yellow-50 dark:bg-yellow-100"
+        : "bg-white dark:bg-slate-100";
+    return `${BASE_CARD_CLASS} ${bgClass} border-blue-400 dark:border-blue-500 shadow-md`;
+  }
+
   const cardStyle = getRoutineCardStyle(routine, isPast);
 
   if (isDraggable)

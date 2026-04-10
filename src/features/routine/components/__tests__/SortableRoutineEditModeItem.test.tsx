@@ -1,4 +1,5 @@
 import { createEvent, fireEvent, render, screen } from "@testing-library/react";
+import { useSortable } from "@dnd-kit/sortable";
 import { SortableRoutineEditModeItem } from "../SortableRoutineEditModeItem";
 import type { Routine } from "@/types/routine";
 
@@ -164,5 +165,44 @@ describe("SortableRoutineEditModeItem", () => {
     const stopPropagation = jest.spyOn(event, "stopPropagation");
     fireEvent(handle, event);
     expect(stopPropagation).toHaveBeenCalled();
+  });
+
+  it("isDragging=true のときカードにハイライト枠線クラスが付与される", () => {
+    (useSortable as jest.Mock).mockReturnValueOnce({
+      attributes: { "aria-describedby": "dnd-desc" },
+      listeners: { onPointerDown: jest.fn() },
+      setNodeRef: jest.fn(),
+      transform: null,
+      transition: null,
+      isDragging: true,
+    });
+    render(
+      <SortableRoutineEditModeItem
+        routine={routine}
+        onEditAction={jest.fn()}
+        onDeleteAction={jest.fn()}
+        onSwipeAction={jest.fn()}
+        swipeActionType="delete"
+      />,
+    );
+    // SwipeableRoutineItem モック内の最初の子要素がカード div
+    const wrapper = screen.getByTestId("swipeable-wrapper");
+    expect(wrapper.firstElementChild).toHaveClass("border-blue-400");
+    expect(wrapper.firstElementChild).toHaveClass("shadow-md");
+  });
+
+  it("isDragging=false のとき（通常状態）ハイライト枠線クラスが付与されない", () => {
+    // useSortable はデフォルトで isDragging=false を返す
+    render(
+      <SortableRoutineEditModeItem
+        routine={routine}
+        onEditAction={jest.fn()}
+        onDeleteAction={jest.fn()}
+        onSwipeAction={jest.fn()}
+        swipeActionType="delete"
+      />,
+    );
+    const wrapper = screen.getByTestId("swipeable-wrapper");
+    expect(wrapper.firstElementChild).not.toHaveClass("border-blue-400");
   });
 });
