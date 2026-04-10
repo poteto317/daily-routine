@@ -89,7 +89,9 @@ describe("authSyncAdminActions", () => {
     });
 
     expect(setIsAdmin).not.toHaveBeenCalled();
-    expect(setIsAdminLoading).not.toHaveBeenCalled();
+    // ローディング開始は行うが、UID 不一致のため完了時の更新は行わない
+    expect(setIsAdminLoading).toHaveBeenCalledTimes(1);
+    expect(setIsAdminLoading).toHaveBeenCalledWith(true);
   });
 
   it("UID が切り替わっていたら状態を更新しない（エラーパス）", async () => {
@@ -107,6 +109,8 @@ describe("authSyncAdminActions", () => {
     });
 
     expect(setIsAdmin).not.toHaveBeenCalled();
-    expect(setIsAdminLoading).not.toHaveBeenCalled();
+    // ローディング開始は行うが、UID 不一致のため完了時の更新は行わない
+    expect(setIsAdminLoading).toHaveBeenCalledTimes(1);
+    expect(setIsAdminLoading).toHaveBeenCalledWith(true);
   });
 });

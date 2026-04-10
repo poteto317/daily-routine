@@ -25,6 +25,10 @@ export const syncAdminStatus = async ({
 }: SyncAdminStatusArgs): Promise<void> => {
   const isCurrentUser = () => isMounted() && getCurrentUserId() === user.uid;
 
+  if (isMounted()) {
+    setIsAdminLoading(true);
+  }
+
   try {
     await ensureAccountRecord(user.uid, user.email, user.isAnonymous);
     const adminStatus = await checkIsAdmin(user.uid);
