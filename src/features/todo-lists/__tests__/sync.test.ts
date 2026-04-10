@@ -1,4 +1,4 @@
-import { saveAndSyncTodoLists } from "../sync";
+import { saveTodoListsToLocal } from "../sync";
 
 jest.mock("../storage", () => ({
   saveTodoLists: jest.fn(),
@@ -27,14 +27,14 @@ describe("todo-lists sync", () => {
       },
     ];
 
-    saveAndSyncTodoLists(lists);
+    saveTodoListsToLocal(lists);
 
     expect(saveTodoLists).toHaveBeenCalledWith(lists);
     expect(uploadToFirestore).not.toHaveBeenCalled();
   });
 
   it("例外を投げない", () => {
-    expect(() => saveAndSyncTodoLists([])).not.toThrow();
+    expect(() => saveTodoListsToLocal([])).not.toThrow();
     expect(saveTodoLists).toHaveBeenCalledWith([]);
     expect(uploadToFirestore).not.toHaveBeenCalled();
   });

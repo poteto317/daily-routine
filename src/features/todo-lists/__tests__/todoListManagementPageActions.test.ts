@@ -9,7 +9,7 @@ import {
 } from "../todoListManagementPageActions";
 
 jest.mock("../sync", () => ({
-  saveAndSyncTodoLists: jest.fn(),
+  saveTodoListsToLocal: jest.fn(),
 }));
 
 jest.mock("../managementPageStateActions", () => ({
@@ -20,7 +20,7 @@ jest.mock("../managementPageStateActions", () => ({
   toggleTodoListVisibilityAndPersist: jest.fn(),
 }));
 
-import { saveAndSyncTodoLists } from "../sync";
+import { saveTodoListsToLocal } from "../sync";
 import {
   createClosedTodoListFormState,
   createTodoListAndPersist,
@@ -51,7 +51,7 @@ describe("todoListManagementPageActions", () => {
     expect(persistManagedTodoLists).toHaveBeenCalledWith({
       nextLists,
       setLists,
-      saveLists: saveAndSyncTodoLists,
+      saveLists: saveTodoListsToLocal,
     });
   });
 

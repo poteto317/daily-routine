@@ -70,7 +70,7 @@ jest.mock("../storage", () => ({
 }));
 
 jest.mock("../sync", () => ({
-  saveAndSyncTodoLists: jest.fn(),
+  saveTodoListsToLocal: jest.fn(),
 }));
 
 jest.mock("../selectedTodoList", () => ({
@@ -80,7 +80,7 @@ jest.mock("../selectedTodoList", () => ({
 }));
 
 import { getTodoLists } from "../storage";
-import { saveAndSyncTodoLists } from "../sync";
+import { saveTodoListsToLocal } from "../sync";
 import {
   getSelectedTodoListId,
   setSelectedTodoListId,
@@ -89,8 +89,8 @@ import {
 const mockGetTodoLists = getTodoLists as jest.MockedFunction<
   typeof getTodoLists
 >;
-const mockSaveAndSyncTodoLists = saveAndSyncTodoLists as jest.MockedFunction<
-  typeof saveAndSyncTodoLists
+const mockSaveTodoListsToLocal = saveTodoListsToLocal as jest.MockedFunction<
+  typeof saveTodoListsToLocal
 >;
 const mockGetSelectedTodoListId = getSelectedTodoListId as jest.MockedFunction<
   typeof getSelectedTodoListId
@@ -179,7 +179,7 @@ describe("TodoListsPage", () => {
     await waitFor(() => {
       expect(screen.getByText("New Task")).toBeInTheDocument();
     });
-    expect(mockSaveAndSyncTodoLists).toHaveBeenCalledWith([
+    expect(mockSaveTodoListsToLocal).toHaveBeenCalledWith([
       expect.objectContaining({
         id: "list-1",
         items: expect.arrayContaining([
@@ -207,7 +207,7 @@ describe("TodoListsPage", () => {
     fireEvent.keyDown(input, { key: "Enter" });
 
     expect(
-      mockSaveAndSyncTodoLists.mock.calls.filter(([lists]) =>
+      mockSaveTodoListsToLocal.mock.calls.filter(([lists]) =>
         lists[0].items.some((item) => item.title === "Enter Task"),
       ),
     ).toHaveLength(1);
@@ -330,7 +330,7 @@ describe("TodoListsPage", () => {
     await waitFor(() => {
       expect(screen.queryByText("Task 1")).toBeNull();
     });
-    expect(mockSaveAndSyncTodoLists).toHaveBeenCalled();
+    expect(mockSaveTodoListsToLocal).toHaveBeenCalled();
   });
 
   it("完了切替とインデント操作ができる", async () => {
@@ -344,7 +344,7 @@ describe("TodoListsPage", () => {
     fireEvent.click(screen.getAllByLabelText("インデントを下げる")[1]);
 
     await waitFor(() => {
-      expect(mockSaveAndSyncTodoLists).toHaveBeenCalled();
+      expect(mockSaveTodoListsToLocal).toHaveBeenCalled();
     });
   });
 
@@ -371,7 +371,7 @@ describe("TodoListsPage", () => {
     });
 
     await waitFor(() => {
-      expect(mockSaveAndSyncTodoLists).toHaveBeenCalledWith([
+      expect(mockSaveTodoListsToLocal).toHaveBeenCalledWith([
         expect.objectContaining({
           id: "list-1",
           items: expect.arrayContaining([
@@ -798,7 +798,7 @@ describe("TodoListsPage", () => {
     fireEvent.click(screen.getByRole("radio", { name: "赤" }));
 
     await waitFor(() => {
-      expect(mockSaveAndSyncTodoLists).toHaveBeenCalledWith([
+      expect(mockSaveTodoListsToLocal).toHaveBeenCalledWith([
         expect.objectContaining({
           id: "list-1",
           items: expect.arrayContaining([
@@ -846,7 +846,7 @@ describe("TodoListsPage", () => {
     fireEvent.click(screen.getByRole("radio", { name: "青" }));
 
     await waitFor(() => {
-      expect(mockSaveAndSyncTodoLists).toHaveBeenCalledWith([
+      expect(mockSaveTodoListsToLocal).toHaveBeenCalledWith([
         expect.objectContaining({
           id: "list-1",
           items: expect.arrayContaining([
@@ -913,7 +913,7 @@ describe("TodoListsPage", () => {
     fireEvent.click(screen.getByRole("button", { name: /ペースト/ }));
 
     await waitFor(() => {
-      expect(mockSaveAndSyncTodoLists).toHaveBeenCalledWith(
+      expect(mockSaveTodoListsToLocal).toHaveBeenCalledWith(
         expect.arrayContaining([
           expect.objectContaining({
             id: "list-2",
@@ -979,7 +979,7 @@ describe("TodoListsPage", () => {
       });
 
       await waitFor(() => {
-        expect(mockSaveAndSyncTodoLists).toHaveBeenCalledWith([
+        expect(mockSaveTodoListsToLocal).toHaveBeenCalledWith([
           expect.objectContaining({
             id: "list-1",
             items: [
@@ -1004,7 +1004,7 @@ describe("TodoListsPage", () => {
 
       // 同一アイテムへのドロップでは saveAndSync が呼ばれない
       await waitFor(() => {
-        expect(mockSaveAndSyncTodoLists).not.toHaveBeenCalled();
+        expect(mockSaveTodoListsToLocal).not.toHaveBeenCalled();
       });
     });
 
@@ -1019,7 +1019,7 @@ describe("TodoListsPage", () => {
       });
 
       await waitFor(() => {
-        expect(mockSaveAndSyncTodoLists).not.toHaveBeenCalled();
+        expect(mockSaveTodoListsToLocal).not.toHaveBeenCalled();
       });
     });
 

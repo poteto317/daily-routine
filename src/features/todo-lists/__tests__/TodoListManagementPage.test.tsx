@@ -24,19 +24,19 @@ jest.mock("../storage", () => ({
 }));
 
 jest.mock("../sync", () => ({
-  saveAndSyncTodoLists: jest.fn(),
+  saveTodoListsToLocal: jest.fn(),
 }));
 
 import { getTodoLists } from "../storage";
-import { saveAndSyncTodoLists } from "../sync";
+import { saveTodoListsToLocal } from "../sync";
 import { setSelectedTodoListId } from "../selectedTodoList";
 import { useNavigationContext } from "@/features/routine/pages/NavigationContext";
 
 const mockGetTodoLists = getTodoLists as jest.MockedFunction<
   typeof getTodoLists
 >;
-const mockSaveAndSyncTodoLists = saveAndSyncTodoLists as jest.MockedFunction<
-  typeof saveAndSyncTodoLists
+const mockSaveTodoListsToLocal = saveTodoListsToLocal as jest.MockedFunction<
+  typeof saveTodoListsToLocal
 >;
 const mockSetSelectedTodoListId = setSelectedTodoListId as jest.MockedFunction<
   typeof setSelectedTodoListId
@@ -73,7 +73,7 @@ describe("TodoListManagementPage", () => {
     await waitFor(() => {
       expect(screen.getByText("✅ 買い物")).toBeInTheDocument();
     });
-    expect(mockSaveAndSyncTodoLists).toHaveBeenCalledWith([
+    expect(mockSaveTodoListsToLocal).toHaveBeenCalledWith([
       expect.objectContaining({ title: "買い物" }),
     ]);
   });
@@ -95,7 +95,7 @@ describe("TodoListManagementPage", () => {
     await waitFor(() => {
       expect(screen.getByText("非表示")).toBeInTheDocument();
     });
-    expect(mockSaveAndSyncTodoLists).toHaveBeenCalledWith([
+    expect(mockSaveTodoListsToLocal).toHaveBeenCalledWith([
       expect.objectContaining({ id: "list-1", isHidden: true }),
     ]);
   });
@@ -139,6 +139,6 @@ describe("TodoListManagementPage", () => {
         screen.getByText("Todoリストはまだありません"),
       ).toBeInTheDocument();
     });
-    expect(mockSaveAndSyncTodoLists).toHaveBeenCalledWith([]);
+    expect(mockSaveTodoListsToLocal).toHaveBeenCalledWith([]);
   });
 });

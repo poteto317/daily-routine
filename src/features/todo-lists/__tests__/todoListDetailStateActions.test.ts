@@ -14,7 +14,7 @@ jest.mock("../todoListPersistence", () => ({
 }));
 
 jest.mock("../sync", () => ({
-  saveAndSyncTodoLists: jest.fn(),
+  saveTodoListsToLocal: jest.fn(),
 }));
 
 jest.mock("../pageStateActions", () => ({
@@ -30,7 +30,7 @@ jest.mock("../todoListDeletePersistActions", () => ({
 }));
 
 import { persistTodoLists } from "../todoListPersistence";
-import { saveAndSyncTodoLists } from "../sync";
+import { saveTodoListsToLocal } from "../sync";
 import {
   addTodoItemAndPersist,
   indentTodoItemAndPersist,
@@ -70,7 +70,7 @@ describe("todoListDetailStateActions", () => {
     expect(persistTodoLists).toHaveBeenCalledWith({
       nextLists: [baseList],
       setLists,
-      saveLists: saveAndSyncTodoLists,
+      saveLists: saveTodoListsToLocal,
     });
   });
 

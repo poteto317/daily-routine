@@ -5,7 +5,7 @@ jest.mock("../storage", () => ({
 }));
 
 jest.mock("../sync", () => ({
-  saveAndSyncTodoLists: jest.fn(),
+  saveTodoListsToLocal: jest.fn(),
 }));
 
 jest.mock("../selectedTodoList", () => ({
@@ -14,14 +14,14 @@ jest.mock("../selectedTodoList", () => ({
 
 import { setSelectedTodoListId } from "../selectedTodoList";
 import { getTodoLists } from "../storage";
-import { saveAndSyncTodoLists } from "../sync";
+import { saveTodoListsToLocal } from "../sync";
 import { useTodoListManagementPageState } from "../useTodoListManagementPageState";
 
 const mockGetTodoLists = getTodoLists as jest.MockedFunction<
   typeof getTodoLists
 >;
-const mockSaveAndSyncTodoLists = saveAndSyncTodoLists as jest.MockedFunction<
-  typeof saveAndSyncTodoLists
+const mockSaveTodoListsToLocal = saveTodoListsToLocal as jest.MockedFunction<
+  typeof saveTodoListsToLocal
 >;
 const mockSetSelectedTodoListId = setSelectedTodoListId as jest.MockedFunction<
   typeof setSelectedTodoListId
@@ -99,7 +99,7 @@ describe("useTodoListManagementPageState", () => {
       result.current.handleCreate();
     });
 
-    expect(mockSaveAndSyncTodoLists).toHaveBeenCalledWith([
+    expect(mockSaveTodoListsToLocal).toHaveBeenCalledWith([
       expect.objectContaining({ id: "list-1", title: "Inbox" }),
       expect.objectContaining({ title: "買い物" }),
     ]);
@@ -127,7 +127,7 @@ describe("useTodoListManagementPageState", () => {
       result.current.commitEditListTitle();
     });
 
-    expect(mockSaveAndSyncTodoLists).toHaveBeenCalledWith([
+    expect(mockSaveTodoListsToLocal).toHaveBeenCalledWith([
       expect.objectContaining({ id: "list-1", title: "Work" }),
     ]);
     expect(result.current.editingListId).toBeNull();

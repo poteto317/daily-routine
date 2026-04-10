@@ -1,7 +1,7 @@
 import type { Dispatch, SetStateAction } from "react";
 import type { TodoList } from "./types";
 import { persistTodoLists } from "./todoListPersistence";
-import { saveAndSyncTodoLists } from "./sync";
+import { saveTodoListsToLocal } from "./sync";
 
 type PersistTodoListsActionArgs = {
   setLists: Dispatch<SetStateAction<TodoList[]>>;
@@ -14,7 +14,7 @@ export const createPersistTodoListsAction = ({
     persistTodoLists({
       nextLists: next,
       setLists,
-      saveLists: saveAndSyncTodoLists,
+      saveLists: saveTodoListsToLocal,
     });
   };
 };

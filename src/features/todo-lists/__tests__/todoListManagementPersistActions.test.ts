@@ -1,10 +1,10 @@
 import type { TodoList } from "../types";
 import { persistManagedTodoLists } from "../managementPageStateActions";
 import { createManagedTodoListsPersistAction } from "../todoListManagementPersistActions";
-import { saveAndSyncTodoLists } from "../sync";
+import { saveTodoListsToLocal } from "../sync";
 
 jest.mock("../sync", () => ({
-  saveAndSyncTodoLists: jest.fn(),
+  saveTodoListsToLocal: jest.fn(),
 }));
 
 jest.mock("../managementPageStateActions", () => ({
@@ -33,7 +33,7 @@ describe("todoListManagementPersistActions", () => {
     expect(persistManagedTodoLists).toHaveBeenCalledWith({
       nextLists,
       setLists,
-      saveLists: saveAndSyncTodoLists,
+      saveLists: saveTodoListsToLocal,
     });
   });
 });
