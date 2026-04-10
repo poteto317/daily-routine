@@ -1002,7 +1002,7 @@ describe("TodoListsPage", () => {
         });
       });
 
-      // 同一アイテムへのドロップでは saveAndSync が呼ばれない
+      // 同一アイテムへのドロップでは saveTodoListsToLocal が呼ばれない
       await waitFor(() => {
         expect(mockSaveTodoListsToLocal).not.toHaveBeenCalled();
       });
