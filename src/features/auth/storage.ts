@@ -15,7 +15,6 @@ export type LocalAuthSnapshot = {
 };
 
 export const isLocalAuthEnabled =
-  process.env.NODE_ENV !== "production" &&
   process.env.NEXT_PUBLIC_ENABLE_LOCAL_AUTH === "true";
 
 export const readLocalAuthSnapshot = (): LocalAuthSnapshot | null => {
