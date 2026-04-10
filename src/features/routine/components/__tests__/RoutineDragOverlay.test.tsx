@@ -48,4 +48,9 @@ describe("RoutineDragOverlay", () => {
     const { container } = render(<RoutineDragOverlay routine={routine} />);
     expect(container.firstChild).toHaveClass("shadow-xl", "opacity-95");
   });
+
+  it("ドラッグオーバーレイにハイライトリングクラスが付与される", () => {
+    const { container } = render(<RoutineDragOverlay routine={routine} />);
+    expect(container.firstChild).toHaveClass("ring-2", "ring-blue-400");
+  });
 });

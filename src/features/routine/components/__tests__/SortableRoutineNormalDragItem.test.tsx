@@ -1,4 +1,5 @@
 import { fireEvent, render, screen } from "@testing-library/react";
+import { useSortable } from "@dnd-kit/sortable";
 import { SortableRoutineNormalDragItem } from "../SortableRoutineNormalDragItem";
 import type { Routine } from "@/types/routine";
 
@@ -106,5 +107,37 @@ describe("SortableRoutineNormalDragItem", () => {
     );
     fireEvent.click(screen.getByRole("button", { name: "並び替え" }));
     expect(onToggleAction).not.toHaveBeenCalled();
+  });
+
+  it("isDragging=true のときカードにハイライト枠線クラスが付与される", () => {
+    (useSortable as jest.Mock).mockReturnValueOnce({
+      attributes: { "aria-describedby": "dnd-desc" },
+      listeners: { onPointerDown: jest.fn() },
+      setNodeRef: jest.fn(),
+      transform: null,
+      transition: null,
+      isDragging: true,
+    });
+    const { container } = render(
+      <SortableRoutineNormalDragItem
+        routine={routine}
+        onToggleAction={jest.fn()}
+        isDragActive={true}
+      />,
+    );
+    expect(container.firstChild).toHaveClass("border-blue-400");
+    expect(container.firstChild).toHaveClass("shadow-md");
+  });
+
+  it("isDragging=false のとき（通常状態）ハイライト枠線クラスが付与されない", () => {
+    // useSortable はデフォルトで isDragging=false を返す
+    const { container } = render(
+      <SortableRoutineNormalDragItem
+        routine={routine}
+        onToggleAction={jest.fn()}
+        isDragActive={false}
+      />,
+    );
+    expect(container.firstChild).not.toHaveClass("border-blue-400");
   });
 });

@@ -22,7 +22,7 @@ export const RoutineDragOverlay = ({ routine }: Props) => {
           routine,
           isEditMode: false,
           isDraggable: false,
-        }) + " shadow-xl opacity-95"
+        }) + " shadow-xl opacity-95 ring-2 ring-blue-400 dark:ring-blue-500"
       }
     >
       <RoutineCardContent routine={routine} showDuration />

@@ -51,6 +51,7 @@ export const SortableRoutineEditModeItem = ({
           routine,
           isEditMode: true,
           isDraggable: true,
+          isDragging,
         })}
       >
         <button
