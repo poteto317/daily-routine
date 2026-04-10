@@ -8,12 +8,18 @@ export const useAuthSync = ({
   setUser,
   setIsAdmin,
   setLoading,
+  setIsAdminLoading,
 }: UseAuthSyncParams) => {
   const handleAuthStateChanged = useAuthStateChangedHandler({
     setUser,
     setIsAdmin,
     setLoading,
+    setIsAdminLoading,
   });
 
-  useAuthSyncSubscription({ handleAuthStateChanged, setLoading });
+  useAuthSyncSubscription({
+    handleAuthStateChanged,
+    setLoading,
+    setIsAdminLoading,
+  });
 };

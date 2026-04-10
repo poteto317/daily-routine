@@ -73,6 +73,14 @@ const isFeatureMenuId = (id: string): id is FeatureMenuId => {
   return Object.prototype.hasOwnProperty.call(FEATURE_KEY_MAP, id);
 };
 
+const ADMIN_ONLY_MENU_IDS = new Set<FeatureMenuId>([
+  "account-admin",
+  "test-matrix",
+]);
+
+const isAdminOnlyMenuId = (id: FeatureMenuId): boolean =>
+  ADMIN_ONLY_MENU_IDS.has(id);
+
 const PINNED_FIRST = new Set(["home"]);
 const PINNED_LAST = new Set(["settings", "account-admin"]);
 
@@ -123,12 +131,12 @@ export const filterStaticHeaderMenuItems = ({
     if (item.id === "todo-lists") return false;
     if (item.id === "home" || item.id === "settings") return true;
     if (isFeatureMenuId(item.id) && visibleFeatures) {
-      if (item.id === "account-admin" && !isAdmin) {
+      if (isAdminOnlyMenuId(item.id) && !isAdmin) {
         return false;
       }
       return visibleFeatures[FEATURE_KEY_MAP[item.id]] !== false;
     }
-    if (item.id === "account-admin") return isAdmin;
+    if (isFeatureMenuId(item.id) && isAdminOnlyMenuId(item.id)) return isAdmin;
     return true;
   });
 };

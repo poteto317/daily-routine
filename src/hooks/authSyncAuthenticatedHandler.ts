@@ -20,18 +20,25 @@ type CreateAuthenticatedAuthStateHandlerArgs = Pick<
   AuthStateStorageActions &
   Pick<
     SyncAdminStatusArgs,
-    "setIsAdmin" | "ensureAccountRecord" | "checkIsAdmin" | "isMounted"
+    | "setIsAdmin"
+    | "setIsAdminLoading"
+    | "ensureAccountRecord"
+    | "checkIsAdmin"
+    | "isMounted"
+    | "getCurrentUserId"
   >;
 
 export const createAuthenticatedAuthStateHandler = ({
   setUser,
   setIsAdmin,
+  setIsAdminLoading,
   setLoading,
   setCurrentUserId,
   migrateToUserStorage,
   ensureAccountRecord,
   checkIsAdmin,
   isMounted,
+  getCurrentUserId,
 }: CreateAuthenticatedAuthStateHandlerArgs) => {
   return (user: User) => {
     applyAuthenticatedUserState(
@@ -43,9 +50,11 @@ export const createAuthenticatedAuthStateHandler = ({
     void syncAdminStatus({
       user,
       setIsAdmin,
+      setIsAdminLoading,
       ensureAccountRecord,
       checkIsAdmin,
       isMounted,
+      getCurrentUserId,
     });
   };
 };

@@ -12,8 +12,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [user, setUser] = useState<User | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [isAdminLoading, setIsAdminLoading] = useState(true);
 
-  useAuthSync({ setUser, setIsAdmin, setLoading });
+  useAuthSync({ setUser, setIsAdmin, setLoading, setIsAdminLoading });
 
   const actions = useAuthActions();
 
@@ -21,6 +22,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     user,
     loading,
     isAdmin,
+    isAdminLoading,
     ...actions,
   };
 

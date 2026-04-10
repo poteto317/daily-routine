@@ -1,5 +1,6 @@
 "use client";
 
+import { useAuth } from "@/features/auth";
 import { DetailPanel } from "./DetailPanel";
 import { MatrixCategoryCard } from "./MatrixCategoryCard";
 import testMatrixTexts from "./locales/ja.json";
@@ -8,6 +9,7 @@ import { useTestMatrixPageState } from "./useTestMatrixPageState";
 import type { CheckStatus } from "./types";
 
 export const TestMatrixPage = () => {
+  const { isAdmin, loading, isAdminLoading } = useAuth();
   const {
     categories,
     collapseAll,
@@ -32,6 +34,30 @@ export const TestMatrixPage = () => {
 
   const { totalCount, okCount, ngCount, uncheckedCount, progressPct } =
     overviewStats;
+
+  if (loading || isAdminLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-gray-500">{testMatrixTexts.page.loading}</p>
+      </div>
+    );
+  }
+
+  if (!isAdmin) {
+    return (
+      <div className="max-w-5xl mx-auto px-4 py-6">
+        <div className="bg-red-50 dark:bg-red-100 border border-red-200 dark:border-red-300 rounded-xl p-6 text-center">
+          <span className="text-4xl mb-4 block">🔒</span>
+          <h2 className="text-lg font-bold text-red-700 dark:text-red-800 mb-2">
+            {testMatrixTexts.page.accessDeniedTitle}
+          </h2>
+          <p className="text-sm text-red-600 dark:text-red-700">
+            {testMatrixTexts.page.accessDeniedDescription}
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   if (categories.length === 0) {
     return (

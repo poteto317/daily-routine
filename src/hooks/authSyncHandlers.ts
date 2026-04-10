@@ -21,31 +21,37 @@ type CreateAuthStateChangedHandlerArgs = AuthSyncSetters &
     ensureAccountRecord: SyncAdminStatusArgs["ensureAccountRecord"];
     checkIsAdmin: SyncAdminStatusArgs["checkIsAdmin"];
     isMounted: SyncAdminStatusArgs["isMounted"];
+    getCurrentUserId: SyncAdminStatusArgs["getCurrentUserId"];
   };
 
 export const createAuthStateChangedHandler = ({
   setUser,
   setIsAdmin,
+  setIsAdminLoading,
   setLoading,
   setCurrentUserId,
   migrateToUserStorage,
   ensureAccountRecord,
   checkIsAdmin,
   isMounted,
+  getCurrentUserId,
 }: CreateAuthStateChangedHandlerArgs) => {
   const handleAuthenticatedUser = createAuthenticatedAuthStateHandler({
     setUser,
     setIsAdmin,
+    setIsAdminLoading,
     setLoading,
     setCurrentUserId,
     migrateToUserStorage,
     ensureAccountRecord,
     checkIsAdmin,
     isMounted,
+    getCurrentUserId,
   });
   const handleSignedOutUser = createSignedOutAuthStateHandler({
     setUser,
     setIsAdmin,
+    setIsAdminLoading,
     setLoading,
     setCurrentUserId,
   });

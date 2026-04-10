@@ -58,13 +58,18 @@ describe("useAuthSyncSubscription", () => {
     const auth = {} as Auth;
     const handleAuthStateChanged = jest.fn<void, [User | null]>();
     const setLoading = jest.fn();
+    const setIsAdminLoading = jest.fn();
     const unsubscribe = jest.fn();
 
     mockGetAuthInstance.mockReturnValue(auth);
     mockOnAuthStateChanged.mockReturnValue(unsubscribe);
 
     const { unmount } = renderHook(() =>
-      useAuthSyncSubscription({ handleAuthStateChanged, setLoading }),
+      useAuthSyncSubscription({
+        handleAuthStateChanged,
+        setLoading,
+        setIsAdminLoading,
+      }),
     );
 
     expect(mockGetAuthInstance).toHaveBeenCalled();
@@ -83,12 +88,17 @@ describe("useAuthSyncSubscription", () => {
     mockIsLocalAuthEnabled = true;
     const handleAuthStateChanged = jest.fn<void, [User | null]>();
     const setLoading = jest.fn();
+    const setIsAdminLoading = jest.fn();
     const unsubscribe = jest.fn();
 
     mockSubscribeLocalAuthUser.mockReturnValue(unsubscribe);
 
     const { unmount } = renderHook(() =>
-      useAuthSyncSubscription({ handleAuthStateChanged, setLoading }),
+      useAuthSyncSubscription({
+        handleAuthStateChanged,
+        setLoading,
+        setIsAdminLoading,
+      }),
     );
 
     expect(mockOnAuthStateChanged).not.toHaveBeenCalled();
@@ -102,13 +112,18 @@ describe("useAuthSyncSubscription", () => {
     expect(unsubscribe).toHaveBeenCalled();
   });
 
-  it("Firebase 未設定かつ local auth 無効時は loading を解除する", () => {
+  it("Firebase 未設定かつ local auth 無効時は loading と isAdminLoading を解除する", () => {
     mockIsFirebaseConfigured = false;
     const handleAuthStateChanged = jest.fn<void, [User | null]>();
     const setLoading = jest.fn();
+    const setIsAdminLoading = jest.fn();
 
     renderHook(() =>
-      useAuthSyncSubscription({ handleAuthStateChanged, setLoading }),
+      useAuthSyncSubscription({
+        handleAuthStateChanged,
+        setLoading,
+        setIsAdminLoading,
+      }),
     );
 
     expect(mockSubscribeLocalAuthUser).not.toHaveBeenCalled();
@@ -118,18 +133,24 @@ describe("useAuthSyncSubscription", () => {
     });
 
     expect(setLoading).toHaveBeenCalledWith(false);
+    expect(setIsAdminLoading).toHaveBeenCalledWith(false);
   });
 
-  it("auth instance の取得失敗時も loading を解除する", () => {
+  it("auth instance の取得失敗時も loading と isAdminLoading を解除する", () => {
     const handleAuthStateChanged = jest.fn<void, [User | null]>();
     const setLoading = jest.fn();
+    const setIsAdminLoading = jest.fn();
 
     mockGetAuthInstance.mockImplementation(() => {
       throw new Error("failed");
     });
 
     renderHook(() =>
-      useAuthSyncSubscription({ handleAuthStateChanged, setLoading }),
+      useAuthSyncSubscription({
+        handleAuthStateChanged,
+        setLoading,
+        setIsAdminLoading,
+      }),
     );
 
     act(() => {
@@ -137,5 +158,6 @@ describe("useAuthSyncSubscription", () => {
     });
 
     expect(setLoading).toHaveBeenCalledWith(false);
+    expect(setIsAdminLoading).toHaveBeenCalledWith(false);
   });
 });

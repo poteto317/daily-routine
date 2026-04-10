@@ -6,7 +6,11 @@ import {
   useRef,
 } from "react";
 import { type User } from "firebase/auth";
-import { migrateToUserStorage, setCurrentUserId } from "@/lib/storage/core";
+import {
+  getCurrentUserId,
+  migrateToUserStorage,
+  setCurrentUserId,
+} from "@/lib/storage/core";
 import {
   checkIsAdmin,
   ensureAccountRecord,
@@ -17,12 +21,14 @@ export type UseAuthSyncParams = {
   setUser: Dispatch<SetStateAction<User | null>>;
   setIsAdmin: Dispatch<SetStateAction<boolean>>;
   setLoading: Dispatch<SetStateAction<boolean>>;
+  setIsAdminLoading: Dispatch<SetStateAction<boolean>>;
 };
 
 export const useAuthStateChangedHandler = ({
   setUser,
   setIsAdmin,
   setLoading,
+  setIsAdminLoading,
 }: UseAuthSyncParams) => {
   const mountedRef = useRef(true);
   const isMounted = useCallback(() => mountedRef.current, []);
@@ -40,13 +46,15 @@ export const useAuthStateChangedHandler = ({
       createAuthStateChangedHandler({
         setUser,
         setIsAdmin,
+        setIsAdminLoading,
         setLoading,
         setCurrentUserId,
+        getCurrentUserId,
         migrateToUserStorage,
         ensureAccountRecord,
         checkIsAdmin,
         isMounted,
       })(user),
-    [isMounted, setIsAdmin, setLoading, setUser],
+    [isMounted, setIsAdmin, setIsAdminLoading, setLoading, setUser],
   );
 };

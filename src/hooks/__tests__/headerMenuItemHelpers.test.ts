@@ -104,6 +104,35 @@ describe("headerMenuItemHelpers", () => {
     expect(items.some((item) => item.id === "settings")).toBe(true);
   });
 
+  it("test-matrix は管理者のみ表示される", () => {
+    const isPageType = (route: string): route is HeaderMenuItem["route"] =>
+      route !== "invalid";
+
+    const adminItems = filterStaticHeaderMenuItems({
+      visibleFeatures: baseVisibleFeatures,
+      isAdmin: true,
+      isPageType,
+    });
+    expect(adminItems.some((item) => item.id === "test-matrix")).toBe(true);
+
+    const nonAdminItems = filterStaticHeaderMenuItems({
+      visibleFeatures: baseVisibleFeatures,
+      isAdmin: false,
+      isPageType,
+    });
+    expect(nonAdminItems.some((item) => item.id === "test-matrix")).toBe(false);
+  });
+
+  it("test-matrix は visibleFeatures が undefined でも非管理者には表示されない", () => {
+    const nonAdminItems = filterStaticHeaderMenuItems({
+      visibleFeatures: undefined,
+      isAdmin: false,
+      isPageType: (route): route is HeaderMenuItem["route"] =>
+        route !== "invalid",
+    });
+    expect(nonAdminItems.some((item) => item.id === "test-matrix")).toBe(false);
+  });
+
   it("並び替えで home を先頭、settings を末尾、legacy todo-lists 順序を維持する", () => {
     const staticItems: HeaderMenuItem[] = [
       { id: "home", label: "Home", icon: "🏠", route: "home" },

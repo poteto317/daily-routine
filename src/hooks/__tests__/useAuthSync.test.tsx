@@ -30,17 +30,24 @@ describe("useAuthSync", () => {
     const setLoading = jest.fn() as React.Dispatch<
       React.SetStateAction<boolean>
     >;
+    const setIsAdminLoading = jest.fn() as React.Dispatch<
+      React.SetStateAction<boolean>
+    >;
 
-    renderHook(() => useAuthSync({ setUser, setIsAdmin, setLoading }));
+    renderHook(() =>
+      useAuthSync({ setUser, setIsAdmin, setLoading, setIsAdminLoading }),
+    );
 
     expect(useAuthStateChangedHandler).toHaveBeenCalledWith({
       setUser,
       setIsAdmin,
       setLoading,
+      setIsAdminLoading,
     });
     expect(useAuthSyncSubscription).toHaveBeenCalledWith({
       handleAuthStateChanged: mockHandleAuthStateChanged,
       setLoading,
+      setIsAdminLoading,
     });
   });
 });
