@@ -21,6 +21,7 @@ type CreateAuthStateChangedHandlerArgs = AuthSyncSetters &
     ensureAccountRecord: SyncAdminStatusArgs["ensureAccountRecord"];
     checkIsAdmin: SyncAdminStatusArgs["checkIsAdmin"];
     isMounted: SyncAdminStatusArgs["isMounted"];
+    getCurrentUserId: SyncAdminStatusArgs["getCurrentUserId"];
   };
 
 export const createAuthStateChangedHandler = ({
@@ -33,6 +34,7 @@ export const createAuthStateChangedHandler = ({
   ensureAccountRecord,
   checkIsAdmin,
   isMounted,
+  getCurrentUserId,
 }: CreateAuthStateChangedHandlerArgs) => {
   const handleAuthenticatedUser = createAuthenticatedAuthStateHandler({
     setUser,
@@ -44,6 +46,7 @@ export const createAuthStateChangedHandler = ({
     ensureAccountRecord,
     checkIsAdmin,
     isMounted,
+    getCurrentUserId,
   });
   const handleSignedOutUser = createSignedOutAuthStateHandler({
     setUser,

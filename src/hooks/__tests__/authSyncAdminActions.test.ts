@@ -25,6 +25,7 @@ describe("authSyncAdminActions", () => {
       ensureAccountRecord,
       checkIsAdmin,
       isMounted: () => true,
+      getCurrentUserId: () => "user-1",
     });
 
     expect(ensureAccountRecord).toHaveBeenCalledWith(
@@ -48,6 +49,7 @@ describe("authSyncAdminActions", () => {
       ensureAccountRecord: jest.fn().mockRejectedValue(new Error("fail")),
       checkIsAdmin: jest.fn(),
       isMounted: () => true,
+      getCurrentUserId: () => "user-1",
     });
 
     expect(setIsAdmin).toHaveBeenCalledWith(false);
@@ -65,6 +67,43 @@ describe("authSyncAdminActions", () => {
       ensureAccountRecord: jest.fn().mockResolvedValue(undefined),
       checkIsAdmin: jest.fn().mockResolvedValue(true),
       isMounted: () => false,
+      getCurrentUserId: () => "user-1",
+    });
+
+    expect(setIsAdmin).not.toHaveBeenCalled();
+    expect(setIsAdminLoading).not.toHaveBeenCalled();
+  });
+
+  it("UID が切り替わっていたら状態を更新しない（成功パス）", async () => {
+    const setIsAdmin = jest.fn();
+    const setIsAdminLoading = jest.fn();
+
+    await syncAdminStatus({
+      user: createUser({ uid: "user-1" }),
+      setIsAdmin,
+      setIsAdminLoading,
+      ensureAccountRecord: jest.fn().mockResolvedValue(undefined),
+      checkIsAdmin: jest.fn().mockResolvedValue(true),
+      isMounted: () => true,
+      getCurrentUserId: () => "other-user",
+    });
+
+    expect(setIsAdmin).not.toHaveBeenCalled();
+    expect(setIsAdminLoading).not.toHaveBeenCalled();
+  });
+
+  it("UID が切り替わっていたら状態を更新しない（エラーパス）", async () => {
+    const setIsAdmin = jest.fn();
+    const setIsAdminLoading = jest.fn();
+
+    await syncAdminStatus({
+      user: createUser({ uid: "user-1" }),
+      setIsAdmin,
+      setIsAdminLoading,
+      ensureAccountRecord: jest.fn().mockRejectedValue(new Error("fail")),
+      checkIsAdmin: jest.fn(),
+      isMounted: () => true,
+      getCurrentUserId: () => "other-user",
     });
 
     expect(setIsAdmin).not.toHaveBeenCalled();

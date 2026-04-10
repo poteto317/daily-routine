@@ -33,6 +33,7 @@ describe("authSyncAuthenticatedHandler", () => {
       ensureAccountRecord,
       checkIsAdmin,
       isMounted: () => true,
+      getCurrentUserId: () => "user-1",
     });
 
     handleAuthenticatedUser(user);

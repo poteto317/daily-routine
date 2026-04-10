@@ -11,6 +11,7 @@ type SyncAdminStatusArgs = {
   ) => Promise<void>;
   checkIsAdmin: (uid: string) => Promise<boolean>;
   isMounted: () => boolean;
+  getCurrentUserId: () => string | null;
 };
 
 export const syncAdminStatus = async ({
@@ -20,16 +21,19 @@ export const syncAdminStatus = async ({
   ensureAccountRecord,
   checkIsAdmin,
   isMounted,
+  getCurrentUserId,
 }: SyncAdminStatusArgs): Promise<void> => {
+  const isCurrentUser = () => isMounted() && getCurrentUserId() === user.uid;
+
   try {
     await ensureAccountRecord(user.uid, user.email, user.isAnonymous);
     const adminStatus = await checkIsAdmin(user.uid);
-    if (isMounted()) {
+    if (isCurrentUser()) {
       setIsAdmin(adminStatus);
       setIsAdminLoading(false);
     }
   } catch {
-    if (isMounted()) {
+    if (isCurrentUser()) {
       setIsAdmin(false);
       setIsAdminLoading(false);
     }

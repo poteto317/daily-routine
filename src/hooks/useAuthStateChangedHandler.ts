@@ -6,7 +6,11 @@ import {
   useRef,
 } from "react";
 import { type User } from "firebase/auth";
-import { migrateToUserStorage, setCurrentUserId } from "@/lib/storage/core";
+import {
+  getCurrentUserId,
+  migrateToUserStorage,
+  setCurrentUserId,
+} from "@/lib/storage/core";
 import {
   checkIsAdmin,
   ensureAccountRecord,
@@ -45,6 +49,7 @@ export const useAuthStateChangedHandler = ({
         setIsAdminLoading,
         setLoading,
         setCurrentUserId,
+        getCurrentUserId,
         migrateToUserStorage,
         ensureAccountRecord,
         checkIsAdmin,

@@ -25,6 +25,7 @@ type CreateAuthenticatedAuthStateHandlerArgs = Pick<
     | "ensureAccountRecord"
     | "checkIsAdmin"
     | "isMounted"
+    | "getCurrentUserId"
   >;
 
 export const createAuthenticatedAuthStateHandler = ({
@@ -37,6 +38,7 @@ export const createAuthenticatedAuthStateHandler = ({
   ensureAccountRecord,
   checkIsAdmin,
   isMounted,
+  getCurrentUserId,
 }: CreateAuthenticatedAuthStateHandlerArgs) => {
   return (user: User) => {
     applyAuthenticatedUserState(
@@ -52,6 +54,7 @@ export const createAuthenticatedAuthStateHandler = ({
       ensureAccountRecord,
       checkIsAdmin,
       isMounted,
+      getCurrentUserId,
     });
   };
 };

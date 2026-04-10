@@ -3,11 +3,16 @@ import {
   checkIsAdmin,
   ensureAccountRecord,
 } from "@/features/account-admin/accountService";
-import { migrateToUserStorage, setCurrentUserId } from "@/lib/storage/core";
+import {
+  getCurrentUserId,
+  migrateToUserStorage,
+  setCurrentUserId,
+} from "@/lib/storage/core";
 
 const mockAuthStateChangedHandler = jest.fn();
 
 jest.mock("@/lib/storage/core", () => ({
+  getCurrentUserId: jest.fn(),
   migrateToUserStorage: jest.fn(),
   setCurrentUserId: jest.fn(),
 }));
@@ -51,6 +56,7 @@ describe("useAuthStateChangedHandler", () => {
         setLoading,
         setIsAdminLoading,
         setCurrentUserId,
+        getCurrentUserId,
         migrateToUserStorage,
         ensureAccountRecord,
         checkIsAdmin,
