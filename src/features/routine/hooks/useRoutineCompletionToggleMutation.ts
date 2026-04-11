@@ -17,20 +17,22 @@ type SetRoutines = Dispatch<SetStateAction<Routine[]>>;
  *
  * saveDailyProgress を setRoutines の関数型 updater 内で呼ぶと、React の render フェーズ中に
  * イベントが dispatch され "Cannot update a component while rendering" エラーが発生する。
- * getRoutines() で最新ルーティンを取得し、updater を使わず直接更新することで回避している。
+ * routinesRef.current で最新ルーティンを取得し、updater を使わず直接更新することで回避している。
+ * また、routinesRef.current = updated を即座に反映することで連続呼び出し時も最新値を参照できる。
  */
 export const useRoutineCompletionToggleMutation = (
   setRoutines: SetRoutines,
-  getRoutines: () => Routine[],
+  routinesRef: { current: Routine[] },
 ) => {
   return useCallback(
     (id: string) => {
-      const updated = toggleRoutineCompletionInState(getRoutines(), id);
+      const updated = toggleRoutineCompletionInState(routinesRef.current, id);
+      routinesRef.current = updated;
       setRoutines(updated);
       saveDailyProgress(
         buildDailyProgressForToggle(updated, getTodayString(), getDailyProgress()),
       );
     },
-    [setRoutines, getRoutines],
+    [setRoutines, routinesRef],
   );
 };

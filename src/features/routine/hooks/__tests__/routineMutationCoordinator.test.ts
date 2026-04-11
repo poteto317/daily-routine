@@ -19,20 +19,36 @@ describe("routineMutationCoordinator", () => {
     },
   ];
 
-  it("getRoutines() から取得した値で mutation を実行し setRoutines と saveAndSync を呼ぶ", () => {
+  it("routinesRef.current の値で mutation を実行し setRoutines と saveAndSync を呼ぶ", () => {
     const setRoutines = jest.fn();
     const saveAndSync = jest.fn();
-    const getRoutines = jest.fn(() => routines);
+    const routinesRef = { current: routines };
     const updated = [{ ...routines[0], title: "Runner Updated" }];
     const mutate = jest.fn(() => updated);
 
-    createRoutineMutationRunner(setRoutines, saveAndSync, getRoutines)(mutate);
+    createRoutineMutationRunner(setRoutines, saveAndSync, routinesRef)(mutate);
 
-    expect(getRoutines).toHaveBeenCalled();
     expect(mutate).toHaveBeenCalledWith(routines);
     // setRoutines は直接値で呼ばれる（関数型 updater ではない）
     expect(setRoutines).toHaveBeenCalledWith(updated);
     // saveAndSync は setRoutines の外（render フェーズ外）で呼ばれる
     expect(saveAndSync).toHaveBeenCalledWith(updated);
+  });
+
+  it("runner 実行後に routinesRef.current が即座に updated に更新される", () => {
+    const setRoutines = jest.fn();
+    const saveAndSync = jest.fn();
+    const routinesRef = { current: routines };
+    const updated = [{ ...routines[0], title: "After First Run" }];
+    const updated2 = [{ ...routines[0], title: "After Second Run" }];
+
+    createRoutineMutationRunner(setRoutines, saveAndSync, routinesRef)(() => updated);
+
+    // 2 回目は routinesRef.current が updated になっていること（stale state にならない）
+    const mutate2 = jest.fn(() => updated2);
+    createRoutineMutationRunner(setRoutines, saveAndSync, routinesRef)(mutate2);
+
+    expect(mutate2).toHaveBeenCalledWith(updated);
+    expect(setRoutines).toHaveBeenLastCalledWith(updated2);
   });
 });

@@ -11,16 +11,20 @@ export type RunAndSync = (mutate: RoutineMutation) => void;
  *
  * saveAndSync を setRoutines の関数型 updater 内で呼ぶと、React の render フェーズ中に
  * イベントが dispatch され "Cannot update a component while rendering" エラーが発生する。
- * getRoutines() でレンダー外から最新ルーティンを取得し、updater を使わずに直接更新することで
+ * routinesRef.current でレンダー外から最新ルーティンを取得し、updater を使わずに直接更新することで
  * この問題を回避している。
+ *
+ * また、runner 内で routinesRef.current = updated を即座に反映することで、
+ * 同一 tick 内で runner が複数回呼ばれた場合も後続の呼び出しが最新値を参照できる。
  */
 export const createRoutineMutationRunner = (
   setRoutines: SetRoutines,
   saveAndSync: SaveAndSyncAction,
-  getRoutines: () => Routine[],
+  routinesRef: { current: Routine[] },
 ): RunAndSync => {
   return (mutate) => {
-    const updated = mutate(getRoutines());
+    const updated = mutate(routinesRef.current);
+    routinesRef.current = updated;
     setRoutines(updated);
     saveAndSync(updated);
   };

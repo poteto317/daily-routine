@@ -31,13 +31,15 @@ describe("useRoutineCompletionToggleMutation", () => {
     const updated = [{ id: "r1", isCompleted: true }];
     const progress = { date: "2026-03-16", completedRoutineIds: ["r1"] };
     const setRoutines = jest.fn();
-    const getRoutines = jest.fn(() => previous as unknown as import("@/types/routine").Routine[]);
+    const routinesRef = {
+      current: previous as unknown as import("@/types/routine").Routine[],
+    };
 
     (toggleRoutineCompletionInState as jest.Mock).mockReturnValue(updated);
     (buildDailyProgressForToggle as jest.Mock).mockReturnValue(progress);
 
     const { result } = renderHook(() =>
-      useRoutineCompletionToggleMutation(setRoutines, getRoutines),
+      useRoutineCompletionToggleMutation(setRoutines, routinesRef),
     );
 
     act(() => {
@@ -46,8 +48,9 @@ describe("useRoutineCompletionToggleMutation", () => {
 
     // setRoutines は関数型 updater ではなく直接値で呼ばれる
     expect(setRoutines).toHaveBeenCalledWith(updated);
-    expect(getRoutines).toHaveBeenCalled();
     expect(toggleRoutineCompletionInState).toHaveBeenCalledWith(previous, "r1");
+    // routinesRef.current が updated に更新されること
+    expect(routinesRef.current).toBe(updated);
     expect(buildDailyProgressForToggle).toHaveBeenCalledWith(
       updated,
       "2026-03-16",

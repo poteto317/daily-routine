@@ -20,19 +20,19 @@ import { useRoutineReorderMutation } from "../useRoutineReorderMutation";
 describe("useRoutineCompletionMutations", () => {
   it("toggle と reorder mutation hook を compose する", () => {
     const setRoutines = jest.fn();
-    const getRoutines = jest.fn();
+    const routinesRef = { current: [] };
     const resultShape = { composed: true };
     (createRoutineCompletionMutationsResult as jest.Mock).mockReturnValue(
       resultShape,
     );
 
     const { result } = renderHook(() =>
-      useRoutineCompletionMutations(setRoutines, getRoutines),
+      useRoutineCompletionMutations(setRoutines, routinesRef),
     );
 
     expect(useRoutineCompletionToggleMutation).toHaveBeenCalledWith(
       setRoutines,
-      getRoutines,
+      routinesRef,
     );
     expect(useRoutineReorderMutation).toHaveBeenCalledWith(setRoutines);
     expect(createRoutineCompletionMutationsResult).toHaveBeenCalledWith({

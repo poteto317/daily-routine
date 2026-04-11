@@ -24,26 +24,28 @@ describe("useRoutineCrudMutationActions", () => {
     (useRoutineCrudMutations as jest.Mock).mockReturnValue(crudMutations);
     const setRoutines = jest.fn();
     const saveAndSync = jest.fn();
-    const getRoutines = jest.fn(() => []);
+    const routinesRef = { current: [] };
 
     const { result } = renderHook(() =>
-      useRoutineCrudMutationActions(setRoutines, saveAndSync, getRoutines),
+      useRoutineCrudMutationActions(setRoutines, saveAndSync, routinesRef),
     );
 
     expect(useRoutineCrudMutations).toHaveBeenCalledWith(expect.any(Function));
     expect(result.current).toBe(crudMutations);
   });
 
-  it("CRUD hook に渡す runner が mutation を同期付きで実行する", () => {
+  it("CRUD hook に渡す runner が mutation を同期付きで実行し ref を更新する", () => {
     (useRoutineCrudMutations as jest.Mock).mockReturnValue({});
     const previous = [{ id: "1" }];
     const updated = [{ id: "2" }];
     const setRoutines = jest.fn();
     const saveAndSync = jest.fn();
-    const getRoutines = jest.fn(() => previous as unknown as import("@/types/routine").Routine[]);
+    const routinesRef = {
+      current: previous as unknown as import("@/types/routine").Routine[],
+    };
 
     renderHook(() =>
-      useRoutineCrudMutationActions(setRoutines, saveAndSync, getRoutines),
+      useRoutineCrudMutationActions(setRoutines, saveAndSync, routinesRef),
     );
 
     const runAndSync = (useRoutineCrudMutations as jest.Mock).mock
@@ -56,5 +58,7 @@ describe("useRoutineCrudMutationActions", () => {
     // setRoutines は直接値で呼ばれる（関数型 updater ではない）
     expect(setRoutines).toHaveBeenCalledWith(updated);
     expect(saveAndSync).toHaveBeenCalledWith(updated);
+    // routinesRef.current が即座に更新されること
+    expect(routinesRef.current).toBe(updated);
   });
 });

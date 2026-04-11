@@ -12,8 +12,10 @@ import type { Routine } from "@/types/routine";
 
 // localStorage mock
 const mockStorage = new Map<string, string>();
+let originalLocalStorage: Storage;
 
 beforeAll(() => {
+  originalLocalStorage = window.localStorage;
   Object.defineProperty(window, "localStorage", {
     value: {
       getItem: (key: string) => mockStorage.get(key) ?? null,
@@ -25,6 +27,13 @@ beforeAll(() => {
       },
       key: (index: number) => [...mockStorage.keys()][index] ?? null,
     },
+    writable: true,
+  });
+});
+
+afterAll(() => {
+  Object.defineProperty(window, "localStorage", {
+    value: originalLocalStorage,
     writable: true,
   });
 });

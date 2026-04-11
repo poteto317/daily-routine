@@ -10,11 +10,12 @@ import { useRoutineCrudMutations } from "./useRoutineCrudMutations";
 export const useRoutineCrudMutationActions = (
   setRoutines: SetRoutines,
   saveAndSync: SaveAndSyncAction,
-  getRoutines: () => Routine[],
+  routinesRef: { current: Routine[] },
 ) => {
   const runAndSync = useMemo(
-    () => createRoutineMutationRunner(setRoutines, saveAndSync, getRoutines),
-    [setRoutines, saveAndSync, getRoutines],
+    () => createRoutineMutationRunner(setRoutines, saveAndSync, routinesRef),
+    // routinesRef は安定した参照（useRef の戻り値）なので deps に含めても問題ない
+    [setRoutines, saveAndSync, routinesRef],
   );
 
   return useRoutineCrudMutations(runAndSync);

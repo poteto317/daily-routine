@@ -8,11 +8,11 @@ type SetRoutines = Dispatch<SetStateAction<Routine[]>>;
 
 export const useRoutineCompletionMutations = (
   setRoutines: SetRoutines,
-  getRoutines: () => Routine[],
+  routinesRef: { current: Routine[] },
 ) => {
   const toggleComplete = useRoutineCompletionToggleMutation(
     setRoutines,
-    getRoutines,
+    routinesRef,
   );
   const reorderRoutines = useRoutineReorderMutation(setRoutines);
 

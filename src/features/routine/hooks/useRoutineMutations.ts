@@ -11,16 +11,16 @@ import { useRoutineCrudMutationActions } from "./useRoutineCrudMutationActions";
 export const useRoutineMutations = (
   setRoutines: SetRoutines,
   saveAndSync: SaveAndSyncAction,
-  getRoutines: () => Routine[],
+  routinesRef: { current: Routine[] },
 ): RoutineMutationActions => {
   const crudMutations = useRoutineCrudMutationActions(
     setRoutines,
     saveAndSync,
-    getRoutines,
+    routinesRef,
   );
   const completionMutations = useRoutineCompletionMutations(
     setRoutines,
-    getRoutines,
+    routinesRef,
   );
 
   return createRoutineMutationsResult(crudMutations, completionMutations);

@@ -105,7 +105,7 @@ describe("useRoutines", () => {
     expect(useRoutineMutations).toHaveBeenCalledWith(
       expect.any(Function),
       expect.any(Function),
-      expect.any(Function),
+      expect.objectContaining({ current: expect.any(Array) }),
     );
     expect(useRoutineQueries).toHaveBeenCalledWith(mockRoutines);
     expect(createUseRoutinesResult).toHaveBeenCalledWith({

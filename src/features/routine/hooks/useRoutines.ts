@@ -50,13 +50,13 @@ export const useRoutines = (): UseRoutinesResult => {
     useState(readBackgroundRefreshIntervalMs);
 
   // 常に最新の routines を参照するための ref。
-  // setRoutines の関数型 updater 内でサイドエフェクトを起こさないよう、
-  // mutations には getLatestRoutines() を渡して render フェーズ外で値を取得させる。
+  // mutations に直接渡すことで、render フェーズ外で最新値を取得できる。
+  // useEffect による同期に加え、mutation runner が routinesRef.current = updated を実行することで
+  // 同一 tick 内での連続呼び出し時も stale state を参照しない。
   const routinesRef = useRef<Routine[]>(routines);
   useEffect(() => {
     routinesRef.current = routines;
   }, [routines]);
-  const getLatestRoutines = useCallback(() => routinesRef.current, []);
 
   // SETTINGS_UPDATED_EVENT は saveSettings が呼ばれたときのみ発火する。
   // ルーティン保存など高頻度な操作では発火されないため、不要な getSettings() 呼び出しを防ぐ。
@@ -86,7 +86,7 @@ export const useRoutines = (): UseRoutinesResult => {
     saveAndSyncRoutines(updated, process.env.NEXT_PUBLIC_FUNCTIONS_URL);
   }, []);
 
-  const mutations = useRoutineMutations(setRoutines, saveAndSync, getLatestRoutines);
+  const mutations = useRoutineMutations(setRoutines, saveAndSync, routinesRef);
   const queries = useRoutineQueries(routines);
 
   const updateServiceWorkerSchedules = useCallback(

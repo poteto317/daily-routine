@@ -65,7 +65,8 @@ describe("グループルーティン編集時の重複チェック統合テス�
     jest.clearAllMocks();
   });
 
-  describe("グループ(g1)が月水金に存在 + 水曜に同時間の非グループルーティン存在", () => {    const { groupRoutines, conflictingOnWed } = createTestRoutines();
+  describe("グループ(g1)が月水金に存在 + 水曜に同時間の非グループルーティン存在", () => {
+    const { groupRoutines, conflictingOnWed } = createTestRoutines();
     const allRoutines = [...groupRoutines, conflictingOnWed];
     const editingRoutine = groupRoutines[0]!; // 月曜のルーティンを編集
 
