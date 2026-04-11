@@ -38,7 +38,6 @@ export const buildOps = (): RoutineCrudOps => ({
   routines: [routine],
   addRoutine: jest.fn(),
   updateRoutine: jest.fn(),
-  updateRoutineGroup: jest.fn(),
   deleteRoutine: jest.fn(),
   deleteRoutineGroup: jest.fn(),
 });

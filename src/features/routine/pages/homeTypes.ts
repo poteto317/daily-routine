@@ -78,10 +78,7 @@ export type HomeCrudState = {
   addRoutineAction: () => void;
   editRoutineAction: (routine: Routine) => void;
   deleteRoutineAction: (id: string) => void;
-  submitRoutineAction: (
-    routineData: RoutineData,
-    originalGroupDays?: number[],
-  ) => void;
+  submitRoutineAction: (routineData: RoutineData) => void;
   cancelRoutineAction: () => void;
   editingRoutine?: Routine;
   showForm: boolean;

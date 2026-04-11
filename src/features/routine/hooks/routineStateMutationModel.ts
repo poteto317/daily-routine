@@ -108,3 +108,97 @@ export const buildUpdatedRoutine = (
 export const assignSortOrder = (routines: Routine[]): Routine[] => {
   return routines.map((routine, index) => ({ ...routine, sortOrder: index }));
 };
+
+/**
+ * 汚染されたグループデータを修復する。
+ *
+ * 汚染パターン:
+ * 1. メンバーの daysOfWeek が [1,3,5] のように複数曜日になっている（本来は [1] のように単一）
+ * 2. 同一 groupId 内に同じ曜日の重複エントリがある
+ *
+ * 修復: 各グループについて、メンバーのユニーク曜日を求め、
+ * 曜日ごとに1エントリだけ残す。汚染がなければ元の配列をそのまま返す。
+ */
+export const repairCorruptedGroupRoutines = (
+  routines: Routine[],
+): Routine[] => {
+  const groups = new Map<string, Routine[]>();
+  const nonGrouped: Routine[] = [];
+
+  for (const routine of routines) {
+    if (!routine.groupId) {
+      nonGrouped.push(routine);
+      continue;
+    }
+    const list = groups.get(routine.groupId);
+    if (list) {
+      list.push(routine);
+    } else {
+      groups.set(routine.groupId, [routine]);
+    }
+  }
+
+  let needsRepair = false;
+
+  for (const members of groups.values()) {
+    if (members.some((m) => m.daysOfWeek.length > 1)) {
+      needsRepair = true;
+      break;
+    }
+    const daySet = new Set<number>();
+    for (const m of members) {
+      for (const d of m.daysOfWeek) {
+        if (daySet.has(d)) {
+          needsRepair = true;
+          break;
+        }
+        daySet.add(d);
+      }
+      if (needsRepair) break;
+    }
+    if (needsRepair) break;
+  }
+
+  if (!needsRepair) return routines;
+
+  const repaired: Routine[] = [...nonGrouped];
+
+  for (const members of groups.values()) {
+    // 全メンバーの曜日をフラットに集める
+    const allDays = members.flatMap((m) => m.daysOfWeek);
+    const uniqueDays = [...new Set(allDays)].sort((a, b) => a - b);
+
+    // テンプレート: 最初のメンバーを基準にする
+    const template = members[0]!;
+
+    const seenDays = new Set<number>();
+    for (const day of uniqueDays) {
+      if (seenDays.has(day)) continue;
+      seenDays.add(day);
+
+      // この曜日に対応する既存メンバーを探す（元データ優先）
+      const existing = members.find(
+        (m) => m.daysOfWeek.length === 1 && m.daysOfWeek[0] === day,
+      );
+
+      if (existing) {
+        repaired.push(existing);
+      } else {
+        // 汚染されたメンバーから修復エントリを生成
+        const now = new Date().toISOString();
+        repaired.push({
+          ...template,
+          id: crypto.randomUUID(),
+          daysOfWeek: [day],
+          sortOrder: template.sortOrder + seenDays.size - 1,
+          createdAt: now,
+          updatedAt: now,
+        });
+      }
+    }
+  }
+
+  return assignSortOrder(
+    [...repaired].sort((a, b) => a.sortOrder - b.sortOrder),
+  );
+};

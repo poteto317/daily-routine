@@ -5,7 +5,6 @@ jest.mock("../useRoutineCrudMutationActions", () => ({
     addRoutine: jest.fn(),
     addRoutines: jest.fn(),
     updateRoutine: jest.fn(),
-    updateRoutineGroup: jest.fn(),
     deleteRoutine: jest.fn(),
     deleteRoutineGroup: jest.fn(),
     replaceRoutinesForDays: jest.fn(),

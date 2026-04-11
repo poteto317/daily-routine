@@ -11,6 +11,7 @@ export {
   createRoutinesForBatchInput,
   createRoutinesForSingleInput,
   migrateMultiDayRoutinesWithGroup,
+  repairCorruptedGroupRoutines,
   sortRoutinesByOrder,
   type RoutineBatchCreateInput,
   type RoutineCreateInput,

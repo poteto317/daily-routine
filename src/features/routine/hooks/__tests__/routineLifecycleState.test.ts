@@ -80,7 +80,41 @@ describe("routineLifecycleState", () => {
     ]);
 
     initializeRoutineState();
-    expect(saveRoutines).toHaveBeenCalled();
+    expect(saveRoutines).toHaveBeenCalledWith(
+      expect.any(Array),
+      { skipLocalDataUpdatedAt: true },
+    );
+  });
+
+  it("initializeRoutineStateはgroupId付きの汚染データをマイグレーション対象にしない", () => {
+    // groupId があり daysOfWeek.length > 1 → マイグレーションではなく修復対象
+    (getRoutines as jest.Mock).mockReturnValue([
+      {
+        ...baseRoutine,
+        id: "r1",
+        groupId: "g1",
+        daysOfWeek: [1, 3],
+      },
+      {
+        ...baseRoutine,
+        id: "r2",
+        groupId: "g1",
+        daysOfWeek: [1, 3],
+      },
+    ]);
+
+    const state = initializeRoutineState();
+
+    // マイグレーション（分割）ではなく修復が行われる
+    // 修復後は [1] と [3] の2エントリになる
+    expect(state).toHaveLength(2);
+    const days = state.map((r) => r.daysOfWeek).sort((a, b) => a[0]! - b[0]!);
+    expect(days).toEqual([[1], [3]]);
+    // saveRoutines が修復のために skipLocalDataUpdatedAt: true で呼ばれたこと
+    expect(saveRoutines).toHaveBeenCalledWith(
+      expect.any(Array),
+      { skipLocalDataUpdatedAt: true },
+    );
   });
 
   it("resetRoutinesWhenDateChangedは日付が同じならnullを返す", () => {
@@ -112,8 +146,9 @@ describe("routineLifecycleState", () => {
     expect(result).toEqual([{ ...baseRoutine, isCompleted: false }]);
     expect(saveDailyProgressSilently).toHaveBeenCalled();
     expect(saveDailyProgress).not.toHaveBeenCalled();
-    expect(saveRoutines).toHaveBeenCalledWith([
-      expect.objectContaining({ id: "r1", isCompleted: false }),
-    ]);
+    expect(saveRoutines).toHaveBeenCalledWith(
+      [expect.objectContaining({ id: "r1", isCompleted: false })],
+      { skipLocalDataUpdatedAt: true },
+    );
   });
 });

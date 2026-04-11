@@ -111,7 +111,6 @@ describe("useRoutineFormState composition", () => {
       description: fieldsState.description,
       notificationMinutes: fieldsState.notificationMinutes,
       defaultDurationMinutes: 30,
-      groupDaysOfWeek: [1, 2],
       hasConflict: false,
       onSubmit,
     });

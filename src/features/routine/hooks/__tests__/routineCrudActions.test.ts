@@ -25,7 +25,6 @@ import {
   deleteRoutineFromState,
   deleteRoutineGroupFromState,
   replaceRoutinesForDaysInState,
-  updateRoutineGroupInState,
   updateRoutineInState,
 } from "../routineCrudActions";
 
@@ -130,19 +129,6 @@ describe("routineCrudActions", () => {
     expect(updated[1]).toEqual(routines[1]);
   });
 
-  it("グループ更新で一致groupIdだけ更新する", () => {
-    const updated = updateRoutineGroupInState(
-      routines,
-      "g2",
-      { title: "Group Updated" },
-      "2024-02-01T00:00:00.000Z",
-    );
-
-    expect(buildUpdatedRoutine).toHaveBeenCalledTimes(1);
-    expect(updated[1].title).toBe("Group Updated");
-    expect(updated[0]).toEqual(routines[0]);
-  });
-
   it("単体削除とグループ削除を行える", () => {
     expect(deleteRoutineFromState(routines, "1")).toEqual([routines[1]]);
     expect(deleteRoutineGroupFromState(routines, "g2")).toEqual([routines[0]]);
@@ -175,4 +161,6 @@ describe("routineCrudActions", () => {
     expect(sortRoutinesByOrder).toHaveBeenCalledWith([routines[1], ...created]);
     expect(updated).toEqual([routines[1], ...created]);
   });
+
 });
+

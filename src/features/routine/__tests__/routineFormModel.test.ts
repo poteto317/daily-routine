@@ -2,8 +2,6 @@ import type { Routine } from "@/types/routine";
 import type { RoutineData } from "../pages/types";
 import {
   buildRoutineSubmitPayload,
-  getGroupDaysOfWeek,
-  getGroupRoutines,
   parseDurationOrDefault,
   parseNotificationMinutes,
   resolveRoutineFormInitialState,
@@ -29,27 +27,6 @@ describe("routineFormModel", () => {
     updatedAt: "2026-02-13T00:00:00.000Z",
   };
 
-  it("groupIdがある場合のみ同一グループを返す", () => {
-    const routines: Routine[] = [
-      baseRoutine,
-      { ...baseRoutine, id: "r2", daysOfWeek: [3] },
-      { ...baseRoutine, id: "r3", groupId: "g2", daysOfWeek: [5] },
-    ];
-
-    expect(
-      getGroupRoutines(routines, baseRoutine).map((item) => item.id),
-    ).toEqual(["r1", "r2"]);
-  });
-
-  it("groupDaysを昇順で返す", () => {
-    const groupRoutines: Routine[] = [
-      { ...baseRoutine, id: "r2", daysOfWeek: [3] },
-      { ...baseRoutine, id: "r1", daysOfWeek: [1] },
-    ];
-
-    expect(getGroupDaysOfWeek(groupRoutines)).toEqual([1, 3]);
-  });
-
   it("初期状態を新規作成向けに解決する", () => {
     const state = resolveRoutineFormInitialState({
       existingRoutines: [],
@@ -68,28 +45,6 @@ describe("routineFormModel", () => {
     });
   });
 
-  it("グループ編集時は groupDaysOfWeek を daysOfWeek の初期値として使う", () => {
-    const state = resolveRoutineFormInitialState({
-      routine: baseRoutine,
-      existingRoutines: [],
-      defaultDurationMinutes: 30,
-      groupDaysOfWeek: [1, 2, 3],
-    });
-
-    expect(state.daysOfWeek).toEqual([1, 2, 3]);
-  });
-
-  it("groupDaysOfWeek が空の場合は routine.daysOfWeek を使う", () => {
-    const state = resolveRoutineFormInitialState({
-      routine: baseRoutine,
-      existingRoutines: [],
-      defaultDurationMinutes: 30,
-      groupDaysOfWeek: [],
-    });
-
-    expect(state.daysOfWeek).toEqual([1]);
-  });
-
   it("groupDaysOfWeek が未指定の場合は routine.daysOfWeek を使う", () => {
     const state = resolveRoutineFormInitialState({
       routine: baseRoutine,
@@ -105,7 +60,7 @@ describe("routineFormModel", () => {
     expect(toggleDaySelection([1, 2, 3], 2)).toEqual([1, 3]);
   });
 
-  it("submit payloadを生成し編集時は元曜日を含める", () => {
+  it("submit payloadを生成する", () => {
     const state = {
       title: "更新朝活",
       category: "health" as const,
@@ -116,11 +71,10 @@ describe("routineFormModel", () => {
       notificationMinutes: "15",
     };
 
-    const { routineData, originalGroupDays } = buildRoutineSubmitPayload({
+    const { routineData } = buildRoutineSubmitPayload({
       routine: baseRoutine,
       state,
       defaultDurationMinutes: 30,
-      groupDaysOfWeek: [1, 3],
     });
 
     const expected: RoutineData = {
@@ -133,7 +87,6 @@ describe("routineFormModel", () => {
     };
 
     expect(routineData).toEqual(expected);
-    expect(originalGroupDays).toEqual([1, 3]);
   });
 
   it("数値パース失敗時はフォールバック値を使う", () => {

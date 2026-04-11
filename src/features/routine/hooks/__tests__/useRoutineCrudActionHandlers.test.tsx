@@ -30,9 +30,9 @@ describe("useRoutineCrudActionHandlers", () => {
       }),
     );
 
-    act(() => result.current.submitRoutineAction(routineData, [1, 3]));
+    act(() => result.current.submitRoutineAction(routineData));
 
-    expect(ops.updateRoutineGroup).toHaveBeenCalledWith("g1", routineData);
+    expect(ops.updateRoutine).toHaveBeenCalledWith("r1", routineData);
     expect(closeForm).toHaveBeenCalledTimes(1);
     expect(window.history.back).toHaveBeenCalledTimes(1);
     expect(restoreScroll).toHaveBeenCalledTimes(1);
@@ -57,7 +57,6 @@ describe("useRoutineCrudActionHandlers", () => {
 
     expect(ops.addRoutine).not.toHaveBeenCalled();
     expect(ops.updateRoutine).not.toHaveBeenCalled();
-    expect(ops.updateRoutineGroup).not.toHaveBeenCalled();
     expect(closeForm).toHaveBeenCalledTimes(1);
     expect(window.history.back).toHaveBeenCalledTimes(1);
     expect(restoreScroll).toHaveBeenCalledTimes(1);

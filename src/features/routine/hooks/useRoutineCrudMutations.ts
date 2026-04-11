@@ -10,10 +10,8 @@ import {
   deleteRoutineFromState,
   deleteRoutineGroupFromState,
   replaceRoutinesForDaysInState,
-  updateRoutineGroupInState,
   updateRoutineInState,
 } from "./routineCrudActions";
-import type { UpdateRoutineGroupInput } from "./routineHookContract";
 
 type RunAndSync = (mutate: (previous: Routine[]) => Routine[]) => void;
 
@@ -37,16 +35,6 @@ export const useRoutineCrudMutations = (runAndSync: RunAndSync) => {
       runAndSync((prev) => {
         const now = new Date().toISOString();
         return updateRoutineInState(prev, id, updates, now);
-      });
-    },
-    [runAndSync],
-  );
-
-  const updateRoutineGroup = useCallback(
-    (groupId: string, updates: UpdateRoutineGroupInput) => {
-      runAndSync((prev) => {
-        const now = new Date().toISOString();
-        return updateRoutineGroupInState(prev, groupId, updates, now);
       });
     },
     [runAndSync],
@@ -82,7 +70,6 @@ export const useRoutineCrudMutations = (runAndSync: RunAndSync) => {
     addRoutine,
     addRoutines,
     updateRoutine,
-    updateRoutineGroup,
     deleteRoutine,
     deleteRoutineGroup,
     replaceRoutinesForDays,

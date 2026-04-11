@@ -64,7 +64,6 @@ export const ROUTINE_FORM_DAYS_LABEL = texts.routineFormCore.daysLabel;
 export const ROUTINE_FORM_CATEGORY_LABEL = texts.routineFormCore.categoryLabel;
 export const ROUTINE_FORM_DAYS_WARNING_LABEL =
   texts.routineFormCore.daysWarningLabel;
-export const ROUTINE_FORM_DAYS_EDIT_HINT = texts.routineFormCore.daysEditHint;
 export const ROUTINE_FORM_DAYS_CREATE_HINT =
   texts.routineFormCore.daysCreateHint;
 

@@ -4,18 +4,10 @@ import type {
   RoutineCreateInput,
 } from "./routineStateModel";
 
-export type UpdateRoutineGroupInput = Partial<
-  Omit<Routine, "id" | "isCompleted" | "daysOfWeek" | "createdAt" | "updatedAt">
->;
-
 export type RoutineMutationActions = {
   addRoutine: (routine: RoutineCreateInput) => void;
   addRoutines: (routines: RoutineBatchCreateInput[]) => void;
   updateRoutine: (id: string, updates: Partial<Routine>) => void;
-  updateRoutineGroup: (
-    groupId: string,
-    updates: UpdateRoutineGroupInput,
-  ) => void;
   deleteRoutine: (id: string) => void;
   deleteRoutineGroup: (groupId: string) => void;
   replaceRoutinesForDays: (

@@ -16,22 +16,6 @@ type ResolveInitialStateParams = {
   currentDayOfWeek?: number;
   existingRoutines: Routine[];
   defaultDurationMinutes: number;
-  groupDaysOfWeek?: number[];
-};
-
-export const getGroupRoutines = (
-  existingRoutines: Routine[],
-  routine?: Routine,
-): Routine[] => {
-  if (!routine?.groupId) return [];
-  return existingRoutines.filter((item) => item.groupId === routine.groupId);
-};
-
-export const getGroupDaysOfWeek = (groupRoutines: Routine[]): number[] => {
-  return groupRoutines
-    .map((item) => item.daysOfWeek[0])
-    .filter((day): day is number => day !== undefined)
-    .sort();
 };
 
 export const toggleDaySelection = (days: number[], day: number): number[] => {
@@ -48,12 +32,9 @@ export const resolveRoutineFormInitialState = (
     currentDayOfWeek,
     existingRoutines,
     defaultDurationMinutes,
-    groupDaysOfWeek,
   } = params;
   const initialDays = routine
-    ? (groupDaysOfWeek && groupDaysOfWeek.length > 0
-        ? groupDaysOfWeek
-        : routine.daysOfWeek)
+    ? routine.daysOfWeek
     : currentDayOfWeek !== undefined
       ? [currentDayOfWeek]
       : [];

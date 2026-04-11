@@ -7,7 +7,6 @@ import {
   type RoutineBatchCreateInput,
   type RoutineCreateInput,
 } from "./routineStateModel";
-import type { UpdateRoutineGroupInput } from "./routineHookContract";
 
 export const addRoutineToState = (
   routines: Routine[],
@@ -37,19 +36,6 @@ export const updateRoutineInState = (
 ): Routine[] => {
   return routines.map((routine) =>
     routine.id === id ? buildUpdatedRoutine(routine, updates, now) : routine,
-  );
-};
-
-export const updateRoutineGroupInState = (
-  routines: Routine[],
-  groupId: string,
-  updates: UpdateRoutineGroupInput,
-  now: string,
-): Routine[] => {
-  return routines.map((routine) =>
-    routine.groupId === groupId
-      ? buildUpdatedRoutine(routine, updates, now)
-      : routine,
   );
 };
 

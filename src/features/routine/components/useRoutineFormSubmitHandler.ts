@@ -4,7 +4,6 @@ import { buildRoutineSubmitPayload } from "./routineFormModel";
 
 export type SubmitAction = (
   routine: Omit<Routine, "id" | "createdAt" | "updatedAt">,
-  groupDaysOfWeek?: number[],
 ) => void;
 
 type UseRoutineFormSubmitHandlerParams = {
@@ -17,7 +16,6 @@ type UseRoutineFormSubmitHandlerParams = {
   description: string;
   notificationMinutes: string;
   defaultDurationMinutes: number;
-  groupDaysOfWeek: number[];
   hasConflict: boolean;
   onSubmit: SubmitAction;
 };
@@ -32,7 +30,6 @@ export const useRoutineFormSubmitHandler = ({
   description,
   notificationMinutes,
   defaultDurationMinutes,
-  groupDaysOfWeek,
   hasConflict,
   onSubmit,
 }: UseRoutineFormSubmitHandlerParams) => {
@@ -43,7 +40,7 @@ export const useRoutineFormSubmitHandler = ({
       event.preventDefault();
       if (isSubmitDisabled) return;
 
-      const { routineData, originalGroupDays } = buildRoutineSubmitPayload({
+      const { routineData } = buildRoutineSubmitPayload({
         routine,
         state: {
           title,
@@ -55,10 +52,9 @@ export const useRoutineFormSubmitHandler = ({
           notificationMinutes,
         },
         defaultDurationMinutes,
-        groupDaysOfWeek,
       });
 
-      onSubmit(routineData, originalGroupDays);
+      onSubmit(routineData);
     },
     [
       isSubmitDisabled,
@@ -71,7 +67,6 @@ export const useRoutineFormSubmitHandler = ({
       description,
       notificationMinutes,
       defaultDurationMinutes,
-      groupDaysOfWeek,
       onSubmit,
     ],
   );

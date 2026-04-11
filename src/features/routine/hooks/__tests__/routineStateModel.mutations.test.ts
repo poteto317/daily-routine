@@ -4,6 +4,7 @@ import {
   createRoutinesForBatchInput,
   createRoutinesForSingleInput,
   migrateMultiDayRoutinesWithGroup,
+  repairCorruptedGroupRoutines,
 } from "../routineStateModel";
 
 const baseRoutine: Routine = {
@@ -68,5 +69,78 @@ describe("routineStateModel mutations", () => {
     ]);
     expect(reordered[0]?.sortOrder).toBe(0);
     expect(reordered[1]?.sortOrder).toBe(1);
+  });
+
+  describe("repairCorruptedGroupRoutines", () => {
+    it("汚染がなければ元の配列をそのまま返す", () => {
+      const routines: Routine[] = [
+        { ...baseRoutine, groupId: "g1", daysOfWeek: [1] },
+        { ...baseRoutine, id: "r2", groupId: "g1", daysOfWeek: [3] },
+      ];
+      const result = repairCorruptedGroupRoutines(routines);
+      expect(result).toBe(routines); // 参照が同一
+    });
+
+    it("daysOfWeekが複数の汚染データを正規化する", () => {
+      const routines: Routine[] = [
+        { ...baseRoutine, id: "r1", groupId: "g1", daysOfWeek: [1, 3, 5] },
+        { ...baseRoutine, id: "r2", groupId: "g1", daysOfWeek: [1, 3, 5] },
+        { ...baseRoutine, id: "r3", groupId: "g1", daysOfWeek: [1, 3, 5] },
+      ];
+      const result = repairCorruptedGroupRoutines(routines);
+      expect(result).toHaveLength(3);
+      const days = result
+        .map((r) => r.daysOfWeek)
+        .sort((a, b) => a[0]! - b[0]!);
+      expect(days).toEqual([[1], [3], [5]]);
+      // 全て同じ groupId
+      expect(result.every((r) => r.groupId === "g1")).toBe(true);
+    });
+
+    it("同一曜日の重複エントリを除去する", () => {
+      const routines: Routine[] = [
+        { ...baseRoutine, id: "r1", groupId: "g1", daysOfWeek: [1] },
+        { ...baseRoutine, id: "r2", groupId: "g1", daysOfWeek: [1] },
+        { ...baseRoutine, id: "r3", groupId: "g1", daysOfWeek: [3] },
+      ];
+      const result = repairCorruptedGroupRoutines(routines);
+      expect(result).toHaveLength(2);
+      const days = result
+        .map((r) => r.daysOfWeek)
+        .sort((a, b) => a[0]! - b[0]!);
+      expect(days).toEqual([[1], [3]]);
+    });
+
+    it("groupIdなしのルーティンはそのまま残す", () => {
+      const routines: Routine[] = [
+        { ...baseRoutine, id: "r1", groupId: undefined, daysOfWeek: [1] },
+        { ...baseRoutine, id: "r2", groupId: "g1", daysOfWeek: [1, 3] },
+      ];
+      const result = repairCorruptedGroupRoutines(routines);
+      expect(result.find((r) => r.id === "r1")).toBeDefined();
+    });
+    it("修復後の sortOrder は一貫した連番になる", () => {
+      // existing メンバーが高い sortOrder を持ち、新規生成エントリと混在する場合
+      const routines: Routine[] = [
+        {
+          ...baseRoutine,
+          id: "r1",
+          groupId: "g1",
+          daysOfWeek: [1],
+          sortOrder: 10,
+        },
+        {
+          ...baseRoutine,
+          id: "r2",
+          groupId: "g1",
+          daysOfWeek: [1, 3, 5], // 汚染: 複数曜日
+          sortOrder: 0,
+        },
+      ];
+      const result = repairCorruptedGroupRoutines(routines);
+      expect(result).toHaveLength(3);
+      const sortOrders = result.map((r) => r.sortOrder).sort((a, b) => a - b);
+      expect(sortOrders).toEqual([0, 1, 2]);
+    });
   });
 });
