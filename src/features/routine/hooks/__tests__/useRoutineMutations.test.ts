@@ -35,18 +35,23 @@ describe("useRoutineMutations", () => {
   it("CRUD/completion/result builder を compose する", () => {
     const setRoutines = jest.fn();
     const saveAndSync = jest.fn();
+    const getRoutines = jest.fn();
     const resultShape = { composed: true };
     (createRoutineMutationsResult as jest.Mock).mockReturnValue(resultShape);
 
     const { result } = renderHook(() =>
-      useRoutineMutations(setRoutines, saveAndSync),
+      useRoutineMutations(setRoutines, saveAndSync, getRoutines),
     );
 
     expect(useRoutineCrudMutationActions).toHaveBeenCalledWith(
       setRoutines,
       saveAndSync,
+      getRoutines,
     );
-    expect(useRoutineCompletionMutations).toHaveBeenCalledWith(setRoutines);
+    expect(useRoutineCompletionMutations).toHaveBeenCalledWith(
+      setRoutines,
+      getRoutines,
+    );
     expect(createRoutineMutationsResult).toHaveBeenCalledWith(
       (useRoutineCrudMutationActions as jest.Mock).mock.results[0].value,
       (useRoutineCompletionMutations as jest.Mock).mock.results[0].value,

@@ -1,8 +1,5 @@
 import type { Routine } from "@/types/routine";
-import {
-  applyRoutineMutationAndSync,
-  createRoutineMutationRunner,
-} from "../routineMutationCoordinator";
+import { createRoutineMutationRunner } from "../routineMutationCoordinator";
 
 describe("routineMutationCoordinator", () => {
   const routines: Routine[] = [
@@ -22,30 +19,20 @@ describe("routineMutationCoordinator", () => {
     },
   ];
 
-  it("mutation結果を同期して返す", () => {
-    const updated = [{ ...routines[0], title: "Updated" }];
-    const mutate = jest.fn(() => updated);
-    const saveAndSync = jest.fn();
-
-    const result = applyRoutineMutationAndSync(routines, mutate, saveAndSync);
-
-    expect(mutate).toHaveBeenCalledWith(routines);
-    expect(saveAndSync).toHaveBeenCalledWith(updated);
-    expect(result).toBe(updated);
-  });
-
-  it("setState updater 経由で mutation と同期を実行する", () => {
+  it("getRoutines() から取得した値で mutation を実行し setRoutines と saveAndSync を呼ぶ", () => {
     const setRoutines = jest.fn();
     const saveAndSync = jest.fn();
+    const getRoutines = jest.fn(() => routines);
     const updated = [{ ...routines[0], title: "Runner Updated" }];
     const mutate = jest.fn(() => updated);
 
-    createRoutineMutationRunner(setRoutines, saveAndSync)(mutate);
+    createRoutineMutationRunner(setRoutines, saveAndSync, getRoutines)(mutate);
 
-    const updater = setRoutines.mock.calls[0][0] as (
-      previous: Routine[],
-    ) => Routine[];
-    expect(updater(routines)).toBe(updated);
+    expect(getRoutines).toHaveBeenCalled();
+    expect(mutate).toHaveBeenCalledWith(routines);
+    // setRoutines は直接値で呼ばれる（関数型 updater ではない）
+    expect(setRoutines).toHaveBeenCalledWith(updated);
+    // saveAndSync は setRoutines の外（render フェーズ外）で呼ばれる
     expect(saveAndSync).toHaveBeenCalledWith(updated);
   });
 });

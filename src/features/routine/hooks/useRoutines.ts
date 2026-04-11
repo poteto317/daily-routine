@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { type Routine } from "@/types/routine";
 import { initializeRoutineState } from "./routineLifecycleState";
 import {
@@ -49,6 +49,15 @@ export const useRoutines = (): UseRoutinesResult => {
   const [backgroundRefreshIntervalMs, setBackgroundRefreshIntervalMs] =
     useState(readBackgroundRefreshIntervalMs);
 
+  // 常に最新の routines を参照するための ref。
+  // setRoutines の関数型 updater 内でサイドエフェクトを起こさないよう、
+  // mutations には getLatestRoutines() を渡して render フェーズ外で値を取得させる。
+  const routinesRef = useRef<Routine[]>(routines);
+  useEffect(() => {
+    routinesRef.current = routines;
+  }, [routines]);
+  const getLatestRoutines = useCallback(() => routinesRef.current, []);
+
   // SETTINGS_UPDATED_EVENT は saveSettings が呼ばれたときのみ発火する。
   // ルーティン保存など高頻度な操作では発火されないため、不要な getSettings() 呼び出しを防ぐ。
   useEffect(() => {
@@ -77,7 +86,7 @@ export const useRoutines = (): UseRoutinesResult => {
     saveAndSyncRoutines(updated, process.env.NEXT_PUBLIC_FUNCTIONS_URL);
   }, []);
 
-  const mutations = useRoutineMutations(setRoutines, saveAndSync);
+  const mutations = useRoutineMutations(setRoutines, saveAndSync, getLatestRoutines);
   const queries = useRoutineQueries(routines);
 
   const updateServiceWorkerSchedules = useCallback(
