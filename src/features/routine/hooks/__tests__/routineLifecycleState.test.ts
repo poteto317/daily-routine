@@ -9,6 +9,7 @@ import {
 import { getTodayString } from "@/lib/storage/core";
 import {
   initializeRoutineState,
+  initializeRoutineStateWithMeta,
   resetRoutinesWhenDateChanged,
 } from "../routineLifecycleState";
 
@@ -150,5 +151,70 @@ describe("routineLifecycleState", () => {
       [expect.objectContaining({ id: "r1", isCompleted: false })],
       { skipLocalDataUpdatedAt: true },
     );
+  });
+});
+
+describe("initializeRoutineStateWithMeta", () => {
+  const baseRoutine: Routine = {
+    id: "r1",
+    title: "朝活",
+    startTime: "08:00",
+    duration: 30,
+    category: "health",
+    daysOfWeek: [1],
+    isCompleted: false,
+    sortOrder: 0,
+    createdAt: "2026-02-13T00:00:00.000Z",
+    updatedAt: "2026-02-13T00:00:00.000Z",
+  };
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    (getTodayString as jest.Mock).mockReturnValue("2026-02-13");
+    (getDailyProgress as jest.Mock).mockReturnValue(null);
+  });
+
+  it("repair も migrate もなければ didRepairOrMigrate が false", () => {
+    (getRoutines as jest.Mock).mockReturnValue([baseRoutine]);
+
+    const { didRepairOrMigrate } = initializeRoutineStateWithMeta();
+    expect(didRepairOrMigrate).toBe(false);
+  });
+
+  it("汚染データの repair 時は didRepairOrMigrate が true", () => {
+    (getRoutines as jest.Mock).mockReturnValue([
+      { ...baseRoutine, id: "r1", groupId: "g1", daysOfWeek: [1, 3] },
+      { ...baseRoutine, id: "r2", groupId: "g1", daysOfWeek: [1, 3] },
+    ]);
+
+    const { didRepairOrMigrate } = initializeRoutineStateWithMeta();
+    expect(didRepairOrMigrate).toBe(true);
+  });
+
+  it("レガシーデータの migrate 時は didRepairOrMigrate が true", () => {
+    // groupId なし・daysOfWeek 複数 → マイグレーション対象
+    (getRoutines as jest.Mock).mockReturnValue([
+      { ...baseRoutine, daysOfWeek: [1, 3] },
+    ]);
+
+    const { didRepairOrMigrate } = initializeRoutineStateWithMeta();
+    expect(didRepairOrMigrate).toBe(true);
+  });
+
+  it("repair 時に completedRoutineIds を repairCorruptedGroupRoutines に渡す", () => {
+    // r2 が完了済みの場合、修復後に r2 が残るべき
+    (getDailyProgress as jest.Mock).mockReturnValue({
+      date: "2026-02-13",
+      completedRoutineIds: ["r2"],
+      lastResetTime: "2026-02-13T00:00:00.000Z",
+    });
+    (getRoutines as jest.Mock).mockReturnValue([
+      { ...baseRoutine, id: "r1", groupId: "g1", daysOfWeek: [1] },
+      { ...baseRoutine, id: "r2", groupId: "g1", daysOfWeek: [1] },
+    ]);
+
+    const { routines } = initializeRoutineStateWithMeta();
+    const day1Entry = routines.find((r) => r.daysOfWeek[0] === 1);
+    expect(day1Entry?.id).toBe("r2");
   });
 });

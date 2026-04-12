@@ -22,39 +22,63 @@ const shouldMigrateMultiDayRoutines = (routines: Routine[]): boolean => {
   );
 };
 
-export const initializeRoutineState = (): Routine[] => {
-  if (typeof window === "undefined") return [];
-
-  let loadedRoutines = getRoutines();
-
-  if (shouldMigrateMultiDayRoutines(loadedRoutines)) {
-    loadedRoutines = migrateMultiDayRoutinesWithGroup(loadedRoutines);
-    saveRoutines(stripCompletionState(loadedRoutines), {
-      skipLocalDataUpdatedAt: true,
-    });
-  }
-
-  const repaired = repairCorruptedGroupRoutines(loadedRoutines);
-  if (repaired !== loadedRoutines) {
-    loadedRoutines = repaired;
-    saveRoutines(stripCompletionState(loadedRoutines), {
-      skipLocalDataUpdatedAt: true,
-    });
-  }
-
-  const today = getTodayString();
-  const progress = getDailyProgress();
-
-  if (!progress || progress.date !== today) {
-    saveDailyProgressSilently(createDailyResetProgress(today));
-    return stripCompletionState(loadedRoutines);
-  }
-
-  return applyDailyProgressToRoutines(
-    loadedRoutines,
-    progress.completedRoutineIds,
-  );
+type InitializeRoutineStateResult = {
+  routines: Routine[];
+  /** migrate/repair によるローカル変更が行われた場合は true。
+   *  呼び出し元はマウント後に setLocalDataUpdatedAt を呼ぶこと。 */
+  didRepairOrMigrate: boolean;
 };
+
+export const initializeRoutineStateWithMeta =
+  (): InitializeRoutineStateResult => {
+    if (typeof window === "undefined") {
+      return { routines: [], didRepairOrMigrate: false };
+    }
+
+    let loadedRoutines = getRoutines();
+    let didRepairOrMigrate = false;
+
+    if (shouldMigrateMultiDayRoutines(loadedRoutines)) {
+      loadedRoutines = migrateMultiDayRoutinesWithGroup(loadedRoutines);
+      saveRoutines(stripCompletionState(loadedRoutines), {
+        skipLocalDataUpdatedAt: true,
+      });
+      didRepairOrMigrate = true;
+    }
+
+    const progress = getDailyProgress();
+    const completedRoutineIds = progress?.completedRoutineIds;
+
+    const repaired = repairCorruptedGroupRoutines(
+      loadedRoutines,
+      completedRoutineIds,
+    );
+    if (repaired !== loadedRoutines) {
+      loadedRoutines = repaired;
+      saveRoutines(stripCompletionState(loadedRoutines), {
+        skipLocalDataUpdatedAt: true,
+      });
+      didRepairOrMigrate = true;
+    }
+
+    const today = getTodayString();
+
+    if (!progress || progress.date !== today) {
+      saveDailyProgressSilently(createDailyResetProgress(today));
+      return { routines: stripCompletionState(loadedRoutines), didRepairOrMigrate };
+    }
+
+    return {
+      routines: applyDailyProgressToRoutines(
+        loadedRoutines,
+        progress.completedRoutineIds,
+      ),
+      didRepairOrMigrate,
+    };
+  };
+
+export const initializeRoutineState = (): Routine[] =>
+  initializeRoutineStateWithMeta().routines;
 
 export const resetRoutinesWhenDateChanged = (
   currentRoutines: Routine[],

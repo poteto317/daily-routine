@@ -111,6 +111,19 @@ describe("routineStateModel mutations", () => {
       expect(days).toEqual([[1], [3]]);
     });
 
+    it("completedRoutineIds に含まれる重複エントリを優先して残す", () => {
+      const routines: Routine[] = [
+        { ...baseRoutine, id: "r1", groupId: "g1", daysOfWeek: [1] },
+        { ...baseRoutine, id: "r2", groupId: "g1", daysOfWeek: [1] }, // r2 が完了済み
+        { ...baseRoutine, id: "r3", groupId: "g1", daysOfWeek: [3] },
+      ];
+      // r2 が completedRoutineIds にある → r2 を優先して残す
+      const result = repairCorruptedGroupRoutines(routines, ["r2"]);
+      expect(result).toHaveLength(2);
+      const day1Entry = result.find((r) => r.daysOfWeek[0] === 1);
+      expect(day1Entry?.id).toBe("r2");
+    });
+
     it("groupIdなしのルーティンはそのまま残す", () => {
       const routines: Routine[] = [
         { ...baseRoutine, id: "r1", groupId: undefined, daysOfWeek: [1] },

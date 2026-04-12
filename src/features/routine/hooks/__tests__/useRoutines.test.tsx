@@ -2,7 +2,7 @@ import { renderHook, act } from "@testing-library/react";
 import type { Routine } from "@/types/routine";
 
 jest.mock("../routineLifecycleState", () => ({
-  initializeRoutineState: jest.fn(),
+  initializeRoutineStateWithMeta: jest.fn(),
 }));
 
 jest.mock("../routinePersistenceSync", () => ({
@@ -32,7 +32,11 @@ jest.mock("@/features/settings/storage", () => ({
   SETTINGS_UPDATED_EVENT: "settings-updated",
 }));
 
-import { initializeRoutineState } from "../routineLifecycleState";
+jest.mock("@/lib/storage/core", () => ({
+  setLocalDataUpdatedAt: jest.fn(),
+}));
+
+import { initializeRoutineStateWithMeta } from "../routineLifecycleState";
 import {
   saveAndSyncRoutines,
   updateNotificationSchedules,
@@ -42,6 +46,7 @@ import { useRoutineMutations } from "../useRoutineMutations";
 import { useRoutineQueries } from "../useRoutineQueries";
 import { useRoutineStateSync } from "../useRoutineStateSync";
 import { getSettings } from "@/features/settings/storage";
+import { setLocalDataUpdatedAt } from "@/lib/storage/core";
 import { useRoutines } from "../useRoutines";
 
 const mockRoutines: Routine[] = [
@@ -64,7 +69,10 @@ const mockRoutines: Routine[] = [
 describe("useRoutines", () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    (initializeRoutineState as jest.Mock).mockReturnValue(mockRoutines);
+    (initializeRoutineStateWithMeta as jest.Mock).mockReturnValue({
+      routines: mockRoutines,
+      didRepairOrMigrate: false,
+    });
     (useRoutineMutations as jest.Mock).mockReturnValue({
       addRoutine: jest.fn(),
       addRoutines: jest.fn(),
@@ -218,5 +226,28 @@ describe("useRoutines", () => {
       mockRoutines,
       3600000, // 60分 × 60 × 1000（上限）
     );
+  });
+
+  it("didRepairOrMigrate が true のとき useEffect でsetLocalDataUpdatedAt を呼ぶ", () => {
+    (initializeRoutineStateWithMeta as jest.Mock).mockReturnValue({
+      routines: mockRoutines,
+      didRepairOrMigrate: true,
+    });
+
+    renderHook(() => useRoutines());
+
+    expect(setLocalDataUpdatedAt).toHaveBeenCalledTimes(1);
+    expect(setLocalDataUpdatedAt).toHaveBeenCalledWith(expect.any(Number));
+  });
+
+  it("didRepairOrMigrate が false のとき setLocalDataUpdatedAt を呼ばない", () => {
+    (initializeRoutineStateWithMeta as jest.Mock).mockReturnValue({
+      routines: mockRoutines,
+      didRepairOrMigrate: false,
+    });
+
+    renderHook(() => useRoutines());
+
+    expect(setLocalDataUpdatedAt).not.toHaveBeenCalled();
   });
 });

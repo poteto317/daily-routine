@@ -9,7 +9,7 @@ import {
   type Dispatch,
 } from "react";
 import { type Routine } from "@/types/routine";
-import { initializeRoutineState } from "./routineLifecycleState";
+import { initializeRoutineStateWithMeta } from "./routineLifecycleState";
 import {
   saveAndSyncRoutines,
   updateNotificationSchedules,
@@ -24,6 +24,7 @@ import {
   getSettings,
   SETTINGS_UPDATED_EVENT,
 } from "@/features/settings/storage";
+import { setLocalDataUpdatedAt } from "@/lib/storage/core";
 
 const BG_REFRESH_MIN_MS = 0;
 const BG_REFRESH_MAX_MS = 60 * 60 * 1000; // 60分
@@ -51,9 +52,12 @@ const readBackgroundRefreshIntervalMs = (): number =>
   );
 
 export const useRoutines = (): UseRoutinesResult => {
-  const [routinesState, setRoutinesState] = useState<Routine[]>(
-    initializeRoutineState,
+  // 初期化時に migrate/repair が発生したかを useState で保持（setter は使用しない）
+  // useRef に render 中に書き込む形を避けるため、lazy initializer で両値を取得する
+  const [{ routines: initRoutines, didRepairOrMigrate: initDidRepairOrMigrate }] = useState(
+    () => initializeRoutineStateWithMeta(),
   );
+  const [routinesState, setRoutinesState] = useState<Routine[]>(() => initRoutines);
   const [isLoaded] = useState(true);
   const [backgroundRefreshIntervalMs, setBackgroundRefreshIntervalMs] =
     useState(readBackgroundRefreshIntervalMs);
@@ -83,6 +87,14 @@ export const useRoutines = (): UseRoutinesResult => {
       window.removeEventListener(SETTINGS_UPDATED_EVENT, handleSettingsChange);
     };
   }, []);
+
+  // migrate/repair が発生した場合、skipLocalDataUpdatedAt: true で保存したため
+  // タイムスタンプが未更新のまま。マウント後に1回だけ更新して sync 側に変更を伝える。
+  useEffect(() => {
+    if (initDidRepairOrMigrate) {
+      setLocalDataUpdatedAt(Date.now());
+    }
+  }, [initDidRepairOrMigrate]);
 
   useRoutineStateSync(
     isLoaded,

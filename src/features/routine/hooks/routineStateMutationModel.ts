@@ -121,6 +121,7 @@ export const assignSortOrder = (routines: Routine[]): Routine[] => {
  */
 export const repairCorruptedGroupRoutines = (
   routines: Routine[],
+  completedRoutineIds?: string[],
 ): Routine[] => {
   const groups = new Map<string, Routine[]>();
   const nonGrouped: Routine[] = [];
@@ -183,10 +184,16 @@ export const repairCorruptedGroupRoutines = (
       if (seenDays.has(day)) continue;
       seenDays.add(day);
 
-      // この曜日に対応する既存メンバーを探す（元データ優先）
-      const existing = members.find(
+      // この曜日に対応する既存メンバーを探す
+      // completedRoutineIds がある場合は完了済みエントリを優先して残す（進捗参照を保護）
+      const cleanCandidates = members.filter(
         (m) => m.daysOfWeek.length === 1 && m.daysOfWeek[0] === day,
       );
+      const existing =
+        completedRoutineIds && cleanCandidates.length > 1
+          ? (cleanCandidates.find((m) => completedRoutineIds.includes(m.id)) ??
+            cleanCandidates[0])
+          : cleanCandidates[0];
 
       if (existing) {
         repaired.push(existing);
