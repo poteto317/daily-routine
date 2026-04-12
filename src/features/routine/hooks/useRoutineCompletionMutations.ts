@@ -14,7 +14,7 @@ export const useRoutineCompletionMutations = (
     setRoutines,
     routinesRef,
   );
-  const reorderRoutines = useRoutineReorderMutation(setRoutines);
+  const reorderRoutines = useRoutineReorderMutation(setRoutines, routinesRef);
 
   return createRoutineCompletionMutationsResult({
     toggleComplete,

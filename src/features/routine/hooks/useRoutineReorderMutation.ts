@@ -5,13 +5,17 @@ import { reorderRoutineState } from "./routineCompletionActions";
 
 type SetRoutines = Dispatch<SetStateAction<Routine[]>>;
 
-export const useRoutineReorderMutation = (setRoutines: SetRoutines) => {
+export const useRoutineReorderMutation = (
+  setRoutines: SetRoutines,
+  routinesRef: { current: Routine[] },
+) => {
   return useCallback(
     (reorderedRoutines: Routine[]) => {
       const updated = reorderRoutineState(reorderedRoutines);
+      routinesRef.current = updated;
       setRoutines(updated);
       saveRoutines(updated);
     },
-    [setRoutines],
+    [setRoutines, routinesRef],
   );
 };

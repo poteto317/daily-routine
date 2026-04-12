@@ -34,7 +34,10 @@ describe("useRoutineCompletionMutations", () => {
       setRoutines,
       routinesRef,
     );
-    expect(useRoutineReorderMutation).toHaveBeenCalledWith(setRoutines);
+    expect(useRoutineReorderMutation).toHaveBeenCalledWith(
+      setRoutines,
+      routinesRef,
+    );
     expect(createRoutineCompletionMutationsResult).toHaveBeenCalledWith({
       toggleComplete: (useRoutineCompletionToggleMutation as jest.Mock).mock
         .results[0].value,

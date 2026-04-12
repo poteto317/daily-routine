@@ -17,10 +17,13 @@ describe("useRoutineReorderMutation", () => {
     const reordered = [{ id: "r2", sortOrder: 10 }];
     const updated = [{ id: "r2", sortOrder: 0 }];
     const setRoutines = jest.fn();
+    const routinesRef = { current: [] as never[] };
 
     (reorderRoutineState as jest.Mock).mockReturnValue(updated);
 
-    const { result } = renderHook(() => useRoutineReorderMutation(setRoutines));
+    const { result } = renderHook(() =>
+      useRoutineReorderMutation(setRoutines, routinesRef),
+    );
 
     act(() => {
       result.current(reordered as never);
@@ -29,5 +32,7 @@ describe("useRoutineReorderMutation", () => {
     expect(reorderRoutineState).toHaveBeenCalledWith(reordered);
     expect(setRoutines).toHaveBeenCalledWith(updated);
     expect(saveRoutines).toHaveBeenCalledWith(updated);
+    // routinesRef.current が即座に updated に更新されること
+    expect(routinesRef.current).toBe(updated);
   });
 });

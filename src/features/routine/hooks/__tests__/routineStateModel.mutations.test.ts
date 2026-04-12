@@ -142,5 +142,31 @@ describe("routineStateModel mutations", () => {
       const sortOrders = result.map((r) => r.sortOrder).sort((a, b) => a - b);
       expect(sortOrders).toEqual([0, 1, 2]);
     });
+
+    it("sortOrder が undefined/NaN のデータでもソート順が安定する", () => {
+      const routines: Routine[] = [
+        {
+          ...baseRoutine,
+          id: "r1",
+          groupId: "g1",
+          daysOfWeek: [1, 3], // 汚染
+          sortOrder: undefined as unknown as number,
+        },
+        {
+          ...baseRoutine,
+          id: "r2",
+          groupId: "g1",
+          daysOfWeek: [1, 3], // 汚染
+          sortOrder: NaN,
+        },
+      ];
+      // 例外が発生せず、結果は2件で sortOrder が連番になること
+      expect(() => repairCorruptedGroupRoutines(routines)).not.toThrow();
+      const result = repairCorruptedGroupRoutines(routines);
+      expect(result).toHaveLength(2);
+      const sortOrders = result.map((r) => r.sortOrder);
+      // assignSortOrder により 0, 1 の連番になる
+      expect(sortOrders).toEqual([0, 1]);
+    });
   });
 });

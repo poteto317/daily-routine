@@ -199,6 +199,6 @@ export const repairCorruptedGroupRoutines = (
   }
 
   return assignSortOrder(
-    [...repaired].sort((a, b) => a.sortOrder - b.sortOrder),
+    [...repaired].sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0)),
   );
 };
