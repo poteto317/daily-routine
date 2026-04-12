@@ -173,5 +173,40 @@ describe("グループルーティンデータ修復テスト", () => {
     const days = group.flatMap((r) => r.daysOfWeek).sort();
     expect(days).toEqual([1, 3, 5]);
   });
-});
 
+  it("全メンバーが汚染されているケースでは既存メンバーの ID が再利用される", () => {
+    // 汚染データ：3 メンバーが全て daysOfWeek: [1, 3, 5] を持つ
+    const contaminatedRoutines: Routine[] = createGroupRoutines().map((r) => ({
+      ...r,
+      daysOfWeek: [1, 3, 5],
+    }));
+    const originalIds = contaminatedRoutines.map((r) => r.id);
+    saveRoutines(contaminatedRoutines);
+
+    const today = new Date().toISOString().split("T")[0];
+    localStorage.setItem(
+      "daily-progress",
+      JSON.stringify({
+        date: today,
+        completedRoutineIds: [],
+        lastResetTime: new Date().toISOString(),
+      }),
+    );
+
+    const repairedState = initializeRoutineState();
+    const group = repairedState.filter((r) => r.groupId === "test-group-1");
+
+    // 修復後の ID が元のメンバー ID を含むこと（新規 UUID だけにならない）
+    const repairedIds = group.map((r) => r.id);
+    const reusedCount = repairedIds.filter((id) => originalIds.includes(id)).length;
+    expect(reusedCount).toBeGreaterThan(0);
+
+    // 修復後のエントリ数と曜日が正しいこと
+    expect(group).toHaveLength(3);
+    const days = group.flatMap((r) => r.daysOfWeek).sort();
+    expect(days).toEqual([1, 3, 5]);
+    for (const member of group) {
+      expect(member.daysOfWeek).toHaveLength(1);
+    }
+  });
+});

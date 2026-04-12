@@ -171,6 +171,13 @@ export const repairCorruptedGroupRoutines = (
     // テンプレート: 最初のメンバーを基準にする
     const template = members[0]!;
 
+    // 汚染されたメンバーの ID をプール化して順に再利用する
+    // （progress/history の completedRoutineIds が旧 ID を参照しているため）
+    const dirtyMemberIds = members
+      .filter((m) => m.daysOfWeek.length > 1)
+      .map((m) => m.id);
+    let dirtyIdIndex = 0;
+
     const seenDays = new Set<number>();
     for (const day of uniqueDays) {
       if (seenDays.has(day)) continue;
@@ -184,11 +191,15 @@ export const repairCorruptedGroupRoutines = (
       if (existing) {
         repaired.push(existing);
       } else {
-        // 汚染されたメンバーから修復エントリを生成
+        // 汚染メンバーの ID を順に再利用し、不足時のみ新規生成
+        const recycledId =
+          dirtyIdIndex < dirtyMemberIds.length
+            ? dirtyMemberIds[dirtyIdIndex++]!
+            : crypto.randomUUID();
         const now = new Date().toISOString();
         repaired.push({
           ...template,
-          id: crypto.randomUUID(),
+          id: recycledId,
           daysOfWeek: [day],
           sortOrder: template.sortOrder + seenDays.size - 1,
           createdAt: now,

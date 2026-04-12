@@ -2,6 +2,7 @@ import { useCallback, type Dispatch, type SetStateAction } from "react";
 import type { Routine } from "@/types/routine";
 import { saveRoutines } from "@/features/routine/storage";
 import { reorderRoutineState } from "./routineCompletionActions";
+import { stripCompletionState } from "./routineStateModel";
 
 type SetRoutines = Dispatch<SetStateAction<Routine[]>>;
 
@@ -14,7 +15,7 @@ export const useRoutineReorderMutation = (
       const updated = reorderRoutineState(reorderedRoutines);
       routinesRef.current = updated;
       setRoutines(updated);
-      saveRoutines(updated);
+      saveRoutines(stripCompletionState(updated));
     },
     [setRoutines, routinesRef],
   );
