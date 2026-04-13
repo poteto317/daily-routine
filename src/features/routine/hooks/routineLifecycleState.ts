@@ -46,8 +46,13 @@ export const initializeRoutineStateWithMeta =
       didRepairOrMigrate = true;
     }
 
+    const today = getTodayString();
     const progress = getDailyProgress();
-    const completedRoutineIds = progress?.completedRoutineIds;
+
+    // 今日の進捗のみ completedRoutineIds を repair に渡す。
+    // 古い日付の progress だと昨日以前の完了状態で優先判定が行われてしまうため除外する。
+    const completedRoutineIds =
+      progress?.date === today ? progress.completedRoutineIds : undefined;
 
     const repaired = repairCorruptedGroupRoutines(
       loadedRoutines,
@@ -60,8 +65,6 @@ export const initializeRoutineStateWithMeta =
       });
       didRepairOrMigrate = true;
     }
-
-    const today = getTodayString();
 
     if (!progress || progress.date !== today) {
       saveDailyProgressSilently(createDailyResetProgress(today));

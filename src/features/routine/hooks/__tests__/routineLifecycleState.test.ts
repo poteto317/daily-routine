@@ -217,4 +217,22 @@ describe("initializeRoutineStateWithMeta", () => {
     const day1Entry = routines.find((r) => r.daysOfWeek[0] === 1);
     expect(day1Entry?.id).toBe("r2");
   });
+
+  it("progress.date が今日と異なる場合は completedRoutineIds を repair に渡さない", () => {
+    // 昨日の progress に r2 の完了記録があっても、今日分ではないので優先されない
+    (getDailyProgress as jest.Mock).mockReturnValue({
+      date: "2026-02-12", // 昨日
+      completedRoutineIds: ["r2"],
+      lastResetTime: "2026-02-12T00:00:00.000Z",
+    });
+    (getRoutines as jest.Mock).mockReturnValue([
+      { ...baseRoutine, id: "r1", groupId: "g1", daysOfWeek: [1] },
+      { ...baseRoutine, id: "r2", groupId: "g1", daysOfWeek: [1] },
+    ]);
+
+    const { routines } = initializeRoutineStateWithMeta();
+    const day1Entry = routines.find((r) => r.daysOfWeek[0] === 1);
+    // 今日の進捗ではないので r2 の優先はなく、最初に見つかった r1 が残る
+    expect(day1Entry?.id).toBe("r1");
+  });
 });
