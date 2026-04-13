@@ -202,7 +202,9 @@ export const repairCorruptedGroupRoutines = (
         const aCompleted = completedSet?.has(a.id) ? 0 : 1;
         const bCompleted = completedSet?.has(b.id) ? 0 : 1;
         if (aCompleted !== bCompleted) return aCompleted - bCompleted;
-        return (a.sortOrder || 0) - (b.sortOrder || 0);
+        const sortOrderDiff = (a.sortOrder || 0) - (b.sortOrder || 0);
+        if (sortOrderDiff !== 0) return sortOrderDiff;
+        return a.id.localeCompare(b.id);
       });
     let dirtyMemberIndex = 0;
 
@@ -243,6 +245,10 @@ export const repairCorruptedGroupRoutines = (
   }
 
   return assignSortOrder(
-    [...repaired].sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0)),
+    [...repaired].sort((a, b) => {
+      const sortOrderDiff = (a.sortOrder || 0) - (b.sortOrder || 0);
+      if (sortOrderDiff !== 0) return sortOrderDiff;
+      return a.id.localeCompare(b.id);
+    }),
   );
 };

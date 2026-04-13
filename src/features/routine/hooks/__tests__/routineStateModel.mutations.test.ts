@@ -337,5 +337,66 @@ describe("routineStateModel mutations", () => {
         expect(Number.isFinite(r.sortOrder)).toBe(true);
       }
     });
+
+    it("dirtyMembers で completed と sortOrder が同値の場合は id 辞書順でタイブレーク", () => {
+      // r_b が辞書順で先 → r_a が後。どちらも未完了・sortOrder 同値。
+      // タイブレークにより r_b が曜日1に、r_a が曜日3に割り当てられる
+      const routines: Routine[] = [
+        {
+          ...baseRoutine,
+          id: "r_b",
+          groupId: "g1",
+          daysOfWeek: [1, 3],
+          sortOrder: 2,
+        },
+        {
+          ...baseRoutine,
+          id: "r_a",
+          groupId: "g1",
+          daysOfWeek: [1, 3],
+          sortOrder: 2, // 同値
+        },
+      ];
+      const result = repairCorruptedGroupRoutines(routines);
+      expect(result).toHaveLength(2);
+      // "r_a" < "r_b" の辞書順なので r_a が先頭（曜日1）に割り当てられる
+      expect(result.find((r) => r.daysOfWeek[0] === 1)?.id).toBe("r_a");
+      expect(result.find((r) => r.daysOfWeek[0] === 3)?.id).toBe("r_b");
+    });
+
+    it("assignSortOrder 前ソートで sortOrder 同値の場合は id 辞書順でタイブレーク（連番の順序が決定的）", () => {
+      // z_clean と a_clean がどちらも sortOrder=0 を持つクリーンメンバー
+      // dirty メンバーが存在することで repairCorruptedGroupRoutines が修復処理を実行し
+      // 最終ソートのタイブレークが効く
+      const routines: Routine[] = [
+        {
+          ...baseRoutine,
+          id: "z_clean",
+          groupId: "g1",
+          daysOfWeek: [3],
+          sortOrder: 0,
+        },
+        {
+          ...baseRoutine,
+          id: "a_clean",
+          groupId: "g1",
+          daysOfWeek: [1],
+          sortOrder: 0, // z_clean と同値
+        },
+        {
+          ...baseRoutine,
+          id: "dirty_1",
+          groupId: "g1",
+          daysOfWeek: [1, 3, 5], // 汚染（曜日5用エントリを新規生成させる）
+          sortOrder: 99,
+        },
+      ];
+      const result = repairCorruptedGroupRoutines(routines);
+      expect(result).toHaveLength(3);
+      // id 辞書順: "a_clean" < "z_clean" → a_clean が sortOrder=0, z_clean が sortOrder=1
+      const aCl = result.find((r) => r.id === "a_clean");
+      const zCl = result.find((r) => r.id === "z_clean");
+      expect(aCl?.sortOrder).toBeLessThan(zCl?.sortOrder ?? 0);
+    });
   });
 });
