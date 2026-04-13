@@ -44,11 +44,12 @@ export const RoutineFormCoreFields = ({
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             {ROUTINE_FORM_DAYS_LABEL}
           </label>
-          <div className="grid grid-cols-4 gap-2">
+          <div className="grid grid-cols-4 gap-2" role="group" aria-label={ROUTINE_FORM_DAYS_LABEL}>
             {DAYS.map((day) => (
               <button
                 key={day.value}
                 type="button"
+                aria-pressed={daysOfWeek.includes(day.value)}
                 onClick={() => toggleDay(day.value)}
                 className={getRoutineDayButtonClassName({
                   isSelected: daysOfWeek.includes(day.value),
