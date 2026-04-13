@@ -7,7 +7,7 @@ import {
   saveRoutines,
 } from "@/features/routine/storage";
 import { initializeRoutineState } from "../hooks/routineLifecycleState";
-import { setCurrentUserId } from "@/lib/storage/core";
+import { setCurrentUserId, getTodayString } from "@/lib/storage/core";
 import type { Routine } from "@/types/routine";
 
 // localStorage mock
@@ -104,7 +104,7 @@ describe("グループルーティンデータ修復テスト", () => {
     );
     saveRoutines(contaminatedRoutines);
 
-    const today = new Date().toISOString().split("T")[0];
+    const today = getTodayString();
     localStorage.setItem(
       "daily-progress",
       JSON.stringify({
@@ -153,7 +153,7 @@ describe("グループルーティンデータ修復テスト", () => {
     }
     saveRoutines(explodedRoutines);
 
-    const today = new Date().toISOString().split("T")[0];
+    const today = getTodayString();
     localStorage.setItem(
       "daily-progress",
       JSON.stringify({
@@ -183,7 +183,7 @@ describe("グループルーティンデータ修復テスト", () => {
     const originalIds = contaminatedRoutines.map((r) => r.id);
     saveRoutines(contaminatedRoutines);
 
-    const today = new Date().toISOString().split("T")[0];
+    const today = getTodayString();
     localStorage.setItem(
       "daily-progress",
       JSON.stringify({

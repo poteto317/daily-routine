@@ -217,7 +217,7 @@ export const repairCorruptedGroupRoutines = (
           ...template,
           id: recycledMember?.id ?? crypto.randomUUID(),
           daysOfWeek: [day],
-          sortOrder: template.sortOrder + seenDays.size - 1,
+          sortOrder: (template.sortOrder || 0) + seenDays.size - 1,
           createdAt: recycledMember?.createdAt ?? now,
           updatedAt: now,
         });

@@ -293,5 +293,25 @@ describe("routineStateModel mutations", () => {
       // assignSortOrder により 0, 1 の連番になる
       expect(sortOrders).toEqual([0, 1]);
     });
+
+    it("template.sortOrder が undefined/NaN でも新規生成エントリの sortOrder が NaN にならない", () => {
+      // 全メンバーが汚染かつ sortOrder が undefined → 新規生成側の sortOrder 計算で NaN にならないことを確認
+      const routines: Routine[] = [
+        {
+          ...baseRoutine,
+          id: "r1",
+          groupId: "g1",
+          daysOfWeek: [1, 3, 5], // 汚染（3曜日分の新規エントリが必要）
+          sortOrder: undefined as unknown as number,
+        },
+      ];
+      expect(() => repairCorruptedGroupRoutines(routines)).not.toThrow();
+      const result = repairCorruptedGroupRoutines(routines);
+      expect(result).toHaveLength(3);
+      // すべての sortOrder が有限数であること
+      for (const r of result) {
+        expect(Number.isFinite(r.sortOrder)).toBe(true);
+      }
+    });
   });
 });
