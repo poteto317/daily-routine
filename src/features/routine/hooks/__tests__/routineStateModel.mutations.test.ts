@@ -132,6 +132,92 @@ describe("routineStateModel mutations", () => {
       const result = repairCorruptedGroupRoutines(routines);
       expect(result.find((r) => r.id === "r1")).toBeDefined();
     });
+
+    it("recycled ID では元メンバーの createdAt を保持し updatedAt のみ更新する", () => {
+      const fixedNow = new Date("2026-04-13T00:30:00.000Z");
+      jest.useFakeTimers().setSystemTime(fixedNow);
+
+      try {
+        const routines: Routine[] = [
+          {
+            ...baseRoutine,
+            id: "r1",
+            groupId: "g1",
+            daysOfWeek: [1, 3],
+            createdAt: "2025-01-01T00:00:00.000Z",
+            updatedAt: "2025-01-05T00:00:00.000Z",
+          },
+          {
+            ...baseRoutine,
+            id: "r2",
+            groupId: "g1",
+            daysOfWeek: [1, 3],
+            createdAt: "2025-02-01T00:00:00.000Z",
+            updatedAt: "2025-02-05T00:00:00.000Z",
+          },
+        ];
+
+        const result = repairCorruptedGroupRoutines(routines);
+        const repairedR1 = result.find((r) => r.id === "r1");
+        const repairedR2 = result.find((r) => r.id === "r2");
+
+        expect(repairedR1).toMatchObject({
+          id: "r1",
+          daysOfWeek: [1],
+          createdAt: "2025-01-01T00:00:00.000Z",
+          updatedAt: fixedNow.toISOString(),
+        });
+        expect(repairedR2).toMatchObject({
+          id: "r2",
+          daysOfWeek: [3],
+          createdAt: "2025-02-01T00:00:00.000Z",
+          updatedAt: fixedNow.toISOString(),
+        });
+      } finally {
+        jest.useRealTimers();
+      }
+    });
+
+    it("dirty member が不足して新規 UUID を使う場合は createdAt と updatedAt を now にする", () => {
+      const fixedNow = new Date("2026-04-13T00:31:00.000Z");
+      jest.useFakeTimers().setSystemTime(fixedNow);
+      const randomUuidSpy = jest
+        .spyOn(crypto, "randomUUID")
+        .mockReturnValueOnce("generated-1")
+        .mockReturnValueOnce("generated-2");
+
+      try {
+        const routines: Routine[] = [
+          {
+            ...baseRoutine,
+            id: "r1",
+            groupId: "g1",
+            daysOfWeek: [1, 3, 5],
+            createdAt: "2025-01-01T00:00:00.000Z",
+            updatedAt: "2025-01-05T00:00:00.000Z",
+          },
+        ];
+
+        const result = repairCorruptedGroupRoutines(routines);
+
+        expect(result.find((r) => r.id === "generated-1")).toMatchObject({
+          id: "generated-1",
+          daysOfWeek: [3],
+          createdAt: fixedNow.toISOString(),
+          updatedAt: fixedNow.toISOString(),
+        });
+        expect(result.find((r) => r.id === "generated-2")).toMatchObject({
+          id: "generated-2",
+          daysOfWeek: [5],
+          createdAt: fixedNow.toISOString(),
+          updatedAt: fixedNow.toISOString(),
+        });
+      } finally {
+        randomUuidSpy.mockRestore();
+        jest.useRealTimers();
+      }
+    });
+
     it("修復後の sortOrder は一貫した連番になる", () => {
       // existing メンバーが高い sortOrder を持ち、新規生成エントリと混在する場合
       const routines: Routine[] = [
