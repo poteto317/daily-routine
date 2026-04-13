@@ -93,9 +93,8 @@ export const resetRoutinesWhenDateChanged = (
 
   saveDailyProgressSilently(createDailyResetProgress(today));
   const updated = stripCompletionState(currentRoutines);
-  // この関数は setRoutines の updater（React render フェーズ）内から呼ばれるため、
-  // 同期イベント発火を抑止して他コンポーネントの setState を防ぐ。
-  // isCompleted は一時的な状態であり sync status 更新は不要。
+  // 日付変更による isCompleted リセットは一時状態の揮発であり、
+  // ユーザー主導のデータ変更ではないため local-data-updated-at は更新しない。
   saveRoutines(updated, { skipLocalDataUpdatedAt: true });
 
   return updated;
