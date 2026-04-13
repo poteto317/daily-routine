@@ -172,9 +172,19 @@ export const repairCorruptedGroupRoutines = (
     // テンプレート: 最初のメンバーを基準にする
     const template = members[0]!;
 
-    // 汚染されたメンバーをプール化して順に再利用する
-    // （progress/history の completedRoutineIds が旧 ID を参照しているため）
-    const dirtyMembers = members.filter((m) => m.daysOfWeek.length > 1);
+    // 汚染されたメンバーをプール化して順に再利用する。
+    // completedRoutineIds のメンバーを先頭に置き、次に sortOrder で安定ソートすることで
+    // 「どの曜日にどの既存IDが割り当てられるか」を決定的にする。
+    // これにより getRoutines() の返却順序に依存せず、完了済み ID が優先して
+    // 若い曜日番号に割り当てられる（進捗参照を最大限保護）。
+    const dirtyMembers = members
+      .filter((m) => m.daysOfWeek.length > 1)
+      .sort((a, b) => {
+        const aCompleted = completedRoutineIds?.includes(a.id) ? 0 : 1;
+        const bCompleted = completedRoutineIds?.includes(b.id) ? 0 : 1;
+        if (aCompleted !== bCompleted) return aCompleted - bCompleted;
+        return (a.sortOrder || 0) - (b.sortOrder || 0);
+      });
     let dirtyMemberIndex = 0;
 
     const seenDays = new Set<number>();
