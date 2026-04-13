@@ -30,7 +30,11 @@ export const useRoutineCompletionToggleMutation = (
       routinesRef.current = updated;
       setRoutines(updated);
       saveDailyProgress(
-        buildDailyProgressForToggle(updated, getTodayString(), getDailyProgress()),
+        buildDailyProgressForToggle(
+          updated,
+          getTodayString(),
+          getDailyProgress(),
+        ),
       );
     },
     [setRoutines, routinesRef],

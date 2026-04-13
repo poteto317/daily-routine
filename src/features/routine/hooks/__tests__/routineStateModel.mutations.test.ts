@@ -127,8 +127,20 @@ describe("routineStateModel mutations", () => {
     it("dirty members は sortOrder でソートして割り当てが決定的になる", () => {
       // r1 の sortOrder が高く r2 が低い場合、r2 が先に（小さい曜日番号に）割り当てられる
       const routines: Routine[] = [
-        { ...baseRoutine, id: "r1", groupId: "g1", daysOfWeek: [1, 3], sortOrder: 5 },
-        { ...baseRoutine, id: "r2", groupId: "g1", daysOfWeek: [1, 3], sortOrder: 2 },
+        {
+          ...baseRoutine,
+          id: "r1",
+          groupId: "g1",
+          daysOfWeek: [1, 3],
+          sortOrder: 5,
+        },
+        {
+          ...baseRoutine,
+          id: "r2",
+          groupId: "g1",
+          daysOfWeek: [1, 3],
+          sortOrder: 2,
+        },
       ];
       const result = repairCorruptedGroupRoutines(routines);
       expect(result).toHaveLength(2);
@@ -140,8 +152,20 @@ describe("routineStateModel mutations", () => {
     it("completedRoutineIds の dirty member を sortOrder に関わらず優先して割り当てる", () => {
       // r1 は sortOrder が低いが r2 が完了済み → r2 が先頭（小さい曜日番号）に割り当てられる
       const routines: Routine[] = [
-        { ...baseRoutine, id: "r1", groupId: "g1", daysOfWeek: [1, 3], sortOrder: 0 },
-        { ...baseRoutine, id: "r2", groupId: "g1", daysOfWeek: [1, 3], sortOrder: 5 },
+        {
+          ...baseRoutine,
+          id: "r1",
+          groupId: "g1",
+          daysOfWeek: [1, 3],
+          sortOrder: 0,
+        },
+        {
+          ...baseRoutine,
+          id: "r2",
+          groupId: "g1",
+          daysOfWeek: [1, 3],
+          sortOrder: 5,
+        },
       ];
       const result = repairCorruptedGroupRoutines(routines, ["r2"]);
       expect(result).toHaveLength(2);

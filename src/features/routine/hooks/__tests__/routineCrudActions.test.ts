@@ -161,6 +161,4 @@ describe("routineCrudActions", () => {
     expect(sortRoutinesByOrder).toHaveBeenCalledWith([routines[1], ...created]);
     expect(updated).toEqual([routines[1], ...created]);
   });
-
 });
-

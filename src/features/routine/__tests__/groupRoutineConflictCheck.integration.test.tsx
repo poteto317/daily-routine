@@ -102,9 +102,7 @@ describe("グループルーティン編集時の重複チェック統合テス�
         result.current.toggleDay(6);
       });
 
-      expect(result.current.daysOfWeek).toEqual(
-        expect.arrayContaining([1, 6]),
-      );
+      expect(result.current.daysOfWeek).toEqual(expect.arrayContaining([1, 6]));
       expect(result.current.conflictInfo.hasConflict).toBe(false);
     });
 
@@ -133,9 +131,7 @@ describe("グループルーティン編集時の重複チェック統合テス�
         result.current.toggleDay(6);
       });
 
-      expect(result.current.daysOfWeek).toEqual(
-        expect.arrayContaining([1, 6]),
-      );
+      expect(result.current.daysOfWeek).toEqual(expect.arrayContaining([1, 6]));
       expect(result.current.conflictInfo.hasConflict).toBe(true);
     });
 
@@ -155,9 +151,7 @@ describe("グループルーティン編集時の重複チェック統合テス�
         result.current.toggleDay(2);
       });
 
-      expect(result.current.daysOfWeek).toEqual(
-        expect.arrayContaining([1, 2]),
-      );
+      expect(result.current.daysOfWeek).toEqual(expect.arrayContaining([1, 2]));
       expect(result.current.conflictInfo.hasConflict).toBe(false);
     });
 

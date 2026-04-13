@@ -32,7 +32,9 @@ describe("useRoutineReorderMutation", () => {
     expect(reorderRoutineState).toHaveBeenCalledWith(reordered);
     expect(setRoutines).toHaveBeenCalledWith(updated);
     // isCompleted は一時状態なので saveRoutines には除去した配列が渡されること
-    expect(saveRoutines).toHaveBeenCalledWith([{ id: "r2", sortOrder: 0, isCompleted: false }]);
+    expect(saveRoutines).toHaveBeenCalledWith([
+      { id: "r2", sortOrder: 0, isCompleted: false },
+    ]);
     // routinesRef.current が即座に updated に更新されること
     expect(routinesRef.current).toBe(updated);
   });

@@ -3,9 +3,7 @@
  *
  * repairCorruptedGroupRoutines による汚染データ・爆発データの修復を検証する。
  */
-import {
-  saveRoutines,
-} from "@/features/routine/storage";
+import { saveRoutines } from "@/features/routine/storage";
 import { initializeRoutineState } from "../hooks/routineLifecycleState";
 import { setCurrentUserId, getTodayString } from "@/lib/storage/core";
 import type { Routine } from "@/types/routine";
@@ -96,12 +94,10 @@ const createGroupRoutines = (overrides?: Partial<Routine>): Routine[] => {
 describe("グループルーティンデータ修復テスト", () => {
   it("汚染されたデータ（daysOfWeek が全メンバーで同一化）でも repairCorruptedGroupRoutines で修復される", () => {
     // 汚染データ：全メンバーの daysOfWeek が [1, 3, 5] に上書きされた状態
-    const contaminatedRoutines: Routine[] = createGroupRoutines().map(
-      (r) => ({
-        ...r,
-        daysOfWeek: [1, 3, 5],
-      }),
-    );
+    const contaminatedRoutines: Routine[] = createGroupRoutines().map((r) => ({
+      ...r,
+      daysOfWeek: [1, 3, 5],
+    }));
     saveRoutines(contaminatedRoutines);
 
     const today = getTodayString();
@@ -117,9 +113,7 @@ describe("グループルーティンデータ修復テスト", () => {
     const repairedState = initializeRoutineState();
 
     // 修復後、3 曜日にそれぞれ 1 エントリずつ存在すること
-    const group = repairedState.filter(
-      (r) => r.groupId === "test-group-1",
-    );
+    const group = repairedState.filter((r) => r.groupId === "test-group-1");
     const days = group.flatMap((r) => r.daysOfWeek).sort();
     expect(days).toEqual([1, 3, 5]);
     expect(group).toHaveLength(3);
@@ -166,9 +160,7 @@ describe("グループルーティンデータ修復テスト", () => {
     const repairedState = initializeRoutineState();
 
     // 修復後、各曜日 1 エントリで合計 3 エントリ
-    const group = repairedState.filter(
-      (r) => r.groupId === "test-group-1",
-    );
+    const group = repairedState.filter((r) => r.groupId === "test-group-1");
     expect(group).toHaveLength(3);
     const days = group.flatMap((r) => r.daysOfWeek).sort();
     expect(days).toEqual([1, 3, 5]);
@@ -198,7 +190,9 @@ describe("グループルーティンデータ修復テスト", () => {
 
     // 修復後の ID が元のメンバー ID を含むこと（新規 UUID だけにならない）
     const repairedIds = group.map((r) => r.id);
-    const reusedCount = repairedIds.filter((id) => originalIds.includes(id)).length;
+    const reusedCount = repairedIds.filter((id) =>
+      originalIds.includes(id),
+    ).length;
     expect(reusedCount).toBeGreaterThan(0);
 
     // 修復後のエントリ数と曜日が正しいこと

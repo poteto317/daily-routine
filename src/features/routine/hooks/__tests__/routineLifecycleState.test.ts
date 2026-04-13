@@ -81,10 +81,9 @@ describe("routineLifecycleState", () => {
     ]);
 
     initializeRoutineState();
-    expect(saveRoutines).toHaveBeenCalledWith(
-      expect.any(Array),
-      { skipLocalDataUpdatedAt: true },
-    );
+    expect(saveRoutines).toHaveBeenCalledWith(expect.any(Array), {
+      skipLocalDataUpdatedAt: true,
+    });
   });
 
   it("initializeRoutineStateはgroupId付きの汚染データをマイグレーション対象にしない", () => {
@@ -112,10 +111,9 @@ describe("routineLifecycleState", () => {
     const days = state.map((r) => r.daysOfWeek).sort((a, b) => a[0]! - b[0]!);
     expect(days).toEqual([[1], [3]]);
     // saveRoutines が修復のために skipLocalDataUpdatedAt: true で呼ばれたこと
-    expect(saveRoutines).toHaveBeenCalledWith(
-      expect.any(Array),
-      { skipLocalDataUpdatedAt: true },
-    );
+    expect(saveRoutines).toHaveBeenCalledWith(expect.any(Array), {
+      skipLocalDataUpdatedAt: true,
+    });
   });
 
   it("resetRoutinesWhenDateChangedは日付が同じならnullを返す", () => {

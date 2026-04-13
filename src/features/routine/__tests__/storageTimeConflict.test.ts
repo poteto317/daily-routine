@@ -34,6 +34,4 @@ describe("hasTimeConflict", () => {
     const result = hasTimeConflict("08:00", 30, routines, "other", [2]);
     expect(result.hasConflict).toBe(false);
   });
-
-
 });

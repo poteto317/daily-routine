@@ -54,10 +54,12 @@ const readBackgroundRefreshIntervalMs = (): number =>
 export const useRoutines = (): UseRoutinesResult => {
   // 初期化時に migrate/repair が発生したかを useState で保持（setter は使用しない）
   // useRef に render 中に書き込む形を避けるため、lazy initializer で両値を取得する
-  const [{ routines: initRoutines, didRepairOrMigrate: initDidRepairOrMigrate }] = useState(
-    () => initializeRoutineStateWithMeta(),
+  const [
+    { routines: initRoutines, didRepairOrMigrate: initDidRepairOrMigrate },
+  ] = useState(() => initializeRoutineStateWithMeta());
+  const [routinesState, setRoutinesState] = useState<Routine[]>(
+    () => initRoutines,
   );
-  const [routinesState, setRoutinesState] = useState<Routine[]>(() => initRoutines);
   const [isLoaded] = useState(true);
   const [backgroundRefreshIntervalMs, setBackgroundRefreshIntervalMs] =
     useState(readBackgroundRefreshIntervalMs);

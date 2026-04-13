@@ -68,7 +68,10 @@ export const initializeRoutineStateWithMeta =
 
     if (!progress || progress.date !== today) {
       saveDailyProgressSilently(createDailyResetProgress(today));
-      return { routines: stripCompletionState(loadedRoutines), didRepairOrMigrate };
+      return {
+        routines: stripCompletionState(loadedRoutines),
+        didRepairOrMigrate,
+      };
     }
 
     return {

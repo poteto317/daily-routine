@@ -42,7 +42,11 @@ describe("routineMutationCoordinator", () => {
     const updated = [{ ...routines[0], title: "After First Run" }];
     const updated2 = [{ ...routines[0], title: "After Second Run" }];
 
-    createRoutineMutationRunner(setRoutines, saveAndSync, routinesRef)(() => updated);
+    createRoutineMutationRunner(
+      setRoutines,
+      saveAndSync,
+      routinesRef,
+    )(() => updated);
 
     // 2 回目は routinesRef.current が updated になっていること（stale state にならない）
     const mutate2 = jest.fn(() => updated2);
