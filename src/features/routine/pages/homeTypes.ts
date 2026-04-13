@@ -66,10 +66,7 @@ export type HomeRoutineListProps = {
 
 export type HomeRoutineFormProps = {
   routine?: Routine;
-  onSubmitAction: (
-    routineData: RoutineData,
-    originalGroupDays?: number[],
-  ) => void;
+  onSubmitAction: (routineData: RoutineData) => void;
   onCancelAction: () => void;
   currentDayOfWeek?: number;
 };

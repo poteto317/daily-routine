@@ -1,4 +1,6 @@
 import {
+  isLocalAuthEnabled,
+  isLocalDevHostname,
   readLocalAuthSnapshot,
   subscribeLocalAuthSnapshot,
   writeLocalAuthSnapshot,
@@ -84,5 +86,25 @@ describe("auth storage", () => {
     expect(listener).toHaveBeenLastCalledWith(updatedSnapshot);
 
     unsubscribe();
+  });
+});
+
+describe("isLocalDevHostname", () => {
+  it.each([
+    ["localhost", true],
+    ["127.0.0.1", true],
+    ["::1", true],
+    ["example.com", false],
+    ["malicious-localhost.com", false],
+    ["", false],
+  ])("hostname=%s のとき %s を返す", (hostname, expected) => {
+    expect(isLocalDevHostname(hostname)).toBe(expected);
+  });
+});
+
+describe("isLocalAuthEnabled", () => {
+  it("jsdom デフォルト (localhost) かつ env 未設定なら false", () => {
+    // NEXT_PUBLIC_ENABLE_LOCAL_AUTH が未設定のテスト環境では false
+    expect(isLocalAuthEnabled).toBe(false);
   });
 });
