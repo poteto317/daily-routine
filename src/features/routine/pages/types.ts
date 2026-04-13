@@ -1,4 +1,4 @@
-import { type Routine } from "@/types/routine";
+import type { Routine } from "@/types/routine";
 
 /** ページの種類 */
 export type PageType =
@@ -49,7 +49,6 @@ export interface RoutineCrudOps {
   routines: Routine[];
   addRoutine: (data: RoutineData) => void;
   updateRoutine: (id: string, data: RoutineData) => void;
-  updateRoutineGroup: (groupId: string, data: RoutineData) => void;
   deleteRoutine: (id: string) => void;
   deleteRoutineGroup: (groupId: string) => void;
 }

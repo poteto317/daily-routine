@@ -1,4 +1,5 @@
 import {
+  isLocalDevHostname,
   readLocalAuthSnapshot,
   subscribeLocalAuthSnapshot,
   writeLocalAuthSnapshot,
@@ -84,5 +85,45 @@ describe("auth storage", () => {
     expect(listener).toHaveBeenLastCalledWith(updatedSnapshot);
 
     unsubscribe();
+  });
+});
+
+describe("isLocalDevHostname", () => {
+  it.each([
+    ["localhost", true],
+    ["127.0.0.1", true],
+    ["::1", true],
+    ["example.com", false],
+    ["malicious-localhost.com", false],
+    ["", false],
+  ])("hostname=%s のとき %s を返す", (hostname, expected) => {
+    expect(isLocalDevHostname(hostname)).toBe(expected);
+  });
+});
+
+describe("isLocalAuthEnabled", () => {
+  type StorageModule = { isLocalAuthEnabled: boolean };
+
+  afterEach(() => {
+    jest.resetModules();
+    delete process.env.NEXT_PUBLIC_ENABLE_LOCAL_AUTH;
+  });
+
+  it("env が設定されており jsdom デフォルト(localhost)なら true", async () => {
+    process.env.NEXT_PUBLIC_ENABLE_LOCAL_AUTH = "true";
+    // jsdom のデフォルト hostname は "localhost" なので isLocalDevHostname が true を返す
+    let mod: StorageModule | undefined;
+    await jest.isolateModulesAsync(async () => {
+      mod = (await import("../storage")) as StorageModule;
+    });
+    expect(mod?.isLocalAuthEnabled).toBe(true);
+  });
+
+  it("NEXT_PUBLIC_ENABLE_LOCAL_AUTH が未設定なら false", async () => {
+    let mod: StorageModule | undefined;
+    await jest.isolateModulesAsync(async () => {
+      mod = (await import("../storage")) as StorageModule;
+    });
+    expect(mod?.isLocalAuthEnabled).toBe(false);
   });
 });

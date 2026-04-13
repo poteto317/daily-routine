@@ -1,3 +1,4 @@
+import type { Routine } from "@/types/routine";
 import type { RoutineMutationActions } from "./routineHookContract";
 import { createRoutineMutationsResult } from "./routineMutationsResult";
 import {
@@ -10,9 +11,17 @@ import { useRoutineCrudMutationActions } from "./useRoutineCrudMutationActions";
 export const useRoutineMutations = (
   setRoutines: SetRoutines,
   saveAndSync: SaveAndSyncAction,
+  routinesRef: { current: Routine[] },
 ): RoutineMutationActions => {
-  const crudMutations = useRoutineCrudMutationActions(setRoutines, saveAndSync);
-  const completionMutations = useRoutineCompletionMutations(setRoutines);
+  const crudMutations = useRoutineCrudMutationActions(
+    setRoutines,
+    saveAndSync,
+    routinesRef,
+  );
+  const completionMutations = useRoutineCompletionMutations(
+    setRoutines,
+    routinesRef,
+  );
 
   return createRoutineMutationsResult(crudMutations, completionMutations);
 };

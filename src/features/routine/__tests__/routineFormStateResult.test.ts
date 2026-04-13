@@ -8,7 +8,6 @@ describe("createRoutineFormStateResult", () => {
         defaultNotificationMinutes: 15,
         defaultDurationMinutes: 30,
         initialState: {} as never,
-        groupDaysOfWeek: [1, 2],
       },
       fieldsState: {
         title: "朝活",

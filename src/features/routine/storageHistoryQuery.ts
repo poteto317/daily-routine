@@ -1,4 +1,5 @@
 import type { DailyHistory, MonthlyHistory } from "@/types/routine";
+import type { SetStorageItemOptions } from "@/lib/storage/core";
 import { getStorageItem, setStorageItem } from "@/lib/storage/core";
 
 const STORAGE_KEY_HISTORY = "daily-history";
@@ -9,7 +10,7 @@ export const getMonthlyHistory = (): MonthlyHistory => {
 
 export const saveMonthlyHistory = (
   history: MonthlyHistory,
-  options?: { skipLocalDataUpdatedAt?: boolean },
+  options?: SetStorageItemOptions,
 ): void => {
   setStorageItem(STORAGE_KEY_HISTORY, history, options);
 };

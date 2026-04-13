@@ -66,7 +66,6 @@ describe("useRoutineFormState composition", () => {
       defaultNotificationMinutes: 5,
       defaultDurationMinutes: 30,
       initialState: fieldsState,
-      groupDaysOfWeek: [1, 2],
     });
     (useRoutineFormFieldsState as jest.Mock).mockReturnValue(fieldsState);
     (useRoutineConflictInfo as jest.Mock).mockReturnValue(conflictInfo);
@@ -111,7 +110,6 @@ describe("useRoutineFormState composition", () => {
       description: fieldsState.description,
       notificationMinutes: fieldsState.notificationMinutes,
       defaultDurationMinutes: 30,
-      groupDaysOfWeek: [1, 2],
       hasConflict: false,
       onSubmit,
     });
@@ -122,7 +120,6 @@ describe("useRoutineFormState composition", () => {
         defaultNotificationMinutes: 5,
         defaultDurationMinutes: 30,
         initialState: fieldsState,
-        groupDaysOfWeek: [1, 2],
       },
       fieldsState,
       submitState: {

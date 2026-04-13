@@ -50,7 +50,6 @@ export const useRoutineFormState = ({
     description: fieldsState.description,
     notificationMinutes: fieldsState.notificationMinutes,
     defaultDurationMinutes: contextData.defaultDurationMinutes,
-    groupDaysOfWeek: contextData.groupDaysOfWeek,
     hasConflict: conflictInfo.hasConflict,
     onSubmit,
   });

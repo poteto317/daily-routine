@@ -24,11 +24,10 @@ export const useRoutineCrudActionHandlers = ({
   restoreScroll,
 }: UseRoutineCrudActionHandlersParams) => {
   const submitRoutineAction = useCallback(
-    (routineData: RoutineData, originalGroupDays?: number[]) => {
+    (routineData: RoutineData) => {
       applyRoutineSubmitPlan({
         editingRoutine,
         routineData,
-        originalGroupDays,
         ops,
       });
 

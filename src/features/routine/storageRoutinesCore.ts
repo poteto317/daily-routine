@@ -1,4 +1,5 @@
 import type { Routine } from "@/types/routine";
+import type { SetStorageItemOptions } from "@/lib/storage/core";
 import { getUserScopedKey, setStorageItem } from "@/lib/storage/core";
 import { migrateRoutineRecord } from "./storageMigration";
 
@@ -16,6 +17,9 @@ export const getRoutines = (): Routine[] => {
   }
 };
 
-export const saveRoutines = (routines: Routine[]): void => {
-  setStorageItem(STORAGE_KEY_ROUTINES, routines);
+export const saveRoutines = (
+  routines: Routine[],
+  options?: SetStorageItemOptions,
+): void => {
+  setStorageItem(STORAGE_KEY_ROUTINES, routines, options);
 };

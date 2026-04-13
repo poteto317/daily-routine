@@ -106,36 +106,20 @@ describe("routineCrudViewStateActions", () => {
       routines: [routine],
       addRoutine: jest.fn(),
       updateRoutine: jest.fn(),
-      updateRoutineGroup: jest.fn(),
       deleteRoutine: jest.fn(),
       deleteRoutineGroup: jest.fn(),
     };
 
     (createRoutineSubmitPlan as jest.Mock)
       .mockReturnValueOnce({ type: "add-new" })
-      .mockReturnValueOnce({ type: "update-single", routineId: "r1" })
-      .mockReturnValueOnce({ type: "update-group", groupId: "g1" })
-      .mockReturnValueOnce({ type: "replace-group", groupId: "g1" });
+      .mockReturnValueOnce({ type: "update-single", routineId: "r1" });
 
     applyRoutineSubmitPlan({ routineData, ops });
     applyRoutineSubmitPlan({ editingRoutine: routine, routineData, ops });
-    applyRoutineSubmitPlan({
-      editingRoutine: routine,
-      routineData,
-      originalGroupDays: [1, 3],
-      ops,
-    });
-    applyRoutineSubmitPlan({
-      editingRoutine: routine,
-      routineData,
-      originalGroupDays: [1, 3],
-      ops,
-    });
 
-    expect(ops.addRoutine).toHaveBeenCalledTimes(2);
+    expect(ops.addRoutine).toHaveBeenCalledTimes(1);
     expect(ops.updateRoutine).toHaveBeenCalledWith("r1", routineData);
-    expect(ops.updateRoutineGroup).toHaveBeenCalledWith("g1", routineData);
-    expect(ops.deleteRoutineGroup).toHaveBeenCalledWith("g1");
+    expect(ops.deleteRoutineGroup).not.toHaveBeenCalled();
   });
 
   it("完了処理と削除処理を行う", () => {

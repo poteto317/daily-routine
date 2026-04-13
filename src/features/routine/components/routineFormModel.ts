@@ -1,6 +1,4 @@
 export {
-  getGroupRoutines,
-  getGroupDaysOfWeek,
   resolveRoutineFormInitialState,
   toggleDaySelection,
   type RoutineFormState,

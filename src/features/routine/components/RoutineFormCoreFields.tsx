@@ -6,7 +6,6 @@ import {
   getRoutineDayButtonClassName,
   ROUTINE_FORM_CATEGORY_LABEL,
   ROUTINE_FORM_DAYS_CREATE_HINT,
-  ROUTINE_FORM_DAYS_EDIT_HINT,
   ROUTINE_FORM_DAYS_LABEL,
   ROUTINE_FORM_DAYS_WARNING_LABEL,
   ROUTINE_FORM_TITLE_LABEL,
@@ -40,37 +39,38 @@ export const RoutineFormCoreFields = ({
         />
       </div>
 
-      <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-          {ROUTINE_FORM_DAYS_LABEL}
-        </label>
-        <div className="grid grid-cols-4 gap-2">
-          {DAYS.map((day) => (
-            <button
-              key={day.value}
-              type="button"
-              onClick={() => toggleDay(day.value)}
-              className={getRoutineDayButtonClassName({
-                isSelected: daysOfWeek.includes(day.value),
-                isHoliday: day.value === 7,
-              })}
-            >
-              {day.label}
-            </button>
-          ))}
+      {!routine && (
+        <div>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            {ROUTINE_FORM_DAYS_LABEL}
+          </label>
+          <div className="grid grid-cols-4 gap-2" role="group" aria-label={ROUTINE_FORM_DAYS_LABEL}>
+            {DAYS.map((day) => (
+              <button
+                key={day.value}
+                type="button"
+                aria-pressed={daysOfWeek.includes(day.value)}
+                onClick={() => toggleDay(day.value)}
+                className={getRoutineDayButtonClassName({
+                  isSelected: daysOfWeek.includes(day.value),
+                  isHoliday: day.value === 7,
+                })}
+              >
+                {day.label}
+              </button>
+            ))}
+          </div>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+            {daysOfWeek.length === 0 ? (
+              <span className="text-red-600 dark:text-red-400 font-medium">
+                {ROUTINE_FORM_DAYS_WARNING_LABEL}
+              </span>
+            ) : (
+              ROUTINE_FORM_DAYS_CREATE_HINT
+            )}
+          </p>
         </div>
-        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-          {daysOfWeek.length === 0 ? (
-            <span className="text-red-600 dark:text-red-400 font-medium">
-              {ROUTINE_FORM_DAYS_WARNING_LABEL}
-            </span>
-          ) : routine ? (
-            ROUTINE_FORM_DAYS_EDIT_HINT
-          ) : (
-            ROUTINE_FORM_DAYS_CREATE_HINT
-          )}
-        </p>
-      </div>
+      )}
 
       <div>
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">

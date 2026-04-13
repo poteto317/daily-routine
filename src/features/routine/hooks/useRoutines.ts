@@ -1,8 +1,15 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import {
+  useState,
+  useCallback,
+  useEffect,
+  useRef,
+  type SetStateAction,
+  type Dispatch,
+} from "react";
 import { type Routine } from "@/types/routine";
-import { initializeRoutineState } from "./routineLifecycleState";
+import { initializeRoutineStateWithMeta } from "./routineLifecycleState";
 import {
   saveAndSyncRoutines,
   updateNotificationSchedules,
@@ -17,6 +24,7 @@ import {
   getSettings,
   SETTINGS_UPDATED_EVENT,
 } from "@/features/settings/storage";
+import { setLocalDataUpdatedAt } from "@/lib/storage/core";
 
 const BG_REFRESH_MIN_MS = 0;
 const BG_REFRESH_MAX_MS = 60 * 60 * 1000; // 60分
@@ -44,10 +52,31 @@ const readBackgroundRefreshIntervalMs = (): number =>
   );
 
 export const useRoutines = (): UseRoutinesResult => {
-  const [routines, setRoutines] = useState<Routine[]>(initializeRoutineState);
+  // 初期化時に migrate/repair が発生したかを useState で保持（setter は使用しない）
+  // useRef に render 中に書き込む形を避けるため、lazy initializer で両値を取得する
+  const [
+    { routines: initRoutines, didRepairOrMigrate: initDidRepairOrMigrate },
+  ] = useState(() => initializeRoutineStateWithMeta());
+  const [routinesState, setRoutinesState] = useState<Routine[]>(
+    () => initRoutines,
+  );
   const [isLoaded] = useState(true);
   const [backgroundRefreshIntervalMs, setBackgroundRefreshIntervalMs] =
     useState(readBackgroundRefreshIntervalMs);
+
+  // routinesRef は常に最新の routines を保持する。
+  // setRoutines をラッパーにすることで、呼び出し元が誰であれ（sync/mutations/reorder）
+  // 必ず routinesRef.current が即時更新され、同一 tick 内の連続操作でも stale state を参照しない。
+  const routinesRef = useRef<Routine[]>(routinesState);
+  const setRoutines: Dispatch<SetStateAction<Routine[]>> = useCallback(
+    (action) => {
+      const next =
+        typeof action === "function" ? action(routinesRef.current) : action;
+      routinesRef.current = next;
+      setRoutinesState(next);
+    },
+    [],
+  );
 
   // SETTINGS_UPDATED_EVENT は saveSettings が呼ばれたときのみ発火する。
   // ルーティン保存など高頻度な操作では発火されないため、不要な getSettings() 呼び出しを防ぐ。
@@ -61,10 +90,18 @@ export const useRoutines = (): UseRoutinesResult => {
     };
   }, []);
 
+  // migrate/repair が発生した場合、skipLocalDataUpdatedAt: true で保存したため
+  // タイムスタンプが未更新のまま。マウント後に1回だけ更新して sync 側に変更を伝える。
+  useEffect(() => {
+    if (initDidRepairOrMigrate) {
+      setLocalDataUpdatedAt(Date.now());
+    }
+  }, [initDidRepairOrMigrate]);
+
   useRoutineStateSync(
     isLoaded,
     setRoutines,
-    routines,
+    routinesState,
     backgroundRefreshIntervalMs,
   );
 
@@ -77,22 +114,22 @@ export const useRoutines = (): UseRoutinesResult => {
     saveAndSyncRoutines(updated, process.env.NEXT_PUBLIC_FUNCTIONS_URL);
   }, []);
 
-  const mutations = useRoutineMutations(setRoutines, saveAndSync);
-  const queries = useRoutineQueries(routines);
+  const mutations = useRoutineMutations(setRoutines, saveAndSync, routinesRef);
+  const queries = useRoutineQueries(routinesState);
 
   const updateServiceWorkerSchedules = useCallback(
     async (routinesToSchedule?: Routine[]) => {
-      const targetRoutines = routinesToSchedule || routines;
+      const targetRoutines = routinesToSchedule || routinesState;
       return updateNotificationSchedules(targetRoutines);
     },
-    [routines],
+    [routinesState],
   );
 
   return createUseRoutinesResult({
     isLoaded,
     mutations,
     queries,
-    routines,
+    routines: routinesState,
     schedules: {
       updateServiceWorkerSchedules,
     },

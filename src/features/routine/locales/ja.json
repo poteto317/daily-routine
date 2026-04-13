@@ -56,7 +56,6 @@
     "daysLabel": "曜日・祝日 *",
     "categoryLabel": "カテゴリ *",
     "daysWarningLabel": "⚠️ 曜日を1つ以上選択してください",
-    "daysEditHint": "曜日を変更すると、同じグループのすべてのルーティンが更新されます",
     "daysCreateHint": "複数選択すると、曜日ごとに独立したルーティンが作成されます"
   },
   "routineFormTime": {

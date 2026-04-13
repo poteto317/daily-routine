@@ -1,10 +1,6 @@
 import { useMemo } from "react";
 import type { Routine } from "@/types/routine";
-import {
-  getGroupDaysOfWeek,
-  getGroupRoutines,
-  resolveRoutineFormInitialState,
-} from "./routineFormModel";
+import { resolveRoutineFormInitialState } from "./routineFormModel";
 
 type UseRoutineFormDerivedContextParams = {
   currentDayOfWeek?: number;
@@ -19,10 +15,6 @@ export const useRoutineFormDerivedContext = ({
   existingRoutines,
   routine,
 }: UseRoutineFormDerivedContextParams) => {
-  const groupDaysOfWeek = useMemo(() => {
-    return getGroupDaysOfWeek(getGroupRoutines(existingRoutines, routine));
-  }, [existingRoutines, routine]);
-
   const initialState = useMemo(
     () =>
       resolveRoutineFormInitialState({
@@ -30,13 +22,11 @@ export const useRoutineFormDerivedContext = ({
         currentDayOfWeek,
         existingRoutines,
         defaultDurationMinutes,
-        groupDaysOfWeek,
       }),
-    [routine, currentDayOfWeek, existingRoutines, defaultDurationMinutes, groupDaysOfWeek],
+    [routine, currentDayOfWeek, existingRoutines, defaultDurationMinutes],
   );
 
   return {
-    groupDaysOfWeek,
     initialState,
   };
 };

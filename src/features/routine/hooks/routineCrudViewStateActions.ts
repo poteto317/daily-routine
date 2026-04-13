@@ -68,15 +68,10 @@ export const openRoutineCrudFormState = (params: {
 export const applyRoutineSubmitPlan = (params: {
   editingRoutine?: Routine;
   routineData: RoutineData;
-  originalGroupDays?: number[];
   ops: RoutineCrudOps;
 }): void => {
-  const { editingRoutine, routineData, originalGroupDays, ops } = params;
-  const plan = createRoutineSubmitPlan(
-    editingRoutine,
-    routineData,
-    originalGroupDays,
-  );
+  const { editingRoutine, routineData, ops } = params;
+  const plan = createRoutineSubmitPlan(editingRoutine);
 
   switch (plan.type) {
     case "add-new":
@@ -84,13 +79,6 @@ export const applyRoutineSubmitPlan = (params: {
       return;
     case "update-single":
       ops.updateRoutine(plan.routineId, routineData);
-      return;
-    case "update-group":
-      ops.updateRoutineGroup(plan.groupId, routineData);
-      return;
-    case "replace-group":
-      ops.deleteRoutineGroup(plan.groupId);
-      ops.addRoutine(routineData);
       return;
     default: {
       const exhaustiveCheck: never = plan;

@@ -14,9 +14,23 @@ export type LocalAuthSnapshot = {
   isAnonymous: boolean;
 };
 
+/**
+ * ローカル認証が有効かどうかを判定する。
+ *
+ * 環境変数だけでなく、実行環境が localhost/127.0.0.1/::1 の場合のみ許可する。
+ * これにより、本番環境で環境変数が誤って設定された場合でも
+ * 意図しない認証バイパスが発生しないよう防御している。
+ * SSR（サーバーサイド）では window が存在しないため常に false を返す。
+ */
+export const isLocalDevHostname = (hostname: string): boolean =>
+  hostname === "localhost" ||
+  hostname === "127.0.0.1" ||
+  hostname === "::1";
+
 export const isLocalAuthEnabled =
-  process.env.NODE_ENV !== "production" &&
-  process.env.NEXT_PUBLIC_ENABLE_LOCAL_AUTH === "true";
+  process.env.NEXT_PUBLIC_ENABLE_LOCAL_AUTH === "true" &&
+  typeof window !== "undefined" &&
+  isLocalDevHostname(window.location.hostname);
 
 export const readLocalAuthSnapshot = (): LocalAuthSnapshot | null => {
   return getUnscopedStorageItem<LocalAuthSnapshot | null>(

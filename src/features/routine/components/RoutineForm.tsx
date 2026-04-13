@@ -10,10 +10,7 @@ import { RoutineFormFooter } from "./RoutineFormFooter";
 
 interface RoutineFormProps {
   routine?: Routine;
-  onSubmit: (
-    routine: Omit<Routine, "id" | "createdAt" | "updatedAt">,
-    groupDaysOfWeek?: number[],
-  ) => void;
+  onSubmit: (routine: Omit<Routine, "id" | "createdAt" | "updatedAt">) => void;
   onCancel: () => void;
   currentDayOfWeek?: number; // 現在表示中の曜日
 }

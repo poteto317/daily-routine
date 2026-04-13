@@ -6,9 +6,15 @@ import { useRoutineReorderMutation } from "./useRoutineReorderMutation";
 
 type SetRoutines = Dispatch<SetStateAction<Routine[]>>;
 
-export const useRoutineCompletionMutations = (setRoutines: SetRoutines) => {
-  const toggleComplete = useRoutineCompletionToggleMutation(setRoutines);
-  const reorderRoutines = useRoutineReorderMutation(setRoutines);
+export const useRoutineCompletionMutations = (
+  setRoutines: SetRoutines,
+  routinesRef: { current: Routine[] },
+) => {
+  const toggleComplete = useRoutineCompletionToggleMutation(
+    setRoutines,
+    routinesRef,
+  );
+  const reorderRoutines = useRoutineReorderMutation(setRoutines, routinesRef);
 
   return createRoutineCompletionMutationsResult({
     toggleComplete,

@@ -17,7 +17,6 @@ describe("useRoutineCrudMutationActions", () => {
       addRoutine: jest.fn(),
       addRoutines: jest.fn(),
       updateRoutine: jest.fn(),
-      updateRoutineGroup: jest.fn(),
       deleteRoutine: jest.fn(),
       deleteRoutineGroup: jest.fn(),
       replaceRoutinesForDays: jest.fn(),
@@ -25,35 +24,41 @@ describe("useRoutineCrudMutationActions", () => {
     (useRoutineCrudMutations as jest.Mock).mockReturnValue(crudMutations);
     const setRoutines = jest.fn();
     const saveAndSync = jest.fn();
+    const routinesRef = { current: [] };
 
     const { result } = renderHook(() =>
-      useRoutineCrudMutationActions(setRoutines, saveAndSync),
+      useRoutineCrudMutationActions(setRoutines, saveAndSync, routinesRef),
     );
 
     expect(useRoutineCrudMutations).toHaveBeenCalledWith(expect.any(Function));
     expect(result.current).toBe(crudMutations);
   });
 
-  it("CRUD hook に渡す runner が mutation を同期付きで実行する", () => {
+  it("CRUD hook に渡す runner が mutation を同期付きで実行し ref を更新する", () => {
     (useRoutineCrudMutations as jest.Mock).mockReturnValue({});
+    const previous = [{ id: "1" }];
+    const updated = [{ id: "2" }];
     const setRoutines = jest.fn();
     const saveAndSync = jest.fn();
+    const routinesRef = {
+      current: previous as unknown as import("@/types/routine").Routine[],
+    };
 
-    renderHook(() => useRoutineCrudMutationActions(setRoutines, saveAndSync));
+    renderHook(() =>
+      useRoutineCrudMutationActions(setRoutines, saveAndSync, routinesRef),
+    );
 
     const runAndSync = (useRoutineCrudMutations as jest.Mock).mock
       .calls[0][0] as (
-      mutate: (previous: Array<{ id: string }>) => Array<{ id: string }>,
+      mutate: (state: Array<{ id: string }>) => Array<{ id: string }>,
     ) => void;
-    const previous = [{ id: "1" }];
-    const updated = [{ id: "2" }];
 
     runAndSync(() => updated);
 
-    const updater = setRoutines.mock.calls[0][0] as (
-      state: Array<{ id: string }>,
-    ) => Array<{ id: string }>;
-    expect(updater(previous)).toBe(updated);
+    // setRoutines は直接値で呼ばれる（関数型 updater ではない）
+    expect(setRoutines).toHaveBeenCalledWith(updated);
     expect(saveAndSync).toHaveBeenCalledWith(updated);
+    // routinesRef.current が即座に更新されること
+    expect(routinesRef.current).toBe(updated);
   });
 });

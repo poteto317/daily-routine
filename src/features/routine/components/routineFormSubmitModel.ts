@@ -6,7 +6,6 @@ type BuildSubmitPayloadParams = {
   routine?: Routine;
   state: RoutineFormState;
   defaultDurationMinutes: number;
-  groupDaysOfWeek: number[];
 };
 
 export const parseDurationOrDefault = (
@@ -32,10 +31,8 @@ export const buildRoutineSubmitPayload = ({
   routine,
   state,
   defaultDurationMinutes,
-  groupDaysOfWeek,
 }: BuildSubmitPayloadParams): {
   routineData: RoutineData;
-  originalGroupDays?: number[];
 } => {
   const routineData: RoutineData = {
     title: state.title,
@@ -50,8 +47,5 @@ export const buildRoutineSubmitPayload = ({
     groupId: routine?.groupId,
   };
 
-  return {
-    routineData,
-    originalGroupDays: routine ? groupDaysOfWeek : undefined,
-  };
+  return { routineData };
 };
