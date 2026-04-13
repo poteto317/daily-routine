@@ -162,6 +162,11 @@ export const repairCorruptedGroupRoutines = (
 
   if (!needsRepair) return routines;
 
+  // completedRoutineIds を Set に変換して O(1) ルックアップを保証
+  const completedSet = completedRoutineIds
+    ? new Set(completedRoutineIds)
+    : undefined;
+
   const repaired: Routine[] = [...nonGrouped];
 
   for (const members of groups.values()) {
@@ -172,16 +177,30 @@ export const repairCorruptedGroupRoutines = (
     // テンプレート: 最初のメンバーを基準にする
     const template = members[0]!;
 
+    // day -> クリーンメンバー候補 の Map を事前構築（ループ内の毎回 filter を回避）
+    const cleanByDay = new Map<number, Routine[]>();
+    for (const m of members) {
+      if (m.daysOfWeek.length === 1) {
+        const day = m.daysOfWeek[0]!;
+        const list = cleanByDay.get(day);
+        if (list) {
+          list.push(m);
+        } else {
+          cleanByDay.set(day, [m]);
+        }
+      }
+    }
+
     // 汚染されたメンバーをプール化して順に再利用する。
-    // completedRoutineIds のメンバーを先頭に置き、次に sortOrder で安定ソートすることで
+    // completedSet のメンバーを先頭に置き、次に sortOrder で安定ソートすることで
     // 「どの曜日にどの既存IDが割り当てられるか」を決定的にする。
     // これにより getRoutines() の返却順序に依存せず、完了済み ID が優先して
     // 若い曜日番号に割り当てられる（進捗参照を最大限保護）。
     const dirtyMembers = members
       .filter((m) => m.daysOfWeek.length > 1)
       .sort((a, b) => {
-        const aCompleted = completedRoutineIds?.includes(a.id) ? 0 : 1;
-        const bCompleted = completedRoutineIds?.includes(b.id) ? 0 : 1;
+        const aCompleted = completedSet?.has(a.id) ? 0 : 1;
+        const bCompleted = completedSet?.has(b.id) ? 0 : 1;
         if (aCompleted !== bCompleted) return aCompleted - bCompleted;
         return (a.sortOrder || 0) - (b.sortOrder || 0);
       });
@@ -192,14 +211,12 @@ export const repairCorruptedGroupRoutines = (
       if (seenDays.has(day)) continue;
       seenDays.add(day);
 
-      // この曜日に対応する既存メンバーを探す
-      // completedRoutineIds がある場合は完了済みエントリを優先して残す（進捗参照を保護）
-      const cleanCandidates = members.filter(
-        (m) => m.daysOfWeek.length === 1 && m.daysOfWeek[0] === day,
-      );
+      // この曜日に対応する既存メンバーを探す（Map から O(1) 取得）
+      // completedSet がある場合は完了済みエントリを優先して残す（進捗参照を保護）
+      const cleanCandidates = cleanByDay.get(day) ?? [];
       const existing =
-        completedRoutineIds && cleanCandidates.length > 1
-          ? (cleanCandidates.find((m) => completedRoutineIds.includes(m.id)) ??
+        completedSet && cleanCandidates.length > 1
+          ? (cleanCandidates.find((m) => completedSet.has(m.id)) ??
             cleanCandidates[0])
           : cleanCandidates[0];
 
