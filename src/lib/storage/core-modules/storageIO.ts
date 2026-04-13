@@ -7,7 +7,7 @@ const getResolvedStorageKey = (key: string, scoped = true): string => {
   return scoped ? getUserScopedKey(key) : key;
 };
 
-type SetStorageItemOptions = {
+export type SetStorageItemOptions = {
   skipLocalDataUpdatedAt?: boolean;
 };
 

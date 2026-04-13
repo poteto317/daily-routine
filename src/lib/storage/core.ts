@@ -18,6 +18,7 @@ export {
   setUnscopedStorageItem,
   withSyncBatch,
 } from "./core-modules/storageIO";
+export type { SetStorageItemOptions } from "./core-modules/storageIO";
 
 export {
   getTodayString,
