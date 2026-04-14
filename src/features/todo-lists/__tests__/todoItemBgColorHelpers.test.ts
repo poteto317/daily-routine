@@ -109,7 +109,7 @@ describe("todoItemBgColorHelpers", () => {
   });
 
   describe("updateAllItemsBgColorInList", () => {
-    it("リスト内の全アイテムの bgColor を一括更新する", () => {
+    it("リスト内の全アイテムの bgColor を一括更新し、defaultItemBgColor も更新する", () => {
       const items = [
         createItem({ id: "item-1" }),
         createItem({ id: "item-2" }),
@@ -124,10 +124,11 @@ describe("todoItemBgColorHelpers", () => {
       expect(
         result[0].items.every((item) => item.bgColor === "bg-yellow-50"),
       ).toBe(true);
+      expect(result[0].defaultItemBgColor).toBe("bg-yellow-50");
       expect(result[0].updatedAt).toBe("2026-03-07T12:00:00.000Z");
     });
 
-    it("bgColor に undefined を渡すと全アイテムをデフォルトに戻す", () => {
+    it("bgColor に undefined を渡すと全アイテムをデフォルトに戻し、defaultItemBgColor も undefined になる", () => {
       const items = [
         createItem({ id: "item-1", bgColor: "bg-red-50" }),
         createItem({ id: "item-2", bgColor: "bg-blue-50" }),
@@ -141,6 +142,7 @@ describe("todoItemBgColorHelpers", () => {
       expect(result[0].items.every((item) => item.bgColor === undefined)).toBe(
         true,
       );
+      expect(result[0].defaultItemBgColor).toBeUndefined();
     });
 
     it("対象外のリストは変更しない", () => {

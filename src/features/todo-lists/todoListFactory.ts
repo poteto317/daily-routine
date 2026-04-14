@@ -1,3 +1,4 @@
+import type { TodoItemBgColorValue } from "./todoItemBgColor";
 import type { TodoList, TodoListItem } from "./types";
 
 export const generateId = (): string =>
@@ -11,9 +12,13 @@ export const createTodoList = (title: string): TodoList => ({
   updatedAt: new Date().toISOString(),
 });
 
-export const createTodoListItem = (title: string): TodoListItem => ({
+export const createTodoListItem = (
+  title: string,
+  bgColor?: TodoItemBgColorValue,
+): TodoListItem => ({
   id: generateId(),
   title,
   isCompleted: false,
   createdAt: new Date().toISOString(),
+  ...(bgColor !== undefined && { bgColor }),
 });

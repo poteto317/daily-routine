@@ -72,6 +72,42 @@ describe("todo detailActions", () => {
     expect(result[0].items.length).toBe(3);
   });
 
+  it("リストに defaultItemBgColor が設定されている場合、新規アイテムに引き継ぐ", () => {
+    const lists = [createList({ defaultItemBgColor: "bg-blue-50" })];
+    const result = addTodoItemToLists({
+      lists,
+      listId: "list-1",
+      title: "Colored Task",
+    });
+
+    expect(result[0].items[0].bgColor).toBe("bg-blue-50");
+  });
+
+  it("リストに defaultItemBgColor が設定されていない場合、bgColor なしでアイテムを追加する", () => {
+    const lists = [createList()];
+    const result = addTodoItemToLists({
+      lists,
+      listId: "list-1",
+      title: "Plain Task",
+    });
+
+    expect(result[0].items[0]).not.toHaveProperty("bgColor");
+  });
+
+  it("insertAfterIndex と defaultItemBgColor が両方ある場合でも bgColor を引き継ぐ", () => {
+    const itemA = createItem({ id: "a", title: "A" });
+    const lists = [createList({ items: [itemA], defaultItemBgColor: "bg-green-50" })];
+
+    const result = addTodoItemToLists({
+      lists,
+      listId: "list-1",
+      title: "Inserted",
+      insertAfterIndex: 0,
+    });
+
+    expect(result[0].items[1].bgColor).toBe("bg-green-50");
+  });
+
   it("インデント操作を委譲する", () => {
     const lists = [createList({ items: [createItem({ indent: 1 })] })];
 

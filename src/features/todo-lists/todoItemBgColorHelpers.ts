@@ -22,7 +22,7 @@ export const updateItemBgColorInList = (
   );
 
 /**
- * リスト内の全アイテムの背景色を一括更新
+ * リスト内の全アイテムの背景色を一括更新し、リストのデフォルト色も更新
  */
 export const updateAllItemsBgColorInList = (
   lists: TodoList[],
@@ -33,6 +33,7 @@ export const updateAllItemsBgColorInList = (
     list.id === listId
       ? {
           ...list,
+          defaultItemBgColor: bgColor,
           items: list.items.map((item) => ({ ...item, bgColor })),
           updatedAt: new Date().toISOString(),
         }
