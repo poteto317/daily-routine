@@ -20,6 +20,8 @@ export interface TodoList {
   createdAt: string;
   updatedAt: string;
   isHidden?: boolean;
+  /** 新規アイテム追加時に適用するデフォルト背景色 */
+  defaultItemBgColor?: TodoItemBgColorValue;
 }
 
 /** TodoList 配列の永続化コールバック型 */

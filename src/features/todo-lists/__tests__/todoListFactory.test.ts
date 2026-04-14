@@ -87,9 +87,23 @@ describe("todoListFactory", () => {
       expect(item.isCompleted).toBe(false);
     });
 
-    it("indent や bgColor は含まれない", () => {
+    it("indent は含まれない", () => {
       const item = createTodoListItem("Task");
       expect(item).not.toHaveProperty("indent");
+    });
+
+    it("bgColor を指定しない場合は bgColor プロパティを含まない", () => {
+      const item = createTodoListItem("Task");
+      expect(item).not.toHaveProperty("bgColor");
+    });
+
+    it("bgColor を指定した場合は bgColor プロパティが含まれる", () => {
+      const item = createTodoListItem("Task", "bg-red-50");
+      expect(item.bgColor).toBe("bg-red-50");
+    });
+
+    it("bgColor に undefined を渡した場合は bgColor プロパティを含まない", () => {
+      const item = createTodoListItem("Task", undefined);
       expect(item).not.toHaveProperty("bgColor");
     });
 

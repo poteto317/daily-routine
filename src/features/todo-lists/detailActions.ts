@@ -18,10 +18,11 @@ export const addTodoItemToLists = (params: {
 }): TodoList[] => {
   const { lists, listId, title, insertAfterIndex } = params;
 
+  const list = lists.find((l) => l.id === listId);
   return addItemToList(
     lists,
     listId,
-    createTodoListItem(title),
+    createTodoListItem(title, list?.defaultItemBgColor),
     insertAfterIndex,
   );
 };
