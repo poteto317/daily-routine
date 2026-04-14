@@ -108,9 +108,17 @@ describe("lib/firebase", () => {
 });
 
 describe("initializeFirebaseIfConfigured の分岐", () => {
+  let originalApiKey: string | undefined;
+  let originalProjectId: string | undefined;
+  let originalAppId: string | undefined;
+
   beforeEach(() => {
     jest.resetModules();
     jest.clearAllMocks();
+
+    originalApiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
+    originalProjectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
+    originalAppId = process.env.NEXT_PUBLIC_FIREBASE_APP_ID;
 
     process.env.NEXT_PUBLIC_FIREBASE_API_KEY = "test-api-key";
     process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID = "test-project";
@@ -118,9 +126,21 @@ describe("initializeFirebaseIfConfigured の分岐", () => {
   });
 
   afterEach(() => {
-    process.env.NEXT_PUBLIC_FIREBASE_API_KEY = "";
-    process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID = "";
-    process.env.NEXT_PUBLIC_FIREBASE_APP_ID = "";
+    if (originalApiKey === undefined) {
+      delete process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
+    } else {
+      process.env.NEXT_PUBLIC_FIREBASE_API_KEY = originalApiKey;
+    }
+    if (originalProjectId === undefined) {
+      delete process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
+    } else {
+      process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID = originalProjectId;
+    }
+    if (originalAppId === undefined) {
+      delete process.env.NEXT_PUBLIC_FIREBASE_APP_ID;
+    } else {
+      process.env.NEXT_PUBLIC_FIREBASE_APP_ID = originalAppId;
+    }
   });
 
   it("getApps()が空の場合はinitializeAppが呼ばれること", async () => {
