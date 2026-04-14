@@ -182,7 +182,7 @@ const SortableTodoListItem = ({
         marginLeft: `${currentIndent * 20}px`,
         touchAction: "pan-y",
       }}
-      className="group"
+      className="group relative"
     >
       <SwipeableRoutineItem
         onSwipeAction={() => onIndentItem(list.id, item.id)}
@@ -378,8 +378,8 @@ const SortableTodoListItem = ({
                 <span className="text-[10px] leading-none">↓</span>
               </button>
 
-              {/* モバイル: ⋮ ボタン（アクション一覧ドロップダウン） */}
-              <div className="relative sm:hidden" data-mobile-menu>
+              {/* モバイル: ⋮ ボタン（アクション一覧トリガー） */}
+              <div className="sm:hidden" data-mobile-menu>
                 <button
                   type="button"
                   onClick={() => toggleMobileMenu(item.id)}
@@ -389,112 +389,111 @@ const SortableTodoListItem = ({
                 >
                   ⋮
                 </button>
-                {mobileMenuItemId === item.id && (
-                  <div
-                    role="menu"
-                    className="absolute right-0 top-full mt-1 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-500 rounded-lg shadow-lg z-10 min-w-[9rem] py-1"
-                  >
-                    <button
-                      type="button"
-                      role="menuitem"
-                      onClick={() => {
-                        startEditItem(item.id, item.title);
-                        closeMobileMenu();
-                      }}
-                      className="w-full text-left px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 flex items-center gap-2"
-                    >
-                      ✏️ {texts.list.editItemLabel}
-                    </button>
-                    <button
-                      type="button"
-                      role="menuitem"
-                      onClick={() => {
-                        onInsertAfter();
-                        closeMobileMenu();
-                      }}
-                      className="w-full text-left px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 flex items-center gap-2"
-                    >
-                      ＋↓ {texts.list.insertAfterLabel}
-                    </button>
-                    <button
-                      type="button"
-                      role="menuitem"
-                      onClick={() => {
-                        onOutdentItem(list.id, item.id);
-                        closeMobileMenu();
-                      }}
-                      disabled={currentIndent === 0}
-                      className="w-full text-left px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2"
-                    >
-                      ← インデントを下げる
-                    </button>
-                    <button
-                      type="button"
-                      role="menuitem"
-                      onClick={() => {
-                        onIndentItem(list.id, item.id);
-                        closeMobileMenu();
-                      }}
-                      disabled={currentIndent >= maxIndent}
-                      className="w-full text-left px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2"
-                    >
-                      → インデントを上げる
-                    </button>
-                    <div
-                      className="px-3 py-1.5 border-t border-gray-100 dark:border-gray-600"
-                      data-color-picker
-                    >
-                      <p className="text-xs text-gray-400 dark:text-gray-500 mb-1.5">
-                        背景色
-                      </p>
-                      <div
-                        role="radiogroup"
-                        aria-label="背景色"
-                        className="flex flex-wrap gap-1.5"
-                      >
-                        {TODO_ITEM_BG_COLORS.map((color) => (
-                          <button
-                            key={color.value ?? "__default__"}
-                            role="radio"
-                            aria-checked={item.bgColor === color.value}
-                            type="button"
-                            onClick={() => {
-                              onUpdateItemBgColor(
-                                list.id,
-                                item.id,
-                                color.value,
-                              );
-                              closeMobileMenu();
-                            }}
-                            className={`w-6 h-6 rounded-full border-2 transition-all ${color.class} ${
-                              item.bgColor === color.value
-                                ? "border-teal-500 ring-2 ring-teal-300"
-                                : "border-gray-200 dark:border-gray-500"
-                            }`}
-                            aria-label={color.label}
-                            title={color.label}
-                          />
-                        ))}
-                      </div>
-                    </div>
-                    <button
-                      type="button"
-                      role="menuitem"
-                      onClick={() => {
-                        onDeleteItem(list.id, item.id, item.title);
-                        closeMobileMenu();
-                      }}
-                      className="w-full text-left px-3 py-2 text-sm text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center gap-2"
-                    >
-                      🗑️ 削除
-                    </button>
-                  </div>
-                )}
               </div>
             </>
           )}
         </div>
       </SwipeableRoutineItem>
+
+      {/* モバイルドロップダウン — SwipeableRoutineItem の overflow-hidden 外に配置 */}
+      {mobileMenuItemId === item.id && (
+        <div
+          role="menu"
+          data-mobile-menu
+          className="absolute right-0 top-full mt-0.5 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-500 rounded-lg shadow-lg z-50 min-w-[10rem] py-1 max-h-[60vh] overflow-y-auto"
+        >
+          <button
+            type="button"
+            role="menuitem"
+            onClick={() => {
+              startEditItem(item.id, item.title);
+              closeMobileMenu();
+            }}
+            className="w-full text-left px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 flex items-center gap-2"
+          >
+            ✏️ {texts.list.editItemLabel}
+          </button>
+          <button
+            type="button"
+            role="menuitem"
+            onClick={() => {
+              onInsertAfter();
+              closeMobileMenu();
+            }}
+            className="w-full text-left px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 flex items-center gap-2"
+          >
+            ＋↓ {texts.list.insertAfterLabel}
+          </button>
+          <button
+            type="button"
+            role="menuitem"
+            onClick={() => {
+              onOutdentItem(list.id, item.id);
+              closeMobileMenu();
+            }}
+            disabled={currentIndent === 0}
+            className="w-full text-left px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2"
+          >
+            ← インデントを下げる
+          </button>
+          <button
+            type="button"
+            role="menuitem"
+            onClick={() => {
+              onIndentItem(list.id, item.id);
+              closeMobileMenu();
+            }}
+            disabled={currentIndent >= maxIndent}
+            className="w-full text-left px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2"
+          >
+            → インデントを上げる
+          </button>
+          <div
+            className="px-3 py-1.5 border-t border-gray-100 dark:border-gray-600"
+            data-color-picker
+          >
+            <p className="text-xs text-gray-400 dark:text-gray-500 mb-1.5">
+              背景色
+            </p>
+            <div
+              role="radiogroup"
+              aria-label="背景色"
+              className="flex flex-wrap gap-1.5"
+            >
+              {TODO_ITEM_BG_COLORS.map((color) => (
+                <button
+                  key={color.value ?? "__default__"}
+                  role="radio"
+                  aria-checked={item.bgColor === color.value}
+                  type="button"
+                  onClick={() => {
+                    onUpdateItemBgColor(list.id, item.id, color.value);
+                    closeMobileMenu();
+                  }}
+                  className={`w-6 h-6 rounded-full border-2 transition-all ${color.class} ${
+                    item.bgColor === color.value
+                      ? "border-teal-500 ring-2 ring-teal-300"
+                      : "border-gray-200 dark:border-gray-500"
+                  }`}
+                  aria-label={color.label}
+                  title={color.label}
+                />
+              ))}
+            </div>
+          </div>
+          <button
+            type="button"
+            role="menuitem"
+            onClick={() => {
+              onDeleteItem(list.id, item.id, item.title);
+              closeMobileMenu();
+            }}
+            className="w-full text-left px-3 py-2 text-sm text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center gap-2"
+          >
+            🗑️ 削除
+          </button>
+        </div>
+      )}
     </li>
   );
 };
