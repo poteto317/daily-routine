@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "clean": "node -e \"require('fs').rmSync('.next', {recursive: true, force: true})\"",
     "generate:fcm-sw": "node tools/generate-firebase-messaging-sw.mjs",
     "dev": "npm run generate:fcm-sw && next dev --webpack",
     "build": "npm run generate:fcm-sw && next build --webpack",

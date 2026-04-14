@@ -1,4 +1,4 @@
-import { initializeApp } from "firebase/app";
+import { getApp, getApps, initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getMessaging, isSupported } from "firebase/messaging";
@@ -8,7 +8,8 @@ import { getFirebaseState, setFirebaseState } from "./state";
 export const initializeFirebaseIfConfigured = () => {
   if (!isFirebaseConfigured) return;
 
-  const app = initializeApp(firebaseConfig);
+  const app =
+    getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
   setFirebaseState({ app });
 
   if (typeof window === "undefined") return;
