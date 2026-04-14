@@ -167,4 +167,51 @@ describe("useMobileActionMenuController", () => {
 
     addSpy.mockRestore();
   });
+
+  it("別アイテムへ切り替えてもリスナーが追加で登録されない（isOpen 依存）", () => {
+    const addSpy = jest.spyOn(document, "addEventListener");
+    const removeSpy = jest.spyOn(document, "removeEventListener");
+    const { result } = renderHook(() => useMobileActionMenuController());
+
+    // 最初のアイテムを開く
+    act(() => {
+      result.current.toggleMobileMenu("item-1");
+    });
+
+    const addCount1 = addSpy.mock.calls.filter(([event]) =>
+      ["mousedown", "touchstart", "keydown"].includes(event as string),
+    ).length;
+    expect(addCount1).toBe(3);
+
+    // 別のアイテムへ切り替える（isOpen=true→trueのまま → cleanup & re-register は起きない）
+    act(() => {
+      result.current.toggleMobileMenu("item-2");
+    });
+
+    // メニューは別アイテムで開いたまま（trueのまま）→ 追加登録されない
+    const addCount2 = addSpy.mock.calls.filter(([event]) =>
+      ["mousedown", "touchstart", "keydown"].includes(event as string),
+    ).length;
+    expect(addCount2).toBe(3);
+
+    addSpy.mockRestore();
+    removeSpy.mockRestore();
+  });
+
+  it("touchstart リスナーに passive:true オプションが渡される", () => {
+    const addSpy = jest.spyOn(document, "addEventListener");
+    const { result } = renderHook(() => useMobileActionMenuController());
+
+    act(() => {
+      result.current.toggleMobileMenu("item-1");
+    });
+
+    const touchStartCall = addSpy.mock.calls.find(
+      ([event]) => event === "touchstart",
+    );
+    expect(touchStartCall).toBeDefined();
+    expect(touchStartCall?.[2]).toEqual({ passive: true });
+
+    addSpy.mockRestore();
+  });
 });

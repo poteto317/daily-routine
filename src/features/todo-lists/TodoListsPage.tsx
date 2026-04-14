@@ -389,7 +389,7 @@ const SortableTodoListItem = ({
                   type="button"
                   onClick={() => toggleMobileMenu(item.id)}
                   aria-label="アクションメニュー"
-                  aria-haspopup="menu"
+                  aria-haspopup="true"
                   aria-expanded={mobileMenuItemId === item.id}
                   aria-controls={`mobile-menu-${item.id}`}
                   className="shrink-0 w-6 h-6 flex items-center justify-center text-gray-400 dark:text-gray-500 text-lg leading-none"
@@ -406,13 +406,12 @@ const SortableTodoListItem = ({
       {mobileMenuItemId === item.id && (
         <div
           id={`mobile-menu-${item.id}`}
-          role="menu"
+          aria-label="アクションメニュー"
           data-mobile-menu
           className="absolute right-0 top-full mt-0.5 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-500 rounded-lg shadow-lg z-50 min-w-[10rem] py-1 max-h-[60vh] overflow-y-auto"
         >
           <button
             type="button"
-            role="menuitem"
             onClick={() => {
               startEditItem(item.id, item.title);
               closeMobileMenu();
@@ -423,7 +422,6 @@ const SortableTodoListItem = ({
           </button>
           <button
             type="button"
-            role="menuitem"
             onClick={() => {
               onInsertAfter();
               closeMobileMenu();
@@ -434,7 +432,6 @@ const SortableTodoListItem = ({
           </button>
           <button
             type="button"
-            role="menuitem"
             onClick={() => {
               onOutdentItem(list.id, item.id);
               closeMobileMenu();
@@ -446,7 +443,6 @@ const SortableTodoListItem = ({
           </button>
           <button
             type="button"
-            role="menuitem"
             onClick={() => {
               onIndentItem(list.id, item.id);
               closeMobileMenu();
@@ -491,7 +487,6 @@ const SortableTodoListItem = ({
           </div>
           <button
             type="button"
-            role="menuitem"
             onClick={() => {
               onDeleteItem(list.id, item.id, item.title);
               closeMobileMenu();

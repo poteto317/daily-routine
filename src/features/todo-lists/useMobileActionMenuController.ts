@@ -16,10 +16,12 @@ export const useMobileActionMenuController = () => {
     setMobileMenuItemId(null);
   }, []);
 
-  useEffect(() => {
-    if (mobileMenuItemId === null) return;
+  const isOpen = mobileMenuItemId !== null;
 
-    const handlePointerDown = (e: MouseEvent | TouchEvent) => {
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handlePointerDown = (e: Event) => {
       const target = e.target instanceof Element ? e.target : null;
       if (!target?.closest("[data-mobile-menu]")) {
         setMobileMenuItemId(null);
@@ -33,7 +35,9 @@ export const useMobileActionMenuController = () => {
     };
 
     document.addEventListener("mousedown", handlePointerDown);
-    document.addEventListener("touchstart", handlePointerDown);
+    document.addEventListener("touchstart", handlePointerDown, {
+      passive: true,
+    });
     document.addEventListener("keydown", handleKeyDown);
 
     return () => {
@@ -41,7 +45,7 @@ export const useMobileActionMenuController = () => {
       document.removeEventListener("touchstart", handlePointerDown);
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [mobileMenuItemId]);
+  }, [isOpen]);
 
   return {
     mobileMenuItemId,
