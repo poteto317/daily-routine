@@ -1,0 +1,129 @@
+import { act, renderHook } from "@testing-library/react";
+import { useMobileActionMenuController } from "../useMobileActionMenuController";
+
+describe("useMobileActionMenuController", () => {
+  it("初期状態では mobileMenuItemId が null", () => {
+    const { result } = renderHook(() => useMobileActionMenuController());
+    expect(result.current.mobileMenuItemId).toBeNull();
+  });
+
+  it("toggleMobileMenu で指定アイテムのメニューが開く", () => {
+    const { result } = renderHook(() => useMobileActionMenuController());
+
+    act(() => {
+      result.current.toggleMobileMenu("item-1");
+    });
+
+    expect(result.current.mobileMenuItemId).toBe("item-1");
+  });
+
+  it("同じ itemId で再度 toggleMobileMenu を呼ぶと閉じる", () => {
+    const { result } = renderHook(() => useMobileActionMenuController());
+
+    act(() => {
+      result.current.toggleMobileMenu("item-1");
+    });
+    act(() => {
+      result.current.toggleMobileMenu("item-1");
+    });
+
+    expect(result.current.mobileMenuItemId).toBeNull();
+  });
+
+  it("別の itemId で toggleMobileMenu を呼ぶと切り替わる", () => {
+    const { result } = renderHook(() => useMobileActionMenuController());
+
+    act(() => {
+      result.current.toggleMobileMenu("item-1");
+    });
+    act(() => {
+      result.current.toggleMobileMenu("item-2");
+    });
+
+    expect(result.current.mobileMenuItemId).toBe("item-2");
+  });
+
+  it("closeMobileMenu でメニューが閉じる", () => {
+    const { result } = renderHook(() => useMobileActionMenuController());
+
+    act(() => {
+      result.current.toggleMobileMenu("item-1");
+    });
+    act(() => {
+      result.current.closeMobileMenu();
+    });
+
+    expect(result.current.mobileMenuItemId).toBeNull();
+  });
+
+  it("メニュー外の mousedown で自動クローズする", () => {
+    const { result } = renderHook(() => useMobileActionMenuController());
+
+    act(() => {
+      result.current.toggleMobileMenu("item-1");
+    });
+
+    act(() => {
+      document.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }));
+    });
+
+    expect(result.current.mobileMenuItemId).toBeNull();
+  });
+
+  it("メニュー外の touchstart で自動クローズする", () => {
+    const { result } = renderHook(() => useMobileActionMenuController());
+
+    act(() => {
+      result.current.toggleMobileMenu("item-1");
+    });
+
+    act(() => {
+      document.dispatchEvent(new TouchEvent("touchstart", { bubbles: true }));
+    });
+
+    expect(result.current.mobileMenuItemId).toBeNull();
+  });
+
+  it("Escape キーでメニューが閉じる", () => {
+    const { result } = renderHook(() => useMobileActionMenuController());
+
+    act(() => {
+      result.current.toggleMobileMenu("item-1");
+    });
+
+    act(() => {
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
+    });
+
+    expect(result.current.mobileMenuItemId).toBeNull();
+  });
+
+  it("Escape 以外のキーでは閉じない", () => {
+    const { result } = renderHook(() => useMobileActionMenuController());
+
+    act(() => {
+      result.current.toggleMobileMenu("item-1");
+    });
+
+    act(() => {
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+    });
+
+    expect(result.current.mobileMenuItemId).toBe("item-1");
+  });
+
+  it("mobileMenuItemId が null のときはイベントリスナーを登録しない", () => {
+    const addSpy = jest.spyOn(document, "addEventListener");
+    const { result } = renderHook(() => useMobileActionMenuController());
+
+    // 初期状態(null)では登録されない
+    expect(result.current.mobileMenuItemId).toBeNull();
+    const calls = addSpy.mock.calls.filter(
+      ([event]) =>
+        event === "mousedown" || event === "touchstart" || event === "keydown",
+    );
+    expect(calls.length).toBe(0);
+
+    addSpy.mockRestore();
+  });
+});
