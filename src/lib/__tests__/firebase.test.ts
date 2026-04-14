@@ -1,11 +1,47 @@
+function withFirebaseEnv(values: {
+  apiKey: string;
+  projectId: string;
+  appId: string;
+}) {
+  let origApiKey: string | undefined;
+  let origProjectId: string | undefined;
+  let origAppId: string | undefined;
+
+  beforeEach(() => {
+    origApiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
+    origProjectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
+    origAppId = process.env.NEXT_PUBLIC_FIREBASE_APP_ID;
+
+    process.env.NEXT_PUBLIC_FIREBASE_API_KEY = values.apiKey;
+    process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID = values.projectId;
+    process.env.NEXT_PUBLIC_FIREBASE_APP_ID = values.appId;
+  });
+
+  afterEach(() => {
+    if (origApiKey === undefined) {
+      delete process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
+    } else {
+      process.env.NEXT_PUBLIC_FIREBASE_API_KEY = origApiKey;
+    }
+    if (origProjectId === undefined) {
+      delete process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
+    } else {
+      process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID = origProjectId;
+    }
+    if (origAppId === undefined) {
+      delete process.env.NEXT_PUBLIC_FIREBASE_APP_ID;
+    } else {
+      process.env.NEXT_PUBLIC_FIREBASE_APP_ID = origAppId;
+    }
+  });
+}
+
 describe("lib/firebase", () => {
+  withFirebaseEnv({ apiKey: "", projectId: "", appId: "" });
+
   beforeEach(() => {
     jest.resetModules();
     jest.clearAllMocks();
-
-    process.env.NEXT_PUBLIC_FIREBASE_API_KEY = "";
-    process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID = "";
-    process.env.NEXT_PUBLIC_FIREBASE_APP_ID = "";
   });
 
   it("設定不足時はisFirebaseConfiguredがfalseになる", async () => {
@@ -108,39 +144,15 @@ describe("lib/firebase", () => {
 });
 
 describe("initializeFirebaseIfConfigured の分岐", () => {
-  let originalApiKey: string | undefined;
-  let originalProjectId: string | undefined;
-  let originalAppId: string | undefined;
+  withFirebaseEnv({
+    apiKey: "test-api-key",
+    projectId: "test-project",
+    appId: "test-app-id",
+  });
 
   beforeEach(() => {
     jest.resetModules();
     jest.clearAllMocks();
-
-    originalApiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
-    originalProjectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
-    originalAppId = process.env.NEXT_PUBLIC_FIREBASE_APP_ID;
-
-    process.env.NEXT_PUBLIC_FIREBASE_API_KEY = "test-api-key";
-    process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID = "test-project";
-    process.env.NEXT_PUBLIC_FIREBASE_APP_ID = "test-app-id";
-  });
-
-  afterEach(() => {
-    if (originalApiKey === undefined) {
-      delete process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
-    } else {
-      process.env.NEXT_PUBLIC_FIREBASE_API_KEY = originalApiKey;
-    }
-    if (originalProjectId === undefined) {
-      delete process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
-    } else {
-      process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID = originalProjectId;
-    }
-    if (originalAppId === undefined) {
-      delete process.env.NEXT_PUBLIC_FIREBASE_APP_ID;
-    } else {
-      process.env.NEXT_PUBLIC_FIREBASE_APP_ID = originalAppId;
-    }
   });
 
   it("getApps()が空の場合はinitializeAppが呼ばれること", async () => {
