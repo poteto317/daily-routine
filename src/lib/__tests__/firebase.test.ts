@@ -9,7 +9,11 @@ describe("lib/firebase", () => {
   });
 
   it("設定不足時はisFirebaseConfiguredがfalseになる", async () => {
-    jest.doMock("firebase/app", () => ({ initializeApp: jest.fn() }));
+    jest.doMock("firebase/app", () => ({
+      initializeApp: jest.fn(),
+      getApps: jest.fn(() => []),
+      getApp: jest.fn(),
+    }));
     jest.doMock("firebase/messaging", () => ({
       getMessaging: jest.fn(),
       getToken: jest.fn(),
@@ -28,7 +32,11 @@ describe("lib/firebase", () => {
   });
 
   it("設定不足時のgetOrCreateUserはconfiguration-not-foundを投げる", async () => {
-    jest.doMock("firebase/app", () => ({ initializeApp: jest.fn() }));
+    jest.doMock("firebase/app", () => ({
+      initializeApp: jest.fn(),
+      getApps: jest.fn(() => []),
+      getApp: jest.fn(),
+    }));
     jest.doMock("firebase/messaging", () => ({
       getMessaging: jest.fn(),
       getToken: jest.fn(),
@@ -50,7 +58,11 @@ describe("lib/firebase", () => {
   });
 
   it("設定不足時のgetFirestoreInstanceはfirestore-not-availableを投げる", async () => {
-    jest.doMock("firebase/app", () => ({ initializeApp: jest.fn() }));
+    jest.doMock("firebase/app", () => ({
+      initializeApp: jest.fn(),
+      getApps: jest.fn(() => []),
+      getApp: jest.fn(),
+    }));
     jest.doMock("firebase/messaging", () => ({
       getMessaging: jest.fn(),
       getToken: jest.fn(),
@@ -71,7 +83,11 @@ describe("lib/firebase", () => {
   });
 
   it("messaging未初期化時のonForegroundMessageはnullを返す", async () => {
-    jest.doMock("firebase/app", () => ({ initializeApp: jest.fn() }));
+    jest.doMock("firebase/app", () => ({
+      initializeApp: jest.fn(),
+      getApps: jest.fn(() => []),
+      getApp: jest.fn(),
+    }));
     jest.doMock("firebase/messaging", () => ({
       getMessaging: jest.fn(),
       getToken: jest.fn(),
