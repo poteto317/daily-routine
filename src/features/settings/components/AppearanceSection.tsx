@@ -35,7 +35,7 @@ export const AppearanceSection = ({
           {THEME_OPTIONS.map((item) => (
             <label
               key={item.value}
-              className="flex items-center gap-3 p-3 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+              className="flex items-center gap-3 p-3 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors"
             >
               <input
                 type="radio"
@@ -69,7 +69,7 @@ export const AppearanceSection = ({
           {SWIPE_ACTION_OPTIONS.map((item) => (
             <label
               key={item.value}
-              className="flex items-center gap-3 p-3 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+              className="flex items-center gap-3 p-3 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors"
             >
               <input
                 type="radio"

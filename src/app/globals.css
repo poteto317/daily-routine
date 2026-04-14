@@ -1,6 +1,8 @@
 @import "tailwindcss";
 
 @variant dark (&:is(.dark *));
+/* hover: variant を @media (hover: hover) なしで `:hover` として定義（タッチスクリーンPCでも動作させる） */
+@variant hover (&:hover);
 
 @theme {
   --color-background: #ffffff;
@@ -30,6 +32,13 @@
 
 body {
   font-family: Arial, Helvetica, sans-serif;
+}
+
+@layer base {
+  /* button のデフォルトカーソルを pointer に統一（disabled は除外） */
+  button:not(:disabled) {
+    cursor: pointer;
+  }
 }
 
 /* 長押しによるテキスト選択を全画面で無効化 */
