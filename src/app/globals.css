@@ -46,8 +46,12 @@ body {
 }
 
 @layer base {
-  /* button のデフォルトカーソルを pointer に統一（disabled は除外） */
-  button:not(:disabled) {
+  /*
+   * button のデフォルトカーソルを pointer に統一（disabled は除外）
+   * :where() で特異性を 0 にし、cursor-grab / cursor-default など
+   * ユーティリティクラスによる上書きを可能にする
+   */
+  :where(button:not(:disabled)) {
     cursor: pointer;
   }
 }
