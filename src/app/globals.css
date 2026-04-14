@@ -1,8 +1,19 @@
 @import "tailwindcss";
 
 @variant dark (&:is(.dark *));
-/* hover: variant を @media (hover: hover) なしで `:hover` として定義（タッチスクリーンPCでも動作させる） */
-@variant hover (&:hover);
+/*
+ * hover: variant を再定義
+ * any-hover: hover はマウス・タッチパッドなど「いずれかの入力デバイスがホバー可能」な環境でマッチする。
+ * タッチスクリーン搭載PCはマウスも利用可能なため any-hover: hover となり :hover が適用される。
+ * 一方、マウスを持たないタッチ専用端末（スマホ等）では条件を満たさず :hover が残留しない。
+ */
+@variant hover {
+  @media (any-hover: hover) {
+    &:hover {
+      @slot;
+    }
+  }
+}
 
 @theme {
   --color-background: #ffffff;

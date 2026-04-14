@@ -48,6 +48,7 @@ describe("HeaderMenuItemButton", () => {
       const button = screen.getByRole("menuitem");
       expect(button.className).not.toContain("bg-blue-50");
       expect(button.className).toContain("hover:bg-gray-200");
+      expect(button.className).toContain("dark:hover:bg-gray-700");
     });
   });
 
@@ -73,6 +74,7 @@ describe("HeaderMenuItemButton", () => {
       const button = screen.getByRole("menuitem");
       expect(button.className).not.toContain("bg-blue-50");
       expect(button.className).toContain("hover:bg-gray-200");
+      expect(button.className).toContain("dark:hover:bg-gray-700");
     });
 
     it("【バグ修正】isActive=true でも currentPage が home の場合は非アクティブスタイルになる", () => {
@@ -80,6 +82,7 @@ describe("HeaderMenuItemButton", () => {
       const button = screen.getByRole("menuitem");
       expect(button.className).not.toContain("bg-blue-50");
       expect(button.className).toContain("hover:bg-gray-200");
+      expect(button.className).toContain("dark:hover:bg-gray-700");
     });
 
     it("isActive=false の場合は currentPage が route と一致してもアクティブスタイルにならない", () => {
@@ -87,6 +90,36 @@ describe("HeaderMenuItemButton", () => {
       renderButton(inactiveItem, "todo-lists");
       const button = screen.getByRole("menuitem");
       expect(button.className).not.toContain("bg-blue-50");
+    });
+  });
+
+  describe("ダークモードのコントラスト（リグレッション防止）", () => {
+    it("非アクティブ時の dark hover 背景色がテキスト色と同色にならない（gray-300同士の混在防止）", () => {
+      renderButton(baseItem, "home");
+      const button = screen.getByRole("menuitem");
+      // dark:hover:bg-gray-300 は dark:text-gray-300 と同色になりコントラストが消えるため使用禁止
+      expect(button.className).not.toContain("dark:hover:bg-gray-300");
+      // dark:hover:bg-gray-700 はテキスト gray-300 と十分なコントラストがある
+      expect(button.className).toContain("dark:hover:bg-gray-700");
+    });
+  });
+
+  describe("カーソルスタイル", () => {
+    it("アクティブ時も非アクティブ時も cursor-pointer が設定されている", () => {
+      const { rerender } = renderButton(baseItem, "journal");
+      expect(screen.getByRole("menuitem").className).toContain("cursor-pointer");
+
+      rerender(
+        <HeaderMenuItemButton
+          item={baseItem}
+          index={0}
+          currentPage="home"
+          setMenuItemRef={mockSetMenuItemRef}
+          onNavigateClick={mockOnNavigateClick}
+          onMenuItemKeyDown={mockOnMenuItemKeyDown}
+        />,
+      );
+      expect(screen.getByRole("menuitem").className).toContain("cursor-pointer");
     });
   });
 
