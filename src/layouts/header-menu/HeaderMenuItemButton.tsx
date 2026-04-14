@@ -41,8 +41,8 @@ export const HeaderMenuItemButton = ({
       role="menuitem"
       className={`w-full text-left px-4 py-3 flex items-center gap-3 whitespace-nowrap transition-colors ${
         isActiveItem
-          ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 cursor-pointer"
-          : "hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 cursor-pointer"
+          ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
+          : "hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300"
       }`}
     >
       <span className="text-xl">{item.icon}</span>

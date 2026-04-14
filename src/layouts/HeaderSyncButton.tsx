@@ -26,7 +26,7 @@ export const HeaderSyncButton = ({
     <button
       onClick={onSyncAction}
       disabled={syncStatus.isSyncing}
-      className={`relative inline-flex items-center justify-center w-10 h-10 rounded-full border transition-colors disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer shadow-sm text-gray-700 dark:text-gray-800 ${
+      className={`relative inline-flex items-center justify-center w-10 h-10 rounded-full border transition-colors disabled:opacity-60 disabled:cursor-not-allowed shadow-sm text-gray-700 dark:text-gray-800 ${
         shouldHighlight
           ? "border-amber-400 bg-amber-50 hover:bg-amber-100 dark:border-amber-500 dark:bg-amber-100 dark:hover:bg-amber-200"
           : "border-gray-200 bg-white hover:bg-gray-100 dark:bg-slate-100 dark:border-slate-300 dark:hover:bg-slate-200"

@@ -41,7 +41,7 @@ export const HeaderMenuFooter = ({
         onClick={onLogoutClick}
         onKeyDown={(event) => onMenuItemKeyDown(event, logoutItemIndex)}
         role="menuitem"
-        className="w-full text-left px-4 py-3 flex items-center gap-3 whitespace-nowrap transition-colors hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600 dark:text-red-400 cursor-pointer"
+        className="w-full text-left px-4 py-3 flex items-center gap-3 whitespace-nowrap transition-colors hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600 dark:text-red-400"
       >
         <span className="text-xl">🚪</span>
         <span className="font-medium">{uiTextConfig.auth.logout.button}</span>

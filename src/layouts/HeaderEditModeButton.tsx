@@ -12,7 +12,7 @@ export const HeaderEditModeButton = ({
   return (
     <button
       onClick={onToggleEditModeAction}
-      className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-200 transition-colors cursor-pointer"
+      className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-200 transition-colors"
       aria-label={
         isEditMode
           ? uiTextConfig.editMode.toggle.disable

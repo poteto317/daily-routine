@@ -104,22 +104,17 @@ describe("HeaderMenuItemButton", () => {
     });
   });
 
-  describe("カーソルスタイル", () => {
-    it("アクティブ時も非アクティブ時も cursor-pointer が設定されている", () => {
-      const { rerender } = renderButton(baseItem, "journal");
-      expect(screen.getByRole("menuitem").className).toContain("cursor-pointer");
+  describe("カーソルスタイル（button 要素の確認）", () => {
+    it("アクティブ時は button 要素として描画される（globals.css で cursor: pointer が適用される）", () => {
+      renderButton(baseItem, "journal");
+      const button = screen.getByRole("menuitem");
+      expect(button.tagName).toBe("BUTTON");
+    });
 
-      rerender(
-        <HeaderMenuItemButton
-          item={baseItem}
-          index={0}
-          currentPage="home"
-          setMenuItemRef={mockSetMenuItemRef}
-          onNavigateClick={mockOnNavigateClick}
-          onMenuItemKeyDown={mockOnMenuItemKeyDown}
-        />,
-      );
-      expect(screen.getByRole("menuitem").className).toContain("cursor-pointer");
+    it("非アクティブ時も button 要素として描画される（globals.css で cursor: pointer が適用される）", () => {
+      renderButton(baseItem, "home");
+      const button = screen.getByRole("menuitem");
+      expect(button.tagName).toBe("BUTTON");
     });
   });
 
