@@ -78,7 +78,7 @@ describe("useMobileActionMenuController", () => {
     });
 
     act(() => {
-      document.dispatchEvent(new TouchEvent("touchstart", { bubbles: true }));
+      document.dispatchEvent(new Event("touchstart", { bubbles: true }));
     });
 
     expect(result.current.mobileMenuItemId).toBeNull();
@@ -110,6 +110,47 @@ describe("useMobileActionMenuController", () => {
     });
 
     expect(result.current.mobileMenuItemId).toBe("item-1");
+  });
+
+  it("[data-mobile-menu] 要素内の mousedown ではメニューが閉じない", () => {
+    const { result } = renderHook(() => useMobileActionMenuController());
+
+    act(() => {
+      result.current.toggleMobileMenu("item-1");
+    });
+
+    // data-mobile-menu 属性を持つ要素をDOMに追加
+    const menuEl = document.createElement("div");
+    menuEl.setAttribute("data-mobile-menu", "");
+    document.body.appendChild(menuEl);
+
+    act(() => {
+      menuEl.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }));
+    });
+
+    expect(result.current.mobileMenuItemId).toBe("item-1");
+
+    document.body.removeChild(menuEl);
+  });
+
+  it("[data-mobile-menu] 要素内の touchstart ではメニューが閉じない", () => {
+    const { result } = renderHook(() => useMobileActionMenuController());
+
+    act(() => {
+      result.current.toggleMobileMenu("item-1");
+    });
+
+    const menuEl = document.createElement("div");
+    menuEl.setAttribute("data-mobile-menu", "");
+    document.body.appendChild(menuEl);
+
+    act(() => {
+      menuEl.dispatchEvent(new Event("touchstart", { bubbles: true }));
+    });
+
+    expect(result.current.mobileMenuItemId).toBe("item-1");
+
+    document.body.removeChild(menuEl);
   });
 
   it("mobileMenuItemId が null のときはイベントリスナーを登録しない", () => {

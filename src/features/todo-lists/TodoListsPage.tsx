@@ -379,12 +379,19 @@ const SortableTodoListItem = ({
               </button>
 
               {/* モバイル: ⋮ ボタン（アクション一覧トリガー） */}
-              <div className="sm:hidden" data-mobile-menu>
+              <div
+                className="sm:hidden"
+                data-mobile-menu
+                onTouchStartCapture={(e) => e.stopPropagation()}
+                onMouseDownCapture={(e) => e.stopPropagation()}
+              >
                 <button
                   type="button"
                   onClick={() => toggleMobileMenu(item.id)}
                   aria-label="アクションメニュー"
+                  aria-haspopup="menu"
                   aria-expanded={mobileMenuItemId === item.id}
+                  aria-controls={`mobile-menu-${item.id}`}
                   className="shrink-0 w-6 h-6 flex items-center justify-center text-gray-400 dark:text-gray-500 text-lg leading-none"
                 >
                   ⋮
@@ -398,6 +405,7 @@ const SortableTodoListItem = ({
       {/* モバイルドロップダウン — SwipeableRoutineItem の overflow-hidden 外に配置 */}
       {mobileMenuItemId === item.id && (
         <div
+          id={`mobile-menu-${item.id}`}
           role="menu"
           data-mobile-menu
           className="absolute right-0 top-full mt-0.5 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-500 rounded-lg shadow-lg z-50 min-w-[10rem] py-1 max-h-[60vh] overflow-y-auto"
