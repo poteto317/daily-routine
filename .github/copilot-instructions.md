@@ -4,6 +4,7 @@
 - コードの修正や提案を行った後は、必ずターミナルで `npm run verify` を実行して動作確認を行うようにしてください。
 - 修正内容に自信がある場合でも、検証ステップを省略しないでください。
 - **`git commit` や `git push` は絶対に自動実行しないでください。** コミット・プッシュは必ずユーザーが確認・承認した上で行います。ユーザーから明示的に指示がある場合のみ実行してください。
+- **GitHub CLI (`gh`) で日本語を含む PR / Issue 本文を読む・書く場合は、PowerShell の文字コードを必ず UTF-8 に固定してから実行してください。** `chcp 65001`、`[Console]::InputEncoding = [System.Text.Encoding]::UTF8`、`[Console]::OutputEncoding = [System.Text.Encoding]::UTF8`、`$OutputEncoding = [Console]::OutputEncoding` を設定してから `gh pr view --json body` / `gh pr edit --body-file` などを実行すること。既存本文が文字化けした場合は壊れた本文を再利用せず、正常なスナップショットや手元で復元した UTF-8 テキストから上書きすること。
 
 # Daily Routine App - 開発ガイドライン
 
