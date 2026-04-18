@@ -24,6 +24,27 @@
   - 既存本文が文字化けした場合は、壊れた本文を再利用しないでください。
   - 正常なスナップショット、または手元で復元した UTF-8 テキストから上書きしてください。
 
+# PR レビューフロー
+
+PR へのコミットをプッシュした後は、以下の手順を必ず実施してください。
+
+1. **未解決スレッドの確認**
+   - PR の「Conversation」タブで未解決のレビュースレッドがないか確認する
+   - 未解決スレッドがある場合はすべて Resolve してから次のステップへ
+
+2. **Copilot へのレビュー依頼**
+   - 未解決スレッドが 0 件になったら、以下の PowerShell コマンドをローカルターミナルから実行して Copilot にレビューを依頼してください
+   - `GITHUB_TOKEN`（GitHub Actions）からは Copilot レビューをトリガーできないため、必ずローカルターミナルから実行すること
+   - `PR_NUMBER` には対象 PR の番号を設定してください（例: `7`）
+   - `REPO` には対象リポジトリの `OWNER/REPO` を設定してください（例: `poteto317/daily-routine`）
+
+   ```powershell
+   $PR_NUMBER = "<対象PR番号>"
+   $REPO = "<OWNER/REPO>"
+   gh api -X POST "repos/$REPO/pulls/$PR_NUMBER/requested_reviewers" `
+     -f "reviewers[]=copilot-pull-request-reviewer[bot]"
+   ```
+
 # Daily Routine App - 開発ガイドライン
 
 このドキュメントは、AIアシスタントや開発者がこのプロジェクトで作業する際のルールと規約を定義します。
