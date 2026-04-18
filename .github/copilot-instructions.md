@@ -34,7 +34,7 @@ PR へのコミットをプッシュした後は、以下の手順を必ず実�
 
 2. **Copilot へのレビュー依頼**
    - 未解決スレッドが 0 件になったら、以下の PowerShell コマンドをローカルターミナルから実行して Copilot にレビューを依頼してください
-   - `GITHUB_TOKEN`（GitHub Actions）からはCopilotレビューをトリガーできないため、必ずローカルターミナルから実行すること
+   - `GITHUB_TOKEN`（GitHub Actions）からは Copilot レビューをトリガーできないため、必ずローカルターミナルから実行すること
    - `PR_NUMBER` には対象 PR の番号を設定してください（例: `7`）
    - `REPO` には対象リポジトリの `OWNER/REPO` を設定してください（例: `poteto317/daily-routine`）
 
