@@ -81,6 +81,20 @@ describe("statusStore", () => {
       });
     });
 
+    it("isSyncing: true の場合も sync-status-changed イベントを発火しない（サイレント更新）", () => {
+      localStorage.setItem(
+        SYNC_STATUS_KEY,
+        JSON.stringify({ isSyncing: true }),
+      );
+      const handler = jest.fn();
+      window.addEventListener("sync-status-changed", handler);
+
+      resetStaleSyncingState();
+
+      expect(handler).not.toHaveBeenCalled();
+      window.removeEventListener("sync-status-changed", handler);
+    });
+
     it("isSyncing: false の場合は sync-status-changed イベントを発火しない", () => {
       localStorage.setItem(
         SYNC_STATUS_KEY,

@@ -19,7 +19,7 @@ describe("useHeaderSyncStatus", () => {
     expect(mockRefreshRemoteSyncStatus).toHaveBeenCalledTimes(1);
   });
 
-  it("mount 時に useLayoutEffect で initializeHeaderSyncState を呼び出す", async () => {
+  it("mount 時に initializeHeaderSyncState を呼び出して残留 isSyncing をリセットする", async () => {
     const initializeSpy = jest
       .spyOn(headerSyncState, "initializeHeaderSyncState")
       .mockImplementation(() => {});
