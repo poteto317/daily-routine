@@ -17,7 +17,8 @@
     "test": "cross-env TZ=Asia/Tokyo jest --forceExit",
     "test:watch": "cross-env TZ=Asia/Tokyo jest --watch",
     "test:ci": "cross-env TZ=Asia/Tokyo jest --ci --coverage --forceExit",
-    "verify": "npm run tailwind:scan && npm run lint && npm run typecheck && npm test -- --runInBand && npm run build"
+    "verify:fast": "npm run tailwind:scan && npm run lint && npm run typecheck && npm test -- --runInBand",
+    "verify": "npm run verify:fast && npm run build"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

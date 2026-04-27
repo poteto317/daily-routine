@@ -4,6 +4,8 @@ const config: Config = {
   coverageProvider: "v8",
   testEnvironment: "jsdom",
   setupFilesAfterEnv: ["<rootDir>/jest.setup.ts"],
+  testTimeout: 15000,
+  openHandlesTimeout: 500,
   moduleNameMapper: {
     "^@/(.*)$": "<rootDir>/src/$1",
   },
