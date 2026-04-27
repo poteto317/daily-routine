@@ -5,11 +5,12 @@ import {
   getOrCreateUser,
 } from "@/lib/firebase";
 import { getSyncErrorMessage } from "./errorMessage";
-import { saveSyncDataToLocal } from "./localData";
+import { saveSyncDataToLocal, collectLocalSyncData } from "./localData";
 import { setSyncStatus } from "./statusStore";
 import { extractTimestamp } from "./timestamp";
 import { SYNC_TIMEOUT_MS } from "./constants";
 import { withSyncTimeout } from "./withSyncTimeout";
+import { saveSyncedContentHash } from "./syncedContentHash";
 import type { SyncData, SyncStatus } from "./types";
 import texts from "../locales/ja.json";
 
@@ -31,6 +32,7 @@ const performDownloadOperation = async (): Promise<Partial<SyncStatus>> => {
   const data = docSnap.data() as SyncData;
   const remoteLastModified = extractTimestamp(data.lastModified);
   saveSyncDataToLocal(data);
+  saveSyncedContentHash(collectLocalSyncData());
 
   // 0 は「タイムスタンプなし」を意味するため null に正規化する
   const normalizedRemote = remoteLastModified > 0 ? remoteLastModified : null;

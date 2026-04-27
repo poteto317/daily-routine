@@ -13,6 +13,7 @@ import { setSyncStatus } from "./statusStore";
 import { buildSyncUploadData, buildUploadSuccessStatus } from "./uploadState";
 import { SYNC_TIMEOUT_MS } from "./constants";
 import { withSyncTimeout } from "./withSyncTimeout";
+import { saveSyncedContentHash } from "./syncedContentHash";
 import type { SyncData, SyncStatus } from "./types";
 import texts from "../locales/ja.json";
 
@@ -34,6 +35,7 @@ const performUploadOperation = async (): Promise<Partial<SyncStatus>> => {
   await setDoc(docRef, { ...syncData, updatedAt: serverTimestamp() });
   await saveSyncSnapshot(syncData);
   setLocalDataUpdatedAt(syncData.lastModified);
+  saveSyncedContentHash(collectLocalSyncData());
 
   return buildUploadSuccessStatus({ syncedAt, lastSyncTime: Date.now() });
 };
