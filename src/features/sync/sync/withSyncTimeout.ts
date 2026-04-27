@@ -2,7 +2,8 @@
  * 指定した非同期処理にタイムアウトを設定する。
  * タイムアウト時間内に完了しない場合、指定したメッセージで reject する。
  * settled フラグにより、タイムアウト後に元の処理が完了しても resolve/reject しない。
- * clearTimeout を呼ぶことでタイマーのリークを防ぐ。
+ * Promise.resolve().then(fn) の形式にすることで fn が同期的に throw した場合も
+ * clearTimeout を確実に呼び出し、タイマーリークを防ぐ。
  */
 export const withSyncTimeout = <T>(
   fn: () => Promise<T>,
@@ -19,20 +20,22 @@ export const withSyncTimeout = <T>(
       }
     }, timeoutMs);
 
-    fn().then(
-      (result) => {
-        if (!settled) {
-          settled = true;
-          clearTimeout(timer);
-          resolve(result);
-        }
-      },
-      (error: unknown) => {
-        if (!settled) {
-          settled = true;
-          clearTimeout(timer);
-          reject(error);
-        }
-      },
-    );
+    Promise.resolve()
+      .then(fn)
+      .then(
+        (result) => {
+          if (!settled) {
+            settled = true;
+            clearTimeout(timer);
+            resolve(result);
+          }
+        },
+        (error: unknown) => {
+          if (!settled) {
+            settled = true;
+            clearTimeout(timer);
+            reject(error);
+          }
+        },
+      );
   });

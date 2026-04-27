@@ -18,7 +18,7 @@ import texts from "../locales/ja.json";
 
 /**
  * Firestore へのアップロード操作を実行する。
- * ステータス管理・エラーハンドリングを含まない純粋な操作関数。
+ * 同期ステータス管理・エラーハンドリングを含まないアップロード処理。
  */
 const performUploadOperation = async (): Promise<Partial<SyncStatus>> => {
   const user = await getOrCreateUser();

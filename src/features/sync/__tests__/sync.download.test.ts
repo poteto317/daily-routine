@@ -258,19 +258,20 @@ describe("sync download", () => {
 
   it("Firebase操作がタイムアウトした場合に isSyncing を false にリセットする", async () => {
     jest.useFakeTimers();
+    try {
+      // 永遠に解決しない Promise を返す
+      mockGetOrCreateUser.mockReturnValue(new Promise(() => {}));
 
-    // 永遠に解決しない Promise を返す
-    mockGetOrCreateUser.mockReturnValue(new Promise(() => {}));
+      const promise = downloadFromFirestore({ reload: false });
+      jest.advanceTimersByTime(SYNC_TIMEOUT_MS + 100);
 
-    const promise = downloadFromFirestore({ reload: false });
-    jest.advanceTimersByTime(SYNC_TIMEOUT_MS + 100);
-
-    await expect(promise).rejects.toMatchObject({ code: "download-failed" });
-    expect(getSyncStatus()).toMatchObject({
-      isSyncing: false,
-      error: expect.stringContaining("タイムアウト"),
-    });
-
-    jest.useRealTimers();
+      await expect(promise).rejects.toMatchObject({ code: "download-failed" });
+      expect(getSyncStatus()).toMatchObject({
+        isSyncing: false,
+        error: expect.stringContaining("タイムアウト"),
+      });
+    } finally {
+      jest.useRealTimers();
+    }
   });
 });

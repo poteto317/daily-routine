@@ -9,20 +9,21 @@ import {
 } from "./headerSyncState";
 
 export const useHeaderSyncStatus = (): HeaderSyncStatus => {
-  const [syncStatus, setSyncStatus] = useState(() => {
-    // 副作用（残留 isSyncing クリア）と純粋な状態取得を分離しつつ、
-    // 初回レンダリング前に実行することで正しい初期状態を保証する
-    initializeHeaderSyncState();
-    return getInitialHeaderSyncStatus();
-  });
+  const [syncStatus, setSyncStatus] = useState(getInitialHeaderSyncStatus);
 
   useEffect(() => {
-    void refreshRemoteSyncStatus();
-
-    return registerHeaderSyncListeners({
+    // リスナーを先に登録し、initializeHeaderSyncState が発火する
+    // sync-status-changed イベントを確実に受け取れるようにする
+    const cleanup = registerHeaderSyncListeners({
       setSyncStatus,
       recalculateSyncStatus: recalculateHeaderSyncStatus,
     });
+
+    // 残留 isSyncing をクリアし、sync-status-changed イベント経由で状態を更新する
+    initializeHeaderSyncState();
+    void refreshRemoteSyncStatus();
+
+    return cleanup;
   }, []);
 
   return syncStatus;

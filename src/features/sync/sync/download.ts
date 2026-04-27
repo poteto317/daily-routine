@@ -15,7 +15,7 @@ import texts from "../locales/ja.json";
 
 /**
  * Firestore からのダウンロード操作を実行する。
- * ページリロード・ステータス管理・エラーハンドリングを含まない純粋な操作関数。
+ * 同期ステータス管理・ページリロード・エラーハンドリングを含まない処理関数。
  * ダウンロード後はローカルとリモートが一致するため、hasRemoteChanges / hasLocalChanges は常に false。
  */
 const performDownloadOperation = async (): Promise<Partial<SyncStatus>> => {

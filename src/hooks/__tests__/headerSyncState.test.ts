@@ -37,6 +37,19 @@ describe("headerSyncState", () => {
 
       expect(mockResetStaleSyncingState).toHaveBeenCalledTimes(1);
     });
+
+    it("実行後に sync-status-changed イベントを発火してリスナーに通知する", () => {
+      const handler = jest.fn();
+      window.addEventListener("sync-status-changed", handler);
+
+      initializeHeaderSyncState();
+
+      expect(handler).toHaveBeenCalledTimes(1);
+      const event = handler.mock.calls[0]?.[0] as CustomEvent;
+      expect(event.detail).toEqual(mockGetSyncStatus.mock.results[0]?.value);
+
+      window.removeEventListener("sync-status-changed", handler);
+    });
   });
 
   it("sync-status-changedイベントで状態更新を通知する", () => {

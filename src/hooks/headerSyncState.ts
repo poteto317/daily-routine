@@ -19,12 +19,17 @@ export const INITIAL_HEADER_SYNC_STATUS: HeaderSyncStatus = {
 };
 
 /**
- * ページロード時の副作用（残留した isSyncing: true のクリア）を実行する。
+ * ページロード時の副作用（残留した isSyncing: true のクリア）を実行し、
+ * リスナーに現在の同期状態を通知する。
  * 純粋な状態取得（getInitialHeaderSyncStatus）とは分離された単一責任の関数。
  */
 export const initializeHeaderSyncState = (): void => {
   if (typeof window === "undefined") return;
   resetStaleSyncingState();
+  const status = getSyncStatus();
+  window.dispatchEvent(
+    new CustomEvent<SyncStatus>("sync-status-changed", { detail: status }),
+  );
 };
 
 /**

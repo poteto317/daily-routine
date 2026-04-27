@@ -76,4 +76,20 @@ describe("withSyncTimeout", () => {
     resolveDelayed("late success");
     // promise は既に reject 済みのため変化しない（settled = true）
   });
+
+  it("fn が同期的に throw した場合もタイマーがクリアされ reject される", async () => {
+    const clearTimeoutSpy = jest.spyOn(globalThis, "clearTimeout");
+    const syncError = new Error("sync throw");
+    const fn = jest.fn().mockImplementation(() => {
+      throw syncError;
+    });
+
+    await expect(withSyncTimeout(fn, 5000, "タイムアウト")).rejects.toThrow(
+      "sync throw",
+    );
+
+    // 同期 throw でもタイマーが確実にクリアされることを確認
+    expect(clearTimeoutSpy).toHaveBeenCalledTimes(1);
+    clearTimeoutSpy.mockRestore();
+  });
 });
