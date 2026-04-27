@@ -119,4 +119,34 @@ describe("statusStore", () => {
       window.removeEventListener("sync-status-changed", handler);
     });
   });
+
+  describe("ストレージアクセスエラー（SecurityError 等）", () => {
+    it("localStorage.setItem が例外をスローしても setSyncStatus はエラーを投げない", () => {
+      const spy = jest
+        .spyOn(Storage.prototype, "setItem")
+        .mockImplementation(() => {
+          throw new DOMException("QuotaExceededError");
+        });
+
+      expect(() => setSyncStatus({ isSyncing: true })).not.toThrow();
+
+      spy.mockRestore();
+    });
+
+    it("localStorage.setItem が例外をスローしても resetStaleSyncingState はエラーを投げない", () => {
+      localStorage.setItem(
+        SYNC_STATUS_KEY,
+        JSON.stringify({ isSyncing: true }),
+      );
+      const spy = jest
+        .spyOn(Storage.prototype, "setItem")
+        .mockImplementation(() => {
+          throw new DOMException("SecurityError");
+        });
+
+      expect(() => resetStaleSyncingState()).not.toThrow();
+
+      spy.mockRestore();
+    });
+  });
 });
