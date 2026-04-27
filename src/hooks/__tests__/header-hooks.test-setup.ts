@@ -3,6 +3,7 @@ import {
   getSyncStatus,
   refreshRemoteSyncStatus,
   refreshSyncStatusFromStoredRemote,
+  resetStaleSyncingState,
   uploadToFirestore,
 } from "@/features/sync";
 
@@ -12,6 +13,7 @@ jest.mock("@/features/sync", () => ({
   getSyncStatus: jest.fn(),
   refreshRemoteSyncStatus: jest.fn(),
   refreshSyncStatusFromStoredRemote: jest.fn(),
+  resetStaleSyncingState: jest.fn(),
   uploadToFirestore: jest.fn(),
 }));
 
@@ -35,6 +37,9 @@ export const mockRefreshSyncStatusFromStoredRemote =
 
 export const mockDownloadFromFirestore =
   downloadFromFirestore as jest.MockedFunction<typeof downloadFromFirestore>;
+
+export const mockResetStaleSyncingState =
+  resetStaleSyncingState as jest.MockedFunction<typeof resetStaleSyncingState>;
 
 export const setupHeaderHooksMocks = () => {
   jest.restoreAllMocks();

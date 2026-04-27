@@ -1,5 +1,7 @@
-import { mockGetDoc, setupSyncTestEnvironment } from "./sync.test.utils";
+import { mockGetDoc, mockGetOrCreateUser, setupSyncTestEnvironment } from "./sync.test.utils";
 import { downloadFromFirestore } from "../sync";
+import { getSyncStatus } from "../sync/statusStore";
+import { SYNC_TIMEOUT_MS } from "../sync/constants";
 import * as budgetStorage from "@/features/budget/storage";
 import * as journalStorage from "@/features/journal/storage";
 import * as mealStorage from "@/features/meal/storage";
@@ -171,5 +173,105 @@ describe("sync download", () => {
     expect(routineStorage.saveRoutines).not.toHaveBeenCalled();
     expect(routineStorage.saveMonthlyHistory).not.toHaveBeenCalled();
     expect(settingsStorage.saveSettings).not.toHaveBeenCalled();
+  });
+
+  it("ダウンロード成功後に isSyncing: false・hasRemoteChanges: false のステータスを設定する", async () => {
+    const remoteData = {
+      routines: [],
+      deviceId: "device-1",
+      lastModified: Date.now(),
+    };
+    mockGetDoc.mockResolvedValue({
+      exists: () => true,
+      data: () => remoteData,
+    } as never);
+
+    await downloadFromFirestore({ reload: false });
+
+    expect(getSyncStatus()).toMatchObject({
+      isSyncing: false,
+      hasRemoteChanges: false,
+      hasLocalChanges: false,
+      error: null,
+    });
+  });
+
+  it("ダウンロード成功後に localLastModified と remoteLastModified をリモートのタイムスタンプで設定する", async () => {
+    const lastModified = 1700000000000;
+    const remoteData = {
+      routines: [],
+      deviceId: "device-1",
+      lastModified,
+    };
+    mockGetDoc.mockResolvedValue({
+      exists: () => true,
+      data: () => remoteData,
+    } as never);
+
+    await downloadFromFirestore({ reload: false });
+
+    expect(getSyncStatus()).toMatchObject({
+      localLastModified: lastModified,
+      remoteLastModified: lastModified,
+    });
+  });
+
+  it("リモートのタイムスタンプが 0 の場合は localLastModified / remoteLastModified を null にする", async () => {
+    const remoteData = {
+      routines: [],
+      deviceId: "device-1",
+      lastModified: 0,
+    };
+    mockGetDoc.mockResolvedValue({
+      exists: () => true,
+      data: () => remoteData,
+    } as never);
+
+    await downloadFromFirestore({ reload: false });
+
+    expect(getSyncStatus()).toMatchObject({
+      localLastModified: null,
+      remoteLastModified: null,
+    });
+  });
+
+  it("ダウンロード完了時に sync-status-changed イベントを 1 回だけ発火する", async () => {
+    const remoteData = {
+      routines: [],
+      deviceId: "device-1",
+      lastModified: Date.now(),
+    };
+    mockGetDoc.mockResolvedValue({
+      exists: () => true,
+      data: () => remoteData,
+    } as never);
+
+    const handler = jest.fn();
+    window.addEventListener("sync-status-changed", handler);
+
+    await downloadFromFirestore({ reload: false });
+
+    // isSyncing: true の設定（開始時）と isSyncing: false の設定（完了時）の 2 回のみ
+    expect(handler).toHaveBeenCalledTimes(2);
+    window.removeEventListener("sync-status-changed", handler);
+  });
+
+  it("Firebase操作がタイムアウトした場合に isSyncing を false にリセットする", async () => {
+    jest.useFakeTimers();
+    try {
+      // 永遠に解決しない Promise を返す
+      mockGetOrCreateUser.mockReturnValue(new Promise(() => {}));
+
+      const promise = downloadFromFirestore({ reload: false });
+      jest.advanceTimersByTime(SYNC_TIMEOUT_MS + 100);
+
+      await expect(promise).rejects.toMatchObject({ code: "download-failed" });
+      expect(getSyncStatus()).toMatchObject({
+        isSyncing: false,
+        error: expect.stringContaining("タイムアウト"),
+      });
+    } finally {
+      jest.useRealTimers();
+    }
   });
 });

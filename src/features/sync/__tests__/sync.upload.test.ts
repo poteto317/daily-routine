@@ -1,6 +1,7 @@
-import { mockSetDoc, setupSyncTestEnvironment } from "./sync.test.utils";
+import { mockSetDoc, mockGetOrCreateUser, setupSyncTestEnvironment } from "./sync.test.utils";
 import { uploadToFirestore } from "../sync";
 import { getSyncStatus } from "../sync/statusStore";
+import { SYNC_TIMEOUT_MS } from "../sync/constants";
 import * as budgetStorage from "@/features/budget/storage";
 import * as journalStorage from "@/features/journal/storage";
 import * as mealStorage from "@/features/meal/storage";
@@ -237,5 +238,35 @@ describe("sync upload", () => {
       hasLocalChanges: false,
       error: null,
     });
+  });
+
+  it("アップロード成功後に isSyncing: false・hasLocalChanges: false のステータスを設定する", async () => {
+    await uploadToFirestore();
+
+    expect(getSyncStatus()).toMatchObject({
+      isSyncing: false,
+      hasRemoteChanges: false,
+      hasLocalChanges: false,
+      error: null,
+    });
+  });
+
+  it("Firebase操作がタイムアウトした場合に isSyncing を false にリセットする", async () => {
+    jest.useFakeTimers();
+    try {
+      // 永遠に解決しない Promise を返す
+      mockGetOrCreateUser.mockReturnValue(new Promise(() => {}));
+
+      const promise = uploadToFirestore();
+      jest.advanceTimersByTime(SYNC_TIMEOUT_MS + 100);
+
+      await expect(promise).rejects.toMatchObject({ code: "upload-failed" });
+      expect(getSyncStatus()).toMatchObject({
+        isSyncing: false,
+        error: expect.stringContaining("タイムアウト"),
+      });
+    } finally {
+      jest.useRealTimers();
+    }
   });
 });

@@ -1,4 +1,4 @@
-export { getSyncStatus } from "./sync/statusStore";
+export { getSyncStatus, resetStaleSyncingState } from "./sync/statusStore";
 export { uploadToFirestore } from "./sync/upload";
 export { downloadFromFirestore } from "./sync/download";
 export {

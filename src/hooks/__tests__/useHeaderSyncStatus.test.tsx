@@ -5,6 +5,7 @@ import {
   setupHeaderHooksMocks,
 } from "./header-hooks.test-setup";
 import { useHeaderSyncStatus } from "@/hooks/useHeaderSyncStatus";
+import * as headerSyncState from "@/hooks/headerSyncState";
 
 describe("useHeaderSyncStatus", () => {
   beforeEach(() => {
@@ -16,6 +17,20 @@ describe("useHeaderSyncStatus", () => {
 
     expect(result.current).toEqual(mockGetSyncStatus.mock.results[0]?.value);
     expect(mockRefreshRemoteSyncStatus).toHaveBeenCalledTimes(1);
+  });
+
+  it("mount 時に initializeHeaderSyncState を呼び出して残留 isSyncing をリセットする", async () => {
+    const initializeSpy = jest
+      .spyOn(headerSyncState, "initializeHeaderSyncState")
+      .mockImplementation(() => {});
+
+    renderHook(() => useHeaderSyncStatus());
+
+    await act(async () => {});
+
+    expect(initializeSpy).toHaveBeenCalledTimes(1);
+
+    initializeSpy.mockRestore();
   });
 
   it("sync-status-changed イベントで状態を更新する", () => {
