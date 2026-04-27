@@ -1,4 +1,5 @@
-const SYNCED_CONTENT_HASH_KEY = "synced-content-hash";
+import { getStorageItem, setStorageItem } from "@/lib/storage/core";
+import { SYNCED_CONTENT_HASH_KEY } from "./constants";
 
 /**
  * djb2 ハッシュ関数（32bit integer）。
@@ -15,17 +16,13 @@ export const computeContentHash = (data: object): number => {
 };
 
 /**
- * 同期済みデータのコンテンツハッシュを localStorage に保存する。
+ * 同期済みデータのコンテンツハッシュをユーザースコープ付きで保存する。
  * アップロード / ダウンロード成功時に呼び出す。
  */
 export const saveSyncedContentHash = (data: object): void => {
-  if (typeof window === "undefined") return;
-  try {
-    const hash = computeContentHash(data);
-    localStorage.setItem(SYNCED_CONTENT_HASH_KEY, String(hash));
-  } catch {
-    // SecurityError / QuotaExceededError などは無視する
-  }
+  setStorageItem(SYNCED_CONTENT_HASH_KEY, computeContentHash(data), {
+    skipLocalDataUpdatedAt: true,
+  });
 };
 
 /**
@@ -33,13 +30,6 @@ export const saveSyncedContentHash = (data: object): void => {
  * 未保存（初回）の場合は null を返す。
  */
 export const getSyncedContentHash = (): number | null => {
-  if (typeof window === "undefined") return null;
-  try {
-    const stored = localStorage.getItem(SYNCED_CONTENT_HASH_KEY);
-    if (stored === null) return null;
-    const parsed = Number(stored);
-    return Number.isNaN(parsed) ? null : parsed;
-  } catch {
-    return null;
-  }
+  const stored = getStorageItem<number | null>(SYNCED_CONTENT_HASH_KEY, null);
+  return typeof stored === "number" ? stored : null;
 };
