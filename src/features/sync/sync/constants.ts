@@ -3,6 +3,9 @@ import type { SyncStatus } from "./types";
 export const DEVICE_ID_KEY = "device-id";
 export const SYNC_STATUS_KEY = "sync-status";
 
+/** アップロード/ダウンロード処理のタイムアウト時間 (ms) */
+export const SYNC_TIMEOUT_MS = 30_000;
+
 export const DEFAULT_SYNC_STATUS: SyncStatus = {
   isSyncing: false,
   lastSyncTime: null,

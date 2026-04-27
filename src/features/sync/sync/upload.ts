@@ -11,33 +11,47 @@ import { getSyncErrorMessage } from "./errorMessage";
 import { saveSyncSnapshot } from "./snapshots";
 import { setSyncStatus } from "./statusStore";
 import { buildSyncUploadData, buildUploadSuccessStatus } from "./uploadState";
-import type { SyncData } from "./types";
+import { SYNC_TIMEOUT_MS } from "./constants";
+import { withSyncTimeout } from "./withSyncTimeout";
+import type { SyncData, SyncStatus } from "./types";
 import texts from "../locales/ja.json";
 
+/**
+ * Firestore へのアップロード操作を実行する。
+ * ステータス管理・エラーハンドリングを含まない純粋な操作関数。
+ */
+const performUploadOperation = async (): Promise<Partial<SyncStatus>> => {
+  const user = await getOrCreateUser();
+  const firestore = getFirestoreInstance();
+  const syncedAt = Date.now();
+  const syncData: SyncData = buildSyncUploadData({
+    localData: collectLocalSyncData(),
+    lastModified: syncedAt,
+    deviceId: getDeviceId(),
+  });
+
+  const docRef = doc(firestore, "users", user.uid);
+  await setDoc(docRef, { ...syncData, updatedAt: serverTimestamp() });
+  await saveSyncSnapshot(syncData);
+  setLocalDataUpdatedAt(syncData.lastModified);
+
+  return buildUploadSuccessStatus({ syncedAt, lastSyncTime: Date.now() });
+};
+
+/**
+ * Firestore へデータをアップロードする。
+ * 同期ステータス管理・タイムアウト制御・エラーハンドリングを担当する。
+ */
 export const uploadToFirestore = async (): Promise<void> => {
   try {
     setSyncStatus({ isSyncing: true, error: null });
 
-    const user = await getOrCreateUser();
-    const firestore = getFirestoreInstance();
-    const syncedAt = Date.now();
-    const syncData: SyncData = buildSyncUploadData({
-      localData: collectLocalSyncData(),
-      lastModified: syncedAt,
-      deviceId: getDeviceId(),
-    });
-
-    const docRef = doc(firestore, "users", user.uid);
-    await setDoc(docRef, { ...syncData, updatedAt: serverTimestamp() });
-    await saveSyncSnapshot(syncData);
-    setLocalDataUpdatedAt(syncData.lastModified);
-
-    setSyncStatus(
-      buildUploadSuccessStatus({
-        syncedAt,
-        lastSyncTime: Date.now(),
-      }),
+    const status = await withSyncTimeout(
+      performUploadOperation,
+      SYNC_TIMEOUT_MS,
+      texts.syncError.timeout,
     );
+    setSyncStatus(status);
   } catch (error) {
     const errorMessage = getSyncErrorMessage(
       error,

@@ -7,6 +7,7 @@ export {
   watchRemoteChanges,
   initialSync,
   getSyncStatus,
+  resetStaleSyncingState,
   refreshRemoteSyncStatus,
   refreshSyncStatusFromStoredRemote,
   syncLatestData,

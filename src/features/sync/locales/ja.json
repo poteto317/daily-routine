@@ -8,7 +8,8 @@
     "downloadFailed": "ダウンロードに失敗しました",
     "uploadFailed": "アップロードに失敗しました",
     "syncLatestFailed": "同期に失敗しました",
-    "watchFailed": "同期監視に失敗しました"
+    "watchFailed": "同期監視に失敗しました",
+    "timeout": "同期がタイムアウトしました"
   },
   "snapshotManager": {
     "title": "☁️ 同期履歴管理",

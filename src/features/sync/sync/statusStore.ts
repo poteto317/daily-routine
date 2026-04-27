@@ -25,3 +25,14 @@ export const setSyncStatus = (status: Partial<SyncStatus>): void => {
     new CustomEvent("sync-status-changed", { detail: updated }),
   );
 };
+
+/**
+ * ページロード時に localStorage へ残留した isSyncing: true をリセットする。
+ * 新しいページロードでは同期処理は走っていないため、isSyncing は必ず false であるべき。
+ */
+export const resetStaleSyncingState = (): void => {
+  const current = getSyncStatus();
+  if (current.isSyncing) {
+    setSyncStatus({ isSyncing: false });
+  }
+};
