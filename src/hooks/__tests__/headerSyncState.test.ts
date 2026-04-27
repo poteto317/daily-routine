@@ -2,9 +2,11 @@ import { LOCAL_DATA_UPDATED_AT_EVENT } from "@/lib/storage/core";
 import {
   mockGetSyncStatus,
   mockRefreshSyncStatusFromStoredRemote,
+  mockResetStaleSyncingState,
   setupHeaderHooksMocks,
 } from "./header-hooks.test-setup";
 import {
+  initializeHeaderSyncState,
   getInitialHeaderSyncStatus,
   registerHeaderSyncListeners,
   recalculateHeaderSyncStatus,
@@ -15,10 +17,26 @@ describe("headerSyncState", () => {
     setupHeaderHooksMocks();
   });
 
-  it("初期状態はgetSyncStatusから取得する", () => {
-    expect(getInitialHeaderSyncStatus()).toEqual(
-      mockGetSyncStatus.mock.results[0]?.value,
-    );
+  describe("getInitialHeaderSyncStatus", () => {
+    it("初期状態はgetSyncStatusから取得する", () => {
+      expect(getInitialHeaderSyncStatus()).toEqual(
+        mockGetSyncStatus.mock.results[0]?.value,
+      );
+    });
+
+    it("resetStaleSyncingState を呼び出さない（副作用なし）", () => {
+      getInitialHeaderSyncStatus();
+
+      expect(mockResetStaleSyncingState).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("initializeHeaderSyncState", () => {
+    it("resetStaleSyncingState を呼び出す", () => {
+      initializeHeaderSyncState();
+
+      expect(mockResetStaleSyncingState).toHaveBeenCalledTimes(1);
+    });
   });
 
   it("sync-status-changedイベントで状態更新を通知する", () => {
