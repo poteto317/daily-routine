@@ -36,8 +36,8 @@ const performUploadOperation = async (): Promise<Partial<SyncStatus>> => {
   const docRef = doc(firestore, "users", user.uid);
   await setDoc(docRef, { ...syncData, updatedAt: serverTimestamp() });
   await saveSyncSnapshot(syncData);
-  setLocalDataUpdatedAt(syncData.lastModified);
   saveSyncedContentHash(localData);
+  setLocalDataUpdatedAt(syncData.lastModified);
 
   return buildUploadSuccessStatus({ syncedAt, lastSyncTime: Date.now() });
 };

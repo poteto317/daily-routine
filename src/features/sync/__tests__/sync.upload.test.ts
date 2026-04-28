@@ -2,6 +2,9 @@ import { mockSetDoc, mockGetOrCreateUser, setupSyncTestEnvironment } from "./syn
 import { uploadToFirestore } from "../sync";
 import { getSyncStatus } from "../sync/statusStore";
 import { SYNC_TIMEOUT_MS } from "../sync/constants";
+import { getSyncedContentHash } from "../sync/syncedContentHash";
+import * as syncedContentHashModule from "../sync/syncedContentHash";
+import * as storageCore from "@/lib/storage/core";
 import * as budgetStorage from "@/features/budget/storage";
 import * as journalStorage from "@/features/journal/storage";
 import * as mealStorage from "@/features/meal/storage";
@@ -249,6 +252,37 @@ describe("sync upload", () => {
       hasLocalChanges: false,
       error: null,
     });
+  });
+
+  it("アップロード成功後にコンテンツハッシュがユーザースコープ付きで保存される", async () => {
+    await uploadToFirestore();
+    // performUploadOperation 内で setCurrentUserId("user-1") が呼ばれているため取得可能
+    expect(getSyncedContentHash()).not.toBeNull();
+  });
+
+  it("saveSyncedContentHash が setLocalDataUpdatedAt より前に呼ばれる", async () => {
+    const callOrder: string[] = [];
+    const hashSpy = jest
+      .spyOn(syncedContentHashModule, "saveSyncedContentHash")
+      .mockImplementation(() => {
+        callOrder.push("hash");
+      });
+    const tsSpy = jest
+      .spyOn(storageCore, "setLocalDataUpdatedAt")
+      .mockImplementation(() => {
+        callOrder.push("timestamp");
+      });
+
+    try {
+      await uploadToFirestore();
+    } finally {
+      hashSpy.mockRestore();
+      tsSpy.mockRestore();
+    }
+
+    expect(callOrder.indexOf("hash")).toBeLessThan(
+      callOrder.indexOf("timestamp"),
+    );
   });
 
   it("Firebase操作がタイムアウトした場合に isSyncing を false にリセットする", async () => {
