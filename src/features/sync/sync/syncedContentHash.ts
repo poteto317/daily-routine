@@ -1,4 +1,8 @@
-import { getStorageItem, setStorageItem } from "@/lib/storage/core";
+import {
+  getCurrentUserId,
+  getStorageItem,
+  setStorageItem,
+} from "@/lib/storage/core";
 import { SYNCED_CONTENT_HASH_KEY } from "./constants";
 
 /**
@@ -42,9 +46,10 @@ export const computeContentHash = (data: object): number => {
 /**
  * 同期済みデータのコンテンツハッシュをユーザースコープ付きで保存する。
  * アップロード / ダウンロード成功時に呼び出す。
- * 呼び出し前に setCurrentUserId(user.uid) でスコープが確立されていること。
+ * currentUserId が未設定（null）の場合はスコープが確立されていないため何もしない。
  */
 export const saveSyncedContentHash = (data: object): void => {
+  if (getCurrentUserId() === null) return;
   setStorageItem(SYNCED_CONTENT_HASH_KEY, computeContentHash(data), {
     skipLocalDataUpdatedAt: true,
   });
@@ -52,9 +57,11 @@ export const saveSyncedContentHash = (data: object): void => {
 
 /**
  * 保存されている同期済みコンテンツハッシュを取得する。
- * 未保存（初回）の場合は null を返す。
+ * currentUserId が未設定（null）の場合はスコープが確立されていないため null を返す。
+ * 未保存（初回）の場合も null を返す。
  */
 export const getSyncedContentHash = (): number | null => {
+  if (getCurrentUserId() === null) return null;
   const stored = getStorageItem<number | null>(SYNCED_CONTENT_HASH_KEY, null);
   return typeof stored === "number" ? stored : null;
 };

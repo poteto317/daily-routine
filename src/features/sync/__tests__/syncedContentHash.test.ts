@@ -3,7 +3,7 @@ import {
   saveSyncedContentHash,
   getSyncedContentHash,
 } from "../sync/syncedContentHash";
-import { setCurrentUserId } from "@/lib/storage/core";
+import { setCurrentUserId, getUserScopedKey } from "@/lib/storage/core";
 import { SYNCED_CONTENT_HASH_KEY } from "../sync/constants";
 
 describe("syncedContentHash", () => {
@@ -42,6 +42,11 @@ describe("syncedContentHash", () => {
   });
 
   describe("saveSyncedContentHash / getSyncedContentHash", () => {
+    beforeEach(() => {
+      // ハッシュ保存・取得はユーザースコープが確立されている前提
+      setCurrentUserId("test-user");
+    });
+
     it("保存したハッシュを取得できる", () => {
       const data = { routines: [], settings: { theme: "dark" } };
       saveSyncedContentHash(data);
@@ -68,7 +73,7 @@ describe("syncedContentHash", () => {
     ])(
       "不正なハッシュ値 (%s) が保存されている場合は null を返す",
       (storedValue) => {
-        localStorage.setItem(SYNCED_CONTENT_HASH_KEY, storedValue);
+        localStorage.setItem(getUserScopedKey(SYNCED_CONTENT_HASH_KEY), storedValue);
         expect(getSyncedContentHash()).toBeNull();
       },
     );
@@ -81,6 +86,19 @@ describe("syncedContentHash", () => {
         });
       expect(() => saveSyncedContentHash({ routines: [] })).not.toThrow();
       spy.mockRestore();
+    });
+  });
+
+  describe("currentUserId が null のとき（スコープ未確立）", () => {
+    it("saveSyncedContentHash は何も保存しない", () => {
+      saveSyncedContentHash({ routines: [] });
+      expect(localStorage.length).toBe(0);
+    });
+
+    it("getSyncedContentHash は null を返す", () => {
+      // スコープなしキーに値があっても null を返す
+      localStorage.setItem(SYNCED_CONTENT_HASH_KEY, "12345");
+      expect(getSyncedContentHash()).toBeNull();
     });
   });
 
@@ -117,15 +135,6 @@ describe("syncedContentHash", () => {
 
       setCurrentUserId("uid-1");
       expect(getSyncedContentHash()).toBe(originalHash);
-    });
-
-    it("ユーザー未設定の場合はスコープなしキーで保存される", () => {
-      const data = { routines: [] };
-      saveSyncedContentHash(data);
-
-      expect(
-        localStorage.getItem(SYNCED_CONTENT_HASH_KEY),
-      ).not.toBeNull();
     });
   });
 });

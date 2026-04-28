@@ -55,6 +55,7 @@ describe("remoteStatus / setSyncStatusFromComparison", () => {
   });
 
   it("タイムスタンプが新しくても、ハッシュが一致すれば hasLocalChanges = false", () => {
+    setCurrentUserId("user-1");
     const syncedData = { routines: [], settings: { theme: "auto" } };
     mockGetLocalLastModified.mockReturnValue(T_LOCAL_NEWER);
     mockCollectLocalSyncData.mockReturnValue(syncedData);
@@ -68,6 +69,7 @@ describe("remoteStatus / setSyncStatusFromComparison", () => {
   });
 
   it("タイムスタンプが新しく、ハッシュが不一致なら hasLocalChanges = true のまま", () => {
+    setCurrentUserId("user-1");
     const syncedData = { routines: [] };
     const localData2 = { routines: [{ id: "r1" }] }; // 実際に変更あり
     mockGetLocalLastModified.mockReturnValue(T_LOCAL_NEWER);
@@ -78,6 +80,17 @@ describe("remoteStatus / setSyncStatusFromComparison", () => {
 
     setSyncStatusFromComparison(T_REMOTE);
 
+    expect(getSyncStatus().hasLocalChanges).toBe(true);
+  });
+
+  it("currentUserId が null のとき、ハッシュ比較をスキップして hasLocalChanges = true のまま", () => {
+    // currentUserId は beforeEach で null にリセット済み
+    mockGetLocalLastModified.mockReturnValue(T_LOCAL_NEWER);
+    mockCollectLocalSyncData.mockReturnValue({ routines: [] });
+
+    setSyncStatusFromComparison(T_REMOTE);
+
+    // スコープ未確立時はハッシュ比較をスキップし、タイムスタンプ判定のみ
     expect(getSyncStatus().hasLocalChanges).toBe(true);
   });
 
