@@ -42,6 +42,7 @@ export const computeContentHash = (data: object): number => {
 /**
  * 同期済みデータのコンテンツハッシュをユーザースコープ付きで保存する。
  * アップロード / ダウンロード成功時に呼び出す。
+ * 呼び出し前に setCurrentUserId(user.uid) でスコープが確立されていること。
  */
 export const saveSyncedContentHash = (data: object): void => {
   setStorageItem(SYNCED_CONTENT_HASH_KEY, computeContentHash(data), {

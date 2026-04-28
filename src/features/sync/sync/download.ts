@@ -4,6 +4,7 @@ import {
   getFirestoreInstance,
   getOrCreateUser,
 } from "@/lib/firebase";
+import { setCurrentUserId } from "@/lib/storage/core";
 import { getSyncErrorMessage } from "./errorMessage";
 import { saveSyncDataToLocal, collectLocalSyncData } from "./localData";
 import { setSyncStatus } from "./statusStore";
@@ -21,6 +22,7 @@ import texts from "../locales/ja.json";
  */
 const performDownloadOperation = async (): Promise<Partial<SyncStatus>> => {
   const user = await getOrCreateUser();
+  setCurrentUserId(user.uid);
   const firestore = getFirestoreInstance();
   const docRef = doc(firestore, "users", user.uid);
   const docSnap = await getDoc(docRef);

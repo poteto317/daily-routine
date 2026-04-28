@@ -2,6 +2,7 @@ import { setupSyncTestEnvironment } from "./sync.test.utils";
 import { setSyncStatusFromComparison } from "../sync/remoteStatus";
 import { getSyncStatus } from "../sync/statusStore";
 import { saveSyncedContentHash } from "../sync/syncedContentHash";
+import { setCurrentUserId } from "@/lib/storage/core";
 import * as localData from "../sync/localData";
 
 jest.mock("../sync/localData", () => ({
@@ -20,6 +21,7 @@ const T_LOCAL_NEWER = 1_000_001;
 describe("remoteStatus / setSyncStatusFromComparison", () => {
   beforeEach(() => {
     setupSyncTestEnvironment();
+    setCurrentUserId(null);
     jest.clearAllMocks();
     localStorage.clear();
   });

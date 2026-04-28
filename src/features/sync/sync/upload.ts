@@ -4,7 +4,7 @@ import {
   getFirestoreInstance,
   getOrCreateUser,
 } from "@/lib/firebase";
-import { setLocalDataUpdatedAt } from "@/lib/storage/core";
+import { setCurrentUserId, setLocalDataUpdatedAt } from "@/lib/storage/core";
 import { collectLocalSyncData } from "./localData";
 import { getDeviceId } from "./deviceId";
 import { getSyncErrorMessage } from "./errorMessage";
@@ -23,6 +23,7 @@ import texts from "../locales/ja.json";
  */
 const performUploadOperation = async (): Promise<Partial<SyncStatus>> => {
   const user = await getOrCreateUser();
+  setCurrentUserId(user.uid);
   const firestore = getFirestoreInstance();
   const syncedAt = Date.now();
   const localData = collectLocalSyncData();
