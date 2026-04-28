@@ -245,6 +245,35 @@ describe("sync download", () => {
     );
   });
 
+  it("ダウンロード前に migrateToUserStorage が呼ばれる", async () => {
+    mockGetDoc.mockResolvedValue({
+      exists: () => true,
+      data: () => ({ routines: [], deviceId: "device-1", lastModified: Date.now() }),
+    } as never);
+
+    await downloadFromFirestore({ reload: false });
+
+    // migrateToUserStorage が呼ばれると user:uid:_migrated フラグが設定される
+    expect(localStorage.getItem("user:user-1:_migrated")).toBe("true");
+  });
+
+  it("setLocalDataUpdatedAt に extractTimestamp 済みの number が渡される", async () => {
+    const lastModifiedStr = "2026-01-01T00:00:00.000Z";
+    const expectedMs = Date.parse(lastModifiedStr);
+
+    mockGetDoc.mockResolvedValue({
+      exists: () => true,
+      data: () => ({ routines: [], deviceId: "device-1", lastModified: lastModifiedStr }),
+    } as never);
+
+    await downloadFromFirestore({ reload: false });
+
+    // setLocalDataUpdatedAt が extractTimestamp 済みの number で呼ばれることを
+    // localStorage への書き込み副作用で確認（文字列のまま渡ると NaN になる）
+    const stored = localStorage.getItem("user:user-1:local-data-updated-at");
+    expect(stored).toBe(String(expectedMs));
+  });
+
   it("ダウンロード成功後に localLastModified と remoteLastModified をリモートのタイムスタンプで設定する", async () => {
     const lastModified = 1700000000000;
     const remoteData = {

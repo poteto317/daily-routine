@@ -285,6 +285,12 @@ describe("sync upload", () => {
     );
   });
 
+  it("アップロード前に migrateToUserStorage が呼ばれる", async () => {
+    await uploadToFirestore();
+    // migrateToUserStorage が呼ばれると user:uid:_migrated フラグが設定される
+    expect(localStorage.getItem("user:user-1:_migrated")).toBe("true");
+  });
+
   it("Firebase操作がタイムアウトした場合に isSyncing を false にリセットする", async () => {
     jest.useFakeTimers();
     try {

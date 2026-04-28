@@ -4,7 +4,7 @@ import {
   getFirestoreInstance,
   getOrCreateUser,
 } from "@/lib/firebase";
-import { setCurrentUserId, setLocalDataUpdatedAt } from "@/lib/storage/core";
+import { setCurrentUserId, setLocalDataUpdatedAt, migrateToUserStorage } from "@/lib/storage/core";
 import { getSyncErrorMessage } from "./errorMessage";
 import { saveSyncDataToLocal, collectLocalSyncData } from "./localData";
 import { setSyncStatus } from "./statusStore";
@@ -23,6 +23,7 @@ import texts from "../locales/ja.json";
 const performDownloadOperation = async (): Promise<Partial<SyncStatus>> => {
   const user = await getOrCreateUser();
   setCurrentUserId(user.uid);
+  migrateToUserStorage(user.uid);
   const firestore = getFirestoreInstance();
   const docRef = doc(firestore, "users", user.uid);
   const docSnap = await getDoc(docRef);
@@ -37,7 +38,7 @@ const performDownloadOperation = async (): Promise<Partial<SyncStatus>> => {
   saveSyncDataToLocal(data, { skipTimestampUpdate: true });
   // イベント発火前にハッシュを保存し、再計算時に正しい値が参照されるようにする
   saveSyncedContentHash(collectLocalSyncData());
-  setLocalDataUpdatedAt(data.lastModified ?? Date.now());
+  setLocalDataUpdatedAt(remoteLastModified);
 
   // 0 は「タイムスタンプなし」を意味するため null に正規化する
   const normalizedRemote = remoteLastModified > 0 ? remoteLastModified : null;
