@@ -270,7 +270,7 @@ describe("sync download", () => {
 
     // setLocalDataUpdatedAt が extractTimestamp 済みの number で呼ばれることを
     // localStorage への書き込み副作用で確認（文字列のまま渡ると NaN になる）
-    const stored = localStorage.getItem("user:user-1:local-data-updated-at");
+    const stored = localStorage.getItem(storageCore.getUserScopedKey("local-data-updated-at"));
     expect(stored).toBe(String(expectedMs));
   });
 

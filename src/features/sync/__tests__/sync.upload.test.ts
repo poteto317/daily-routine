@@ -234,7 +234,7 @@ describe("sync upload", () => {
       }),
     );
 
-    expect(localStorage.getItem("user:user-1:local-data-updated-at")).not.toBeNull();
+    expect(localStorage.getItem(storageCore.getUserScopedKey("local-data-updated-at"))).not.toBeNull();
     expect(getSyncStatus()).toMatchObject({
       isSyncing: false,
       hasRemoteChanges: false,
