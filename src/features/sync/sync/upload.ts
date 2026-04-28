@@ -4,7 +4,7 @@ import {
   getFirestoreInstance,
   getOrCreateUser,
 } from "@/lib/firebase";
-import { setLocalDataUpdatedAt } from "@/lib/storage/core";
+import { setCurrentUserId, setLocalDataUpdatedAt, migrateToUserStorage } from "@/lib/storage/core";
 import { collectLocalSyncData } from "./localData";
 import { getDeviceId } from "./deviceId";
 import { getSyncErrorMessage } from "./errorMessage";
@@ -13,6 +13,7 @@ import { setSyncStatus } from "./statusStore";
 import { buildSyncUploadData, buildUploadSuccessStatus } from "./uploadState";
 import { SYNC_TIMEOUT_MS } from "./constants";
 import { withSyncTimeout } from "./withSyncTimeout";
+import { saveSyncedContentHash } from "./syncedContentHash";
 import type { SyncData, SyncStatus } from "./types";
 import texts from "../locales/ja.json";
 
@@ -22,10 +23,13 @@ import texts from "../locales/ja.json";
  */
 const performUploadOperation = async (): Promise<Partial<SyncStatus>> => {
   const user = await getOrCreateUser();
+  setCurrentUserId(user.uid);
+  migrateToUserStorage(user.uid);
   const firestore = getFirestoreInstance();
   const syncedAt = Date.now();
+  const localData = collectLocalSyncData();
   const syncData: SyncData = buildSyncUploadData({
-    localData: collectLocalSyncData(),
+    localData,
     lastModified: syncedAt,
     deviceId: getDeviceId(),
   });
@@ -33,6 +37,7 @@ const performUploadOperation = async (): Promise<Partial<SyncStatus>> => {
   const docRef = doc(firestore, "users", user.uid);
   await setDoc(docRef, { ...syncData, updatedAt: serverTimestamp() });
   await saveSyncSnapshot(syncData);
+  saveSyncedContentHash(localData);
   setLocalDataUpdatedAt(syncData.lastModified);
 
   return buildUploadSuccessStatus({ syncedAt, lastSyncTime: Date.now() });

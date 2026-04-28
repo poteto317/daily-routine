@@ -1,8 +1,9 @@
 import { doc, getDoc } from "firebase/firestore";
 import { getFirestoreInstance, getOrCreateUser } from "@/lib/firebase";
-import { getLocalLastModified } from "./localData";
+import { collectLocalSyncData, getLocalLastModified } from "./localData";
 import { getSyncStatus, setSyncStatus } from "./statusStore";
 import { extractTimestamp } from "./timestamp";
+import { computeContentHash, getSyncedContentHash } from "./syncedContentHash";
 import type { SyncData } from "./types";
 
 const normalizeTimestamp = (value: number): number | null => {
@@ -19,10 +20,21 @@ export const setSyncStatusFromComparison = (
     normalizedRemote &&
     (!normalizedLocal || normalizedRemote > normalizedLocal),
   );
-  const hasLocalChanges = Boolean(
+  let hasLocalChanges = Boolean(
     normalizedLocal &&
     (!normalizedRemote || normalizedLocal > normalizedRemote),
   );
+
+  // タイムスタンプが新しくてもコンテンツが同期済みと同じなら未変更とみなす
+  if (hasLocalChanges) {
+    const syncedHash = getSyncedContentHash();
+    if (syncedHash !== null) {
+      const localHash = computeContentHash(collectLocalSyncData());
+      if (localHash === syncedHash) {
+        hasLocalChanges = false;
+      }
+    }
+  }
 
   setSyncStatus({
     localLastModified: normalizedLocal,

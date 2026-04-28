@@ -1,5 +1,6 @@
 import * as firestore from "firebase/firestore";
 import * as firebaseLib from "@/lib/firebase";
+import { setCurrentUserId } from "@/lib/storage/core";
 
 jest.mock("firebase/firestore", () => ({
   collection: jest.fn(),
@@ -82,6 +83,7 @@ export const mockGetOrCreateUser =
   >;
 
 export const setupSyncTestEnvironment = (): void => {
+  setCurrentUserId(null);
   jest.clearAllMocks();
   localStorage.clear();
   mockGetOrCreateUser.mockResolvedValue({ uid: "user-1" } as never);

@@ -57,7 +57,10 @@ export const collectLocalSyncData = (): Omit<
   todoLists: getTodoLists(),
 });
 
-export const saveSyncDataToLocal = (data: Partial<SyncData>): void => {
+export const saveSyncDataToLocal = (
+  data: Partial<SyncData>,
+  options?: { skipTimestampUpdate?: boolean },
+): void => {
   withSyncBatch(() => {
     saveRoutines(data.routines ?? []);
     if (data.dailyProgress) {
@@ -75,7 +78,9 @@ export const saveSyncDataToLocal = (data: Partial<SyncData>): void => {
     savePresets(data.presets ?? []);
     saveTodoLists(data.todoLists ?? []);
   });
-  setLocalDataUpdatedAt(data.lastModified ?? Date.now());
+  if (!options?.skipTimestampUpdate) {
+    setLocalDataUpdatedAt(data.lastModified ?? Date.now());
+  }
 };
 
 export const hasLocalData = (): boolean => {

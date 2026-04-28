@@ -2,6 +2,9 @@ import { mockGetDoc, mockGetOrCreateUser, setupSyncTestEnvironment } from "./syn
 import { downloadFromFirestore } from "../sync";
 import { getSyncStatus } from "../sync/statusStore";
 import { SYNC_TIMEOUT_MS } from "../sync/constants";
+import { getSyncedContentHash } from "../sync/syncedContentHash";
+import * as syncedContentHashModule from "../sync/syncedContentHash";
+import * as storageCore from "@/lib/storage/core";
 import * as budgetStorage from "@/features/budget/storage";
 import * as journalStorage from "@/features/journal/storage";
 import * as mealStorage from "@/features/meal/storage";
@@ -194,6 +197,81 @@ describe("sync download", () => {
       hasLocalChanges: false,
       error: null,
     });
+  });
+
+  it("ダウンロード成功後にコンテンツハッシュがユーザースコープ付きで保存される", async () => {
+    const remoteData = {
+      routines: [],
+      deviceId: "device-1",
+      lastModified: Date.now(),
+    };
+    mockGetDoc.mockResolvedValue({
+      exists: () => true,
+      data: () => remoteData,
+    } as never);
+
+    await downloadFromFirestore({ reload: false });
+    // performDownloadOperation 内で setCurrentUserId("user-1") が呼ばれているため取得可能
+    expect(getSyncedContentHash()).not.toBeNull();
+  });
+
+  it("saveSyncedContentHash が setLocalDataUpdatedAt より前に呼ばれる", async () => {
+    const callOrder: string[] = [];
+    const hashSpy = jest
+      .spyOn(syncedContentHashModule, "saveSyncedContentHash")
+      .mockImplementation(() => {
+        callOrder.push("hash");
+      });
+    const tsSpy = jest
+      .spyOn(storageCore, "setLocalDataUpdatedAt")
+      .mockImplementation(() => {
+        callOrder.push("timestamp");
+      });
+
+    mockGetDoc.mockResolvedValue({
+      exists: () => true,
+      data: () => ({ routines: [], deviceId: "device-1", lastModified: Date.now() }),
+    } as never);
+
+    try {
+      await downloadFromFirestore({ reload: false });
+    } finally {
+      hashSpy.mockRestore();
+      tsSpy.mockRestore();
+    }
+
+    expect(callOrder.indexOf("hash")).toBeLessThan(
+      callOrder.indexOf("timestamp"),
+    );
+  });
+
+  it("ダウンロード前に migrateToUserStorage が呼ばれる", async () => {
+    mockGetDoc.mockResolvedValue({
+      exists: () => true,
+      data: () => ({ routines: [], deviceId: "device-1", lastModified: Date.now() }),
+    } as never);
+
+    await downloadFromFirestore({ reload: false });
+
+    // migrateToUserStorage が呼ばれると user:uid:_migrated フラグが設定される
+    expect(localStorage.getItem("user:user-1:_migrated")).toBe("true");
+  });
+
+  it("setLocalDataUpdatedAt に extractTimestamp 済みの number が渡される", async () => {
+    const lastModifiedStr = "2026-01-01T00:00:00.000Z";
+    const expectedMs = Date.parse(lastModifiedStr);
+
+    mockGetDoc.mockResolvedValue({
+      exists: () => true,
+      data: () => ({ routines: [], deviceId: "device-1", lastModified: lastModifiedStr }),
+    } as never);
+
+    await downloadFromFirestore({ reload: false });
+
+    // setLocalDataUpdatedAt が extractTimestamp 済みの number で呼ばれることを
+    // localStorage への書き込み副作用で確認（文字列のまま渡ると NaN になる）
+    const stored = localStorage.getItem(storageCore.getUserScopedKey("local-data-updated-at"));
+    expect(stored).toBe(String(expectedMs));
   });
 
   it("ダウンロード成功後に localLastModified と remoteLastModified をリモートのタイムスタンプで設定する", async () => {

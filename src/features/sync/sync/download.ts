@@ -4,12 +4,14 @@ import {
   getFirestoreInstance,
   getOrCreateUser,
 } from "@/lib/firebase";
+import { setCurrentUserId, setLocalDataUpdatedAt, migrateToUserStorage } from "@/lib/storage/core";
 import { getSyncErrorMessage } from "./errorMessage";
-import { saveSyncDataToLocal } from "./localData";
+import { saveSyncDataToLocal, collectLocalSyncData } from "./localData";
 import { setSyncStatus } from "./statusStore";
 import { extractTimestamp } from "./timestamp";
 import { SYNC_TIMEOUT_MS } from "./constants";
 import { withSyncTimeout } from "./withSyncTimeout";
+import { saveSyncedContentHash } from "./syncedContentHash";
 import type { SyncData, SyncStatus } from "./types";
 import texts from "../locales/ja.json";
 
@@ -20,6 +22,8 @@ import texts from "../locales/ja.json";
  */
 const performDownloadOperation = async (): Promise<Partial<SyncStatus>> => {
   const user = await getOrCreateUser();
+  setCurrentUserId(user.uid);
+  migrateToUserStorage(user.uid);
   const firestore = getFirestoreInstance();
   const docRef = doc(firestore, "users", user.uid);
   const docSnap = await getDoc(docRef);
@@ -30,7 +34,11 @@ const performDownloadOperation = async (): Promise<Partial<SyncStatus>> => {
 
   const data = docSnap.data() as SyncData;
   const remoteLastModified = extractTimestamp(data.lastModified);
-  saveSyncDataToLocal(data);
+  // データを保存し、タイムスタンプ更新（イベント発火）は後回しにする
+  saveSyncDataToLocal(data, { skipTimestampUpdate: true });
+  // イベント発火前にハッシュを保存し、再計算時に正しい値が参照されるようにする
+  saveSyncedContentHash(collectLocalSyncData());
+  setLocalDataUpdatedAt(remoteLastModified);
 
   // 0 は「タイムスタンプなし」を意味するため null に正規化する
   const normalizedRemote = remoteLastModified > 0 ? remoteLastModified : null;
