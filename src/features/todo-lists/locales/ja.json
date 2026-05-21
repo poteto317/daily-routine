@@ -39,6 +39,8 @@
     "cancelClipboardButton": "キャンセル",
     "clearSelectionButton": "選択解除",
     "selectItemLabel": "「{title}」を選択",
-    "insertAfterLabel": "下に追加"
+    "insertAfterLabel": "下に追加",
+    "addItemPositionFirst": "先頭に追加",
+    "addItemPositionLast": "末尾に追加"
   }
 }

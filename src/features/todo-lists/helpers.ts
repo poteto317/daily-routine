@@ -26,7 +26,9 @@ export const addItemToList = (
             item,
             ...list.items.slice(insertAfterIndex + 1),
           ]
-        : [...list.items, item];
+        : list.addItemPosition === "first"
+          ? [item, ...list.items]
+          : [...list.items, item];
     return {
       ...list,
       items: newItems,
@@ -85,6 +87,17 @@ export const updateItemTitleInList = (
           ),
           updatedAt: new Date().toISOString(),
         }
+      : list,
+  );
+
+export const updateListAddItemPosition = (
+  lists: TodoList[],
+  listId: string,
+  position: "last" | "first",
+): TodoList[] =>
+  lists.map((list) =>
+    list.id === listId
+      ? { ...list, addItemPosition: position, updatedAt: new Date().toISOString() }
       : list,
   );
 

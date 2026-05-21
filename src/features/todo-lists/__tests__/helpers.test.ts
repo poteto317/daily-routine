@@ -5,6 +5,7 @@ import {
   outdentItemInList,
   reorderItemsInList,
   toggleItemInList,
+  updateListAddItemPosition,
 } from "../helpers";
 import { getItemIndentLevel } from "../todoListItemIndentLevel";
 import type { TodoList, TodoListItem } from "../types";
@@ -86,6 +87,46 @@ describe("todo list helpers", () => {
     const result = addItemToList([list], "list-1", newItem, -1);
 
     expect(result[0].items.map((i) => i.id)).toEqual(["a", "new"]);
+  });
+
+  it("addItemPosition が 'first' のとき insertAfterIndex なしで先頭に追加される", () => {
+    const itemA = createItem({ id: "a" });
+    const newItem = createItem({ id: "new", title: "New" });
+    const list = createList({ items: [itemA], addItemPosition: "first" });
+
+    const result = addItemToList([list], "list-1", newItem);
+
+    expect(result[0].items.map((i) => i.id)).toEqual(["new", "a"]);
+  });
+
+  it("addItemPosition が 'first' でも insertAfterIndex が有効なら指定位置に挿入される", () => {
+    const itemA = createItem({ id: "a" });
+    const itemB = createItem({ id: "b" });
+    const newItem = createItem({ id: "new" });
+    const list = createList({ items: [itemA, itemB], addItemPosition: "first" });
+
+    const result = addItemToList([list], "list-1", newItem, 0);
+
+    expect(result[0].items.map((i) => i.id)).toEqual(["a", "new", "b"]);
+  });
+
+  it("updateListAddItemPosition でリストの addItemPosition を更新する", () => {
+    const list = createList();
+
+    const result = updateListAddItemPosition([list], "list-1", "first");
+
+    expect(result[0].addItemPosition).toBe("first");
+    expect(result[0].updatedAt).toBe("2026-03-07T12:00:00.000Z");
+  });
+
+  it("updateListAddItemPosition は対象外のリストを変更しない", () => {
+    const list1 = createList({ id: "list-1" });
+    const list2 = createList({ id: "list-2", addItemPosition: "first" });
+
+    const result = updateListAddItemPosition([list1, list2], "list-1", "last");
+
+    expect(result[0].addItemPosition).toBe("last");
+    expect(result[1].addItemPosition).toBe("first");
   });
 
   it("指定アイテムの完了状態を切り替える", () => {

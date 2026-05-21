@@ -17,6 +17,7 @@ import { filterIncompleteItems } from "./todoListIncompleteItemsFilter";
 import { hasChildren } from "./todoListItemHasChildren";
 import { getItemIndentLevel } from "./todoListItemIndentLevel";
 import { getMaxAllowedIndent } from "./todoListItemMaxIndent";
+import { TodoItemTitleArea } from "./TodoItemTitleArea";
 import {
   useTodoListDetailState,
   useTodoListSelectionState,
@@ -28,6 +29,7 @@ import { useColorPickerController } from "./useColorPickerController";
 import { useMobileActionMenuController } from "./useMobileActionMenuController";
 import { useTodoListDragAndDrop } from "./useTodoListDragAndDrop";
 import { useTodoListInlineInsert } from "./useTodoListInlineInsert";
+import { AddItemPositionToggleButton } from "./AddItemPositionToggleButton";
 import texts from "./locales/ja.json";
 
 // ============================================================
@@ -269,11 +271,9 @@ const SortableTodoListItem = ({
           )}
           <button
             type="button"
-            onClick={() => {
-              if (isDragActive) return;
-              onToggleItem(list.id, item.id);
-            }}
-            className={`shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${
+            onClick={() => onToggleItem(list.id, item.id)}
+            disabled={isDragActive}
+            className={`shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all disabled:cursor-not-allowed ${
               item.isCompleted
                 ? "bg-teal-500 border-teal-500"
                 : "border-gray-300 dark:border-gray-400 hover:border-teal-400"
@@ -284,42 +284,18 @@ const SortableTodoListItem = ({
               <span className="text-white text-xs leading-none">✓</span>
             )}
           </button>
-          {editingItemId === item.id ? (
-            <input
-              type="text"
-              autoFocus
-              value={editingItemTitle}
-              onChange={(e) => setEditingItemTitle(e.target.value)}
-              onBlur={() => commitEditItem(item.id)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && !isImeComposingKeyDown(e))
-                  commitEditItem(item.id);
-                if (e.key === "Escape") cancelEditItem();
-              }}
-              className="flex-1 min-w-0 text-sm px-1 py-0.5 border-b-2 border-teal-400 bg-transparent text-gray-800 dark:text-gray-100 focus:outline-none"
-            />
-          ) : (
-            <button
-              type="button"
-              onClick={() => {
-                onToggleItem(list.id, item.id);
-              }}
-              aria-label={
-                item.isCompleted
-                  ? `「${item.title}」を未完了に戻す`
-                  : `「${item.title}」を完了にする`
-              }
-              aria-pressed={item.isCompleted}
-              disabled={isDragActive}
-              className={`flex-1 min-w-0 text-sm break-words text-left disabled:cursor-not-allowed ${
-                item.isCompleted
-                  ? "line-through text-gray-400 dark:text-gray-500"
-                  : "text-gray-800 dark:text-gray-100"
-              }`}
-            >
-              {item.title}
-            </button>
-          )}
+          <TodoItemTitleArea
+            itemId={item.id}
+            title={item.title}
+            isCompleted={item.isCompleted}
+            isEditing={editingItemId === item.id}
+            editingTitle={editingItemTitle}
+            isDragActive={isDragActive}
+            onChangeTitle={setEditingItemTitle}
+            onCommitEdit={() => commitEditItem(item.id)}
+            onCancelEdit={cancelEditItem}
+            onToggle={() => onToggleItem(list.id, item.id)}
+          />
           {editingItemId !== item.id && (
             <>
               {/* デスクトップ: ホバーで表示するアクションボタン群 */}
@@ -540,6 +516,7 @@ type DetailViewProps = {
   onPasteItems: (listId: string, items: TodoListItem[]) => void;
   onSetClipboard: (items: TodoListItem[]) => void;
   onClearClipboard: () => void;
+  onUpdateListAddItemPosition: (listId: string, position: "last" | "first") => void;
 };
 
 const DetailView = ({
@@ -560,6 +537,7 @@ const DetailView = ({
   onPasteItems,
   onSetClipboard,
   onClearClipboard,
+  onUpdateListAddItemPosition,
 }: DetailViewProps) => {
   const {
     selectedItemIds,
@@ -723,7 +701,7 @@ const DetailView = ({
             </div>
           )}
 
-          {/* 完了済みトグル + 一括背景色 */}
+          {/* 完了済みトグル + 一括背景色 + 追加位置 */}
           <div className="mb-4 flex items-center justify-between">
             <div className="relative" data-color-picker>
               <button
@@ -778,17 +756,25 @@ const DetailView = ({
                 </div>
               )}
             </div>
-            {list.items.some((item) => item.isCompleted) && (
-              <button
-                type="button"
-                onClick={toggleHideCompleted}
-                className="text-xs text-gray-500 dark:text-gray-600 hover:text-teal-600 dark:hover:text-teal-700 transition-colors"
-              >
-                {hideCompleted
-                  ? texts.list.showCompleted
-                  : texts.list.hideCompleted}
-              </button>
-            )}
+            <div className="flex items-center gap-3">
+              <AddItemPositionToggleButton
+                addItemPosition={list.addItemPosition}
+                onToggle={(nextPosition) =>
+                  onUpdateListAddItemPosition(list.id, nextPosition)
+                }
+              />
+              {list.items.some((item) => item.isCompleted) && (
+                <button
+                  type="button"
+                  onClick={toggleHideCompleted}
+                  className="text-xs text-gray-500 dark:text-gray-600 hover:text-teal-600 dark:hover:text-teal-700 transition-colors"
+                >
+                  {hideCompleted
+                    ? texts.list.showCompleted
+                    : texts.list.hideCompleted}
+                </button>
+              )}
+            </div>
           </div>
 
           {/* Todoアイテム一覧 */}

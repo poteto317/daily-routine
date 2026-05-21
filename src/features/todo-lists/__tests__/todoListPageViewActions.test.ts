@@ -30,6 +30,7 @@ jest.mock("../todoListDetailBgColorHandlers", () => ({
 jest.mock("../todoListDetailListHandlers", () => ({
   createDeleteTodoListHandler: jest.fn(),
   createUpdateListTitleHandler: jest.fn(),
+  createUpdateListAddItemPositionHandler: jest.fn(),
 }));
 
 import {
@@ -50,6 +51,7 @@ import {
 import {
   createDeleteTodoListHandler,
   createUpdateListTitleHandler,
+  createUpdateListAddItemPositionHandler,
 } from "../todoListDetailListHandlers";
 
 const list: TodoList = {
@@ -131,6 +133,7 @@ describe("todoListPageViewActions", () => {
     const onReorderItems = jest.fn();
     const onUpdateItemTitle = jest.fn();
     const onUpdateListTitle = jest.fn();
+    const onUpdateListAddItemPosition = jest.fn();
     const onUpdateItemBgColor = jest.fn();
     const onUpdateAllItemsBgColor = jest.fn();
     const onCutItems = jest.fn();
@@ -152,6 +155,9 @@ describe("todoListPageViewActions", () => {
     );
     (createUpdateListTitleHandler as jest.Mock).mockReturnValue(
       onUpdateListTitle,
+    );
+    (createUpdateListAddItemPositionHandler as jest.Mock).mockReturnValue(
+      onUpdateListAddItemPosition,
     );
     (createUpdateTodoItemBgColorHandler as jest.Mock).mockReturnValue(
       onUpdateItemBgColor,
@@ -216,6 +222,10 @@ describe("todoListPageViewActions", () => {
       lists: [list],
       persist,
     });
+    expect(createUpdateListAddItemPositionHandler).toHaveBeenCalledWith({
+      lists: [list],
+      persist,
+    });
     expect(createUpdateTodoItemBgColorHandler).toHaveBeenCalledWith({
       lists: [list],
       persist,
@@ -238,6 +248,7 @@ describe("todoListPageViewActions", () => {
       onReorderItems,
       onUpdateItemTitle,
       onUpdateListTitle,
+      onUpdateListAddItemPosition,
       onUpdateItemBgColor,
       onUpdateAllItemsBgColor,
       onCutItems,

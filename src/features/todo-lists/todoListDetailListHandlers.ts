@@ -2,6 +2,7 @@ import { normalizeTitle } from "./todoListTitleNormalization";
 import type { PersistTodoLists, TodoList } from "./types";
 import { deleteTodoListAndPersist } from "./todoListDeletePersistActions";
 import { updateTodoListTitleAndPersist } from "./todoListTitleUpdatePersistAction";
+import { updateTodoListAddItemPositionAndPersist } from "./pageStateActions";
 
 type TodoListsHandlerArgs = {
   lists: TodoList[];
@@ -38,5 +39,14 @@ export const createUpdateListTitleHandler = ({
       title: normalized,
       persist,
     });
+  };
+};
+
+export const createUpdateListAddItemPositionHandler = ({
+  lists,
+  persist,
+}: TodoListsHandlerArgs) => {
+  return (listId: string, position: "last" | "first") => {
+    updateTodoListAddItemPositionAndPersist({ lists, listId, position, persist });
   };
 };

@@ -5,6 +5,7 @@ import {
   reorderItemsInList,
   toggleItemInList,
   updateItemTitleInList,
+  updateListAddItemPosition,
   updateListTitle,
 } from "./helpers";
 import { createTodoListItem } from "./todoListFactory";
@@ -87,4 +88,14 @@ export const updateTodoListTitleInLists = (params: {
   const { lists, listId, title } = params;
 
   return updateListTitle(lists, listId, title);
+};
+
+export const updateTodoListAddItemPositionInLists = (params: {
+  lists: TodoList[];
+  listId: string;
+  position: "last" | "first";
+}): TodoList[] => {
+  const { lists, listId, position } = params;
+
+  return updateListAddItemPosition(lists, listId, position);
 };

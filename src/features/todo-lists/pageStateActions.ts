@@ -6,6 +6,7 @@ import {
   reorderTodoItemsInLists,
   toggleTodoItemInLists,
   updateTodoItemTitleInLists,
+  updateTodoListAddItemPositionInLists,
 } from "./detailActions";
 
 type AddTodoItemArgs = {
@@ -126,6 +127,24 @@ export const updateTodoItemTitleAndPersist = ({
     itemId,
     title,
   });
+  persist(nextLists);
+  return nextLists;
+};
+
+type UpdateTodoListAddItemPositionArgs = {
+  lists: TodoList[];
+  listId: string;
+  position: "last" | "first";
+  persist: PersistTodoLists;
+};
+
+export const updateTodoListAddItemPositionAndPersist = ({
+  lists,
+  listId,
+  position,
+  persist,
+}: UpdateTodoListAddItemPositionArgs): TodoList[] => {
+  const nextLists = updateTodoListAddItemPositionInLists({ lists, listId, position });
   persist(nextLists);
   return nextLists;
 };
