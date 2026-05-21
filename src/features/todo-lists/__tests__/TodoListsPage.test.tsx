@@ -399,25 +399,25 @@ describe("TodoListsPage", () => {
     );
   });
 
-  it("ドラッグ中はタイトルボタンに aria-disabled が付与される", async () => {
+  it("ドラッグ中はタイトルボタンが disabled になる", async () => {
     mockGetTodoLists.mockReturnValue([baseList]);
     mockGetSelectedTodoListId.mockReturnValue("list-1");
 
     render(<TodoListsPage />);
 
-    // ドラッグ前は aria-disabled なし
-    expect(screen.getByRole("button", { name: "Task 1" })).not.toHaveAttribute(
-      "aria-disabled",
-    );
+    // ドラッグ前は disabled なし
+    expect(
+      screen.getByRole("button", { name: "Task 1" }),
+    ).not.toBeDisabled();
 
     act(() => {
       capturedDragCallbacks.onDragStart!({ active: { id: "item-1" } });
     });
 
     await waitFor(() => {
-      // ドラッグ中は aria-disabled="true"
+      // ドラッグ中は disabled
       const buttons = screen.getAllByRole("button", { name: "Task 1" });
-      expect(buttons[0]).toHaveAttribute("aria-disabled", "true");
+      expect(buttons[0]).toBeDisabled();
     });
   });
 
