@@ -348,6 +348,83 @@ describe("TodoListsPage", () => {
     });
   });
 
+  it("タイトルをクリックしてTodoを完了/未完了にできる", async () => {
+    mockGetTodoLists.mockReturnValue([baseList]);
+    mockGetSelectedTodoListId.mockReturnValue("list-1");
+
+    render(<TodoListsPage />);
+
+    fireEvent.click(
+      screen.getByRole("button", { name: "「Task 1」を完了にする" }),
+    );
+
+    await waitFor(() => {
+      expect(mockSaveTodoListsToLocal).toHaveBeenCalledWith([
+        expect.objectContaining({
+          id: "list-1",
+          items: expect.arrayContaining([
+            expect.objectContaining({ id: "item-1", isCompleted: true }),
+          ]),
+        }),
+      ]);
+    });
+
+    fireEvent.click(
+      screen.getByRole("button", { name: "「Task 1」を未完了に戻す" }),
+    );
+
+    await waitFor(() => {
+      expect(mockSaveTodoListsToLocal).toHaveBeenLastCalledWith([
+        expect.objectContaining({
+          id: "list-1",
+          items: expect.arrayContaining([
+            expect.objectContaining({ id: "item-1", isCompleted: false }),
+          ]),
+        }),
+      ]);
+    });
+  });
+
+  it("タイトルボタンの aria-pressed が完了状態を反映する", () => {
+    mockGetTodoLists.mockReturnValue([baseList]);
+    mockGetSelectedTodoListId.mockReturnValue("list-1");
+
+    render(<TodoListsPage />);
+
+    // 未完了アイテム: aria-pressed="false"
+    expect(
+      screen.getByRole("button", { name: "「Task 1」を完了にする" }),
+    ).toHaveAttribute("aria-pressed", "false");
+    // 完了済みアイテム: aria-pressed="true"
+    expect(
+      screen.getByRole("button", { name: "「Done Task」を未完了に戻す" }),
+    ).toHaveAttribute("aria-pressed", "true");
+  });
+
+  it("ドラッグ中はタイトルボタンが disabled になる", async () => {
+    mockGetTodoLists.mockReturnValue([baseList]);
+    mockGetSelectedTodoListId.mockReturnValue("list-1");
+
+    render(<TodoListsPage />);
+
+    // ドラッグ前は disabled なし
+    expect(
+      screen.getByRole("button", { name: "「Task 1」を完了にする" }),
+    ).not.toBeDisabled();
+
+    act(() => {
+      capturedDragCallbacks.onDragStart!({ active: { id: "item-1" } });
+    });
+
+    await waitFor(() => {
+      // ドラッグ中は disabled
+      const buttons = screen.getAllByRole("button", {
+        name: "「Task 1」を完了にする",
+      });
+      expect(buttons[0]).toBeDisabled();
+    });
+  });
+
   it("スワイプでもインデントできる", async () => {
     jest.useFakeTimers();
     mockGetTodoLists.mockReturnValue([baseList]);
@@ -1034,6 +1111,24 @@ describe("TodoListsPage", () => {
         // DragOverlay 内にアイテムタイトルが表示される
         expect(screen.getAllByText("Beta")).toHaveLength(2);
       });
+    });
+
+    it("ドラッグ中はタイトルクリックでトグルされない", async () => {
+      render(<TodoListsPage />);
+
+      act(() => {
+        capturedDragCallbacks.onDragStart!({ active: { id: "item-a" } });
+      });
+
+      await waitFor(() => {
+        expect(screen.getAllByText("Alpha")).toHaveLength(2);
+      });
+
+      fireEvent.click(
+        screen.getAllByRole("button", { name: "「Alpha」を完了にする" })[0],
+      );
+
+      expect(mockSaveTodoListsToLocal).not.toHaveBeenCalled();
     });
 
     it("onDragCancel でドラッグ状態がリセットされる", async () => {
