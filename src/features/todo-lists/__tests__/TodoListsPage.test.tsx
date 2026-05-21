@@ -348,6 +348,85 @@ describe("TodoListsPage", () => {
     });
   });
 
+  it("デフォルトでは末尾に追加ボタンが表示される", () => {
+    mockGetTodoLists.mockReturnValue([baseList]);
+    mockGetSelectedTodoListId.mockReturnValue("list-1");
+
+    render(<TodoListsPage />);
+
+    expect(screen.getByRole("button", { name: "末尾に追加" })).toBeInTheDocument();
+  });
+
+  it("末尾に追加ボタンをクリックすると先頭に追加に切り替わりlocalStorageに保存される", async () => {
+    mockGetTodoLists.mockReturnValue([baseList]);
+    mockGetSelectedTodoListId.mockReturnValue("list-1");
+
+    render(<TodoListsPage />);
+
+    fireEvent.click(screen.getByRole("button", { name: "末尾に追加" }));
+
+    await waitFor(() => {
+      expect(mockSaveTodoListsToLocal).toHaveBeenCalledWith([
+        expect.objectContaining({
+          id: "list-1",
+          addItemPosition: "first",
+        }),
+      ]);
+    });
+    expect(screen.getByRole("button", { name: "先頭に追加" })).toBeInTheDocument();
+  });
+
+  it("先頭に追加が設定されているとき末尾に追加ボタンをクリックすると末尾に戻りlocalStorageに保存される", async () => {
+    mockGetTodoLists.mockReturnValue([
+      { ...baseList, addItemPosition: "first" as const },
+    ]);
+    mockGetSelectedTodoListId.mockReturnValue("list-1");
+
+    render(<TodoListsPage />);
+
+    expect(screen.getByRole("button", { name: "先頭に追加" })).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "先頭に追加" }));
+
+    await waitFor(() => {
+      expect(mockSaveTodoListsToLocal).toHaveBeenCalledWith([
+        expect.objectContaining({
+          id: "list-1",
+          addItemPosition: "last",
+        }),
+      ]);
+    });
+    expect(screen.getByRole("button", { name: "末尾に追加" })).toBeInTheDocument();
+  });
+
+  it("先頭に追加が設定されているときTodoを追加すると先頭に追加される", async () => {
+    mockGetTodoLists.mockReturnValue([
+      { ...baseList, addItemPosition: "first" as const },
+    ]);
+    mockGetSelectedTodoListId.mockReturnValue("list-1");
+
+    render(<TodoListsPage />);
+
+    fireEvent.change(screen.getByPlaceholderText("Todoを追加..."), {
+      target: { value: "First Item" },
+    });
+    fireEvent.click(screen.getByText("追加"));
+
+    await waitFor(() => {
+      expect(mockSaveTodoListsToLocal).toHaveBeenCalledWith([
+        expect.objectContaining({
+          id: "list-1",
+          items: expect.arrayContaining([
+            expect.objectContaining({ title: "First Item" }),
+          ]),
+        }),
+      ]);
+    });
+
+    const savedItems = mockSaveTodoListsToLocal.mock.calls.at(-1)![0][0].items;
+    expect(savedItems[0].title).toBe("First Item");
+  });
+
   it("タイトルをクリックしてTodoを完了/未完了にできる", async () => {
     mockGetTodoLists.mockReturnValue([baseList]);
     mockGetSelectedTodoListId.mockReturnValue("list-1");
