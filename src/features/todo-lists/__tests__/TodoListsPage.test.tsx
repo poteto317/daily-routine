@@ -381,6 +381,46 @@ describe("TodoListsPage", () => {
     });
   });
 
+  it("タイトルボタンの aria-pressed が完了状態を反映する", () => {
+    mockGetTodoLists.mockReturnValue([baseList]);
+    mockGetSelectedTodoListId.mockReturnValue("list-1");
+
+    render(<TodoListsPage />);
+
+    // 未完了アイテム: aria-pressed="false"
+    expect(screen.getByRole("button", { name: "Task 1" })).toHaveAttribute(
+      "aria-pressed",
+      "false",
+    );
+    // 完了済みアイテム: aria-pressed="true"
+    expect(screen.getByRole("button", { name: "Done Task" })).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
+  });
+
+  it("ドラッグ中はタイトルボタンに aria-disabled が付与される", async () => {
+    mockGetTodoLists.mockReturnValue([baseList]);
+    mockGetSelectedTodoListId.mockReturnValue("list-1");
+
+    render(<TodoListsPage />);
+
+    // ドラッグ前は aria-disabled なし
+    expect(screen.getByRole("button", { name: "Task 1" })).not.toHaveAttribute(
+      "aria-disabled",
+    );
+
+    act(() => {
+      capturedDragCallbacks.onDragStart!({ active: { id: "item-1" } });
+    });
+
+    await waitFor(() => {
+      // ドラッグ中は aria-disabled="true"
+      const buttons = screen.getAllByRole("button", { name: "Task 1" });
+      expect(buttons[0]).toHaveAttribute("aria-disabled", "true");
+    });
+  });
+
   it("スワイプでもインデントできる", async () => {
     jest.useFakeTimers();
     mockGetTodoLists.mockReturnValue([baseList]);

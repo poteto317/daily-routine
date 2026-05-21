@@ -305,6 +305,8 @@ const SortableTodoListItem = ({
                 if (isDragActive) return;
                 onToggleItem(list.id, item.id);
               }}
+              aria-pressed={item.isCompleted}
+              aria-disabled={isDragActive || undefined}
               className={`flex-1 min-w-0 text-sm break-words text-left ${
                 item.isCompleted
                   ? "line-through text-gray-400 dark:text-gray-500"
