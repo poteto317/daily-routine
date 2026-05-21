@@ -354,7 +354,9 @@ describe("TodoListsPage", () => {
 
     render(<TodoListsPage />);
 
-    fireEvent.click(screen.getByRole("button", { name: "Task 1" }));
+    fireEvent.click(
+      screen.getByRole("button", { name: "「Task 1」を完了にする" }),
+    );
 
     await waitFor(() => {
       expect(mockSaveTodoListsToLocal).toHaveBeenCalledWith([
@@ -367,7 +369,9 @@ describe("TodoListsPage", () => {
       ]);
     });
 
-    fireEvent.click(screen.getByRole("button", { name: "Task 1" }));
+    fireEvent.click(
+      screen.getByRole("button", { name: "「Task 1」を未完了に戻す" }),
+    );
 
     await waitFor(() => {
       expect(mockSaveTodoListsToLocal).toHaveBeenLastCalledWith([
@@ -388,15 +392,13 @@ describe("TodoListsPage", () => {
     render(<TodoListsPage />);
 
     // 未完了アイテム: aria-pressed="false"
-    expect(screen.getByRole("button", { name: "Task 1" })).toHaveAttribute(
-      "aria-pressed",
-      "false",
-    );
+    expect(
+      screen.getByRole("button", { name: "「Task 1」を完了にする" }),
+    ).toHaveAttribute("aria-pressed", "false");
     // 完了済みアイテム: aria-pressed="true"
-    expect(screen.getByRole("button", { name: "Done Task" })).toHaveAttribute(
-      "aria-pressed",
-      "true",
-    );
+    expect(
+      screen.getByRole("button", { name: "「Done Task」を未完了に戻す" }),
+    ).toHaveAttribute("aria-pressed", "true");
   });
 
   it("ドラッグ中はタイトルボタンが disabled になる", async () => {
@@ -407,7 +409,7 @@ describe("TodoListsPage", () => {
 
     // ドラッグ前は disabled なし
     expect(
-      screen.getByRole("button", { name: "Task 1" }),
+      screen.getByRole("button", { name: "「Task 1」を完了にする" }),
     ).not.toBeDisabled();
 
     act(() => {
@@ -416,7 +418,9 @@ describe("TodoListsPage", () => {
 
     await waitFor(() => {
       // ドラッグ中は disabled
-      const buttons = screen.getAllByRole("button", { name: "Task 1" });
+      const buttons = screen.getAllByRole("button", {
+        name: "「Task 1」を完了にする",
+      });
       expect(buttons[0]).toBeDisabled();
     });
   });
@@ -1120,7 +1124,9 @@ describe("TodoListsPage", () => {
         expect(screen.getAllByText("Alpha")).toHaveLength(2);
       });
 
-      fireEvent.click(screen.getAllByRole("button", { name: "Alpha" })[0]);
+      fireEvent.click(
+        screen.getAllByRole("button", { name: "「Alpha」を完了にする" })[0],
+      );
 
       expect(mockSaveTodoListsToLocal).not.toHaveBeenCalled();
     });

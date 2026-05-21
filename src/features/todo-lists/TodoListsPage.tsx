@@ -302,9 +302,13 @@ const SortableTodoListItem = ({
             <button
               type="button"
               onClick={() => {
-                if (isDragActive) return;
                 onToggleItem(list.id, item.id);
               }}
+              aria-label={
+                item.isCompleted
+                  ? `「${item.title}」を未完了に戻す`
+                  : `「${item.title}」を完了にする`
+              }
               aria-pressed={item.isCompleted}
               disabled={isDragActive}
               className={`flex-1 min-w-0 text-sm break-words text-left disabled:cursor-not-allowed ${
