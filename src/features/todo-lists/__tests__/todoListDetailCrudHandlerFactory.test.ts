@@ -20,6 +20,7 @@ jest.mock("../todoListDetailBgColorHandlers", () => ({
 jest.mock("../todoListDetailListHandlers", () => ({
   createDeleteTodoListHandler: jest.fn(),
   createUpdateListTitleHandler: jest.fn(),
+  createUpdateListAddItemPositionHandler: jest.fn(),
 }));
 
 import {
@@ -39,6 +40,7 @@ import {
 } from "../todoListDetailBgColorHandlers";
 import {
   createDeleteTodoListHandler,
+  createUpdateListAddItemPositionHandler,
   createUpdateListTitleHandler,
 } from "../todoListDetailListHandlers";
 import type { TodoList } from "../types";
@@ -67,6 +69,7 @@ describe("todoListDetailCrudHandlerFactory", () => {
     const onReorderItems = jest.fn();
     const onUpdateItemTitle = jest.fn();
     const onUpdateListTitle = jest.fn();
+    const onUpdateListAddItemPosition = jest.fn();
     const onUpdateItemBgColor = jest.fn();
     const onUpdateAllItemsBgColor = jest.fn();
     const onCutItems = jest.fn();
@@ -93,6 +96,9 @@ describe("todoListDetailCrudHandlerFactory", () => {
     (createUpdateListTitleHandler as jest.Mock).mockReturnValue(
       onUpdateListTitle,
     );
+    (createUpdateListAddItemPositionHandler as jest.Mock).mockReturnValue(
+      onUpdateListAddItemPosition,
+    );
     (createCutTodoItemsHandler as jest.Mock).mockReturnValue(onCutItems);
     (createPasteTodoItemsHandler as jest.Mock).mockReturnValue(onPasteItems);
 
@@ -118,6 +124,7 @@ describe("todoListDetailCrudHandlerFactory", () => {
       onReorderItems,
       onUpdateItemTitle,
       onUpdateListTitle,
+      onUpdateListAddItemPosition,
       onUpdateItemBgColor,
       onUpdateAllItemsBgColor,
       onCutItems,
@@ -170,6 +177,10 @@ describe("todoListDetailCrudHandlerFactory", () => {
       persist,
     });
     expect(createUpdateListTitleHandler).toHaveBeenCalledWith({
+      lists: [list],
+      persist,
+    });
+    expect(createUpdateListAddItemPositionHandler).toHaveBeenCalledWith({
       lists: [list],
       persist,
     });

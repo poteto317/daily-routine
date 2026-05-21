@@ -15,6 +15,7 @@ import {
 } from "./todoListDetailBgColorHandlers";
 import {
   createDeleteTodoListHandler,
+  createUpdateListAddItemPositionHandler,
   createUpdateListTitleHandler,
 } from "./todoListDetailListHandlers";
 import type { PersistTodoLists, TodoList } from "./types";
@@ -50,6 +51,10 @@ export const createTodoListDetailHandlers = (params: {
     onReorderItems: createReorderTodoItemsHandler({ lists, persist }),
     onUpdateItemTitle: createUpdateTodoItemTitleHandler({ lists, persist }),
     onUpdateListTitle: createUpdateListTitleHandler({ lists, persist }),
+    onUpdateListAddItemPosition: createUpdateListAddItemPositionHandler({
+      lists,
+      persist,
+    }),
     onUpdateItemBgColor: createUpdateTodoItemBgColorHandler({ lists, persist }),
     onUpdateAllItemsBgColor: createUpdateAllTodoItemsBgColorHandler({
       lists,

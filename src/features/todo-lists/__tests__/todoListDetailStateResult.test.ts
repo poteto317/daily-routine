@@ -19,6 +19,7 @@ describe("todoListDetailStateResult", () => {
       onReorderItems: jest.fn(),
       onUpdateItemTitle: jest.fn(),
       onUpdateListTitle: jest.fn(),
+      onUpdateListAddItemPosition: jest.fn(),
       onCutItems: jest.fn(),
       onPasteItems: jest.fn(),
       onUpdateItemBgColor: jest.fn(),
