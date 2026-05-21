@@ -1,4 +1,3 @@
-import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { AddItemPositionToggleButton } from "../AddItemPositionToggleButton";
 
@@ -89,6 +88,38 @@ describe("AddItemPositionToggleButton", () => {
       fireEvent.click(screen.getByRole("button"));
       fireEvent.click(screen.getByRole("button"));
       expect(onToggle).toHaveBeenCalledTimes(2);
+    });
+  });
+
+  describe("aria-pressed", () => {
+    it("addItemPosition が undefined のとき aria-pressed が false である", () => {
+      render(
+        <AddItemPositionToggleButton
+          addItemPosition={undefined}
+          onToggle={jest.fn()}
+        />,
+      );
+      expect(screen.getByRole("button")).toHaveAttribute("aria-pressed", "false");
+    });
+
+    it("addItemPosition が 'last' のとき aria-pressed が false である", () => {
+      render(
+        <AddItemPositionToggleButton
+          addItemPosition="last"
+          onToggle={jest.fn()}
+        />,
+      );
+      expect(screen.getByRole("button")).toHaveAttribute("aria-pressed", "false");
+    });
+
+    it("addItemPosition が 'first' のとき aria-pressed が true である", () => {
+      render(
+        <AddItemPositionToggleButton
+          addItemPosition="first"
+          onToggle={jest.fn()}
+        />,
+      );
+      expect(screen.getByRole("button")).toHaveAttribute("aria-pressed", "true");
     });
   });
 

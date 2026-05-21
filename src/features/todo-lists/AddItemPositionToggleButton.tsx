@@ -21,6 +21,7 @@ export const AddItemPositionToggleButton = ({
   return (
     <button
       type="button"
+      aria-pressed={isFirst}
       onClick={() => onToggle(nextPosition)}
       className={`text-xs transition-colors ${
         isFirst
