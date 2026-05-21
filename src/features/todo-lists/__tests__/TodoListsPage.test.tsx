@@ -348,6 +348,39 @@ describe("TodoListsPage", () => {
     });
   });
 
+  it("タイトルをクリックしてTodoを完了/未完了にできる", async () => {
+    mockGetTodoLists.mockReturnValue([baseList]);
+    mockGetSelectedTodoListId.mockReturnValue("list-1");
+
+    render(<TodoListsPage />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Task 1" }));
+
+    await waitFor(() => {
+      expect(mockSaveTodoListsToLocal).toHaveBeenCalledWith([
+        expect.objectContaining({
+          id: "list-1",
+          items: expect.arrayContaining([
+            expect.objectContaining({ id: "item-1", isCompleted: true }),
+          ]),
+        }),
+      ]);
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: "Task 1" }));
+
+    await waitFor(() => {
+      expect(mockSaveTodoListsToLocal).toHaveBeenLastCalledWith([
+        expect.objectContaining({
+          id: "list-1",
+          items: expect.arrayContaining([
+            expect.objectContaining({ id: "item-1", isCompleted: false }),
+          ]),
+        }),
+      ]);
+    });
+  });
+
   it("スワイプでもインデントできる", async () => {
     jest.useFakeTimers();
     mockGetTodoLists.mockReturnValue([baseList]);
@@ -1034,6 +1067,22 @@ describe("TodoListsPage", () => {
         // DragOverlay 内にアイテムタイトルが表示される
         expect(screen.getAllByText("Beta")).toHaveLength(2);
       });
+    });
+
+    it("ドラッグ中はタイトルクリックでトグルされない", async () => {
+      render(<TodoListsPage />);
+
+      act(() => {
+        capturedDragCallbacks.onDragStart!({ active: { id: "item-a" } });
+      });
+
+      await waitFor(() => {
+        expect(screen.getAllByText("Alpha")).toHaveLength(2);
+      });
+
+      fireEvent.click(screen.getAllByRole("button", { name: "Alpha" })[0]);
+
+      expect(mockSaveTodoListsToLocal).not.toHaveBeenCalled();
     });
 
     it("onDragCancel でドラッグ状態がリセットされる", async () => {

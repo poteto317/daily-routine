@@ -299,15 +299,20 @@ const SortableTodoListItem = ({
               className="flex-1 min-w-0 text-sm px-1 py-0.5 border-b-2 border-teal-400 bg-transparent text-gray-800 dark:text-gray-100 focus:outline-none"
             />
           ) : (
-            <span
-              className={`flex-1 min-w-0 text-sm break-words ${
+            <button
+              type="button"
+              onClick={() => {
+                if (isDragActive) return;
+                onToggleItem(list.id, item.id);
+              }}
+              className={`flex-1 min-w-0 text-sm break-words text-left ${
                 item.isCompleted
                   ? "line-through text-gray-400 dark:text-gray-500"
                   : "text-gray-800 dark:text-gray-100"
               }`}
             >
               {item.title}
-            </span>
+            </button>
           )}
           {editingItemId !== item.id && (
             <>
