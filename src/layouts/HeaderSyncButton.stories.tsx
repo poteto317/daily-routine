@@ -15,7 +15,7 @@ type Story = StoryObj<typeof meta>;
 
 const idleStatus: SyncStatus = {
   isSyncing: false,
-  lastSyncTime: Date.now(),
+  lastSyncTime: new Date("2026-05-21T08:30:00+09:00").getTime(),
   hasRemoteChanges: false,
   hasLocalChanges: false,
   error: null,

@@ -9,7 +9,7 @@ const meta = {
     layout: "padded",
   },
   args: {
-    currentDate: new Date("2026-05-22"),
+    currentDate: new Date(2026, 4, 22),
     onAdd: fn(),
     onAmountChange: fn(),
     onCancel: fn(),

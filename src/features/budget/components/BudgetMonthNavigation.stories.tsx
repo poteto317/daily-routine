@@ -19,19 +19,19 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const CurrentMonth: Story = {
-  args: { currentDate: new Date("2026-05-01"), isCurrentMonth: true },
+  args: { currentDate: new Date(2026, 4, 1), isCurrentMonth: true },
 };
 
 export const PastMonth: Story = {
-  args: { currentDate: new Date("2026-03-01"), isCurrentMonth: false },
+  args: { currentDate: new Date(2026, 2, 1), isCurrentMonth: false },
 };
 
 export const FutureMonth: Story = {
-  args: { currentDate: new Date("2026-07-01"), isCurrentMonth: false },
+  args: { currentDate: new Date(2026, 6, 1), isCurrentMonth: false },
 };
 
 export const ClickPrevious: Story = {
-  args: { currentDate: new Date("2026-05-01"), isCurrentMonth: true },
+  args: { currentDate: new Date(2026, 4, 1), isCurrentMonth: true },
   play: async ({ canvasElement, args }) => {
     const canvas = within(canvasElement);
     const prevButton = canvas.getAllByRole("button")[0];
@@ -41,7 +41,7 @@ export const ClickPrevious: Story = {
 };
 
 export const ClickGoToCurrent: Story = {
-  args: { currentDate: new Date("2026-03-01"), isCurrentMonth: false },
+  args: { currentDate: new Date(2026, 2, 1), isCurrentMonth: false },
   play: async ({ canvasElement, args }) => {
     const canvas = within(canvasElement);
     const todayButton = canvas.getByRole("button", { name: /今月|今|current/i });
