@@ -39,15 +39,17 @@ const weeklyStats: WeeklyStats = {
   totalRoutines: 25,
 };
 
+const monthlyDayRates = [80, 100, 60, 100, 40, 80, 100, 20, 60, 0, 100, 80, 60, 100, 40, 80, 100, 60, 100, 80, 60];
+
 const monthlyStats: MonthlyStats = {
   year: 2026,
   month: 5,
-  days: Array.from({ length: 21 }, (_, i) => ({
+  days: monthlyDayRates.map((rate, i) => ({
     ...dailyBase,
     date: `2026-05-${String(i + 1).padStart(2, "0")}`,
-    completedCount: Math.floor(Math.random() * 5),
+    completedCount: Math.round((rate / 100) * 5),
     totalCount: 5,
-    achievementRate: Math.floor(Math.random() * 100),
+    achievementRate: rate,
   })),
   averageAchievementRate: 72,
   totalCompleted: 68,

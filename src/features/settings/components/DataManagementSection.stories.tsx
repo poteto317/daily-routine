@@ -1,5 +1,4 @@
 import { useRef } from "react";
-import type { RefObject } from "react";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { fn } from "storybook/test";
 import { DataManagementSection } from "./DataManagementSection";
@@ -7,14 +6,15 @@ import { ALL_TRANSFER_OPTIONS, EMPTY_TRANSFER_OPTIONS } from "../state/constants
 
 type Props = React.ComponentProps<typeof DataManagementSection>;
 
-const DataManagementSectionWithRef = (args: Props) => {
+// fileInputRef は Controls に露出させず render 側でのみ注入する
+const DataManagementSectionWithRef = (args: Omit<Props, "fileInputRef">) => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   return <DataManagementSection {...args} fileInputRef={fileInputRef} />;
 };
 
 const meta = {
   title: "Features/Settings/DataManagementSection",
-  component: DataManagementSection,
+  component: DataManagementSectionWithRef,
   parameters: {
     layout: "padded",
   },
@@ -24,10 +24,8 @@ const meta = {
     handleExport: fn(),
     handleImportClick: fn(),
     handleImport: fn(),
-    fileInputRef: { current: null } as RefObject<HTMLInputElement | null>,
   },
-  render: DataManagementSectionWithRef,
-} satisfies Meta<typeof DataManagementSection>;
+} satisfies Meta<typeof DataManagementSectionWithRef>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

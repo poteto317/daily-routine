@@ -1,27 +1,25 @@
 import { useRef } from "react";
-import type { RefObject } from "react";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { expect, fn, userEvent, within } from "storybook/test";
 import { HeaderMenuToggleButton } from "./HeaderMenuToggleButton";
 
 type Props = React.ComponentProps<typeof HeaderMenuToggleButton>;
 
-const HeaderMenuToggleButtonWithRef = (args: Props) => {
+// menuButtonRef は Controls に露出させず render 側でのみ注入する
+const HeaderMenuToggleButtonWithRef = (args: Omit<Props, "menuButtonRef">) => {
   const menuButtonRef = useRef<HTMLButtonElement | null>(null);
   return <HeaderMenuToggleButton {...args} menuButtonRef={menuButtonRef} />;
 };
 
 const meta = {
   title: "Layouts/HeaderMenuToggleButton",
-  component: HeaderMenuToggleButton,
+  component: HeaderMenuToggleButtonWithRef,
   parameters: { layout: "padded" },
   args: {
     onToggleClick: fn(),
     panelId: "header-menu-panel",
-    menuButtonRef: { current: null } as RefObject<HTMLButtonElement | null>,
   },
-  render: HeaderMenuToggleButtonWithRef,
-} satisfies Meta<typeof HeaderMenuToggleButton>;
+} satisfies Meta<typeof HeaderMenuToggleButtonWithRef>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

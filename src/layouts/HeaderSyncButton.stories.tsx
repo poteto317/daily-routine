@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { fn } from "storybook/test";
 import { HeaderSyncButton } from "./HeaderSyncButton";
-import type { SyncStatus } from "@/features/sync/sync/types";
+import type { SyncStatus } from "@/features/sync";
 
 const meta = {
   title: "Layouts/HeaderSyncButton",
