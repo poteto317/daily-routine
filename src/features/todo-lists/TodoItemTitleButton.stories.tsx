@@ -3,7 +3,7 @@ import { expect, fn, userEvent, within } from "storybook/test";
 import { TodoItemTitleButton } from "./TodoItemTitleButton";
 
 const meta = {
-  title: "Features/TodoList/TodoItemTitleButton",
+  title: "Features/TodoLists/TodoItemTitleButton",
   component: TodoItemTitleButton,
   parameters: {
     layout: "padded",

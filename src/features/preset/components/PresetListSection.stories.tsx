@@ -8,11 +8,9 @@ const meta = {
   component: PresetListSection,
   parameters: { layout: "padded" },
   args: {
-    selectedDays: new Set<number>(),
     editRoutines: [],
     editPresetName: "",
     editPresetDescription: "",
-    editSelectedRoutines: new Set<string>(),
     editingPresetId: null,
     onSelectPreset: fn(),
     onDeletePreset: fn(),
@@ -24,6 +22,10 @@ const meta = {
     onChangeEditName: fn(),
     onChangeEditDescription: fn(),
     onToggleEditRoutine: fn(),
+  },
+  argTypes: {
+    selectedDays: { control: false },
+    editSelectedRoutines: { control: false },
   },
 } satisfies Meta<typeof PresetListSection>;
 
@@ -56,11 +58,11 @@ const presets: RoutinePreset[] = [
 ];
 
 export const WithPresets: Story = {
-  args: { presets, selectedPresetId: null },
+  args: { presets, selectedPresetId: null, selectedDays: new Set<number>(), editSelectedRoutines: new Set<string>() },
 };
 
 export const Empty: Story = {
-  args: { presets: [], selectedPresetId: null },
+  args: { presets: [], selectedPresetId: null, selectedDays: new Set<number>(), editSelectedRoutines: new Set<string>() },
 };
 
 export const Selected: Story = {
@@ -68,5 +70,6 @@ export const Selected: Story = {
     presets,
     selectedPresetId: "p-1",
     selectedDays: new Set([1, 2, 3, 4, 5]),
+    editSelectedRoutines: new Set<string>(),
   },
 };

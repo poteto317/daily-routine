@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
+import { fn } from "storybook/test";
 import { ErrorAlert } from "./ErrorAlert";
 
 const meta = {
@@ -6,6 +7,9 @@ const meta = {
   component: ErrorAlert,
   parameters: {
     layout: "padded",
+  },
+  args: {
+    onRetry: fn(),
   },
 } satisfies Meta<typeof ErrorAlert>;
 
@@ -21,14 +25,13 @@ export const Default: Story = {
 export const WithRetry: Story = {
   args: {
     error: "ネットワークエラーが発生しました。",
-    onRetry: () => alert("再試行"),
   },
 };
 
 export const WithCustomRetryText: Story = {
   args: {
     error: "同期に失敗しました。インターネット接続を確認してください。",
-    onRetry: () => {},
+    onRetry: fn(),
     retryButtonText: "もう一度試す",
   },
 };

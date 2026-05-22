@@ -10,11 +10,9 @@ const meta = {
     layout: "padded",
   },
   args: {
-    selectedDays: new Set<number>(),
     editRoutines: [],
     editPresetName: "",
     editPresetDescription: "",
-    editSelectedRoutines: new Set<string>(),
     onSelect: fn(),
     onDelete: fn(),
     onToggleDay: fn(),
@@ -25,6 +23,10 @@ const meta = {
     onChangeEditName: fn(),
     onChangeEditDescription: fn(),
     onToggleEditRoutine: fn(),
+  },
+  argTypes: {
+    selectedDays: { control: false },
+    editSelectedRoutines: { control: false },
   },
 } satisfies Meta<typeof PresetCard>;
 
@@ -56,11 +58,11 @@ const minimalPreset: RoutinePreset = {
 };
 
 export const Default: Story = {
-  args: { preset, isSelected: false, isEditing: false },
+  args: { preset, isSelected: false, isEditing: false, selectedDays: new Set<number>(), editSelectedRoutines: new Set<string>() },
 };
 
 export const WithoutDescription: Story = {
-  args: { preset: minimalPreset, isSelected: false, isEditing: false },
+  args: { preset: minimalPreset, isSelected: false, isEditing: false, selectedDays: new Set<number>(), editSelectedRoutines: new Set<string>() },
 };
 
 export const Selected: Story = {
@@ -69,6 +71,7 @@ export const Selected: Story = {
     isSelected: true,
     isEditing: false,
     selectedDays: new Set([1, 2, 3, 4, 5]),
+    editSelectedRoutines: new Set<string>(),
   },
 };
 
@@ -78,11 +81,12 @@ export const SelectedWithDaysChosen: Story = {
     isSelected: true,
     isEditing: false,
     selectedDays: new Set([1, 3, 5]),
+    editSelectedRoutines: new Set<string>(),
   },
 };
 
 export const ClickEdit: Story = {
-  args: { preset, isSelected: false, isEditing: false },
+  args: { preset, isSelected: false, isEditing: false, selectedDays: new Set<number>(), editSelectedRoutines: new Set<string>() },
   play: async ({ canvasElement, args }) => {
     const canvas = within(canvasElement);
     const editButton = canvas.getByRole("button", { name: /編集/ });
@@ -92,7 +96,7 @@ export const ClickEdit: Story = {
 };
 
 export const ClickDelete: Story = {
-  args: { preset, isSelected: false, isEditing: false },
+  args: { preset, isSelected: false, isEditing: false, selectedDays: new Set<number>(), editSelectedRoutines: new Set<string>() },
   play: async ({ canvasElement, args }) => {
     const canvas = within(canvasElement);
     const deleteButton = canvas.getByRole("button", { name: /削除/ });

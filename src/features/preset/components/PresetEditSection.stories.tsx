@@ -14,6 +14,9 @@ const meta = {
     onSaveEdit: fn(),
     onCancelEdit: fn(),
   },
+  argTypes: {
+    editSelectedRoutines: { control: false },
+  },
 } satisfies Meta<typeof PresetEditSection>;
 
 export default meta;

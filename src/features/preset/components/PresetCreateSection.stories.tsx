@@ -17,6 +17,10 @@ const meta = {
     onToggleCreateFilterDay: fn(),
     onCreatePreset: fn(),
   },
+  argTypes: {
+    selectedRoutines: { control: false },
+    createFilterDays: { control: false },
+  },
 } satisfies Meta<typeof PresetCreateSection>;
 
 export default meta;

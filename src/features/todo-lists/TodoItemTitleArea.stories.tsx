@@ -3,7 +3,7 @@ import { expect, fn, userEvent, within } from "storybook/test";
 import { TodoItemTitleArea } from "./TodoItemTitleArea";
 
 const meta = {
-  title: "Features/TodoList/TodoItemTitleArea",
+  title: "Features/TodoLists/TodoItemTitleArea",
   component: TodoItemTitleArea,
   parameters: {
     layout: "padded",
