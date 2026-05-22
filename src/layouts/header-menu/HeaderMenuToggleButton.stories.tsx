@@ -4,6 +4,13 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { expect, fn, userEvent, within } from "storybook/test";
 import { HeaderMenuToggleButton } from "./HeaderMenuToggleButton";
 
+type Props = React.ComponentProps<typeof HeaderMenuToggleButton>;
+
+const HeaderMenuToggleButtonWithRef = (args: Props) => {
+  const menuButtonRef = useRef<HTMLButtonElement | null>(null);
+  return <HeaderMenuToggleButton {...args} menuButtonRef={menuButtonRef} />;
+};
+
 const meta = {
   title: "Layouts/HeaderMenuToggleButton",
   component: HeaderMenuToggleButton,
@@ -13,10 +20,7 @@ const meta = {
     panelId: "header-menu-panel",
     menuButtonRef: { current: null } as RefObject<HTMLButtonElement | null>,
   },
-  render: (args) => {
-    const menuButtonRef = useRef<HTMLButtonElement | null>(null);
-    return <HeaderMenuToggleButton {...args} menuButtonRef={menuButtonRef} />;
-  },
+  render: HeaderMenuToggleButtonWithRef,
 } satisfies Meta<typeof HeaderMenuToggleButton>;
 
 export default meta;

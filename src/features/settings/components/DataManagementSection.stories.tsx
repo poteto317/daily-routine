@@ -5,6 +5,13 @@ import { fn } from "storybook/test";
 import { DataManagementSection } from "./DataManagementSection";
 import { ALL_TRANSFER_OPTIONS, EMPTY_TRANSFER_OPTIONS } from "../state/constants";
 
+type Props = React.ComponentProps<typeof DataManagementSection>;
+
+const DataManagementSectionWithRef = (args: Props) => {
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  return <DataManagementSection {...args} fileInputRef={fileInputRef} />;
+};
+
 const meta = {
   title: "Features/Settings/DataManagementSection",
   component: DataManagementSection,
@@ -19,10 +26,7 @@ const meta = {
     handleImport: fn(),
     fileInputRef: { current: null } as RefObject<HTMLInputElement | null>,
   },
-  render: (args) => {
-    const fileInputRef = useRef<HTMLInputElement | null>(null);
-    return <DataManagementSection {...args} fileInputRef={fileInputRef} />;
-  },
+  render: DataManagementSectionWithRef,
 } satisfies Meta<typeof DataManagementSection>;
 
 export default meta;
