@@ -22,6 +22,8 @@ const eslintConfig = defineConfig([
     "firebase-functions/lib/**",
     // Ignore test coverage reports:
     "coverage/**",
+    // Ignore Storybook build output:
+    "storybook-static/**",
   ]),
   {
     files: ["**/*.{ts,tsx,mts,cts}"],
