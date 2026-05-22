@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import type { WorkTemplate } from "@/types/routine";
+import { saveWorkSessionHistory } from "@/features/work-tracker/storageData";
 import { WorkTrackerTemplateInsights } from "./WorkTrackerTemplateInsights";
 
 // WorkTrackerTemplateInsights は localStorage["work-sessions"] から統計を算出する。
@@ -47,8 +48,8 @@ export const WithStats: Story = {
     elapsedTime: 3600,
   },
   beforeEach() {
-    localStorage.setItem("work-sessions", JSON.stringify(sessionHistory));
-    return () => localStorage.removeItem("work-sessions");
+    saveWorkSessionHistory(sessionHistory);
+    return () => saveWorkSessionHistory({});
   },
 };
 
@@ -59,8 +60,8 @@ export const LongSession: Story = {
     elapsedTime: 7200,
   },
   beforeEach() {
-    localStorage.setItem("work-sessions", JSON.stringify(sessionHistory));
-    return () => localStorage.removeItem("work-sessions");
+    saveWorkSessionHistory(sessionHistory);
+    return () => saveWorkSessionHistory({});
   },
 };
 

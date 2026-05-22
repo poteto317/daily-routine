@@ -4,6 +4,7 @@ import { expect, fn, userEvent, within } from "storybook/test";
 import { DndContext } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import type { Routine } from "@/types/routine";
+import { DEFAULT_SETTINGS, saveSettings } from "@/features/settings/storage";
 import { SortableRoutineItem } from "./SortableRoutineItem";
 
 // isEditMode=true のとき内部で SortableRoutineEditModeItem → useSortable が使われるため
@@ -63,8 +64,8 @@ export const CompletedEditMode: Story = {
 export const SwipeActionEdit: Story = {
   args: { routine, isEditMode: false },
   beforeEach() {
-    localStorage.setItem("app-settings", JSON.stringify({ swipeAction: "edit" }));
-    return () => localStorage.removeItem("app-settings");
+    saveSettings({ ...DEFAULT_SETTINGS, swipeAction: "edit" });
+    return () => saveSettings(DEFAULT_SETTINGS);
   },
 };
 

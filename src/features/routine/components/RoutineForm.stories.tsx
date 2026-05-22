@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { expect, fn, userEvent, within } from "storybook/test";
 import type { Routine } from "@/types/routine";
+import { saveRoutines } from "@/features/routine";
 import { RoutineForm } from "./RoutineForm";
 
 // useRoutineFormState は内部で getSettings() と getRoutines() を呼ぶ。
@@ -58,8 +59,8 @@ export const EditExisting: Story = {
 export const WithConflict: Story = {
   args: { routine: undefined },
   beforeEach() {
-    localStorage.setItem("daily-routines", JSON.stringify([conflictingRoutine]));
-    return () => localStorage.removeItem("daily-routines");
+    saveRoutines([conflictingRoutine]);
+    return () => saveRoutines([]);
   },
 };
 

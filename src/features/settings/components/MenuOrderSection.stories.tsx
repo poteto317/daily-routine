@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { fn } from "storybook/test";
 import type { TodoList } from "@/features/todo-lists/types";
+import { saveTodoLists } from "@/features/todo-lists/storage";
 import { MenuOrderSection } from "./MenuOrderSection";
 
 // getTodoLists() は localStorage["todo-lists"] が空のとき [] を返す。
@@ -76,8 +77,8 @@ export const CustomOrder: Story = {
 export const WithTodoLists: Story = {
   args: { menuOrder: defaultOrder },
   beforeEach() {
-    localStorage.setItem("todo-lists", JSON.stringify(sampleTodoLists));
-    return () => localStorage.removeItem("todo-lists");
+    saveTodoLists(sampleTodoLists);
+    return () => saveTodoLists([]);
   },
 };
 

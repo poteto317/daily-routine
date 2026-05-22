@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { expect, fn, userEvent, within } from "storybook/test";
 import type { Routine } from "@/types/routine";
+import { DEFAULT_SETTINGS, saveSettings } from "@/features/settings/storage";
 import { RoutineItem } from "./RoutineItem";
 
 // getSettings() は localStorage が空のとき DEFAULT_SETTINGS を返すため
@@ -49,8 +50,8 @@ export const EditMode: Story = {
 export const SwipeActionEdit: Story = {
   args: { routine, isEditMode: false },
   beforeEach() {
-    localStorage.setItem("app-settings", JSON.stringify({ swipeAction: "edit" }));
-    return () => localStorage.removeItem("app-settings");
+    saveSettings({ ...DEFAULT_SETTINGS, swipeAction: "edit" });
+    return () => saveSettings(DEFAULT_SETTINGS);
   },
 };
 
