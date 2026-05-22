@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import type { WorkTemplate } from "@/types/routine";
-import { saveWorkSessionHistory } from "@/features/work-tracker/storageData";
+import { saveWorkSessionHistory } from "@/features/work-tracker/storage";
 import { WorkTrackerTemplateInsights } from "./WorkTrackerTemplateInsights";
 
 // WorkTrackerTemplateInsights は localStorage["work-sessions"] から統計を算出する。

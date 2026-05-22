@@ -49,7 +49,7 @@ export const IndentSwipe: Story = {
   args: { swipeActionType: "indent", isEditMode: false },
 };
 
-export const EditModeDisabled: Story = {
+export const EditModeSwipeActive: Story = {
   args: { swipeActionType: "delete", isEditMode: true },
 };
 
