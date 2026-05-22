@@ -48,6 +48,9 @@ public/firebase-messaging-sw.js
 *.tsbuildinfo
 next-env.d.ts
 
+# Storybook
+/storybook-static/
+
 # PWA files
 **/public/sw.js
 **/public/workbox-*.js
