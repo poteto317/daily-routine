@@ -32,10 +32,7 @@ export const SwitchToMonth: Story = {
   args: { viewMode: "week" },
   play: async ({ canvasElement, args }) => {
     const canvas = within(canvasElement);
-    const buttons = canvas.getAllByRole("button");
-    const monthButton = buttons.find((btn) =>
-      btn.textContent?.includes("月"),
-    )!;
+    const monthButton = canvas.getByRole("button", { name: /月次/ });
     await userEvent.click(monthButton);
     expect(args.onChange).toHaveBeenCalledWith("month");
   },

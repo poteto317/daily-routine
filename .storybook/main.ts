@@ -12,10 +12,18 @@ const config: StorybookConfig = {
   },
   viteFinal: async (config) => {
     config.resolve ??= {};
-    config.resolve.alias = {
-      ...config.resolve.alias,
-      "@": path.resolve(__dirname, "../src"),
-    };
+    const existing = config.resolve.alias;
+    if (Array.isArray(existing)) {
+      config.resolve.alias = [
+        ...existing,
+        { find: "@", replacement: path.resolve(__dirname, "../src") },
+      ];
+    } else {
+      config.resolve.alias = {
+        ...existing,
+        "@": path.resolve(__dirname, "../src"),
+      };
+    }
 
     config.server ??= {};
     config.server.watch ??= {};
