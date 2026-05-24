@@ -78,9 +78,7 @@ describe("sampleCompletedRoutines", () => {
 
   it("isCompleted 以外のプロパティが sampleRoutines と一致する", () => {
     sampleCompletedRoutines.forEach((r, i) => {
-      const { isCompleted: _c, ...rest } = r;
-      const { isCompleted: _o, ...original } = sampleRoutines[i];
-      expect(rest).toEqual(original);
+      expect(r).toEqual({ ...sampleRoutines[i], isCompleted: true });
     });
   });
 });
