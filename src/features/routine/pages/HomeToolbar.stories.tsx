@@ -5,57 +5,60 @@ import { baseDisplay, createBaseView, sampleTrainDelay } from "./__fixtures__/ho
 
 // HomeToolbar は純粋な props コンポーネント。localStorage / API 依存なし。
 
-const baseView = createBaseView();
+// ストーリーごとに独立した fn() インスタンスを持つため、meta.args は使わずに
+// 各ストーリーでこのファクトリを呼び出す。
+const createBaseArgs = () => ({
+  view: createBaseView(),
+  display: baseDisplay,
+  trainDelays: [],
+  onAddRoutineAction: fn(),
+  showAddButton: true,
+});
 
 const meta = {
   title: "Features/Routine/HomeToolbar",
   component: HomeToolbar,
   parameters: { layout: "padded" },
-  args: {
-    view: baseView,
-    display: baseDisplay,
-    trainDelays: [],
-    onAddRoutineAction: fn(),
-    showAddButton: true,
-  },
 } satisfies Meta<typeof HomeToolbar>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {};
+export const Default: Story = {
+  args: createBaseArgs(),
+};
 
 export const HolidayMode: Story = {
-  args: {
-    view: {
-      ...baseView,
-      isTodayHoliday: true,
-      viewMode: "holiday",
-    },
-  },
+  args: (() => {
+    const { view, ...rest } = createBaseArgs();
+    return { ...rest, view: { ...view, isTodayHoliday: true, viewMode: "holiday" } };
+  })(),
 };
 
 export const WithTrainDelay: Story = {
-  args: { trainDelays: [sampleTrainDelay] },
+  args: { ...createBaseArgs(), trainDelays: [sampleTrainDelay] },
 };
 
 export const AllCompleted: Story = {
   args: {
+    ...createBaseArgs(),
     display: { completedMinutes: 90, totalMinutes: 90, progressPercentage: 100 },
   },
 };
 
 export const NoAddButton: Story = {
-  args: { showAddButton: false },
+  args: { ...createBaseArgs(), showAddButton: false },
 };
 
 export const CategoryFiltered: Story = {
-  args: {
-    view: { ...baseView, filterCategory: "health" },
-  },
+  args: (() => {
+    const { view, ...rest } = createBaseArgs();
+    return { ...rest, view: { ...view, filterCategory: "health" } };
+  })(),
 };
 
 export const ClickAddButton: Story = {
+  args: createBaseArgs(),
   play: async ({ args, canvasElement }) => {
     const canvas = within(canvasElement);
     await userEvent.click(canvas.getByRole("button", { name: /ルーティンを追加/i }));

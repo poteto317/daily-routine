@@ -51,4 +51,19 @@ describe("createBaseViewModel", () => {
     const vm = createBaseViewModel();
     expect(vm.toolbarProps.trainDelays).toHaveLength(0);
   });
+
+  it("routineListProps.isEditMode のデフォルト値が false である", () => {
+    const vm = createBaseViewModel();
+    expect(vm.routineListProps.isEditMode).toBe(false);
+  });
+
+  it("routineFormProps.currentDayOfWeek のデフォルト値が 6（土曜）である", () => {
+    const vm = createBaseViewModel();
+    expect(vm.routineFormProps.currentDayOfWeek).toBe(6);
+  });
+
+  it("toolbarProps.view.viewMode と routineListProps.viewMode が一致する", () => {
+    const vm = createBaseViewModel();
+    expect(vm.routineListProps.viewMode).toBe(vm.toolbarProps.view.viewMode);
+  });
 });
