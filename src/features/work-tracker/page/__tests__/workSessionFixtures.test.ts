@@ -14,6 +14,36 @@ describe("sampleWorkSessions", () => {
     expect(sampleWorkSessions).toHaveLength(3);
   });
 
+  it("全件の id が空でない文字列である", () => {
+    sampleWorkSessions.forEach((s) => {
+      expect(typeof s.id).toBe("string");
+      expect(s.id.length).toBeGreaterThan(0);
+    });
+  });
+
+  it("全件の workTemplateId が空でない文字列である", () => {
+    sampleWorkSessions.forEach((s) => {
+      expect(typeof s.workTemplateId).toBe("string");
+      expect(s.workTemplateId.length).toBeGreaterThan(0);
+    });
+  });
+
+  it("全件の workName が空でない文字列である", () => {
+    sampleWorkSessions.forEach((s) => {
+      expect(typeof s.workName).toBe("string");
+      expect(s.workName.length).toBeGreaterThan(0);
+    });
+  });
+
+  it("notes が定義されている場合は空でない文字列である", () => {
+    sampleWorkSessions
+      .filter((s): s is WorkSession & { notes: string } => s.notes !== undefined)
+      .forEach((s) => {
+        expect(typeof s.notes).toBe("string");
+        expect(s.notes.length).toBeGreaterThan(0);
+      });
+  });
+
   it("id が全件で一意である", () => {
     const ids = sampleWorkSessions.map((s) => s.id);
     expect(new Set(ids).size).toBe(ids.length);
@@ -68,6 +98,15 @@ describe("sampleWorkSessions", () => {
 });
 
 describe("sampleSessionHistory", () => {
+  it("1件の日付キーを持つ", () => {
+    expect(Object.keys(sampleSessionHistory)).toHaveLength(1);
+  });
+
+  it("全セッション件数が sampleWorkSessions と一致する", () => {
+    const total = Object.values(sampleSessionHistory).reduce((acc, sessions) => acc + sessions.length, 0);
+    expect(total).toBe(sampleWorkSessions.length);
+  });
+
   it("キーが YYYY-MM-DD 形式である", () => {
     Object.keys(sampleSessionHistory).forEach((key) => {
       expect(key).toMatch(DATE_KEY_PATTERN);

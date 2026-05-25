@@ -16,7 +16,11 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {};
+export const Default: Story = {
+  beforeEach() {
+    saveWorkSessionHistory({});
+  },
+};
 
 export const WithHistory: Story = {
   beforeEach() {
