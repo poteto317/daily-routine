@@ -16,6 +16,20 @@ describe("routineFixtures", () => {
     expect(new Set(orders).size).toBe(orders.length);
   });
 
+  it("全件の sortOrder が 0 以上の整数である", () => {
+    sampleRoutines.forEach((r) => {
+      expect(r.sortOrder).toBeGreaterThanOrEqual(0);
+      expect(Number.isInteger(r.sortOrder)).toBe(true);
+    });
+  });
+
+  it("全件の duration が正の整数である", () => {
+    sampleRoutines.forEach((r) => {
+      expect(r.duration).toBeGreaterThan(0);
+      expect(Number.isInteger(r.duration)).toBe(true);
+    });
+  });
+
   it("全件の startTime が HH:MM 形式である", () => {
     sampleRoutines.forEach((r) => {
       expect(r.startTime).toMatch(/^\d{2}:\d{2}$/);
