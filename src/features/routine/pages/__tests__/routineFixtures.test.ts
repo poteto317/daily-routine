@@ -1,4 +1,4 @@
-import { ROUTINE_CATEGORIES } from "@/types/routine";
+import { HOLIDAY_DAY_VALUE, ROUTINE_CATEGORIES } from "@/types/routine";
 import { sampleCompletedRoutines, sampleRoutines } from "../__fixtures__/routineFixtures";
 
 describe("routineFixtures", () => {
@@ -28,11 +28,11 @@ describe("routineFixtures", () => {
     });
   });
 
-  it("全件の daysOfWeek が 0〜6 の範囲内である", () => {
+  it("全件の daysOfWeek が 0〜HOLIDAY_DAY_VALUE の範囲内である", () => {
     sampleRoutines.forEach((r) => {
       r.daysOfWeek.forEach((d) => {
         expect(d).toBeGreaterThanOrEqual(0);
-        expect(d).toBeLessThanOrEqual(6);
+        expect(d).toBeLessThanOrEqual(HOLIDAY_DAY_VALUE);
       });
     });
   });
