@@ -26,8 +26,10 @@ describe("samplePomodoroHistory", () => {
     });
   });
 
-  it("キーが重複なく一意である", () => {
-    const keys = Object.keys(samplePomodoroHistory);
-    expect(new Set(keys).size).toBe(keys.length);
+  it("各エントリが date と completedPomodoros プロパティを持つ", () => {
+    Object.values(samplePomodoroHistory).forEach((session) => {
+      expect(session).toHaveProperty("date");
+      expect(session).toHaveProperty("completedPomodoros");
+    });
   });
 });

@@ -91,10 +91,8 @@ describe("sampleCalendarPomodoroHistory", () => {
   });
 
   it("sampleMonthlyHistory と同じ日付キーを持つ", () => {
-    const monthlyKeys = new Set(Object.keys(sampleMonthlyHistory));
-    const pomodoroKeys = new Set(Object.keys(sampleCalendarPomodoroHistory));
-    pomodoroKeys.forEach((key) => {
-      expect(monthlyKeys.has(key)).toBe(true);
-    });
+    expect(new Set(Object.keys(sampleCalendarPomodoroHistory))).toEqual(
+      new Set(Object.keys(sampleMonthlyHistory)),
+    );
   });
 });
