@@ -64,6 +64,21 @@ describe("sampleMonthlyHistory", () => {
       expect(new Set(ids).size).toBe(ids.length);
     });
   });
+
+  it("completedRoutineIds の件数が routineSnapshots の件数以下である", () => {
+    Object.values(sampleMonthlyHistory).forEach((history) => {
+      expect(history.completedRoutineIds.length).toBeLessThanOrEqual(
+        history.routineSnapshots.length,
+      );
+    });
+  });
+
+  it("各エントリの date が有効なカレンダー日付である", () => {
+    Object.values(sampleMonthlyHistory).forEach((history) => {
+      const parsed = new Date(history.date);
+      expect(isNaN(parsed.getTime())).toBe(false);
+    });
+  });
 });
 
 describe("sampleCalendarPomodoroHistory", () => {

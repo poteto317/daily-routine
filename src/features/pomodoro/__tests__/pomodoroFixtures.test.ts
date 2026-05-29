@@ -32,4 +32,11 @@ describe("samplePomodoroHistory", () => {
       expect(session).toHaveProperty("completedPomodoros");
     });
   });
+
+  it("各エントリの date が有効なカレンダー日付である", () => {
+    Object.values(samplePomodoroHistory).forEach((session) => {
+      const parsed = new Date(session.date);
+      expect(isNaN(parsed.getTime())).toBe(false);
+    });
+  });
 });
