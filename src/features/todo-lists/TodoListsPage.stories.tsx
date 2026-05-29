@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { saveTodoLists, saveSelectedTodoListId } from "./storage";
+import { saveTodoLists } from "./storage";
+import { setSelectedTodoListId } from "./selectedTodoList";
 import { sampleTodoLists } from "./__fixtures__/todoListFixtures";
 import { TodoListsPage } from "./TodoListsPage";
 
@@ -7,10 +8,15 @@ import { TodoListsPage } from "./TodoListsPage";
 // localStorage が空のとき「リストを選択してください」の初期状態で描画される。
 // WithSelectedList では sampleTodoLists を保存しリスト選択状態を設定して
 // リスト詳細（アイテム一覧）が表示された状態を確認できる。
+//
+// selectedId のセットアップ・クリーンアップには saveSelectedTodoListId（storage のみ）ではなく
+// setSelectedTodoListId（モジュール内キャッシュ＋リスナー通知も含む）を使用する。
+// Storybook はモジュールを保持したままストーリーを切り替えるため、キャッシュが古い値を
+// 返し続けると useTodoListSelectionState() が選択 ID を認識できなくなる。
 
 const clearTodoListsStorage = (): void => {
   saveTodoLists([]);
-  saveSelectedTodoListId(null);
+  setSelectedTodoListId(null);
 };
 
 const meta = {
@@ -32,7 +38,7 @@ export const Default: Story = {
 export const WithSelectedList: Story = {
   beforeEach() {
     saveTodoLists(sampleTodoLists);
-    saveSelectedTodoListId(sampleTodoLists[0].id);
+    setSelectedTodoListId(sampleTodoLists[0].id);
     return clearTodoListsStorage;
   },
 };
