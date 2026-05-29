@@ -79,6 +79,11 @@ describe("sampleMonthlyHistory", () => {
       expect(isNaN(parsed.getTime())).toBe(false);
     });
   });
+
+  it("全エントリが同一年月に属する", () => {
+    const yearMonths = Object.keys(sampleMonthlyHistory).map((key) => key.slice(0, 7));
+    expect(new Set(yearMonths).size).toBe(1);
+  });
 });
 
 describe("sampleCalendarPomodoroHistory", () => {

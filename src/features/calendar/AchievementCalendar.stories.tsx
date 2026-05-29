@@ -6,13 +6,18 @@ import { AchievementCalendar } from "./AchievementCalendar";
 // AchievementCalendar は useAchievementCalendarState() を内部で呼び出す。
 // useState(new Date()) で表示中の年月を初期化するため、固定日付のフィクスチャでは
 // 閲覧時期によって達成セルがヒットしない。
-// WithHistory では直近の日付を動的に生成してハイライトが常に表示されるようにする。
+// WithHistory では当月内の直近日付を動的に生成してハイライトが常に表示されるようにする。
+// 月初（1日・2日）に実行しても前月に入らないよう 1 日をクランプ下限にする。
 
-// getTodayString() と同じく JST オフセットを加算して日付文字列を生成する。
-const getJstDateString = (daysAgo = 0): string => {
-  const d = new Date();
-  d.setDate(d.getDate() - daysAgo);
-  return new Date(d.getTime() + 9 * 60 * 60 * 1000).toISOString().split("T")[0];
+// JST の当月内で daysAgo 前の日を返す（月初をまたがないよう 1 日をクランプ下限にする）。
+// これにより月初（1日・2日）でも前月に入らず、常に当月のセルがハイライトされる。
+const getJstCurrentMonthDateString = (daysAgo = 0): string => {
+  const now = new Date();
+  const jst = new Date(now.getTime() + 9 * 60 * 60 * 1000);
+  const year = jst.getUTCFullYear();
+  const month = jst.getUTCMonth() + 1;
+  const day = Math.max(1, jst.getUTCDate() - daysAgo);
+  return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
 };
 
 const meta = {
@@ -37,8 +42,8 @@ export const Default: Story = {
 
 export const WithHistory: Story = {
   beforeEach() {
-    const yesterday = getJstDateString(1);
-    const twoDaysAgo = getJstDateString(2);
+    const yesterday = getJstCurrentMonthDateString(1);
+    const twoDaysAgo = getJstCurrentMonthDateString(2);
     saveMonthlyHistory({
       [yesterday]: {
         date: yesterday,
