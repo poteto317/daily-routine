@@ -1,11 +1,11 @@
 import { updateTodoListTitleAndPersist } from "../todoListTitleUpdatePersistAction";
 import type { TodoList } from "../types";
 
-jest.mock("../detailActions", () => ({
+jest.mock("../todoListDetailActions", () => ({
   updateTodoListTitleInLists: jest.fn(),
 }));
 
-import { updateTodoListTitleInLists } from "../detailActions";
+import { updateTodoListTitleInLists } from "../todoListDetailActions";
 
 const createList = (overrides: Partial<TodoList> = {}): TodoList => ({
   id: "list-1",

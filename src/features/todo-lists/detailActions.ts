@@ -1,101 +1,17 @@
-import {
-  addItemToList,
-  indentItemInList,
-  outdentItemInList,
-  reorderItemsInList,
-  toggleItemInList,
-  updateItemTitleInList,
-  updateListAddItemPosition,
-  updateListTitle,
-} from "./helpers";
-import { createTodoListItem } from "./todoListFactory";
-import type { TodoList } from "./types";
+// 後方互換の re-export バレル。
+// 新規インポートは各専用モジュールから直接 import してください:
+//   - アイテム操作: "./todoItemDetailActions"
+//   - リスト操作:   "./todoListDetailActions"
+export {
+  addTodoItemToLists,
+  toggleTodoItemInLists,
+  indentTodoItemInLists,
+  outdentTodoItemInLists,
+  reorderTodoItemsInLists,
+  updateTodoItemTitleInLists,
+} from "./todoItemDetailActions";
 
-export const addTodoItemToLists = (params: {
-  lists: TodoList[];
-  listId: string;
-  title: string;
-  insertAfterIndex?: number;
-}): TodoList[] => {
-  const { lists, listId, title, insertAfterIndex } = params;
-
-  const list = lists.find((l) => l.id === listId);
-  return addItemToList(
-    lists,
-    listId,
-    createTodoListItem(title, list?.defaultItemBgColor),
-    insertAfterIndex,
-  );
-};
-
-export const toggleTodoItemInLists = (params: {
-  lists: TodoList[];
-  listId: string;
-  itemId: string;
-}): TodoList[] => {
-  const { lists, listId, itemId } = params;
-
-  return toggleItemInList(lists, listId, itemId);
-};
-
-export const indentTodoItemInLists = (params: {
-  lists: TodoList[];
-  listId: string;
-  itemId: string;
-}): TodoList[] => {
-  const { lists, listId, itemId } = params;
-
-  return indentItemInList(lists, listId, itemId);
-};
-
-export const outdentTodoItemInLists = (params: {
-  lists: TodoList[];
-  listId: string;
-  itemId: string;
-}): TodoList[] => {
-  const { lists, listId, itemId } = params;
-
-  return outdentItemInList(lists, listId, itemId);
-};
-
-export const reorderTodoItemsInLists = (params: {
-  lists: TodoList[];
-  listId: string;
-  fromIndex: number;
-  toIndex: number;
-}): TodoList[] => {
-  const { lists, listId, fromIndex, toIndex } = params;
-
-  return reorderItemsInList(lists, listId, fromIndex, toIndex);
-};
-
-export const updateTodoItemTitleInLists = (params: {
-  lists: TodoList[];
-  listId: string;
-  itemId: string;
-  title: string;
-}): TodoList[] => {
-  const { lists, listId, itemId, title } = params;
-
-  return updateItemTitleInList(lists, listId, itemId, title);
-};
-
-export const updateTodoListTitleInLists = (params: {
-  lists: TodoList[];
-  listId: string;
-  title: string;
-}): TodoList[] => {
-  const { lists, listId, title } = params;
-
-  return updateListTitle(lists, listId, title);
-};
-
-export const updateTodoListAddItemPositionInLists = (params: {
-  lists: TodoList[];
-  listId: string;
-  position: "last" | "first";
-}): TodoList[] => {
-  const { lists, listId, position } = params;
-
-  return updateListAddItemPosition(lists, listId, position);
-};
+export {
+  updateTodoListTitleInLists,
+  updateTodoListAddItemPositionInLists,
+} from "./todoListDetailActions";

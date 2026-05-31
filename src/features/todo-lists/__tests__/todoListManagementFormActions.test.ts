@@ -1,10 +1,10 @@
-import { createClosedTodoListFormState } from "../managementPageStateActions";
+import { createClosedTodoListFormState } from "../todoListManagementFormState";
 import {
   createTodoListFormCloseAction,
   createTodoListFormOpenAction,
 } from "../todoListManagementFormActions";
 
-jest.mock("../managementPageStateActions", () => ({
+jest.mock("../todoListManagementFormState", () => ({
   createClosedTodoListFormState: jest.fn(),
 }));
 

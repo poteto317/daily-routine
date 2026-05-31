@@ -1,4 +1,4 @@
-import { deleteItemFromList } from "./helpers";
+import { deleteItemFromList } from "./todoListItemContentMutations";
 import { removeTodoList } from "./management";
 import type { TodoList } from "./types";
 

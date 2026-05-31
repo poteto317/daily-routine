@@ -1,5 +1,5 @@
 import type { TodoList } from "../types";
-import { persistManagedTodoLists } from "../managementPageStateActions";
+import { persistManagedTodoLists } from "../todoListCrudPersistActions";
 import { createManagedTodoListsPersistAction } from "../todoListManagementPersistActions";
 import { saveTodoListsToLocal } from "../sync";
 
@@ -7,7 +7,7 @@ jest.mock("../sync", () => ({
   saveTodoListsToLocal: jest.fn(),
 }));
 
-jest.mock("../managementPageStateActions", () => ({
+jest.mock("../todoListCrudPersistActions", () => ({
   persistManagedTodoLists: jest.fn(),
 }));
 

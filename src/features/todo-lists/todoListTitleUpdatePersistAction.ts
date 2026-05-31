@@ -1,5 +1,5 @@
 import type { PersistTodoLists, TodoList } from "./types";
-import { updateTodoListTitleInLists } from "./detailActions";
+import { updateTodoListTitleInLists } from "./todoListDetailActions";
 
 type UpdateTodoListTitleArgs = {
   lists: TodoList[];

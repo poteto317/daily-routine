@@ -12,7 +12,7 @@ jest.mock("../sync", () => ({
   saveTodoListsToLocal: jest.fn(),
 }));
 
-jest.mock("../managementPageStateActions", () => ({
+jest.mock("../todoListCrudPersistActions", () => ({
   createClosedTodoListFormState: jest.fn(),
   createTodoListAndPersist: jest.fn(),
   deleteTodoListAndPersist: jest.fn(),
@@ -20,14 +20,18 @@ jest.mock("../managementPageStateActions", () => ({
   toggleTodoListVisibilityAndPersist: jest.fn(),
 }));
 
+jest.mock("../todoListManagementFormState", () => ({
+  createClosedTodoListFormState: jest.fn(),
+}));
+
 import { saveTodoListsToLocal } from "../sync";
 import {
-  createClosedTodoListFormState,
   createTodoListAndPersist,
   deleteTodoListAndPersist,
   persistManagedTodoLists,
   toggleTodoListVisibilityAndPersist,
-} from "../managementPageStateActions";
+} from "../todoListCrudPersistActions";
+import { createClosedTodoListFormState } from "../todoListManagementFormState";
 
 const baseList: TodoList = {
   id: "list-1",
