@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { fn } from "storybook/test";
+import { expect, fn, userEvent, within } from "storybook/test";
 import type { User } from "firebase/auth";
 import { HeaderMenuFooter } from "./HeaderMenuFooter";
 
@@ -31,4 +31,15 @@ export const Anonymous: Story = {
 
 export const NoUser: Story = {
   args: { user: null },
+};
+
+/** ログアウトボタンをクリック → onLogoutClick が呼ばれる */
+export const ClickLogout: Story = {
+  args: { user: regularUser },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    const logoutButton = canvas.getByRole("menuitem", { name: /ログアウト/ });
+    await userEvent.click(logoutButton);
+    expect(args.onLogoutClick).toHaveBeenCalledOnce();
+  },
 };

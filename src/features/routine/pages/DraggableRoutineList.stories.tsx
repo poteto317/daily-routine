@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { fn } from "storybook/test";
+import { expect, fn, userEvent, within } from "storybook/test";
 import type { Routine } from "@/types/routine";
 import { DraggableRoutineList } from "./DraggableRoutineList";
 
@@ -81,5 +81,27 @@ export const AllCompleted: Story = {
   args: {
     routines: routines.map((r) => ({ ...r, isCompleted: true })),
     isEditMode: false,
+  },
+};
+
+/** 編集ボタンをクリック → onEditAction が呼ばれる（編集モード） */
+export const ClickEditInEditMode: Story = {
+  args: { routines, isEditMode: true },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    const [firstEditButton] = canvas.getAllByRole("button", { name: "編集" });
+    await userEvent.click(firstEditButton);
+    expect(args.onEditAction).toHaveBeenCalledWith("r-1");
+  },
+};
+
+/** 削除ボタンをクリック → onDeleteAction が呼ばれる（編集モード） */
+export const ClickDeleteInEditMode: Story = {
+  args: { routines, isEditMode: true },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    const [firstDeleteButton] = canvas.getAllByRole("button", { name: "削除" });
+    await userEvent.click(firstDeleteButton);
+    expect(args.onDeleteAction).toHaveBeenCalledWith("r-1");
   },
 };

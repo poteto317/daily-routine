@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { fn } from "storybook/test";
+import { expect, fn, userEvent, within } from "storybook/test";
 import { WeeklyForecastSection } from "./WeeklyForecastSection";
 import type { WeatherForecast } from "@/types/routine";
 
@@ -33,4 +33,15 @@ export const TodaySelected: Story = {
 
 export const MidWeekSelected: Story = {
   args: { forecasts, selectedDate: "2026-05-25" },
+};
+
+/** 天気カードをクリック → onSelectDate が呼ばれる */
+export const ClickForecastCard: Story = {
+  args: { forecasts, selectedDate: null },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    const [firstCard] = canvas.getAllByRole("button");
+    await userEvent.click(firstCard);
+    expect(args.onSelectDate).toHaveBeenCalledWith("2026-05-22");
+  },
 };

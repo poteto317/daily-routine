@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { fn } from "storybook/test";
+import { expect, fn, userEvent, within } from "storybook/test";
 import { AccountEditForm } from "./AccountEditForm";
 import type { Account } from "./types";
 
@@ -54,5 +54,37 @@ export const Loading: Story = {
     editingAccount: account,
     editDisplayName: "更新中...",
     editIsAdmin: false,
+  },
+};
+
+/** 「更新」ボタンをクリック → onSubmit が呼ばれる */
+export const ClickSubmit: Story = {
+  args: {
+    actionLoading: false,
+    editingAccount: account,
+    editDisplayName: "更新名前",
+    editIsAdmin: false,
+  },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    const submitButton = canvas.getByRole("button", { name: "更新" });
+    await userEvent.click(submitButton);
+    expect(args.onSubmit).toHaveBeenCalledOnce();
+  },
+};
+
+/** 「キャンセル」ボタンをクリック → onCancel が呼ばれる */
+export const ClickCancel: Story = {
+  args: {
+    actionLoading: false,
+    editingAccount: account,
+    editDisplayName: "一般ユーザー",
+    editIsAdmin: false,
+  },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    const cancelButton = canvas.getByRole("button", { name: "キャンセル" });
+    await userEvent.click(cancelButton);
+    expect(args.onCancel).toHaveBeenCalledOnce();
   },
 };

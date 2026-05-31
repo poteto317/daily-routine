@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { fn } from "storybook/test";
+import { expect, fn, userEvent, within } from "storybook/test";
 import { DefaultAndPomodoroSection } from "./DefaultAndPomodoroSection";
 
 const meta = {
@@ -47,5 +47,23 @@ export const MinimalValues: Story = {
     pomodoroFocusInput: "1",
     pomodoroBreakInput: "1",
     backgroundRefreshIntervalInput: "0",
+  },
+};
+
+/** デフォルト所要時間フィールドに値を入力 → setDurationInput が呼ばれる */
+export const TypeDuration: Story = {
+  args: {
+    durationInput: "",
+    notificationInput: "5",
+    pomodoroFocusInput: "25",
+    pomodoroBreakInput: "5",
+    backgroundRefreshIntervalInput: "30",
+  },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    const durationInput = canvas.getByLabelText(/デフォルト所要時間/);
+    await userEvent.clear(durationInput);
+    await userEvent.type(durationInput, "45");
+    expect(args.setDurationInput).toHaveBeenCalled();
   },
 };

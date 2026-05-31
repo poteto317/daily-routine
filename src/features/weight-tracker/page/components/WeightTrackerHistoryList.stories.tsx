@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { fn } from "storybook/test";
+import { expect, fn, userEvent, within } from "storybook/test";
 import { WeightTrackerHistoryList } from "./WeightTrackerHistoryList";
 import type { WeightRecord } from "@/types/routine";
 
@@ -75,5 +75,16 @@ export const DownwardTrend: Story = {
       ...r,
       weight: 70.0 - i * 0.3,
     })),
+  },
+};
+
+/** 削除ボタンをクリック → onDeleteRecord が呼ばれる */
+export const ClickDelete: Story = {
+  args: { recentRecords: [records[0]] },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    const deleteButton = canvas.getByRole("button", { name: "削除" });
+    await userEvent.click(deleteButton);
+    expect(args.onDeleteRecord).toHaveBeenCalledWith("wr-1");
   },
 };

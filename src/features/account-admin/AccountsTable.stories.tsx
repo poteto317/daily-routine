@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { fn } from "storybook/test";
+import { expect, fn, userEvent, within } from "storybook/test";
 import { AccountsTable } from "./AccountsTable";
 import type { Account } from "./types";
 
@@ -79,5 +79,16 @@ export const ActionLoading: Story = {
     accounts,
     actionLoading: true,
     currentUid: "uid-1",
+  },
+};
+
+/** 編集ボタン（✏️）をクリック → onStartEdit が呼ばれる */
+export const ClickEdit: Story = {
+  args: { accounts, actionLoading: false, currentUid: "uid-1" },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    const editButtons = canvas.getAllByRole("button", { name: "✏️" });
+    await userEvent.click(editButtons[0]);
+    expect(args.onStartEdit).toHaveBeenCalledWith(accounts[0]);
   },
 };

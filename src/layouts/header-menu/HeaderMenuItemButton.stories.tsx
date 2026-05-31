@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { fn } from "storybook/test";
+import { expect, fn, userEvent, within } from "storybook/test";
 import { HeaderMenuItemButton } from "./HeaderMenuItemButton";
 import type { HeaderMenuItem } from "@/hooks/useHeaderMenuItems";
 
@@ -46,4 +46,15 @@ export const WithBadge: Story = {
 
 export const WithBadgeActive: Story = {
   args: { item: budgetItemWithBadge, index: 1, currentPage: "budget" },
+};
+
+/** クリック → onNavigateClick("home") が呼ばれる */
+export const ClickToNavigate: Story = {
+  args: { item: homeItem, index: 0, currentPage: "settings" },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    const menuItem = canvas.getByRole("menuitem", { name: /ホーム/ });
+    await userEvent.click(menuItem);
+    expect(args.onNavigateClick).toHaveBeenCalledWith("home");
+  },
 };

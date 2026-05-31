@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { fn } from "storybook/test";
+import { expect, fn, userEvent, within } from "storybook/test";
 import { DaySelector, DAYS } from "./DaySelector";
 
 const meta = {
@@ -30,5 +30,27 @@ export const WeekdaysOnly: Story = {
   args: {
     viewMode: 1,
     sortedDaysAndHoliday: DAYS.filter((d) => d.value >= 1 && d.value <= 5),
+  },
+};
+
+/** 金曜日をクリック → onViewModeChangeAction(5) が呼ばれる */
+export const ClickFriday: Story = {
+  args: { viewMode: 1, sortedDaysAndHoliday: allDaysAndHoliday },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    const fridayButton = canvas.getByRole("button", { name: "金曜日" });
+    await userEvent.click(fridayButton);
+    expect(args.onViewModeChangeAction).toHaveBeenCalledWith(5);
+  },
+};
+
+/** 祝日をクリック → onViewModeChangeAction("holiday") が呼ばれる */
+export const ClickHoliday: Story = {
+  args: { viewMode: 1, sortedDaysAndHoliday: allDaysAndHoliday },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    const holidayButton = canvas.getByRole("button", { name: /祝日/ });
+    await userEvent.click(holidayButton);
+    expect(args.onViewModeChangeAction).toHaveBeenCalledWith("holiday");
   },
 };

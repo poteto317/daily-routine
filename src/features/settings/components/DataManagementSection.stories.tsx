@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { fn } from "storybook/test";
+import { expect, fn, userEvent, within } from "storybook/test";
 import { DataManagementSection } from "./DataManagementSection";
 import { ALL_TRANSFER_OPTIONS, EMPTY_TRANSFER_OPTIONS } from "../state/constants";
 
@@ -72,5 +72,37 @@ export const ExportError: Story = {
     importOptions: ALL_TRANSFER_OPTIONS,
     exportStatus: "error",
     importStatus: "idle",
+  },
+};
+
+/** エクスポートボタンをクリック → handleExport が呼ばれる */
+export const ClickExport: Story = {
+  args: {
+    exportOptions: ALL_TRANSFER_OPTIONS,
+    importOptions: ALL_TRANSFER_OPTIONS,
+    exportStatus: "idle",
+    importStatus: "idle",
+  },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    const exportButton = canvas.getByRole("button", { name: /エクスポート/ });
+    await userEvent.click(exportButton);
+    expect(args.handleExport).toHaveBeenCalledOnce();
+  },
+};
+
+/** インポートボタンをクリック → handleImportClick が呼ばれる */
+export const ClickImport: Story = {
+  args: {
+    exportOptions: ALL_TRANSFER_OPTIONS,
+    importOptions: ALL_TRANSFER_OPTIONS,
+    exportStatus: "idle",
+    importStatus: "idle",
+  },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    const importButton = canvas.getByRole("button", { name: /インポート/ });
+    await userEvent.click(importButton);
+    expect(args.handleImportClick).toHaveBeenCalledOnce();
   },
 };

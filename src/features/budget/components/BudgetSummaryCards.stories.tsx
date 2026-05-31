@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { fn } from "storybook/test";
+import { expect, fn, userEvent, within } from "storybook/test";
 import { BudgetSummaryCards } from "./BudgetSummaryCards";
 
 const meta = {
@@ -78,5 +78,25 @@ export const PastMonth: Story = {
     daysRemaining: 0,
     expenseCount: 18,
     isCurrentMonth: false,
+  },
+};
+
+/** 「変更」ボタンをクリック → onOpenBudgetInput が呼ばれる */
+export const ClickChangeBudget: Story = {
+  args: {
+    monthBudget: 100000,
+    totalExpense: 42000,
+    remaining: 58000,
+    dailyBudget: 3226,
+    dailyRemainingBudget: 2900,
+    daysRemaining: 20,
+    expenseCount: 8,
+    isCurrentMonth: true,
+  },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    const changeBudgetButton = canvas.getByRole("button", { name: "変更" });
+    await userEvent.click(changeBudgetButton);
+    expect(args.onOpenBudgetInput).toHaveBeenCalledOnce();
   },
 };

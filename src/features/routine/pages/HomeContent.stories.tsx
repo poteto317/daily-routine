@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
+import { expect, userEvent, within } from "storybook/test";
 import { HomeContent } from "./HomeContent";
 import { createBaseViewModel } from "./__fixtures__/homeContentFixtures";
 
@@ -52,4 +53,15 @@ export const EditMode: Story = {
 
 export const WithForm: Story = {
   args: { ...createBaseViewModel(), showRoutineForm: true },
+};
+
+/** 「ルーティンを追加」ボタンをクリック → onAddRoutineAction が呼ばれる */
+export const ClickAdd: Story = {
+  args: createBaseViewModel(),
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    const addButton = canvas.getByRole("button", { name: "ルーティンを追加" });
+    await userEvent.click(addButton);
+    expect(args.toolbarProps.onAddRoutineAction).toHaveBeenCalled();
+  },
 };
