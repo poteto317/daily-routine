@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { fn } from "storybook/test";
+import { expect, fn, userEvent, within } from "storybook/test";
 import { RoutineFormTimeFields } from "./RoutineFormTimeFields";
 
 const meta = {
@@ -60,5 +60,37 @@ export const WithConflict: Story = {
         },
       ],
     },
+  },
+};
+
+/** 開始時間を変更 → setStartTime が呼ばれる */
+export const ChangeStartTime: Story = {
+  args: {
+    startTime: "07:00",
+    duration: "30",
+    conflictInfo: noConflict,
+  },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    const startInput = canvas.getByLabelText(/開始時間/);
+    await userEvent.clear(startInput);
+    await userEvent.type(startInput, "08:00");
+    expect(args.setStartTime).toHaveBeenCalled();
+  },
+};
+
+/** 所要時間を変更 → setDuration が呼ばれる */
+export const ChangeDuration: Story = {
+  args: {
+    startTime: "07:00",
+    duration: "30",
+    conflictInfo: noConflict,
+  },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    const durationInput = canvas.getByLabelText(/所要時間/);
+    await userEvent.clear(durationInput);
+    await userEvent.type(durationInput, "45");
+    expect(args.setDuration).toHaveBeenCalled();
   },
 };

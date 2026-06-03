@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { fn } from "storybook/test";
+import { expect, fn, userEvent, within } from "storybook/test";
 import { MatrixCategoryCard } from "./MatrixCategoryCard";
 import type { TestCategory } from "./types";
 import type { DetailData } from "./matrixComputations";
@@ -45,4 +45,15 @@ export const FilteredOk: Story = {
 
 export const FilteredNg: Story = {
   args: { category, detailData, filterStatus: "ng", isCollapsed: false },
+};
+
+/** カテゴリヘッダーをクリック → onToggleCollapse が呼ばれる */
+export const ClickCollapseToggle: Story = {
+  args: { category, detailData, filterStatus: "all", isCollapsed: false },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    const collapseButton = canvas.getByRole("button", { name: /認証機能/ });
+    await userEvent.click(collapseButton);
+    expect(args.onToggleCollapse).toHaveBeenCalledWith("cat-1");
+  },
 };

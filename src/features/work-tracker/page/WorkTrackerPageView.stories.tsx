@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
+import { expect, userEvent, within } from "storybook/test";
 import { saveWorkSessionHistory } from "@/features/work-tracker/storage";
 import { WorkTrackerPage } from "./WorkTrackerPageView";
 import { sampleSessionHistory } from "./__fixtures__/workSessionFixtures";
@@ -27,5 +28,19 @@ export const WithHistory: Story = {
   beforeEach() {
     saveWorkSessionHistory(sampleSessionHistory);
     return () => saveWorkSessionHistory({});
+  },
+};
+
+export const ClickStart: Story = {
+  name: "ClickStart: スタートボタンをクリックするとストップに変わる",
+  beforeEach() {
+    saveWorkSessionHistory({});
+    return () => saveWorkSessionHistory({});
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const startButton = canvas.getByRole("button", { name: /スタート/ });
+    await userEvent.click(startButton);
+    await expect(canvas.getByRole("button", { name: /ストップ/ })).toBeTruthy();
   },
 };

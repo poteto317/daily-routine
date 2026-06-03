@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { fn } from "storybook/test";
+import { expect, fn, userEvent, within } from "storybook/test";
 import { WorkTrackerSessionHistory } from "./WorkTrackerSessionHistory";
 import type { WorkSession } from "@/types/routine";
 
@@ -61,4 +61,15 @@ export const SingleSession: Story = {
 
 export const MultipleSessions: Story = {
   args: { sessions },
+};
+
+/** 削除ボタンをクリック → onDeleteSession が呼ばれる */
+export const ClickDelete: Story = {
+  args: { sessions: [sessions[0]] },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    const deleteButton = canvas.getByRole("button", { name: "削除" });
+    await userEvent.click(deleteButton);
+    expect(args.onDeleteSession).toHaveBeenCalledWith(sessions[0].id);
+  },
 };

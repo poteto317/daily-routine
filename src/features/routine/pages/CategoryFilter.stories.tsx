@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { fn } from "storybook/test";
+import { expect, fn, userEvent, within } from "storybook/test";
 import { CategoryFilter } from "./CategoryFilter";
 
 const meta = {
@@ -26,4 +26,26 @@ export const Study: Story = {
 
 export const Work: Story = {
   args: { filterCategory: "work" },
+};
+
+/** 「健康」カテゴリをクリック → onFilterChangeAction("health") が呼ばれる */
+export const ClickHealthFilter: Story = {
+  args: { filterCategory: "all" },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    const healthButton = canvas.getByRole("button", { name: /健康/ });
+    await userEvent.click(healthButton);
+    expect(args.onFilterChangeAction).toHaveBeenCalledWith("health");
+  },
+};
+
+/** 「すべて」をクリック → onFilterChangeAction("all") が呼ばれる */
+export const ClickAllFilter: Story = {
+  args: { filterCategory: "health" },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    const allButton = canvas.getByRole("button", { name: "すべて" });
+    await userEvent.click(allButton);
+    expect(args.onFilterChangeAction).toHaveBeenCalledWith("all");
+  },
 };

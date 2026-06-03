@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { fn } from "storybook/test";
+import { expect, fn, userEvent, within } from "storybook/test";
 import { ErrorAlert } from "./ErrorAlert";
 
 const meta = {
@@ -33,5 +33,18 @@ export const WithCustomRetryText: Story = {
     error: "同期に失敗しました。インターネット接続を確認してください。",
     onRetry: fn(),
     retryButtonText: "もう一度試す",
+  },
+};
+
+/** 「再試行」ボタンをクリック → onRetry が呼ばれる */
+export const ClickRetry: Story = {
+  args: {
+    error: "データの読み込みに失敗しました。",
+  },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    const retryButton = canvas.getByRole("button", { name: "再試行" });
+    await userEvent.click(retryButton);
+    expect(args.onRetry).toHaveBeenCalledOnce();
   },
 };

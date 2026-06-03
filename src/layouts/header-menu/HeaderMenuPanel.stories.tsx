@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { fn } from "storybook/test";
+import { expect, fn, userEvent, within } from "storybook/test";
 import type { User } from "firebase/auth";
 import { HeaderMenuPanel } from "./HeaderMenuPanel";
 import type { HeaderMenuItem } from "@/hooks/useHeaderMenuItems";
@@ -47,4 +47,15 @@ export const SettingsActive: Story = {
 
 export const NoMenuItems: Story = {
   args: { filteredMenuItems: [], currentPage: "home", user },
+};
+
+/** ナビゲーション項目をクリック → onNavigateClick が呼ばれる */
+export const ClickNavigate: Story = {
+  args: { filteredMenuItems: menuItems, currentPage: "home", user },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    const budgetItem = canvas.getByRole("menuitem", { name: /予算/ });
+    await userEvent.click(budgetItem);
+    expect(args.onNavigateClick).toHaveBeenCalledWith("budget");
+  },
 };

@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { fn } from "storybook/test";
+import { expect, fn, userEvent, within } from "storybook/test";
 import type { WeatherData } from "../api";
 import { WeatherDataView } from "./WeatherDataView";
 
@@ -103,4 +103,15 @@ export const LocationLoading: Story = {
 
 export const NoHourly: Story = {
   args: { data: { ...sampleData, hourly: undefined } },
+};
+
+/** 「現在地を使用」ボタンをクリック → onUseCurrentLocation が呼ばれる */
+export const ClickUseLocation: Story = {
+  args: { data: sampleData },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    const locationButton = canvas.getByRole("button", { name: "現在地を使用" });
+    await userEvent.click(locationButton);
+    expect(args.onUseCurrentLocation).toHaveBeenCalledOnce();
+  },
 };

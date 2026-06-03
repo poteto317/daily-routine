@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { fn } from "storybook/test";
+import { expect, fn, userEvent, within } from "storybook/test";
 import { PresetListSection } from "./PresetListSection";
 import type { RoutinePreset } from "@/types/routine";
 
@@ -71,5 +71,27 @@ export const Selected: Story = {
     selectedPresetId: "p-1",
     selectedDays: new Set([1, 2, 3, 4, 5]),
     editSelectedRoutines: new Set<string>(),
+  },
+};
+
+/** プリセットカードをクリック → onSelectPreset が呼ばれる */
+export const ClickSelect: Story = {
+  args: { presets, selectedPresetId: null, selectedDays: new Set<number>(), editSelectedRoutines: new Set<string>() },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    const card = canvas.getByText("朝の健康ルーティン");
+    await userEvent.click(card);
+    expect(args.onSelectPreset).toHaveBeenCalledWith("p-1");
+  },
+};
+
+/** 削除ボタンをクリック → onDeletePreset が呼ばれる */
+export const ClickDelete: Story = {
+  args: { presets, selectedPresetId: null, selectedDays: new Set<number>(), editSelectedRoutines: new Set<string>() },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    const deleteButton = canvas.getByRole("button", { name: "プリセットを削除" });
+    await userEvent.click(deleteButton);
+    expect(args.onDeletePreset).toHaveBeenCalledWith("p-1");
   },
 };

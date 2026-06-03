@@ -4,7 +4,7 @@ import {
   deleteTodoListAndPersist,
   renameTodoListAndPersist,
   toggleTodoListVisibilityAndPersist,
-} from "../managementPageStateActions";
+} from "../todoListCrudPersistActions";
 import {
   createTodoListCreateHandler,
   createTodoListDeleteHandler,
@@ -13,7 +13,7 @@ import {
 } from "../todoListManagementMutationHandlers";
 import { normalizeTitle } from "../todoListTitleNormalization";
 
-jest.mock("../managementPageStateActions", () => ({
+jest.mock("../todoListCrudPersistActions", () => ({
   createTodoListAndPersist: jest.fn(),
   deleteTodoListAndPersist: jest.fn(),
   renameTodoListAndPersist: jest.fn(),

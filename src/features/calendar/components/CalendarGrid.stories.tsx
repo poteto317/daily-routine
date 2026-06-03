@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { fn } from "storybook/test";
+import { expect, fn, userEvent, within } from "storybook/test";
 import { CalendarGrid } from "./CalendarGrid";
 import type { DailyHistory, PomodoroHistory } from "@/types/routine";
 
@@ -119,5 +119,26 @@ export const AllCompleted: Story = {
     ),
     pomodoroHistory: {},
     selectedDate: null,
+  },
+};
+
+/** 過去の日付（2026-04-01）をクリック → onDateClick が呼ばれる */
+export const ClickDate: Story = {
+  args: {
+    year: 2026,
+    month: 4,
+    monthHistory: makeHistory(2026, 4, [{ day: 1, completed: 5, total: 5 }]),
+    pomodoroHistory: {},
+    selectedDate: null,
+  },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    // 「1」の日付ボタンをクリック（過去の日付）
+    const dayButtons = canvas.getAllByRole("button");
+    const firstDay = dayButtons.find((b) => b.textContent?.trim().startsWith("1"));
+    if (firstDay) {
+      await userEvent.click(firstDay);
+      expect(args.onDateClick).toHaveBeenCalled();
+    }
   },
 };

@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { fn } from "storybook/test";
+import { expect, fn, userEvent, within } from "storybook/test";
 import { WorkTrackerTemplateInput } from "./WorkTrackerTemplateInput";
 import type { WorkTemplate } from "@/types/routine";
 
@@ -56,4 +56,26 @@ export const ShowingDropdown: Story = {
 
 export const NoMatchingTemplates: Story = {
   args: { workName: "新規プロジェクト", templates, showTemplateDropdown: true },
+};
+
+/** 作業名を入力 → setWorkName が呼ばれる */
+export const TypeWorkName: Story = {
+  args: { workName: "", templates, showTemplateDropdown: false },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    const input = canvas.getByRole("textbox");
+    await userEvent.type(input, "機能開発");
+    expect(args.setWorkName).toHaveBeenCalled();
+  },
+};
+
+/** テンプレートドロップダウンからアイテムをクリック → setSelectedTemplate が呼ばれる */
+export const ClickTemplateItem: Story = {
+  args: { workName: "機", templates, showTemplateDropdown: true },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    const item = canvas.getByRole("button", { name: /機能開発/ });
+    await userEvent.click(item);
+    expect(args.setSelectedTemplate).toHaveBeenCalledWith(templates[0]);
+  },
 };

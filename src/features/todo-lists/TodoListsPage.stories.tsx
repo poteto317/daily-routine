@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
+import { expect, userEvent, within } from "storybook/test";
 import { saveTodoLists } from "./storage";
 import { setSelectedTodoListId } from "./selectedTodoList";
 import { sampleTodoLists } from "./__fixtures__/todoListFixtures";
@@ -40,5 +41,22 @@ export const WithSelectedList: Story = {
     saveTodoLists(sampleTodoLists);
     setSelectedTodoListId(sampleTodoLists[0].id);
     return clearTodoListsStorage;
+  },
+};
+
+/** 選択中リストのアイテム「牛乳」の完了ボタンをクリック → チェック状態になる */
+export const ClickCompleteItem: Story = {
+  beforeEach() {
+    saveTodoLists(sampleTodoLists);
+    setSelectedTodoListId(sampleTodoLists[0].id);
+    return clearTodoListsStorage;
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const completeButton = canvas.getByRole("button", {
+      name: /「牛乳」を完了にする/,
+    });
+    await userEvent.click(completeButton);
+    expect(canvas.queryByRole("button", { name: /「牛乳」を完了にする/ })).toBeNull();
   },
 };

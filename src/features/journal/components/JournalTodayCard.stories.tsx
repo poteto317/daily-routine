@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { fn } from "storybook/test";
+import { expect, fn, userEvent, within } from "storybook/test";
 import { JournalTodayCard } from "./JournalTodayCard";
 import type { JournalEntry } from "@/types/routine";
 
@@ -81,5 +81,56 @@ export const EditingEntry: Story = {
     showForm: true,
     titleInput: todayEntry.title,
     contentInput: todayEntry.content,
+  },
+};
+
+/** 「➕」ボタンをクリック → onOpenForm が呼ばれる */
+export const ClickAdd: Story = {
+  args: {
+    todayEntry: null,
+    editingEntry: null,
+    showForm: false,
+    titleInput: "",
+    contentInput: "",
+  },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    const addButton = canvas.getByRole("button", { name: "➕" });
+    await userEvent.click(addButton);
+    expect(args.onOpenForm).toHaveBeenCalledOnce();
+  },
+};
+
+/** 本文を入力 → onContentChange が呼ばれる */
+export const TypeContent: Story = {
+  args: {
+    todayEntry: null,
+    editingEntry: null,
+    showForm: true,
+    titleInput: "",
+    contentInput: "",
+  },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    const contentInput = canvas.getByPlaceholderText(/今日感じたこと/);
+    await userEvent.type(contentInput, "今日も充実した一日だった。");
+    expect(args.onContentChange).toHaveBeenCalled();
+  },
+};
+
+/** 「保存」ボタンをクリック → onSave が呼ばれる */
+export const ClickSaveNew: Story = {
+  args: {
+    todayEntry: null,
+    editingEntry: null,
+    showForm: true,
+    titleInput: "今日のメモ",
+    contentInput: "充実した一日",
+  },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    const saveButton = canvas.getByRole("button", { name: "保存" });
+    await userEvent.click(saveButton);
+    expect(args.onSave).toHaveBeenCalledOnce();
   },
 };

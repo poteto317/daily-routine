@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { fn } from "storybook/test";
+import { expect, fn, userEvent, within } from "storybook/test";
 import { MealTodaySection } from "./MealTodaySection";
 import type { MealRecord } from "@/types/routine";
 
@@ -60,5 +60,27 @@ export const ShowingForm: Story = {
         （フォームコンポーネントはここに挿入されます）
       </div>
     ),
+  },
+};
+
+/** 「➕」ボタンをクリック → onOpenForm が呼ばれる */
+export const ClickAdd: Story = {
+  args: { meals: [] },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    const addButton = canvas.getByRole("button", { name: "➕" });
+    await userEvent.click(addButton);
+    expect(args.onOpenForm).toHaveBeenCalledOnce();
+  },
+};
+
+/** 削除ボタンをクリック → onDeleteMeal が呼ばれる */
+export const ClickDelete: Story = {
+  args: { meals: [todayMeals[0]] },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    const deleteButton = canvas.getByRole("button", { name: "🗑️" });
+    await userEvent.click(deleteButton);
+    expect(args.onDeleteMeal).toHaveBeenCalledWith("meal-1");
   },
 };

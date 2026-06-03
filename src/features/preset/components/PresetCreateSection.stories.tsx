@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { fn } from "storybook/test";
+import { expect, fn, userEvent, within } from "storybook/test";
 import { PresetCreateSection } from "./PresetCreateSection";
 import type { Routine } from "@/types/routine";
 
@@ -106,5 +106,41 @@ export const NoRoutines: Story = {
     newPresetDescription: "",
     selectedRoutines: new Set<string>(),
     createFilterDays: new Set<number>(),
+  },
+};
+
+/** 「➕」ボタンをクリック → onToggleCreating が呼ばれる（フォームを開く） */
+export const ClickOpenForm: Story = {
+  args: {
+    isCreating: false,
+    currentRoutines: [],
+    newPresetName: "",
+    newPresetDescription: "",
+    selectedRoutines: new Set<string>(),
+    createFilterDays: new Set<number>(),
+  },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    const openButton = canvas.getByRole("button", { name: "➕" });
+    await userEvent.click(openButton);
+    expect(args.onToggleCreating).toHaveBeenCalledOnce();
+  },
+};
+
+/** プリセット名を入力 → onChangeName が呼ばれる */
+export const TypePresetName: Story = {
+  args: {
+    isCreating: true,
+    currentRoutines: [],
+    newPresetName: "",
+    newPresetDescription: "",
+    selectedRoutines: new Set<string>(),
+    createFilterDays: new Set<number>(),
+  },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    const nameInput = canvas.getByPlaceholderText("例: 平日モーニングルーティン");
+    await userEvent.type(nameInput, "朝のルーティン");
+    expect(args.onChangeName).toHaveBeenCalled();
   },
 };

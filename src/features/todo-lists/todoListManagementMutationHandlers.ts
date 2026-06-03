@@ -5,7 +5,7 @@ import {
   deleteTodoListAndPersist,
   renameTodoListAndPersist,
   toggleTodoListVisibilityAndPersist,
-} from "./managementPageStateActions";
+} from "./todoListCrudPersistActions";
 
 export const createTodoListCreateHandler = (params: {
   lists: TodoList[];

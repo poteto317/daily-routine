@@ -1,6 +1,6 @@
 import type { TodoList } from "./types";
 import { saveTodoListsToLocal } from "./sync";
-import { persistManagedTodoLists } from "./managementPageStateActions";
+import { persistManagedTodoLists } from "./todoListCrudPersistActions";
 
 type SetValue<T> = (value: T) => void;
 

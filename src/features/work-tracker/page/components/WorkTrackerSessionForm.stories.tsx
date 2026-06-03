@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { fn } from "storybook/test";
+import { expect, fn, userEvent, within } from "storybook/test";
 import { WorkTrackerSessionForm } from "./WorkTrackerSessionForm";
 import type { WorkTemplate } from "@/types/routine";
 
@@ -66,5 +66,43 @@ export const WithNotes: Story = {
     selectedTemplate: null,
     templates,
     showTemplateDropdown: false,
+  },
+};
+
+/** 「記録を保存」ボタンをクリック → onSave が呼ばれる */
+export const ClickSave: Story = {
+  args: {
+    elapsedTime: 3600,
+    workName: "機能開発",
+    notes: "",
+    selectedMood: "good",
+    selectedTemplate: null,
+    templates,
+    showTemplateDropdown: false,
+  },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    const saveButton = canvas.getByRole("button", { name: /記録を保存/ });
+    await userEvent.click(saveButton);
+    expect(args.onSave).toHaveBeenCalledOnce();
+  },
+};
+
+/** 「キャンセル」ボタンをクリック → onCancel が呼ばれる */
+export const ClickCancel: Story = {
+  args: {
+    elapsedTime: 3600,
+    workName: "",
+    notes: "",
+    selectedMood: "good",
+    selectedTemplate: null,
+    templates,
+    showTemplateDropdown: false,
+  },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    const cancelButton = canvas.getByRole("button", { name: "キャンセル" });
+    await userEvent.click(cancelButton);
+    expect(args.onCancel).toHaveBeenCalledOnce();
   },
 };

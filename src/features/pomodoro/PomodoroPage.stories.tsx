@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
+import { expect, userEvent, within } from "storybook/test";
 import { savePomodoroHistory } from "@/features/pomodoro";
 import { PomodoroPage } from "./PomodoroPage";
 
@@ -39,5 +40,19 @@ export const WithPomodoros: Story = {
       [yesterday]: { date: yesterday, completedPomodoros: 5 },
     });
     return () => savePomodoroHistory({});
+  },
+};
+
+/** スタートボタンをクリック → 一時停止ボタンに変わる */
+export const ClickStart: Story = {
+  beforeEach() {
+    savePomodoroHistory({});
+    return () => savePomodoroHistory({});
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const startButton = canvas.getByRole("button", { name: /スタート/ });
+    await userEvent.click(startButton);
+    expect(canvas.getByRole("button", { name: /一時停止/ })).toBeTruthy();
   },
 };

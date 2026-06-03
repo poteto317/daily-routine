@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { fn } from "storybook/test";
+import { expect, fn, userEvent, within } from "storybook/test";
 import { PresetEditSection } from "./PresetEditSection";
 import type { Routine } from "@/types/routine";
 
@@ -73,5 +73,37 @@ export const NoRoutines: Story = {
     editPresetName: "新しいプリセット",
     editPresetDescription: "",
     editSelectedRoutines: new Set<string>(),
+  },
+};
+
+/** 「保存」ボタンをクリック → onSaveEdit が呼ばれる */
+export const ClickSave: Story = {
+  args: {
+    routines,
+    editPresetName: "朝のルーティン",
+    editPresetDescription: "",
+    editSelectedRoutines: new Set(["r-1"]),
+  },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    const saveButton = canvas.getByRole("button", { name: "保存" });
+    await userEvent.click(saveButton);
+    expect(args.onSaveEdit).toHaveBeenCalledOnce();
+  },
+};
+
+/** 「キャンセル」ボタンをクリック → onCancelEdit が呼ばれる */
+export const ClickCancel: Story = {
+  args: {
+    routines,
+    editPresetName: "朝のルーティン",
+    editPresetDescription: "",
+    editSelectedRoutines: new Set<string>(),
+  },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    const cancelButton = canvas.getByRole("button", { name: "キャンセル" });
+    await userEvent.click(cancelButton);
+    expect(args.onCancelEdit).toHaveBeenCalledOnce();
   },
 };

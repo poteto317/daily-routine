@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { fn } from "storybook/test";
+import { expect, fn, userEvent, within } from "storybook/test";
 import type { TodoList } from "@/features/todo-lists/types";
 import { saveTodoLists } from "@/features/todo-lists/storage";
 import { MenuOrderSection } from "./MenuOrderSection";
@@ -84,4 +84,15 @@ export const WithTodoLists: Story = {
 
 export const EmptyOrder: Story = {
   args: { menuOrder: [] },
+};
+
+/** 「デフォルトに戻す」クリック → setMenuOrderAction が呼ばれる */
+export const ClickReset: Story = {
+  args: { menuOrder: defaultOrder },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    const resetButton = canvas.getByRole("button", { name: "デフォルトに戻す" });
+    await userEvent.click(resetButton);
+    expect(args.setMenuOrderAction).toHaveBeenCalled();
+  },
 };

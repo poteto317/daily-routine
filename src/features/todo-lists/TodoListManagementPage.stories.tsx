@@ -1,5 +1,5 @@
 import type { Decorator, Meta, StoryObj } from "@storybook/nextjs-vite";
-import { fn } from "storybook/test";
+import { expect, fn, userEvent, within } from "storybook/test";
 import { NavigationContextProvider } from "@/features/routine/pages/NavigationContext";
 import { saveTodoLists } from "./storage";
 import { sampleTodoLists } from "./__fixtures__/todoListFixtures";
@@ -37,5 +37,20 @@ export const WithLists: Story = {
   beforeEach() {
     saveTodoLists(sampleTodoLists);
     return () => saveTodoLists([]);
+  },
+};
+
+/** 「＋ 新しいリストを追加」ボタンをクリック → フォームが開く */
+export const ClickAddList: Story = {
+  beforeEach() {
+    saveTodoLists([]);
+    return () => saveTodoLists([]);
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const addButton = canvas.getByRole("button", { name: /新しいリストを追加/ });
+    await userEvent.click(addButton);
+    // フォームが開き、タイトル入力欄が表示される
+    expect(canvas.getByPlaceholderText("リストのタイトル")).toBeTruthy();
   },
 };

@@ -1,5 +1,5 @@
 import { type RefObject, useEffect } from "react";
-import { shouldFocusTodoListForm } from "./managementPageStateActions";
+import { shouldFocusTodoListForm } from "./todoListManagementFormState";
 
 type UseTodoListManagementFormFocusParams = {
   inputRef: RefObject<HTMLInputElement | null>;

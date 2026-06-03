@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { fn } from "storybook/test";
+import { expect, fn, userEvent, within } from "storybook/test";
 import { DetailPanel } from "./DetailPanel";
 import type { DetailTestCase } from "./detailedTestCases";
 
@@ -33,5 +33,16 @@ export const AllOk: Story = {
     itemId: "item-2",
     itemLabel: "ログアウト機能",
     cases: cases.map((c) => ({ ...c, pc: "ok" as const, sp: "ok" as const })),
+  },
+};
+
+/** 「閉じる」ボタンをクリック → onClose が呼ばれる */
+export const ClickClose: Story = {
+  args: { itemId: "item-1", itemLabel: "ログイン機能", cases },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    const closeButton = canvas.getByRole("button", { name: "閉じる" });
+    await userEvent.click(closeButton);
+    expect(args.onClose).toHaveBeenCalledOnce();
   },
 };

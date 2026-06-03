@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { fn } from "storybook/test";
+import { expect, fn, userEvent, within } from "storybook/test";
 import { AccountCreateForm } from "./AccountCreateForm";
 
 const meta = {
@@ -56,5 +56,39 @@ export const Loading: Story = {
     createPassword: "password123",
     createDisplayName: "ユーザー",
     createIsAdmin: false,
+  },
+};
+
+/** メールアドレス入力 → setCreateEmail が呼ばれる */
+export const TypeEmail: Story = {
+  args: {
+    actionLoading: false,
+    createEmail: "",
+    createPassword: "",
+    createDisplayName: "",
+    createIsAdmin: false,
+  },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    const emailInput = canvas.getByPlaceholderText("user@example.com");
+    await userEvent.type(emailInput, "newuser@example.com");
+    expect(args.setCreateEmail).toHaveBeenCalled();
+  },
+};
+
+/** 作成ボタンをクリック → onSubmit が呼ばれる */
+export const ClickSubmit: Story = {
+  args: {
+    actionLoading: false,
+    createEmail: "newuser@example.com",
+    createPassword: "password123",
+    createDisplayName: "新規ユーザー",
+    createIsAdmin: false,
+  },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    const submitButton = canvas.getByRole("button", { name: "作成" });
+    await userEvent.click(submitButton);
+    expect(args.onSubmit).toHaveBeenCalledOnce();
   },
 };

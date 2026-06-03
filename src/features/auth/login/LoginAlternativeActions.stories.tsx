@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { fn } from "storybook/test";
+import { expect, fn, userEvent, within } from "storybook/test";
 import { LoginAlternativeActions } from "./LoginAlternativeActions";
 
 const meta = {
@@ -48,5 +48,37 @@ export const Loading: Story = {
     isSignUp: false,
     loading: true,
     onTestLogin: fn(),
+  },
+};
+
+/** 「匿名でログイン」ボタンをクリック → onAnonymousLogin が呼ばれる */
+export const ClickAnonymousLogin: Story = {
+  args: {
+    authUnavailable: false,
+    isSignUp: false,
+    loading: false,
+    onTestLogin: fn(),
+  },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    const button = canvas.getByRole("button", { name: "匿名でログイン" });
+    await userEvent.click(button);
+    expect(args.onAnonymousLogin).toHaveBeenCalledOnce();
+  },
+};
+
+/** モード切り替えボタンをクリック → onToggleMode が呼ばれる */
+export const ClickToggleMode: Story = {
+  args: {
+    authUnavailable: false,
+    isSignUp: false,
+    loading: false,
+    onTestLogin: fn(),
+  },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    const button = canvas.getByRole("button", { name: "新規アカウントを作成" });
+    await userEvent.click(button);
+    expect(args.onToggleMode).toHaveBeenCalledOnce();
   },
 };

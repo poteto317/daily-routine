@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { fn } from "storybook/test";
+import { expect, fn, userEvent, within } from "storybook/test";
 import { HeaderSyncButton } from "./HeaderSyncButton";
 import type { SyncStatus } from "@/features/sync";
 
@@ -47,5 +47,27 @@ export const Syncing: Story = {
   args: {
     mode: "upload",
     syncStatus: { ...idleStatus, isSyncing: true },
+  },
+};
+
+/** アップロードボタンをクリック → onSyncAction が呼ばれる */
+export const ClickUpload: Story = {
+  args: { mode: "upload", syncStatus: idleStatus },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    const button = canvas.getByRole("button", { name: "クラウドへアップロード" });
+    await userEvent.click(button);
+    expect(args.onSyncAction).toHaveBeenCalledOnce();
+  },
+};
+
+/** ダウンロードボタンをクリック → onSyncAction が呼ばれる */
+export const ClickDownload: Story = {
+  args: { mode: "download", syncStatus: idleStatus },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    const button = canvas.getByRole("button", { name: "クラウドからダウンロード" });
+    await userEvent.click(button);
+    expect(args.onSyncAction).toHaveBeenCalledOnce();
   },
 };

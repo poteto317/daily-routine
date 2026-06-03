@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { fn } from "storybook/test";
+import { expect, fn, userEvent, within } from "storybook/test";
 import { WeightTrackerTodayCard } from "./WeightTrackerTodayCard";
 
 const meta = {
@@ -82,5 +82,53 @@ export const EditingRecord: Story = {
     showForm: true,
     weightInput: "68.5",
     notesInput: "",
+  },
+};
+
+/** 「➕」ボタンをクリック → onEdit が呼ばれる（記録なし） */
+export const ClickAdd: Story = {
+  args: {
+    todayRecord: null,
+    showForm: false,
+    weightInput: "",
+    notesInput: "",
+  },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    const addButton = canvas.getByRole("button", { name: "➕" });
+    await userEvent.click(addButton);
+    expect(args.onEdit).toHaveBeenCalledOnce();
+  },
+};
+
+/** 「保存」ボタンをクリック → onSave が呼ばれる（フォーム表示中） */
+export const ClickSave: Story = {
+  args: {
+    todayRecord: null,
+    showForm: true,
+    weightInput: "68.0",
+    notesInput: "",
+  },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    const saveButton = canvas.getByRole("button", { name: "保存" });
+    await userEvent.click(saveButton);
+    expect(args.onSave).toHaveBeenCalledOnce();
+  },
+};
+
+/** 「キャンセル」ボタンをクリック → onCancel が呼ばれる（フォーム表示中） */
+export const ClickCancel: Story = {
+  args: {
+    todayRecord: null,
+    showForm: true,
+    weightInput: "",
+    notesInput: "",
+  },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    const cancelButton = canvas.getByRole("button", { name: "キャンセル" });
+    await userEvent.click(cancelButton);
+    expect(args.onCancel).toHaveBeenCalledOnce();
   },
 };
