@@ -32,6 +32,26 @@ service cloud.firestore {
         && get(/databases/$(database)/documents/accounts/$(request.auth.uid)).data.isAdmin == true;
     }
 
+    // 不具合報告: クライアントは自分の uid の報告を作成・読み取りのみ可能。
+    // status は "pending" 固定、サーバ専用フィールドの書き込みは禁止。
+    // update / delete は Cloud Functions (Admin SDK) のみ。
+    match /bugReports/{reportId} {
+      allow read: if request.auth != null
+        && resource.data.uid == request.auth.uid;
+      allow create: if request.auth != null
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.status == "pending"
+        && request.resource.data.description is string
+        && request.resource.data.description.size() > 0
+        && request.resource.data.description.size() <= 2000
+        && (!('title' in request.resource.data) || (request.resource.data.title is string && request.resource.data.title.size() <= 100))
+        && (!('stepsToReproduce' in request.resource.data) || (request.resource.data.stepsToReproduce is string && request.resource.data.stepsToReproduce.size() <= 2000))
+        && !request.resource.data.keys().hasAny([
+          "issueNumber", "issueUrl", "aiLabels", "errorMessage"
+        ]);
+      allow update, delete: if false;
+    }
+
     // その他のドキュメントはデフォルトで拒否
     match /{document=**} {
       allow read, write: if false;
