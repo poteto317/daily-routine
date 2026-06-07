@@ -46,8 +46,9 @@ service cloud.firestore {
         && request.resource.data.description.size() <= 2000
         && (!('title' in request.resource.data) || (request.resource.data.title is string && request.resource.data.title.size() <= 100))
         && (!('stepsToReproduce' in request.resource.data) || (request.resource.data.stepsToReproduce is string && request.resource.data.stepsToReproduce.size() <= 2000))
-        && !request.resource.data.keys().hasAny([
-          "issueNumber", "issueUrl", "aiLabels", "errorMessage"
+        && (!('meta' in request.resource.data) || request.resource.data.meta is map)
+        && request.resource.data.keys().hasOnly([
+          "uid", "status", "description", "title", "stepsToReproduce", "meta", "createdAt"
         ]);
       allow update, delete: if false;
     }

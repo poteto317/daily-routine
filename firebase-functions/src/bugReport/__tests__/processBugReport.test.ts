@@ -156,7 +156,7 @@ describe("processBugReport", () => {
     expect(updateReport).toHaveBeenCalledTimes(2);
   });
 
-  it("成功パスの updateReport 失敗後、エラー書き戻しの内容が正しい", async () => {
+  it("成功パスの updateReport 失敗後、エラー書き戻しに issueNumber/issueUrl が含まれる", async () => {
     const createIssue = jest
       .fn()
       .mockResolvedValue({ issueNumber: 1, issueUrl: "u" });
@@ -168,10 +168,37 @@ describe("processBugReport", () => {
       processBugReport(pendingReport, { createIssue, updateReport }),
     ).rejects.toThrow("Firestore down");
 
-    // 2 回目の呼び出しで status: "error" と errorMessage が書き戻されること
+    // 2 回目: issued 書き戻し失敗後のエラー書き戻しに issueNumber/issueUrl を含む
+    // （再実行時に shouldSkipProcessing が機能し二重作成を防ぐため）
     expect(updateReport.mock.calls[1][0]).toEqual({
       status: "error",
+      issueNumber: 1,
+      issueUrl: "u",
       errorMessage: "Firestore down",
+    });
+  });
+
+  it("成功後の issued 書き戻し失敗時、エラー書き戻しが成功すれば例外が伝播する", async () => {
+    const createIssue = jest
+      .fn()
+      .mockResolvedValue({ issueNumber: 5, issueUrl: "https://example.com/5" });
+    let callCount = 0;
+    const updateReport = jest.fn().mockImplementation(async () => {
+      callCount++;
+      if (callCount === 1) throw new Error("issued write failed");
+      // 2 回目（エラー書き戻し）は成功
+    });
+
+    await expect(
+      processBugReport(pendingReport, { createIssue, updateReport }),
+    ).rejects.toThrow("issued write failed");
+
+    expect(updateReport).toHaveBeenCalledTimes(2);
+    expect(updateReport.mock.calls[1][0]).toEqual({
+      status: "error",
+      issueNumber: 5,
+      issueUrl: "https://example.com/5",
+      errorMessage: "issued write failed",
     });
   });
 
