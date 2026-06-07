@@ -48,7 +48,7 @@ service cloud.firestore {
         && (!('stepsToReproduce' in request.resource.data) || (request.resource.data.stepsToReproduce is string && request.resource.data.stepsToReproduce.size() <= 2000))
         && (!('meta' in request.resource.data) || request.resource.data.meta is map)
         && request.resource.data.keys().hasOnly([
-          "uid", "status", "description", "title", "stepsToReproduce", "meta", "createdAt"
+          "uid", "status", "description", "title", "stepsToReproduce", "meta", "createdAt", "updatedAt"
         ]);
       allow update, delete: if false;
     }

@@ -153,6 +153,16 @@ type BugReport = {
   ステータス遷移を検証。
 - 既存 functions のテスト規約（`firebase-functions` の lint/build）を遵守。
 
+> **Phase 2 セットアップ前提 — GitHub ラベル作成**:
+> `buildIssueContent.ts` の `DEFAULT_BUG_REPORT_LABELS = ["bug", "user-report"]` を使用するため、
+> リポジトリに `user-report` ラベルが存在しないと Issue 作成 API が 422 で失敗する。
+> 初回デプロイ前に以下で作成すること（`bug` はデフォルトで存在する）:
+> ```bash
+> gh api repos/OWNER/REPO/labels --method POST \
+>   --field name="user-report" --field color="e4e669" \
+>   --field description="ユーザーからのアプリ内不具合報告"
+> ```
+
 > Phase 2 実装済み成果物（`firebase-functions/src/bugReport/`）:
 > - `buildIssueContent.ts`: 報告→Issue 内容（title/body/labels）整形（firebase 非依存の純粋関数）
 > - `createGithubIssue.ts`: GitHub REST API で Issue 作成。**依存追加を避けるため Octokit ではなく Node グローバル `fetch` を使用**

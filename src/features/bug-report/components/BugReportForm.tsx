@@ -86,7 +86,7 @@ export const BugReportForm = ({
 
       <button
         type="button"
-        onClick={handleSubmit}
+        onClick={() => { void handleSubmit(); }}
         disabled={isSubmitting}
         className="w-full px-4 py-3 rounded-lg font-medium transition-all bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
       >
