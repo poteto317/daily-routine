@@ -67,7 +67,7 @@ export const onBugReportCreated = onDocumentCreated(
   async (event) => {
     const token = githubToken.value();
     const repo = githubRepo.value();
-    // ... Octokit で Issue 作成
+    // ... fetch で GitHub REST API を呼び出し Issue 作成（createGithubIssue）
   },
 );
 ```
@@ -87,7 +87,7 @@ firebase deploy --only functions
 - エミュレータでは `firebase-functions/src/.secret.local`（gitignore 済みであること）
   に `GITHUB_TOKEN=...` の形式で記載するか、`functions:secrets:access` を利用する。
 - 実際の GitHub への Issue 作成を避けたい場合は、テスト用リポジトリを `GITHUB_REPO`
-  に指定するか、Octokit をモックする。
+  に指定するか、`createGithubIssue` をモックする。
 
 > `.gitignore` に Secret を含むローカルファイル（`.env*`, `.secret.local` 等）が
 > 含まれていることを Phase 2 着手時に確認する。
