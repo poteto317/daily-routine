@@ -84,7 +84,7 @@ firebase deploy --only functions
 
 ## 4. ローカル開発 / エミュレータ
 
-- エミュレータでは `firebase-functions/src/.secret.local`（gitignore 済みであること）
+- エミュレータでは `firebase-functions/.secret.local`（gitignore 済みであること）
   に `GITHUB_TOKEN=...` の形式で記載するか、`functions:secrets:access` を利用する。
 - 実際の GitHub への Issue 作成を避けたい場合は、テスト用リポジトリを `GITHUB_REPO`
   に指定するか、`createGithubIssue` をモックする。

@@ -113,7 +113,7 @@ type BugReport = {
 ## 段階導入フェーズ
 
 ### Phase 0 — 設計・基盤準備
-- Firestore コレクション設計の確定、型定義 `BugReport`（`firebase-functions/src/types.ts`
+- Firestore コレクション設計の確定、型定義 `BugReport`（`firebase-functions/src/bugReport/types.ts`
   と フロント `src/features/bug-report/types.ts`）。
 - `firestore.rules` に `bugReports` ルール追加（クライアントは create のみ・サーバ専用
   フィールド禁止）。

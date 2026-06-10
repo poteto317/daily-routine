@@ -46,6 +46,6 @@ export interface BugReport {
  * processBugReport が処理対象とする不具合報告（firebase 非依存の構造型）。
  */
 export interface ProcessableBugReport extends BugReportContentSource {
-  status: string;
+  status: BugReportStatus;
   issueNumber?: number;
 }
