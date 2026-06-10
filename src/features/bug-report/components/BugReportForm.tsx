@@ -11,7 +11,7 @@ type Props = {
   setStepsToReproduce: (value: string) => void;
   status: BugReportSubmitStatus;
   errorMessage: string;
-  handleSubmit: () => void;
+  handleSubmit: () => Promise<void>;
 };
 
 const inputClassName =

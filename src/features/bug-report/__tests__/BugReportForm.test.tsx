@@ -11,7 +11,7 @@ const defaultProps = {
   setStepsToReproduce: jest.fn(),
   status: "idle" as const,
   errorMessage: "",
-  handleSubmit: jest.fn(),
+  handleSubmit: jest.fn().mockResolvedValue(undefined),
 };
 
 describe("BugReportForm", () => {
@@ -68,7 +68,7 @@ describe("BugReportForm", () => {
   });
 
   it("ボタンクリックで handleSubmit を呼ぶ", () => {
-    const handleSubmit = jest.fn();
+    const handleSubmit = jest.fn().mockResolvedValue(undefined);
     render(<BugReportForm {...defaultProps} handleSubmit={handleSubmit} />);
     fireEvent.click(screen.getByRole("button", { name: texts.form.submitLabel }));
     expect(handleSubmit).toHaveBeenCalledTimes(1);

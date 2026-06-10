@@ -31,7 +31,7 @@ GitHub Issue を自動作成する**までを段階的に実装する。
    ▼
 [Cloud Functions]
    │  ③ AI で本文整形（title / body(再現手順含む) / labels[]）
-   │  ④ GitHub REST API（Octokit）で Issue 作成
+   │  ④ GitHub REST API（fetch）で Issue 作成
    ▼
 [GitHub: Issue 作成]  ← 自動化はここまで
    │  ⑤ issueNumber / issueUrl を Firestore に書き戻し  status: "issued"
