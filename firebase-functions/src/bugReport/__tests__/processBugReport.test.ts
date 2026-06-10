@@ -11,7 +11,7 @@ const pendingReport: ProcessableBugReport = {
 };
 
 describe("processBugReport", () => {
-  it("status が pending の報告は Issue を作成し issued を書き戻す", async () => {
+  it("status が pending の報告は processing → issued の順に書き戻す", async () => {
     const createIssue = jest.fn().mockResolvedValue({
       issueNumber: 7,
       issueUrl: "https://example.com/issues/7",
@@ -26,7 +26,14 @@ describe("processBugReport", () => {
 
     expect(result).toBe("issued");
     expect(createIssue).toHaveBeenCalledTimes(1);
-    expect(updateReport).toHaveBeenCalledWith({
+    expect(updateReport).toHaveBeenCalledTimes(2);
+    // 1回目: processing ロック
+    expect(updateReport.mock.calls[0][0]).toEqual({
+      status: "processing",
+      updatedAt: "server-timestamp",
+    });
+    // 2回目: issued 書き戻し
+    expect(updateReport.mock.calls[1][0]).toEqual({
       status: "issued",
       issueNumber: 7,
       issueUrl: "https://example.com/issues/7",
@@ -59,9 +66,23 @@ describe("processBugReport", () => {
 
     expect(result).toBe("skipped");
     expect(createIssue).not.toHaveBeenCalled();
+    expect(updateReport).not.toHaveBeenCalled();
   });
 
-  it("Issue 作成に失敗した場合は error ステータスを書き戻す", async () => {
+  it("processing 更新が失敗した場合は createIssue を呼ばずに例外が伝播する", async () => {
+    const createIssue = jest.fn();
+    const updateReport = jest.fn().mockRejectedValue(new Error("Firestore down"));
+
+    await expect(
+      processBugReport(pendingReport, { createIssue, updateReport }),
+    ).rejects.toThrow("Firestore down");
+    // status は "pending" のままなのでリトライ時に再処理される
+    expect(createIssue).not.toHaveBeenCalled();
+    expect(updateReport).toHaveBeenCalledTimes(1);
+    expect(updateReport.mock.calls[0][0]).toMatchObject({ status: "processing" });
+  });
+
+  it("Issue 作成に失敗した場合は processing → error の順に書き戻す", async () => {
     const createIssue = jest
       .fn()
       .mockRejectedValue(new Error("GitHub API への Issue 作成に失敗しました"));
@@ -73,13 +94,15 @@ describe("processBugReport", () => {
     });
 
     expect(result).toBe("error");
-    expect(updateReport).toHaveBeenCalledWith({
+    expect(updateReport).toHaveBeenCalledTimes(2);
+    expect(updateReport.mock.calls[0][0]).toMatchObject({ status: "processing" });
+    expect(updateReport.mock.calls[1][0]).toEqual({
       status: "error",
       errorMessage: "GitHub API への Issue 作成に失敗しました",
     });
   });
 
-  it("now 未指定なら updatedAt は付与しない", async () => {
+  it("now 未指定なら processing / issued いずれも updatedAt を付与しない", async () => {
     const createIssue = jest
       .fn()
       .mockResolvedValue({ issueNumber: 1, issueUrl: "u" });
@@ -87,7 +110,9 @@ describe("processBugReport", () => {
 
     await processBugReport(pendingReport, { createIssue, updateReport });
 
-    expect(updateReport).toHaveBeenCalledWith({
+    expect(updateReport).toHaveBeenCalledTimes(2);
+    expect(updateReport.mock.calls[0][0]).toEqual({ status: "processing" });
+    expect(updateReport.mock.calls[1][0]).toEqual({
       status: "issued",
       issueNumber: 1,
       issueUrl: "u",
@@ -118,13 +143,14 @@ describe("processBugReport", () => {
     });
 
     expect(result).toBe("error");
-    expect(updateReport).toHaveBeenCalledWith({
+    expect(updateReport).toHaveBeenCalledTimes(2);
+    expect(updateReport.mock.calls[1][0]).toEqual({
       status: "error",
       errorMessage: "string error",
     });
   });
 
-  it("失敗時も now が指定されていれば updatedAt を付与する", async () => {
+  it("失敗時も now が指定されていれば processing / error に updatedAt を付与する", async () => {
     const createIssue = jest.fn().mockRejectedValue(new Error("失敗"));
     const updateReport = jest.fn().mockResolvedValue(undefined);
 
@@ -134,43 +160,54 @@ describe("processBugReport", () => {
       now: () => "server-timestamp",
     });
 
-    expect(updateReport).toHaveBeenCalledWith({
+    expect(updateReport).toHaveBeenCalledTimes(2);
+    expect(updateReport.mock.calls[0][0]).toEqual({
+      status: "processing",
+      updatedAt: "server-timestamp",
+    });
+    expect(updateReport.mock.calls[1][0]).toEqual({
       status: "error",
       errorMessage: "失敗",
       updatedAt: "server-timestamp",
     });
   });
 
-  it("createIssue 成功後に updateReport が失敗した場合、例外が伝播する", async () => {
+  it("createIssue 成功後に issued 書き戻しが失敗した場合、例外が伝播する", async () => {
     const createIssue = jest
       .fn()
       .mockResolvedValue({ issueNumber: 1, issueUrl: "u" });
-    const updateReport = jest
-      .fn()
-      .mockRejectedValue(new Error("Firestore down"));
+    // processing は成功、issued 以降は失敗
+    let callCount = 0;
+    const updateReport = jest.fn().mockImplementation(async () => {
+      callCount++;
+      if (callCount === 1) return; // processing: 成功
+      throw new Error("Firestore down");
+    });
 
     await expect(
       processBugReport(pendingReport, { createIssue, updateReport }),
     ).rejects.toThrow("Firestore down");
-    // 成功の書き戻し失敗 → catch でエラーの書き戻しも試みる
-    expect(updateReport).toHaveBeenCalledTimes(2);
+    // processing + issued(失敗) + error(失敗)
+    expect(updateReport).toHaveBeenCalledTimes(3);
   });
 
   it("成功パスの updateReport 失敗後、エラー書き戻しに issueNumber/issueUrl が含まれる", async () => {
     const createIssue = jest
       .fn()
       .mockResolvedValue({ issueNumber: 1, issueUrl: "u" });
-    const updateReport = jest
-      .fn()
-      .mockRejectedValue(new Error("Firestore down"));
+    let callCount = 0;
+    const updateReport = jest.fn().mockImplementation(async () => {
+      callCount++;
+      if (callCount === 1) return; // processing: 成功
+      throw new Error("Firestore down");
+    });
 
     await expect(
       processBugReport(pendingReport, { createIssue, updateReport }),
     ).rejects.toThrow("Firestore down");
 
-    // 2 回目: issued 書き戻し失敗後のエラー書き戻しに issueNumber/issueUrl を含む
-    // （再実行時に shouldSkipProcessing が機能し二重作成を防ぐため）
-    expect(updateReport.mock.calls[1][0]).toEqual({
+    // 3 回目: issued 書き戻し失敗後のエラー書き戻しに issueNumber/issueUrl を含む
+    expect(updateReport.mock.calls[2][0]).toEqual({
       status: "error",
       issueNumber: 1,
       issueUrl: "u",
@@ -185,16 +222,17 @@ describe("processBugReport", () => {
     let callCount = 0;
     const updateReport = jest.fn().mockImplementation(async () => {
       callCount++;
-      if (callCount === 1) throw new Error("issued write failed");
-      // 2 回目（エラー書き戻し）は成功
+      if (callCount === 1) return; // processing: 成功
+      if (callCount === 2) throw new Error("issued write failed"); // issued: 失敗
+      // 3 回目（エラー書き戻し）は成功
     });
 
     await expect(
       processBugReport(pendingReport, { createIssue, updateReport }),
     ).rejects.toThrow("issued write failed");
 
-    expect(updateReport).toHaveBeenCalledTimes(2);
-    expect(updateReport.mock.calls[1][0]).toEqual({
+    expect(updateReport).toHaveBeenCalledTimes(3);
+    expect(updateReport.mock.calls[2][0]).toEqual({
       status: "error",
       issueNumber: 5,
       issueUrl: "https://example.com/5",
@@ -204,16 +242,23 @@ describe("processBugReport", () => {
 
   it("createIssue 失敗後にエラー書き戻しの updateReport も失敗した場合、例外が伝播する", async () => {
     const createIssue = jest.fn().mockRejectedValue(new Error("GitHub失敗"));
-    const updateReport = jest.fn().mockRejectedValue(new Error("Firestore down"));
+    // processing は成功、error 書き戻しは失敗
+    let callCount = 0;
+    const updateReport = jest.fn().mockImplementation(async () => {
+      callCount++;
+      if (callCount === 1) return; // processing: 成功
+      throw new Error("Firestore down");
+    });
 
     await expect(
       processBugReport(pendingReport, { createIssue, updateReport }),
     ).rejects.toThrow("Firestore down");
-    // createIssue 失敗 → catch でエラー書き戻しのみ試みる（計1回）
-    expect(updateReport).toHaveBeenCalledTimes(1);
-    expect(updateReport).toHaveBeenCalledWith(
-      expect.objectContaining({ status: "error", errorMessage: "GitHub失敗" }),
-    );
+    // processing + error 書き戻し(失敗)
+    expect(updateReport).toHaveBeenCalledTimes(2);
+    expect(updateReport.mock.calls[1][0]).toMatchObject({
+      status: "error",
+      errorMessage: "GitHub失敗",
+    });
   });
 
   it("undefined が throw された場合は errorMessage が 'undefined' になる", async () => {
@@ -226,9 +271,8 @@ describe("processBugReport", () => {
     });
 
     expect(result).toBe("error");
-    expect(updateReport).toHaveBeenCalledWith(
-      expect.objectContaining({ errorMessage: "undefined" }),
-    );
+    expect(updateReport).toHaveBeenCalledTimes(2);
+    expect(updateReport.mock.calls[1][0]).toMatchObject({ errorMessage: "undefined" });
   });
 });
 
@@ -243,6 +287,10 @@ describe("shouldSkipProcessing", () => {
 
   it("status が processing なら true を返す", () => {
     expect(shouldSkipProcessing({ uid: "u", description: "d", status: "processing" })).toBe(true);
+  });
+
+  it("status が error なら true を返す", () => {
+    expect(shouldSkipProcessing({ uid: "u", description: "d", status: "error" })).toBe(true);
   });
 
   it("issueNumber が付与されていれば pending でも true を返す", () => {

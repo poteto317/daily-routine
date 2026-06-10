@@ -19,11 +19,17 @@ export interface ProcessBugReportDeps {
 
 /**
  * 不具合報告から GitHub Issue を作成し、結果を Firestore に書き戻すコアロジック。
- * - 冪等性: status が "pending" でない、または issueNumber が既にある場合はスキップ。
- * - 成功: status="issued" と issueNumber/issueUrl を書き戻す。
- * - createIssue 失敗: status="error" と errorMessage を書き戻して "error" を返す。
- * - issued 書き戻し失敗: issueNumber/issueUrl を含む status="error" の書き戻しを試みた上で例外を再 throw。
- *   これにより再実行時に shouldSkipProcessing が機能し二重作成を防ぐ。
+ *
+ * 実行順序:
+ * 1. 冪等性チェック: status が "pending" でない / issueNumber 既存 → スキップ。
+ * 2. status を "processing" に更新してからIssue作成へ進む。
+ *    これにより関数の再実行・並行実行時に shouldSkipProcessing がスキップし
+ *    二重 Issue 作成を防ぐ（at-least-once トリガ対策）。
+ *    ※ processing 書き込みが失敗した場合は例外を伝播させ Cloud Functions にリトライを
+ *      委ねる（status は "pending" のまま残るので冪等性は保たれる）。
+ * 3. createIssue 失敗: status="error" + errorMessage を書き戻して "error" を返す。
+ * 4. issued 書き戻し失敗: issueNumber/issueUrl を含む status="error" の書き戻しを試みた上で例外を再 throw。
+ *    再実行時に shouldSkipProcessing が機能し二重作成を防ぐ。
  */
 export const processBugReport = async (
   report: ProcessableBugReport,
@@ -35,6 +41,9 @@ export const processBugReport = async (
 
   const withTimestamp = (fields: Record<string, unknown>) =>
     deps.now ? { ...fields, updatedAt: deps.now() } : fields;
+
+  // 外部副作用前に status を "processing" に更新する（二重作成防止ロック）
+  await deps.updateReport(withTimestamp({ status: "processing" }));
 
   // Phase 1: Issue 作成
   let issueResult!: GithubIssueResult;
