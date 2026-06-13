@@ -199,11 +199,7 @@ describe("processBugReport", () => {
       .fn()
       .mockResolvedValue({ issueNumber: 1, issueUrl: "u" });
     // issued: 失敗、error 書き戻し: 失敗
-    let callCount = 0;
-    const updateReport = jest.fn().mockImplementation(async () => {
-      callCount++;
-      throw new Error("Firestore down");
-    });
+    const updateReport = jest.fn().mockRejectedValue(new Error("Firestore down"));
 
     await expect(
       processBugReport(pendingReport, { claimProcessing, createIssue, updateReport }),
@@ -217,11 +213,7 @@ describe("processBugReport", () => {
     const createIssue = jest
       .fn()
       .mockResolvedValue({ issueNumber: 1, issueUrl: "u" });
-    let callCount = 0;
-    const updateReport = jest.fn().mockImplementation(async () => {
-      callCount++;
-      throw new Error("Firestore down");
-    });
+    const updateReport = jest.fn().mockRejectedValue(new Error("Firestore down"));
 
     await expect(
       processBugReport(pendingReport, { claimProcessing, createIssue, updateReport }),
