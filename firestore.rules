@@ -42,7 +42,7 @@ service cloud.firestore {
         && request.resource.data.uid == request.auth.uid
         && request.resource.data.status == "pending"
         && request.resource.data.description is string
-        && request.resource.data.description.trim().size() > 0
+        && request.resource.data.description.matches('[\\s\\S]*[^\\s][\\s\\S]*')
         && request.resource.data.description.size() <= 2000
         && (!('title' in request.resource.data) || (request.resource.data.title is string && request.resource.data.title.size() <= 100))
         && (!('stepsToReproduce' in request.resource.data) || (request.resource.data.stepsToReproduce is string && request.resource.data.stepsToReproduce.size() <= 2000))
