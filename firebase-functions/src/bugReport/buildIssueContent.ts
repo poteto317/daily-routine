@@ -38,7 +38,7 @@ const TITLE_SNIPPET_LENGTH = 50;
  * 無ければ説明の先頭を要約して生成する。
  */
 export const buildIssueTitle = (report: BugReportContentSource): string => {
-  const title = (report.title ?? "").trim();
+  const title = sanitizeMention((report.title ?? "").trim());
   if (title.length > 0) {
     return title;
   }
@@ -46,7 +46,9 @@ export const buildIssueTitle = (report: BugReportContentSource): string => {
     .trim()
     .replace(/\s+/g, " ")
     .slice(0, TITLE_SNIPPET_LENGTH);
-  return snippet.length > 0 ? `[不具合報告] ${snippet}` : "[不具合報告]";
+  return snippet.length > 0
+    ? `[不具合報告] ${sanitizeMention(snippet)}`
+    : "[不具合報告]";
 };
 
 /**
@@ -71,12 +73,12 @@ export const buildIssueBody = (report: BugReportContentSource): string => {
   const meta = report.meta;
   if (meta) {
     lines.push(
-      `- アプリバージョン: ${meta.appVersion}`,
-      `- URL: ${meta.url}`,
-      `- ロケール: ${meta.locale}`,
-      `- タイムゾーン: ${meta.timezone}`,
-      `- User-Agent: ${meta.userAgent}`,
-      `- 報告日時(クライアント): ${meta.createdAtClient}`,
+      `- アプリバージョン: ${sanitizeMention(meta.appVersion)}`,
+      `- URL: ${sanitizeMention(meta.url)}`,
+      `- ロケール: ${sanitizeMention(meta.locale)}`,
+      `- タイムゾーン: ${sanitizeMention(meta.timezone)}`,
+      `- User-Agent: ${sanitizeMention(meta.userAgent)}`,
+      `- 報告日時(クライアント): ${sanitizeMention(meta.createdAtClient)}`,
     );
   } else {
     lines.push("(メタ情報なし)");
@@ -84,7 +86,7 @@ export const buildIssueBody = (report: BugReportContentSource): string => {
 
   lines.push(
     "",
-    `> 報告者 uid: ${report.uid}`,
+    `> 報告者 uid: ${sanitizeMention(report.uid)}`,
     "> この Issue はアプリの不具合報告機能から自動生成されました。",
   );
 

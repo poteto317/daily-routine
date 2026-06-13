@@ -138,8 +138,27 @@ describe("processBugReport", () => {
     });
   });
 
-  it("status が processing の場合はスキップする", async () => {
-    const claimProcessing = jest.fn();
+  it("status が processing でも claimProcessing で stuck と判定されれば処理を続行する", async () => {
+    // stuck な processing は claimProcessing が true を返す（再取得）→ 処理続行
+    const claimProcessing = jest.fn().mockResolvedValue(true);
+    const createIssue = jest
+      .fn()
+      .mockResolvedValue({ issueNumber: 9, issueUrl: "u9" });
+    const updateReport = jest.fn().mockResolvedValue(undefined);
+
+    const result = await processBugReport(
+      { ...pendingReport, status: "processing" },
+      { claimProcessing, createIssue, updateReport },
+    );
+
+    expect(result).toBe("issued");
+    expect(claimProcessing).toHaveBeenCalledTimes(1);
+    expect(createIssue).toHaveBeenCalledTimes(1);
+  });
+
+  it("status が processing で claimProcessing が false を返した場合はスキップする", async () => {
+    // fresh な processing は claimProcessing が false を返す → スキップ
+    const claimProcessing = jest.fn().mockResolvedValue(false);
     const createIssue = jest.fn();
     const updateReport = jest.fn();
 
@@ -149,7 +168,7 @@ describe("processBugReport", () => {
     );
 
     expect(result).toBe("skipped");
-    expect(claimProcessing).not.toHaveBeenCalled();
+    expect(claimProcessing).toHaveBeenCalledTimes(1);
     expect(createIssue).not.toHaveBeenCalled();
     expect(updateReport).not.toHaveBeenCalled();
   });
@@ -291,15 +310,15 @@ describe("shouldSkipProcessing", () => {
     expect(shouldSkipProcessing({ uid: "u", description: "d", status: "pending" })).toBe(false);
   });
 
-  it("status が pending でなければ true を返す", () => {
+  it("status が issued なら true を返す（終端状態）", () => {
     expect(shouldSkipProcessing({ uid: "u", description: "d", status: "issued" })).toBe(true);
   });
 
-  it("status が processing なら true を返す", () => {
-    expect(shouldSkipProcessing({ uid: "u", description: "d", status: "processing" })).toBe(true);
+  it("status が processing でも false を返す（claimProcessing で stuck 判定する）", () => {
+    expect(shouldSkipProcessing({ uid: "u", description: "d", status: "processing" })).toBe(false);
   });
 
-  it("status が error なら true を返す", () => {
+  it("status が error なら true を返す（終端状態）", () => {
     expect(shouldSkipProcessing({ uid: "u", description: "d", status: "error" })).toBe(true);
   });
 

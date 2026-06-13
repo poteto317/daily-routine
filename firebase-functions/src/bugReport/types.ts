@@ -48,4 +48,9 @@ export interface BugReport {
 export interface ProcessableBugReport extends BugReportContentSource {
   status: BugReportStatus;
   issueNumber?: number;
+  /**
+   * processing ロックを取得した時刻（ms epoch）。
+   * 期限付きロックの判定に用いる（タイムアウト超過時は他の実行が再取得可能）。
+   */
+  processingAt?: number;
 }

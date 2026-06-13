@@ -163,4 +163,67 @@ describe("buildIssueBody — @ メンション無害化", () => {
     const body = buildIssueBody(baseReport);
     expect(body).toContain("通知が表示されない");
   });
+
+  it("meta.userAgent の @ をゼロ幅スペース付きに置換する", () => {
+    const body = buildIssueBody({
+      ...baseReport,
+      meta: { ...baseReport.meta!, userAgent: "Mozilla/5.0 @evil" },
+    });
+    expect(body).toContain("Mozilla/5.0 @​evil");
+    expect(body).not.toMatch(/@evil/);
+  });
+
+  it("meta.url の @ をゼロ幅スペース付きに置換する", () => {
+    const body = buildIssueBody({
+      ...baseReport,
+      meta: { ...baseReport.meta!, url: "/settings?ref=@org" },
+    });
+    expect(body).toContain("/settings?ref=@​org");
+    expect(body).not.toMatch(/@org/);
+  });
+
+  it("meta の全フィールド（appVersion / locale / timezone / createdAtClient）で @ を置換する", () => {
+    const body = buildIssueBody({
+      ...baseReport,
+      meta: {
+        appVersion: "0.1.0-@beta",
+        userAgent: "ua",
+        url: "/",
+        locale: "ja-JP@x",
+        timezone: "Asia/Tokyo@x",
+        createdAtClient: "2026-06-01@x",
+      },
+    });
+    expect(body).toContain("0.1.0-@​beta");
+    expect(body).toContain("ja-JP@​x");
+    expect(body).toContain("Asia/Tokyo@​x");
+    expect(body).toContain("2026-06-01@​x");
+    expect(body).not.toMatch(/@beta|@x/);
+  });
+
+  it("uid の @ をゼロ幅スペース付きに置換する", () => {
+    const body = buildIssueBody({ ...baseReport, uid: "user-@admin" });
+    expect(body).toContain("user-@​admin");
+    expect(body).not.toMatch(/user-@admin/);
+  });
+});
+
+describe("buildIssueTitle — @ メンション無害化", () => {
+  it("ユーザー入力タイトル内の @ をゼロ幅スペース付きに置換する", () => {
+    expect(
+      buildIssueTitle({ uid: "u", description: "d", title: "@admin 通知バグ" }),
+    ).toBe("@​admin 通知バグ");
+  });
+
+  it("説明から生成される要約タイトル内の @ もゼロ幅スペース付きに置換する", () => {
+    expect(
+      buildIssueTitle({ uid: "u", description: "@admin 通知が表示されない" }),
+    ).toBe("[不具合報告] @​admin 通知が表示されない");
+  });
+
+  it("タイトルが空白のみ＋説明に @ が含まれる場合は要約タイトル側で置換される", () => {
+    expect(
+      buildIssueTitle({ uid: "u", description: "@user バグ", title: "   " }),
+    ).toBe("[不具合報告] @​user バグ");
+  });
 });
