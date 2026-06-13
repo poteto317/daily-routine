@@ -33,6 +33,7 @@ const makeDeps = () => ({
     info: jest.fn(),
     error: jest.fn(),
   },
+  claimProcessing: jest.fn().mockResolvedValue(true),
 });
 
 beforeEach(() => {

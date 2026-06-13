@@ -27,6 +27,10 @@ export interface GithubIssueContent {
 /** ユーザー報告に付与する既定ラベル */
 export const DEFAULT_BUG_REPORT_LABELS = ["bug", "user-report"];
 
+/** GitHub Issue 本文内で @ メンションが通知スパムにならないようゼロ幅スペースを挿入する */
+export const sanitizeMention = (text: string): string =>
+  text.replace(/@/g, "@​");
+
 const TITLE_SNIPPET_LENGTH = 50;
 
 /**
@@ -51,9 +55,14 @@ export const buildIssueTitle = (report: BugReportContentSource): string => {
 export const buildIssueBody = (report: BugReportContentSource): string => {
   const lines: string[] = [];
 
-  lines.push("## 不具合の内容", "", report.description.trim() || "(記載なし)", "");
+  lines.push(
+    "## 不具合の内容",
+    "",
+    sanitizeMention(report.description.trim()) || "(記載なし)",
+    "",
+  );
 
-  const steps = (report.stepsToReproduce ?? "").trim();
+  const steps = sanitizeMention((report.stepsToReproduce ?? "").trim());
   if (steps.length > 0) {
     lines.push("## 再現手順", "", steps, "");
   }

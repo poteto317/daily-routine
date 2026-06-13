@@ -21,11 +21,33 @@ export const onBugReportCreated = (db: admin.firestore.Firestore) =>
       if (!event.data) {
         return;
       }
-      await handleBugReport(event.params.reportId, db, {
+      const reportId = event.params.reportId;
+      const docRef = db.collection(BUG_REPORTS_COLLECTION).doc(reportId);
+
+      // pending → processing へトランザクション的にアトミック更新。
+      // 他の実行が既にロック済みなら false を返し二重作成を防ぐ。
+      const claimProcessing = async (): Promise<boolean> => {
+        let claimed = false;
+        await db.runTransaction(async (t) => {
+          claimed = false; // トランザクション再試行時にリセット
+          const snap = await t.get(docRef);
+          const data = snap.data() as { status?: string } | undefined;
+          if (data?.status !== "pending") return;
+          t.update(docRef, {
+            status: "processing",
+            updatedAt: FieldValue.serverTimestamp(),
+          });
+          claimed = true;
+        });
+        return claimed;
+      };
+
+      await handleBugReport(reportId, db, {
         repo: githubRepo.value(),
         token: githubToken.value(),
         logger,
         now: () => FieldValue.serverTimestamp(),
+        claimProcessing,
       });
     },
   );

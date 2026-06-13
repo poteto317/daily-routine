@@ -11,7 +11,8 @@ type DbLike = {
   collection(name: string): {
     doc(id: string): {
       get(): Promise<{ exists: boolean; data(): unknown }>;
-      update(fields: Record<string, unknown>): Promise<void>;
+      // Promise<unknown> にして firebase-admin の Promise<WriteResult> も受け入れる
+      update(fields: Record<string, unknown>): Promise<unknown>;
     };
   };
 };
@@ -24,6 +25,7 @@ type HandleBugReportDeps = {
     error(message: string, data?: object): void;
   };
   now?: () => unknown;
+  claimProcessing: () => Promise<boolean>;
 };
 
 /**
@@ -51,6 +53,7 @@ export const handleBugReport = async (
 
   try {
     const result = await processBugReport(report, {
+      claimProcessing: deps.claimProcessing,
       createIssue: (content) =>
         createGithubIssue({ token: deps.token, repo: deps.repo, content }),
       updateReport: async (fields) => {

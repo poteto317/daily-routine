@@ -2,6 +2,7 @@ import {
   buildIssueBody,
   buildIssueContent,
   buildIssueTitle,
+  sanitizeMention,
   DEFAULT_BUG_REPORT_LABELS,
   type BugReportContentSource,
 } from "../buildIssueContent";
@@ -121,5 +122,45 @@ describe("buildIssueTitle — 空白正規化", () => {
     const title = buildIssueTitle({ uid: "u", description: "通知が\t表示されない" });
     expect(title).toBe("[不具合報告] 通知が 表示されない");
     expect(title).not.toContain("\t");
+  });
+});
+
+describe("sanitizeMention", () => {
+  it("@ をゼロ幅スペース付きに置換する", () => {
+    expect(sanitizeMention("@admin")).toBe("@​admin");
+  });
+
+  it("複数の @ を全て置換する", () => {
+    expect(sanitizeMention("@foo と @bar")).toBe("@​foo と @​bar");
+  });
+
+  it("@ が存在しない場合はそのまま返す", () => {
+    expect(sanitizeMention("通知が表示されない")).toBe("通知が表示されない");
+  });
+
+  it("空文字はそのまま返す", () => {
+    expect(sanitizeMention("")).toBe("");
+  });
+});
+
+describe("buildIssueBody — @ メンション無害化", () => {
+  it("description の @ をゼロ幅スペース付きに置換する", () => {
+    const body = buildIssueBody({ ...baseReport, description: "@admin に報告" });
+    expect(body).toContain("@​admin に報告");
+    expect(body).not.toMatch(/@admin/);
+  });
+
+  it("stepsToReproduce の @ をゼロ幅スペース付きに置換する", () => {
+    const body = buildIssueBody({
+      ...baseReport,
+      stepsToReproduce: "1. @user を開く",
+    });
+    expect(body).toContain("@​user を開く");
+    expect(body).not.toMatch(/@user/);
+  });
+
+  it("@ が存在しない場合は本文がそのまま出力される", () => {
+    const body = buildIssueBody(baseReport);
+    expect(body).toContain("通知が表示されない");
   });
 });

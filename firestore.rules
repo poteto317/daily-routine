@@ -46,7 +46,16 @@ service cloud.firestore {
         && request.resource.data.description.size() <= 2000
         && (!('title' in request.resource.data) || (request.resource.data.title is string && request.resource.data.title.size() <= 100))
         && (!('stepsToReproduce' in request.resource.data) || (request.resource.data.stepsToReproduce is string && request.resource.data.stepsToReproduce.size() <= 2000))
-        && (!('meta' in request.resource.data) || request.resource.data.meta is map)
+        && (!('meta' in request.resource.data) || (
+          request.resource.data.meta is map
+          && request.resource.data.meta.keys().hasOnly(['appVersion', 'userAgent', 'url', 'locale', 'timezone', 'createdAtClient'])
+          && request.resource.data.meta.appVersion is string && request.resource.data.meta.appVersion.size() <= 50
+          && request.resource.data.meta.userAgent is string && request.resource.data.meta.userAgent.size() <= 500
+          && request.resource.data.meta.url is string && request.resource.data.meta.url.size() <= 2000
+          && request.resource.data.meta.locale is string && request.resource.data.meta.locale.size() <= 20
+          && request.resource.data.meta.timezone is string && request.resource.data.meta.timezone.size() <= 50
+          && request.resource.data.meta.createdAtClient is string && request.resource.data.meta.createdAtClient.size() <= 30
+        ))
         && request.resource.data.createdAt == request.time
         && request.resource.data.updatedAt == request.time
         && request.resource.data.keys().hasOnly([
