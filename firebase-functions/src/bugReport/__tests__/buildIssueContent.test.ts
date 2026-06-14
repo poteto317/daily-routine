@@ -3,6 +3,7 @@ import {
   buildIssueContent,
   buildIssueTitle,
   sanitizeMention,
+  ZERO_WIDTH_SPACE,
   DEFAULT_BUG_REPORT_LABELS,
   type BugReportContentSource,
 } from "../buildIssueContent";
@@ -125,13 +126,20 @@ describe("buildIssueTitle — 空白正規化", () => {
   });
 });
 
+describe("ZERO_WIDTH_SPACE", () => {
+  it("U+200B（1文字のゼロ幅スペース）である", () => {
+    expect(ZERO_WIDTH_SPACE).toHaveLength(1);
+    expect(ZERO_WIDTH_SPACE.charCodeAt(0)).toBe(0x200b);
+  });
+});
+
 describe("sanitizeMention", () => {
   it("@ をゼロ幅スペース付きに置換する", () => {
-    expect(sanitizeMention("@admin")).toBe("@​admin");
+    expect(sanitizeMention("@admin")).toBe(`@${ZERO_WIDTH_SPACE}admin`);
   });
 
   it("複数の @ を全て置換する", () => {
-    expect(sanitizeMention("@foo と @bar")).toBe("@​foo と @​bar");
+    expect(sanitizeMention("@foo と @bar")).toBe(`@${ZERO_WIDTH_SPACE}foo と @${ZERO_WIDTH_SPACE}bar`);
   });
 
   it("@ が存在しない場合はそのまま返す", () => {
@@ -146,7 +154,7 @@ describe("sanitizeMention", () => {
 describe("buildIssueBody — @ メンション無害化", () => {
   it("description の @ をゼロ幅スペース付きに置換する", () => {
     const body = buildIssueBody({ ...baseReport, description: "@admin に報告" });
-    expect(body).toContain("@​admin に報告");
+    expect(body).toContain(`@${ZERO_WIDTH_SPACE}admin に報告`);
     expect(body).not.toMatch(/@admin/);
   });
 
@@ -155,7 +163,7 @@ describe("buildIssueBody — @ メンション無害化", () => {
       ...baseReport,
       stepsToReproduce: "1. @user を開く",
     });
-    expect(body).toContain("@​user を開く");
+    expect(body).toContain(`@${ZERO_WIDTH_SPACE}user を開く`);
     expect(body).not.toMatch(/@user/);
   });
 
@@ -169,7 +177,7 @@ describe("buildIssueBody — @ メンション無害化", () => {
       ...baseReport,
       meta: { ...baseReport.meta!, userAgent: "Mozilla/5.0 @evil" },
     });
-    expect(body).toContain("Mozilla/5.0 @​evil");
+    expect(body).toContain(`Mozilla/5.0 @${ZERO_WIDTH_SPACE}evil`);
     expect(body).not.toMatch(/@evil/);
   });
 
@@ -178,7 +186,7 @@ describe("buildIssueBody — @ メンション無害化", () => {
       ...baseReport,
       meta: { ...baseReport.meta!, url: "/settings?ref=@org" },
     });
-    expect(body).toContain("/settings?ref=@​org");
+    expect(body).toContain(`/settings?ref=@${ZERO_WIDTH_SPACE}org`);
     expect(body).not.toMatch(/@org/);
   });
 
@@ -194,16 +202,16 @@ describe("buildIssueBody — @ メンション無害化", () => {
         createdAtClient: "2026-06-01@x",
       },
     });
-    expect(body).toContain("0.1.0-@​beta");
-    expect(body).toContain("ja-JP@​x");
-    expect(body).toContain("Asia/Tokyo@​x");
-    expect(body).toContain("2026-06-01@​x");
+    expect(body).toContain(`0.1.0-@${ZERO_WIDTH_SPACE}beta`);
+    expect(body).toContain(`ja-JP@${ZERO_WIDTH_SPACE}x`);
+    expect(body).toContain(`Asia/Tokyo@${ZERO_WIDTH_SPACE}x`);
+    expect(body).toContain(`2026-06-01@${ZERO_WIDTH_SPACE}x`);
     expect(body).not.toMatch(/@beta|@x/);
   });
 
   it("uid の @ をゼロ幅スペース付きに置換する", () => {
     const body = buildIssueBody({ ...baseReport, uid: "user-@admin" });
-    expect(body).toContain("user-@​admin");
+    expect(body).toContain(`user-@${ZERO_WIDTH_SPACE}admin`);
     expect(body).not.toMatch(/user-@admin/);
   });
 });
@@ -212,18 +220,18 @@ describe("buildIssueTitle — @ メンション無害化", () => {
   it("ユーザー入力タイトル内の @ をゼロ幅スペース付きに置換する", () => {
     expect(
       buildIssueTitle({ uid: "u", description: "d", title: "@admin 通知バグ" }),
-    ).toBe("@​admin 通知バグ");
+    ).toBe(`@${ZERO_WIDTH_SPACE}admin 通知バグ`);
   });
 
   it("説明から生成される要約タイトル内の @ もゼロ幅スペース付きに置換する", () => {
     expect(
       buildIssueTitle({ uid: "u", description: "@admin 通知が表示されない" }),
-    ).toBe("[不具合報告] @​admin 通知が表示されない");
+    ).toBe(`[不具合報告] @${ZERO_WIDTH_SPACE}admin 通知が表示されない`);
   });
 
   it("タイトルが空白のみ＋説明に @ が含まれる場合は要約タイトル側で置換される", () => {
     expect(
       buildIssueTitle({ uid: "u", description: "@user バグ", title: "   " }),
-    ).toBe("[不具合報告] @​user バグ");
+    ).toBe(`[不具合報告] @${ZERO_WIDTH_SPACE}user バグ`);
   });
 });

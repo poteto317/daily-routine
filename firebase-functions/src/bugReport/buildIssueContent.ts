@@ -27,9 +27,16 @@ export interface GithubIssueContent {
 /** ユーザー報告に付与する既定ラベル */
 export const DEFAULT_BUG_REPORT_LABELS = ["bug", "user-report"];
 
+/**
+ * ゼロ幅スペース（U+200B）。
+ * 文字列リテラルに直接埋め込むと差分レビュー・検索・コピー&ペーストで破損し得るため、
+ * 必ずこの定数経由で参照する。
+ */
+export const ZERO_WIDTH_SPACE = "\u200B";
+
 /** GitHub Issue 本文内で @ メンションが通知スパムにならないようゼロ幅スペースを挿入する */
 export const sanitizeMention = (text: string): string =>
-  text.replace(/@/g, "@​");
+  text.replace(/@/g, `@${ZERO_WIDTH_SPACE}`);
 
 const TITLE_SNIPPET_LENGTH = 50;
 
