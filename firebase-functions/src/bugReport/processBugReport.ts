@@ -23,13 +23,18 @@ export interface ProcessBugReportDeps {
  * 不具合報告から GitHub Issue を作成し、結果を Firestore に書き戻すコアロジック。
  *
  * 実行順序:
- * 1. 冪等性チェック: status が "pending" でない / issueNumber 既存 → スキップ。
- * 2. claimProcessing でトランザクション的に pending → processing へ更新。
- *    false が返った場合（他の実行がロック済み）はスキップ。
- *    例外が投げられた場合は Cloud Functions にリトライを委ねる（status は pending のまま）。
+ * 1. 冪等性チェック（shouldSkipProcessing）: 終端状態（status が "issued" / "error"）
+ *    または issueNumber 既存ならスキップ。"pending" および "processing" は処理対象として
+ *    通過し、ロック取得の最終判定は claimProcessing に委ねる。
+ * 2. claimProcessing でトランザクション的にロックを取得（pending → processing、または
+ *    stale な processing の再取得）。
+ *    - true: ロック取得成功。処理続行。
+ *    - false: 他の実行が fresh な processing 中、または競合状態。スキップ。
+ *    - 例外: Cloud Functions にリトライを委ねる。
  * 3. createIssue 失敗: status="error" + errorMessage を書き戻して "error" を返す。
- * 4. issued 書き戻し失敗: issueNumber/issueUrl を含む status="error" の書き戻しを試みた上で例外を再 throw。
- *    再実行時に shouldSkipProcessing が機能し二重作成を防ぐ。
+ * 4. issued 書き戻し失敗: issueNumber/issueUrl を含む status="error" の書き戻しを試みた
+ *    上で例外を再 throw。再実行時に shouldSkipProcessing が issueNumber 既存で
+ *    スキップし二重作成を防ぐ。
  */
 export const processBugReport = async (
   report: ProcessableBugReport,
@@ -42,8 +47,8 @@ export const processBugReport = async (
   const withTimestamp = (fields: Record<string, unknown>) =>
     deps.now ? { ...fields, updatedAt: deps.now() } : fields;
 
-  // トランザクションで pending → processing へアトミックに更新（二重作成防止ロック）
-  // false が返った場合は他の実行がロック済み → スキップ
+  // ロック取得（pending または stale な processing の再取得）。
+  // false の場合は他の実行が fresh な processing 中のためスキップ。
   const claimed = await deps.claimProcessing();
   if (!claimed) {
     return "skipped";
