@@ -25,7 +25,7 @@ export interface BugReportMeta {
 /**
  * Firestore `bugReports/{reportId}` ドキュメントの型（サーバ側）。
  * issueNumber 以降は Cloud Functions が書き戻すフィールド。
- * createdAt / updatedAt は読み取り時 Timestamp、書き込み時 FieldValue。
+ * createdAt / updatedAt / processingAt は読み取り時 Timestamp、書き込み時 FieldValue。
  */
 export interface BugReport {
   uid: string;
@@ -40,17 +40,22 @@ export interface BugReport {
   errorMessage?: string;
   createdAt: Timestamp | FieldValue;
   updatedAt: Timestamp | FieldValue;
+  /**
+   * processing ロックを取得した時刻。期限付きロックの判定に使用する。
+   * 参照する場合は呼び出し側で Timestamp → ms epoch への変換責任を持つこと。
+   */
+  processingAt?: Timestamp | FieldValue;
 }
 
 /**
  * processBugReport が処理対象とする不具合報告（firebase 非依存の構造型）。
+ *
+ * 注意: ロック判定で使う processingAt は Firestore 上 Timestamp 型のため、
+ * この構造体には含めない。期限付きロックの取得可否判定は claimProcessing dep
+ * （onBugReportCreated 側で Timestamp → ms 変換して canClaimProcessing に渡す）
+ * に委譲する。これにより firebase 依存をコアロジックから排除している。
  */
 export interface ProcessableBugReport extends BugReportContentSource {
   status: BugReportStatus;
   issueNumber?: number;
-  /**
-   * processing ロックを取得した時刻（ms epoch）。
-   * 期限付きロックの判定に用いる（タイムアウト超過時は他の実行が再取得可能）。
-   */
-  processingAt?: number;
 }
