@@ -38,13 +38,29 @@ describe("processBugReport", () => {
     });
   });
 
-  it("status が pending でない場合はスキップする（冪等性）", async () => {
+  it("status が終端状態（issued）の場合はスキップする（冪等性）", async () => {
     const claimProcessing = jest.fn();
     const createIssue = jest.fn();
     const updateReport = jest.fn();
 
     const result = await processBugReport(
       { ...pendingReport, status: "issued" },
+      { claimProcessing, createIssue, updateReport },
+    );
+
+    expect(result).toBe("skipped");
+    expect(claimProcessing).not.toHaveBeenCalled();
+    expect(createIssue).not.toHaveBeenCalled();
+    expect(updateReport).not.toHaveBeenCalled();
+  });
+
+  it("status が終端状態（error）の場合はスキップする（冪等性）", async () => {
+    const claimProcessing = jest.fn();
+    const createIssue = jest.fn();
+    const updateReport = jest.fn();
+
+    const result = await processBugReport(
+      { ...pendingReport, status: "error" },
       { claimProcessing, createIssue, updateReport },
     );
 
