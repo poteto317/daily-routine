@@ -42,10 +42,12 @@ describe("collectBugReportMeta", () => {
       }) as unknown as typeof Intl.DateTimeFormat,
     };
 
-    const meta = collectBugReportMeta();
-    expect(meta.timezone).toBe("");
-
-    global.Intl = originalIntl;
+    try {
+      const meta = collectBugReportMeta();
+      expect(meta.timezone).toBe("");
+    } finally {
+      global.Intl = originalIntl;
+    }
   });
 
   it("navigator が undefined の場合 userAgent と locale は空文字になる", () => {
@@ -53,15 +55,17 @@ describe("collectBugReportMeta", () => {
     // @ts-expect-error: SSR 環境のシミュレーション
     delete global.navigator;
 
-    const meta = collectBugReportMeta();
-    expect(meta.userAgent).toBe("");
-    expect(meta.locale).toBe("");
-
-    Object.defineProperty(global, "navigator", {
-      value: originalNavigator,
-      configurable: true,
-      writable: true,
-    });
+    try {
+      const meta = collectBugReportMeta();
+      expect(meta.userAgent).toBe("");
+      expect(meta.locale).toBe("");
+    } finally {
+      Object.defineProperty(global, "navigator", {
+        value: originalNavigator,
+        configurable: true,
+        writable: true,
+      });
+    }
   });
 
   it("url は window.location.href や origin ではなく pathname を返す", () => {
@@ -69,5 +73,24 @@ describe("collectBugReportMeta", () => {
     // pathname のみ（クエリ・ハッシュ・origin は含まない）
     expect(meta.url).toBe(window.location.pathname);
     expect(meta.url).not.toContain("://");
+  });
+
+  it("Intl 例外のテストで Intl が復元されているため後続テストに副作用が残らない", () => {
+    // 前のテストで global.Intl をモックしたが、try/finally で復元されているため
+    // 通常の Intl.DateTimeFormat が機能することを確認する。
+    const meta = collectBugReportMeta();
+    // jsdom 環境ではタイムゾーンは "UTC" または環境依存の文字列が返る
+    expect(typeof meta.timezone).toBe("string");
+    // Intl.DateTimeFormat が再びネイティブ実装で動くことを直接確認
+    expect(() => Intl.DateTimeFormat().resolvedOptions().timeZone).not.toThrow();
+  });
+
+  it("navigator 削除テストの後 navigator が復元されているため後続テストに副作用が残らない", () => {
+    // 前のテストで global.navigator を delete したが、try/finally で復元されているため
+    // navigator 経由のメタ収集が再び機能することを確認する。
+    const meta = collectBugReportMeta();
+    expect(typeof meta.userAgent).toBe("string");
+    expect(typeof meta.locale).toBe("string");
+    expect(typeof navigator).toBe("object");
   });
 });
