@@ -74,6 +74,24 @@ describe("BugReportForm", () => {
     expect(handleSubmit).toHaveBeenCalledTimes(1);
   });
 
+  it("form 要素として描画され aria-label が付与されている（アクセシビリティ・セマンティクス）", () => {
+    render(<BugReportForm {...defaultProps} />);
+    expect(screen.getByRole("form", { name: texts.form.formAriaLabel })).toBeInTheDocument();
+  });
+
+  it("送信ボタンは type='submit' 属性を持つ", () => {
+    render(<BugReportForm {...defaultProps} />);
+    const button = screen.getByRole("button", { name: texts.form.submitLabel });
+    expect(button).toHaveAttribute("type", "submit");
+  });
+
+  it("form の submit イベントで handleSubmit を呼ぶ（Enter キー送信相当）", () => {
+    const handleSubmit = jest.fn().mockResolvedValue(undefined);
+    render(<BugReportForm {...defaultProps} handleSubmit={handleSubmit} />);
+    fireEvent.submit(screen.getByRole("form", { name: texts.form.formAriaLabel }));
+    expect(handleSubmit).toHaveBeenCalledTimes(1);
+  });
+
   it("status が idle のときボタンは enabled で送信ラベルを表示する", () => {
     render(<BugReportForm {...defaultProps} status="idle" />);
     const button = screen.getByRole("button", { name: texts.form.submitLabel });

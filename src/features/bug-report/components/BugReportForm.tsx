@@ -34,8 +34,13 @@ export const BugReportForm = ({
 }: Props) => {
   const isSubmitting = status === "submitting";
 
+  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    void handleSubmit();
+  };
+
   return (
-    <div className="space-y-3">
+    <form className="space-y-3" onSubmit={onSubmit} aria-label={texts.form.formAriaLabel}>
       <div>
         <label htmlFor="bug-title" className="block text-sm font-medium text-gray-700 dark:text-gray-800 mb-1">
           {texts.form.titleLabel}
@@ -85,13 +90,12 @@ export const BugReportForm = ({
       <BugReportFeedback status={status} errorMessage={errorMessage} />
 
       <button
-        type="button"
-        onClick={() => { void handleSubmit(); }}
+        type="submit"
         disabled={isSubmitting}
         className="w-full px-4 py-3 rounded-lg font-medium transition-all bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {isSubmitting ? texts.form.submittingLabel : texts.form.submitLabel}
       </button>
-    </div>
+    </form>
   );
 };
