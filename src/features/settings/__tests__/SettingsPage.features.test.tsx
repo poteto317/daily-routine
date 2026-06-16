@@ -54,6 +54,14 @@ describe("SettingsPage features", () => {
     expect(screen.getByText(/アカウント管理/)).toBeInTheDocument();
   });
 
+  it("不具合報告セクションが表示される", () => {
+    render(<SettingsPage />);
+    expect(screen.getByText("不具合を報告")).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "報告を送信" }),
+    ).toBeInTheDocument();
+  });
+
   it("ポモドーロ設定は保存ボタンなしで即時保存される", async () => {
     render(<SettingsPage />);
     const focusInput = screen

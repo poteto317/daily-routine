@@ -2,9 +2,13 @@ import type { NextConfig } from "next";
 import { InjectManifest } from "workbox-webpack-plugin";
 import path from "path";
 import TerserPlugin from "terser-webpack-plugin";
+import packageJson from "./package.json";
 
 const nextConfig: NextConfig = {
   reactCompiler: true,
+  env: {
+    NEXT_PUBLIC_APP_VERSION: packageJson.version,
+  },
   typescript: {
     // ビルド時のTypeScriptエラーを警告に変更
     ignoreBuildErrors: false,
