@@ -94,6 +94,7 @@ export const TodoListDetailView = ({
     editingListTitle,
     editingListTitleValue,
     hideCompleted,
+    moveCompletedToBottom,
     inputRef,
     inputText,
     listTitleInputRef,
@@ -111,6 +112,7 @@ export const TodoListDetailView = ({
     startEditListTitle,
     toggleCollapseItem,
     toggleHideCompleted,
+    toggleMoveCompletedToBottom,
   } = useTodoListDetailViewState({
     list,
     onAddItem,
@@ -183,6 +185,7 @@ export const TodoListDetailView = ({
             items={list.items}
             addItemPosition={list.addItemPosition}
             hideCompleted={hideCompleted}
+            moveCompletedToBottom={moveCompletedToBottom}
             showBulkColorPicker={showBulkColorPicker}
             hasCompletedItems={list.items.some((item) => item.isCompleted)}
             onToggleBulkColorPicker={toggleBulkColorPicker}
@@ -194,6 +197,7 @@ export const TodoListDetailView = ({
               onUpdateListAddItemPosition(list.id, nextPosition)
             }
             onToggleHideCompleted={toggleHideCompleted}
+            onToggleMoveCompletedToBottom={toggleMoveCompletedToBottom}
           />
 
           {hasSelection && (

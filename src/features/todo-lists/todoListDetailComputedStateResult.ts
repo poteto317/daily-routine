@@ -1,30 +1,34 @@
+import type { useTodoListDetailItemOrder } from "./useTodoListDetailItemOrder";
+import type { useTodoListDetailOrderedItems } from "./useTodoListDetailOrderedItems";
 import type { useTodoListDetailProgress } from "./useTodoListDetailProgress";
-import type { useTodoListDetailVisibleItems } from "./useTodoListDetailVisibleItems";
 import type { useTodoListDetailVisibility } from "./useTodoListDetailVisibility";
 
 type TodoListDetailProgress = ReturnType<typeof useTodoListDetailProgress>;
-type TodoListDetailVisibleItems = ReturnType<
-  typeof useTodoListDetailVisibleItems
->;
+type TodoListDetailOrderedItems = ReturnType<typeof useTodoListDetailOrderedItems>;
 type TodoListDetailVisibility = ReturnType<typeof useTodoListDetailVisibility>;
+type TodoListDetailItemOrder = ReturnType<typeof useTodoListDetailItemOrder>;
 
 type CreateTodoListDetailComputedStateResultParams = {
   detailProgress: TodoListDetailProgress;
-  detailVisibleItems: TodoListDetailVisibleItems;
+  detailOrderedItems: TodoListDetailOrderedItems;
   detailVisibility: TodoListDetailVisibility;
+  detailItemOrder: TodoListDetailItemOrder;
 };
 
 export const createTodoListDetailComputedStateResult = ({
   detailProgress,
-  detailVisibleItems,
+  detailOrderedItems,
   detailVisibility,
+  detailItemOrder,
 }: CreateTodoListDetailComputedStateResultParams) => {
   return {
     collapsedItemIds: detailVisibility.collapsedItemIds,
     hideCompleted: detailVisibility.hideCompleted,
+    moveCompletedToBottom: detailItemOrder.moveCompletedToBottom,
     toggleCollapseItem: detailVisibility.toggleCollapseItem,
     toggleHideCompleted: detailVisibility.toggleHideCompleted,
+    toggleMoveCompletedToBottom: detailItemOrder.toggleMoveCompletedToBottom,
     progress: detailProgress.progress,
-    visibleItems: detailVisibleItems.visibleItems,
+    visibleItems: detailOrderedItems.visibleItems,
   };
 };
