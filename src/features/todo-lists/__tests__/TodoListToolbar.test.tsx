@@ -129,6 +129,36 @@ describe("TodoListToolbar", () => {
     expect(onToggleMoveCompletedToBottom).toHaveBeenCalledTimes(1);
   });
 
+  it("moveCompletedToBottom=false のとき「完了済みを下へ移動」ボタンの aria-pressed が false", () => {
+    render(<TodoListToolbar {...defaultProps} hasCompletedItems moveCompletedToBottom={false} />);
+    expect(
+      screen.getByRole("button", { name: "完了済みを下へ移動" }),
+    ).toHaveAttribute("aria-pressed", "false");
+  });
+
+  it("moveCompletedToBottom=true のとき「元の順番で表示」ボタンの aria-pressed が true", () => {
+    render(
+      <TodoListToolbar {...defaultProps} hasCompletedItems moveCompletedToBottom />,
+    );
+    expect(
+      screen.getByRole("button", { name: "元の順番で表示" }),
+    ).toHaveAttribute("aria-pressed", "true");
+  });
+
+  it("hideCompleted=false のとき完了済みトグルボタンの aria-pressed が false", () => {
+    render(<TodoListToolbar {...defaultProps} hasCompletedItems hideCompleted={false} />);
+    expect(
+      screen.getByRole("button", { name: "完了済みを非表示" }),
+    ).toHaveAttribute("aria-pressed", "false");
+  });
+
+  it("hideCompleted=true のとき完了済みトグルボタンの aria-pressed が true", () => {
+    render(<TodoListToolbar {...defaultProps} hasCompletedItems hideCompleted />);
+    expect(
+      screen.getByRole("button", { name: "完了済みを表示" }),
+    ).toHaveAttribute("aria-pressed", "true");
+  });
+
   it("追加位置トグルボタンを表示する（末尾追加がデフォルト）", () => {
     render(<TodoListToolbar {...defaultProps} />);
     expect(

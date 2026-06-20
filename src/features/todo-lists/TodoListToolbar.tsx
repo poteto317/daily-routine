@@ -56,6 +56,7 @@ export const TodoListToolbar = ({
       {hasCompletedItems && !hideCompleted && (
         <button
           type="button"
+          aria-pressed={moveCompletedToBottom}
           onClick={onToggleMoveCompletedToBottom}
           className="text-xs text-gray-500 dark:text-gray-600 hover:text-teal-600 dark:hover:text-teal-700 transition-colors"
         >
@@ -67,6 +68,7 @@ export const TodoListToolbar = ({
       {hasCompletedItems && (
         <button
           type="button"
+          aria-pressed={hideCompleted}
           onClick={onToggleHideCompleted}
           className="text-xs text-gray-500 dark:text-gray-600 hover:text-teal-600 dark:hover:text-teal-700 transition-colors"
         >
