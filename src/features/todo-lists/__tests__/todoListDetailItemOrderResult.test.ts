@@ -1,7 +1,7 @@
 import { createTodoListDetailItemOrderResult } from "../todoListDetailItemOrderResult";
 
 describe("createTodoListDetailItemOrderResult", () => {
-  it("itemOrder の公開 shape を返す", () => {
+  it("moveCompletedToBottom と toggleMoveCompletedToBottom を含む公開 shape を返す", () => {
     const toggleMoveCompletedToBottom = jest.fn();
 
     expect(
