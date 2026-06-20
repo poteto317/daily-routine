@@ -155,6 +155,7 @@ export const TodoListDetailView = ({
     listId: list.id,
     onReorderItems,
     onDragStarted: closeInlineInsert,
+    disabled: moveCompletedToBottom,
   });
 
   const activeItem = list.items.find((i) => i.id === activeId) ?? null;
