@@ -172,5 +172,19 @@ describe("useTodoListDragAndDrop", () => {
       rerender({ disabled: true });
       expect(result.current.sensors).toEqual([]);
     });
+
+    it("disabled=true のとき sensors の参照がレンダーをまたいで安定している", () => {
+      const { result, rerender } = renderHook(() =>
+        useTodoListDragAndDrop({
+          items,
+          listId: "list-1",
+          onReorderItems: jest.fn(),
+          disabled: true,
+        }),
+      );
+      const first = result.current.sensors;
+      rerender();
+      expect(result.current.sensors).toBe(first);
+    });
   });
 });

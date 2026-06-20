@@ -7,9 +7,13 @@ import {
   useSensors,
   type DragEndEvent,
   type DragStartEvent,
+  type SensorDescriptor,
+  type SensorOptions,
 } from "@dnd-kit/core";
 import { sortableKeyboardCoordinates } from "@dnd-kit/sortable";
 import type { TodoListItem } from "./types";
+
+const EMPTY_SENSORS: SensorDescriptor<SensorOptions>[] = [];
 
 type UseTodoListDragAndDropParams = {
   items: TodoListItem[];
@@ -78,7 +82,7 @@ export const useTodoListDragAndDrop = ({
 
   return {
     activeId,
-    sensors: disabled ? [] : registeredSensors,
+    sensors: disabled ? EMPTY_SENSORS : registeredSensors,
     handleDragStart,
     handleDragEnd,
     handleDragCancel,
