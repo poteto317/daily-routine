@@ -14,10 +14,10 @@ export const useTodoListDetailVisibleItems = ({
   collapsedItemIds,
   list,
 }: UseTodoListDetailVisibleItemsParams) => {
-  const visibleItems = useMemo(
+  const filteredItems = useMemo(
     () => getVisibleTodoItems(list.items, hideCompleted, collapsedItemIds),
     [hideCompleted, collapsedItemIds, list.items],
   );
 
-  return createTodoListDetailVisibleItemsResult({ visibleItems });
+  return createTodoListDetailVisibleItemsResult({ filteredItems });
 };

@@ -9,6 +9,7 @@ import { TodoListSelectionBar } from "./TodoListSelectionBar";
 import { TodoListClipboardBar } from "./TodoListClipboardBar";
 import { TodoListAddForm } from "./TodoListAddForm";
 import { TodoListSortableItems } from "./TodoListSortableItems";
+import { useCallback, useEffect } from "react";
 import {
   useTodoListDetailViewState,
 } from "./useTodoListDetailViewState";
@@ -94,6 +95,7 @@ export const TodoListDetailView = ({
     editingListTitle,
     editingListTitleValue,
     hideCompleted,
+    moveCompletedToBottom,
     inputRef,
     inputText,
     listTitleInputRef,
@@ -111,6 +113,7 @@ export const TodoListDetailView = ({
     startEditListTitle,
     toggleCollapseItem,
     toggleHideCompleted,
+    toggleMoveCompletedToBottom,
   } = useTodoListDetailViewState({
     list,
     onAddItem,
@@ -153,7 +156,16 @@ export const TodoListDetailView = ({
     listId: list.id,
     onReorderItems,
     onDragStarted: closeInlineInsert,
+    disabled: moveCompletedToBottom && !hideCompleted,
   });
+
+  // ソートビュー有効時（かつ hideCompleted=false）は表示順とデータ順が乖離するため、既存のインライン挿入フォームを閉じる
+  useEffect(() => {
+    if (moveCompletedToBottom && !hideCompleted) closeInlineInsert();
+  }, [moveCompletedToBottom, hideCompleted, closeInlineInsert]);
+
+  // moveCompletedToBottom=true 時はインライン挿入を封じる安定参照の no-op
+  const noOpOpenInlineInsert = useCallback(() => {}, []);
 
   const activeItem = list.items.find((i) => i.id === activeId) ?? null;
 
@@ -183,6 +195,7 @@ export const TodoListDetailView = ({
             items={list.items}
             addItemPosition={list.addItemPosition}
             hideCompleted={hideCompleted}
+            moveCompletedToBottom={moveCompletedToBottom}
             showBulkColorPicker={showBulkColorPicker}
             hasCompletedItems={list.items.some((item) => item.isCompleted)}
             onToggleBulkColorPicker={toggleBulkColorPicker}
@@ -194,6 +207,7 @@ export const TodoListDetailView = ({
               onUpdateListAddItemPosition(list.id, nextPosition)
             }
             onToggleHideCompleted={toggleHideCompleted}
+            onToggleMoveCompletedToBottom={toggleMoveCompletedToBottom}
           />
 
           {hasSelection && (
@@ -229,7 +243,7 @@ export const TodoListDetailView = ({
             onSetInlineInputText={setInlineInputText}
             onHandleInlineAdd={handleInlineAdd}
             onCloseInlineInsert={closeInlineInsert}
-            onOpenInlineInsert={openInlineInsert}
+            onOpenInlineInsert={(moveCompletedToBottom && !hideCompleted) ? noOpOpenInlineInsert : openInlineInsert}
             editingItemId={editingItemId}
             editingItemTitle={editingItemTitle}
             setEditingItemTitle={setEditingItemTitle}

@@ -13,9 +13,11 @@ describe("createTodoListDetailViewStateResult", () => {
     const detailComputed = {
       collapsedItemIds: new Set<string>(),
       hideCompleted: false,
+      moveCompletedToBottom: false,
       progress: { completed: 0, total: 0, percentage: 0 },
       toggleCollapseItem: jest.fn(),
       toggleHideCompleted: jest.fn(),
+      toggleMoveCompletedToBottom: jest.fn(),
       visibleItems: [] as never[],
     };
     const detailEditing = {

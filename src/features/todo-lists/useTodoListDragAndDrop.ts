@@ -7,9 +7,13 @@ import {
   useSensors,
   type DragEndEvent,
   type DragStartEvent,
+  type SensorDescriptor,
+  type SensorOptions,
 } from "@dnd-kit/core";
 import { sortableKeyboardCoordinates } from "@dnd-kit/sortable";
 import type { TodoListItem } from "./types";
+
+const EMPTY_SENSORS: SensorDescriptor<SensorOptions>[] = [];
 
 type UseTodoListDragAndDropParams = {
   items: TodoListItem[];
@@ -17,6 +21,8 @@ type UseTodoListDragAndDropParams = {
   onReorderItems: (listId: string, fromIndex: number, toIndex: number) => void;
   /** ドラッグ開始時に呼ばれるコールバック（例: インライン挿入フォームを閉じる） */
   onDragStarted?: () => void;
+  /** true のとき DnD を完全に無効化する（ソートビュー中など表示順と data 順が乖離している場合に使用） */
+  disabled?: boolean;
 };
 
 /**
@@ -30,10 +36,11 @@ export const useTodoListDragAndDrop = ({
   listId,
   onReorderItems,
   onDragStarted,
+  disabled = false,
 }: UseTodoListDragAndDropParams) => {
   const [activeId, setActiveId] = useState<string | null>(null);
 
-  const sensors = useSensors(
+  const registeredSensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
     useSensor(TouchSensor, {
       activationConstraint: { delay: 300, tolerance: 5 },
@@ -75,7 +82,7 @@ export const useTodoListDragAndDrop = ({
 
   return {
     activeId,
-    sensors,
+    sensors: disabled ? EMPTY_SENSORS : registeredSensors,
     handleDragStart,
     handleDragEnd,
     handleDragCancel,

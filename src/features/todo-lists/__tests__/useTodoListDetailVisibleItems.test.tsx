@@ -63,7 +63,7 @@ describe("useTodoListDetailVisibleItems", () => {
     );
   });
 
-  it("hideCompleted に応じて visibleItems を計算する", () => {
+  it("hideCompleted に応じて filteredItems を計算する", () => {
     const { result, rerender } = renderHook(
       ({ hideCompleted }) =>
         useTodoListDetailVisibleItems({
@@ -76,7 +76,7 @@ describe("useTodoListDetailVisibleItems", () => {
       },
     );
 
-    expect(result.current.visibleItems.map((item) => item.id)).toEqual([
+    expect(result.current.filteredItems.map((item) => item.id)).toEqual([
       "parent",
       "child-done",
       "child-open",
@@ -85,14 +85,14 @@ describe("useTodoListDetailVisibleItems", () => {
 
     rerender({ hideCompleted: true });
 
-    expect(result.current.visibleItems.map((item) => item.id)).toEqual([
+    expect(result.current.filteredItems.map((item) => item.id)).toEqual([
       "parent",
       "child-open",
       "sibling",
     ]);
   });
 
-  it("collapsedItemIds に応じて visibleItems を計算する", () => {
+  it("collapsedItemIds に応じて filteredItems を計算する", () => {
     const { result } = renderHook(() =>
       useTodoListDetailVisibleItems({
         hideCompleted: false,
@@ -102,12 +102,12 @@ describe("useTodoListDetailVisibleItems", () => {
     );
 
     expect(createTodoListDetailVisibleItemsResult).toHaveBeenCalledWith({
-      visibleItems: [
+      filteredItems: [
         expect.objectContaining({ id: "parent" }),
         expect.objectContaining({ id: "sibling" }),
       ],
     });
-    expect(result.current.visibleItems.map((item) => item.id)).toEqual([
+    expect(result.current.filteredItems.map((item) => item.id)).toEqual([
       "parent",
       "sibling",
     ]);
@@ -132,7 +132,7 @@ describe("useTodoListDetailVisibleItems", () => {
       collapsedItemIds,
     );
     expect(createTodoListDetailVisibleItemsResult).toHaveBeenCalledWith({
-      visibleItems: mockFiltered,
+      filteredItems: mockFiltered,
     });
   });
 });

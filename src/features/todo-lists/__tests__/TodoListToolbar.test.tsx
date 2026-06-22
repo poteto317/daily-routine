@@ -16,6 +16,7 @@ const defaultProps = {
   items: [createItem(), createItem()],
   addItemPosition: "last" as const,
   hideCompleted: false,
+  moveCompletedToBottom: false,
   showBulkColorPicker: false,
   hasCompletedItems: false,
   onToggleBulkColorPicker: jest.fn(),
@@ -23,6 +24,7 @@ const defaultProps = {
   onUpdateAllItemsBgColor: jest.fn(),
   onToggleListAddItemPosition: jest.fn(),
   onToggleHideCompleted: jest.fn(),
+  onToggleMoveCompletedToBottom: jest.fn(),
 };
 
 beforeEach(() => {
@@ -83,6 +85,78 @@ describe("TodoListToolbar", () => {
     render(<TodoListToolbar {...defaultProps} hasCompletedItems />);
     fireEvent.click(screen.getByRole("button", { name: "完了済みを非表示" }));
     expect(defaultProps.onToggleHideCompleted).toHaveBeenCalledTimes(1);
+  });
+
+  it("hasCompletedItems=true かつ hideCompleted=false のとき「完了済みを下へ移動」ボタンを表示する", () => {
+    render(<TodoListToolbar {...defaultProps} hasCompletedItems />);
+    expect(
+      screen.getByRole("button", { name: "完了済みを下へ移動" }),
+    ).toBeInTheDocument();
+  });
+
+  it("moveCompletedToBottom=true のとき「元の順番で表示」ボタンを表示する", () => {
+    render(
+      <TodoListToolbar
+        {...defaultProps}
+        hasCompletedItems
+        moveCompletedToBottom
+      />,
+    );
+    expect(
+      screen.getByRole("button", { name: "元の順番で表示" }),
+    ).toBeInTheDocument();
+  });
+
+  it("hideCompleted=true のとき「完了済みを下へ移動」ボタンを表示しない", () => {
+    render(
+      <TodoListToolbar {...defaultProps} hasCompletedItems hideCompleted />,
+    );
+    expect(
+      screen.queryByRole("button", { name: /下へ移動|元の順番/ }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("「完了済みを下へ移動」クリックで onToggleMoveCompletedToBottom が呼ばれる", () => {
+    const onToggleMoveCompletedToBottom = jest.fn();
+    render(
+      <TodoListToolbar
+        {...defaultProps}
+        hasCompletedItems
+        onToggleMoveCompletedToBottom={onToggleMoveCompletedToBottom}
+      />,
+    );
+    fireEvent.click(screen.getByRole("button", { name: "完了済みを下へ移動" }));
+    expect(onToggleMoveCompletedToBottom).toHaveBeenCalledTimes(1);
+  });
+
+  it("moveCompletedToBottom=false のとき「完了済みを下へ移動」ボタンの aria-pressed が false", () => {
+    render(<TodoListToolbar {...defaultProps} hasCompletedItems moveCompletedToBottom={false} />);
+    expect(
+      screen.getByRole("button", { name: "完了済みを下へ移動" }),
+    ).toHaveAttribute("aria-pressed", "false");
+  });
+
+  it("moveCompletedToBottom=true のとき「元の順番で表示」ボタンの aria-pressed が true", () => {
+    render(
+      <TodoListToolbar {...defaultProps} hasCompletedItems moveCompletedToBottom />,
+    );
+    expect(
+      screen.getByRole("button", { name: "元の順番で表示" }),
+    ).toHaveAttribute("aria-pressed", "true");
+  });
+
+  it("hideCompleted=false のとき完了済みトグルボタンの aria-pressed が false", () => {
+    render(<TodoListToolbar {...defaultProps} hasCompletedItems hideCompleted={false} />);
+    expect(
+      screen.getByRole("button", { name: "完了済みを非表示" }),
+    ).toHaveAttribute("aria-pressed", "false");
+  });
+
+  it("hideCompleted=true のとき完了済みトグルボタンの aria-pressed が true", () => {
+    render(<TodoListToolbar {...defaultProps} hasCompletedItems hideCompleted />);
+    expect(
+      screen.getByRole("button", { name: "完了済みを表示" }),
+    ).toHaveAttribute("aria-pressed", "true");
   });
 
   it("追加位置トグルボタンを表示する（末尾追加がデフォルト）", () => {

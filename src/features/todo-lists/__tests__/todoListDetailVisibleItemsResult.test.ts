@@ -1,8 +1,8 @@
 import { createTodoListDetailVisibleItemsResult } from "../todoListDetailVisibleItemsResult";
 
 describe("createTodoListDetailVisibleItemsResult", () => {
-  it("visibleItems の公開 shape を返す", () => {
-    const visibleItems = [
+  it("filteredItems の公開 shape を返す", () => {
+    const filteredItems = [
       {
         id: "item-1",
         title: "Task 1",
@@ -11,24 +11,24 @@ describe("createTodoListDetailVisibleItemsResult", () => {
       },
     ];
 
-    expect(createTodoListDetailVisibleItemsResult({ visibleItems })).toEqual({
-      visibleItems,
+    expect(createTodoListDetailVisibleItemsResult({ filteredItems })).toEqual({
+      filteredItems,
     });
   });
 
   it("空配列でも shape をそのまま返す", () => {
     expect(
-      createTodoListDetailVisibleItemsResult({ visibleItems: [] }),
-    ).toEqual({ visibleItems: [] });
+      createTodoListDetailVisibleItemsResult({ filteredItems: [] }),
+    ).toEqual({ filteredItems: [] });
   });
 
   it("複数アイテムでも shape をそのまま返す", () => {
-    const visibleItems = [
+    const filteredItems = [
       { id: "item-1", title: "A", isCompleted: false, createdAt: "" },
       { id: "item-2", title: "B", isCompleted: true, createdAt: "" },
     ];
-    expect(createTodoListDetailVisibleItemsResult({ visibleItems })).toEqual({
-      visibleItems,
+    expect(createTodoListDetailVisibleItemsResult({ filteredItems })).toEqual({
+      filteredItems,
     });
   });
 });

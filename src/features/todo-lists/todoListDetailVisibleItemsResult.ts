@@ -1,11 +1,11 @@
 import type { TodoListItem } from "./types";
 
 type TodoListDetailVisibleItemsResultInput = {
-  visibleItems: TodoListItem[];
+  filteredItems: TodoListItem[];
 };
 
 export const createTodoListDetailVisibleItemsResult = ({
-  visibleItems,
+  filteredItems,
 }: TodoListDetailVisibleItemsResultInput) => ({
-  visibleItems,
+  filteredItems,
 });

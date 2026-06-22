@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { TodoListSortableItems } from "../TodoListSortableItems";
 import type { TodoListSortableItemsProps } from "../TodoListSortableItems";
 import type { TodoList } from "../types";
@@ -184,6 +184,35 @@ describe("TodoListSortableItems", () => {
         <TodoListSortableItems {...defaultProps} insertAfterId={null} />,
       );
       // フォームの「追加」ボタンがないこと（インライン挿入フォームは非表示）
+      expect(
+        screen.queryByRole("button", { name: "追加" }),
+      ).not.toBeInTheDocument();
+    });
+
+    it("「下に追加」ボタンをクリックすると onOpenInlineInsert がアイテム ID で呼ばれる", () => {
+      const onOpenInlineInsert = jest.fn();
+      render(
+        <TodoListSortableItems
+          {...defaultProps}
+          onOpenInlineInsert={onOpenInlineInsert}
+        />,
+      );
+      const buttons = screen.getAllByRole("button", { name: "下に追加" });
+      fireEvent.click(buttons[0]);
+      expect(onOpenInlineInsert).toHaveBeenCalledWith("item-1");
+    });
+
+    it("onOpenInlineInsert が no-op のとき insertAfterId は変わらずフォームが開かない", () => {
+      render(
+        <TodoListSortableItems
+          {...defaultProps}
+          onOpenInlineInsert={() => {}}
+          insertAfterId={null}
+        />,
+      );
+      const buttons = screen.getAllByRole("button", { name: "下に追加" });
+      fireEvent.click(buttons[0]);
+      // insertAfterId は外部制御のため、no-op の場合はフォームが開かない
       expect(
         screen.queryByRole("button", { name: "追加" }),
       ).not.toBeInTheDocument();

@@ -30,6 +30,8 @@
     "completedCount": "{completed}/{total} 完了",
     "hideCompleted": "完了済みを非表示",
     "showCompleted": "完了済みを表示",
+    "moveCompletedToBottom": "完了済みを下へ移動",
+    "moveCompletedToBottomActive": "元の順番で表示",
     "deleteItemConfirm": "「{title}」を削除しますか？",
     "editItemLabel": "編集",
     "selectedCount": "{count}件選択中",

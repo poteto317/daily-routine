@@ -9,6 +9,7 @@ export type TodoListToolbarProps = {
   items: TodoListItem[];
   addItemPosition: "first" | "last" | undefined;
   hideCompleted: boolean;
+  moveCompletedToBottom: boolean;
   showBulkColorPicker: boolean;
   hasCompletedItems: boolean;
   onToggleBulkColorPicker: () => void;
@@ -18,6 +19,7 @@ export type TodoListToolbarProps = {
   ) => void;
   onToggleListAddItemPosition: (nextPosition: "first" | "last") => void;
   onToggleHideCompleted: () => void;
+  onToggleMoveCompletedToBottom: () => void;
 };
 
 /**
@@ -28,6 +30,7 @@ export const TodoListToolbar = ({
   items,
   addItemPosition,
   hideCompleted,
+  moveCompletedToBottom,
   showBulkColorPicker,
   hasCompletedItems,
   onToggleBulkColorPicker,
@@ -35,6 +38,7 @@ export const TodoListToolbar = ({
   onUpdateAllItemsBgColor,
   onToggleListAddItemPosition,
   onToggleHideCompleted,
+  onToggleMoveCompletedToBottom,
 }: TodoListToolbarProps) => (
   <div className="mb-4 flex items-center justify-between">
     <TodoListBulkColorPicker
@@ -49,9 +53,22 @@ export const TodoListToolbar = ({
         addItemPosition={addItemPosition}
         onToggle={onToggleListAddItemPosition}
       />
+      {hasCompletedItems && !hideCompleted && (
+        <button
+          type="button"
+          aria-pressed={moveCompletedToBottom}
+          onClick={onToggleMoveCompletedToBottom}
+          className="text-xs text-gray-500 dark:text-gray-600 hover:text-teal-600 dark:hover:text-teal-700 transition-colors"
+        >
+          {moveCompletedToBottom
+            ? texts.list.moveCompletedToBottomActive
+            : texts.list.moveCompletedToBottom}
+        </button>
+      )}
       {hasCompletedItems && (
         <button
           type="button"
+          aria-pressed={hideCompleted}
           onClick={onToggleHideCompleted}
           className="text-xs text-gray-500 dark:text-gray-600 hover:text-teal-600 dark:hover:text-teal-700 transition-colors"
         >
