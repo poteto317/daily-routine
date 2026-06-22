@@ -9,7 +9,7 @@ import { TodoListSelectionBar } from "./TodoListSelectionBar";
 import { TodoListClipboardBar } from "./TodoListClipboardBar";
 import { TodoListAddForm } from "./TodoListAddForm";
 import { TodoListSortableItems } from "./TodoListSortableItems";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import {
   useTodoListDetailViewState,
 } from "./useTodoListDetailViewState";
@@ -164,6 +164,9 @@ export const TodoListDetailView = ({
     if (moveCompletedToBottom) closeInlineInsert();
   }, [moveCompletedToBottom, closeInlineInsert]);
 
+  // moveCompletedToBottom=true 時はインライン挿入を封じる安定参照の no-op
+  const noOpOpenInlineInsert = useCallback(() => {}, []);
+
   const activeItem = list.items.find((i) => i.id === activeId) ?? null;
 
   return (
@@ -240,7 +243,7 @@ export const TodoListDetailView = ({
             onSetInlineInputText={setInlineInputText}
             onHandleInlineAdd={handleInlineAdd}
             onCloseInlineInsert={closeInlineInsert}
-            onOpenInlineInsert={moveCompletedToBottom ? () => {} : openInlineInsert}
+            onOpenInlineInsert={moveCompletedToBottom ? noOpOpenInlineInsert : openInlineInsert}
             editingItemId={editingItemId}
             editingItemTitle={editingItemTitle}
             setEditingItemTitle={setEditingItemTitle}

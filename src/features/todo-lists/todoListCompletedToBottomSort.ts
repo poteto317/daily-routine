@@ -2,13 +2,13 @@ import type { TodoListItem } from "./types";
 
 export const sortCompletedToBottom = (items: TodoListItem[]): TodoListItem[] => {
   const incomplete: TodoListItem[] = [];
-  const complete: TodoListItem[] = [];
+  const completed: TodoListItem[] = [];
   for (const item of items) {
     if (item.isCompleted) {
-      complete.push(item);
+      completed.push(item);
     } else {
       incomplete.push(item);
     }
   }
-  return [...incomplete, ...complete];
+  return [...incomplete, ...completed];
 };
