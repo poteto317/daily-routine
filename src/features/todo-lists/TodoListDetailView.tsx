@@ -156,13 +156,13 @@ export const TodoListDetailView = ({
     listId: list.id,
     onReorderItems,
     onDragStarted: closeInlineInsert,
-    disabled: moveCompletedToBottom,
+    disabled: moveCompletedToBottom && !hideCompleted,
   });
 
-  // ソートビュー有効時は表示順とデータ順が乖離するため、既存のインライン挿入フォームを閉じる
+  // ソートビュー有効時（かつ hideCompleted=false）は表示順とデータ順が乖離するため、既存のインライン挿入フォームを閉じる
   useEffect(() => {
-    if (moveCompletedToBottom) closeInlineInsert();
-  }, [moveCompletedToBottom, closeInlineInsert]);
+    if (moveCompletedToBottom && !hideCompleted) closeInlineInsert();
+  }, [moveCompletedToBottom, hideCompleted, closeInlineInsert]);
 
   // moveCompletedToBottom=true 時はインライン挿入を封じる安定参照の no-op
   const noOpOpenInlineInsert = useCallback(() => {}, []);
@@ -243,7 +243,7 @@ export const TodoListDetailView = ({
             onSetInlineInputText={setInlineInputText}
             onHandleInlineAdd={handleInlineAdd}
             onCloseInlineInsert={closeInlineInsert}
-            onOpenInlineInsert={moveCompletedToBottom ? noOpOpenInlineInsert : openInlineInsert}
+            onOpenInlineInsert={(moveCompletedToBottom && !hideCompleted) ? noOpOpenInlineInsert : openInlineInsert}
             editingItemId={editingItemId}
             editingItemTitle={editingItemTitle}
             setEditingItemTitle={setEditingItemTitle}

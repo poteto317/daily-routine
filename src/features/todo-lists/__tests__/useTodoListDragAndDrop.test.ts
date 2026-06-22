@@ -173,6 +173,23 @@ describe("useTodoListDragAndDrop", () => {
       expect(result.current.sensors).toEqual([]);
     });
 
+    it("disabled が true → false に切り替わると sensors が空でなくなる", () => {
+      const { result, rerender } = renderHook(
+        ({ disabled }) =>
+          useTodoListDragAndDrop({
+            items,
+            listId: "list-1",
+            onReorderItems: jest.fn(),
+            disabled,
+          }),
+        { initialProps: { disabled: true } },
+      );
+      expect(result.current.sensors).toEqual([]);
+
+      rerender({ disabled: false });
+      expect(result.current.sensors.length).toBeGreaterThan(0);
+    });
+
     it("disabled=true のとき sensors の参照がレンダーをまたいで安定している", () => {
       const { result, rerender } = renderHook(() =>
         useTodoListDragAndDrop({
