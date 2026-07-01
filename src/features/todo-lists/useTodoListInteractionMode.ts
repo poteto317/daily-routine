@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from "react";
+import { useEffect } from "react";
 import type { TodoListItem } from "./types";
 import { useTodoListInlineInsert } from "./useTodoListInlineInsert";
 import { useTodoListDragAndDrop } from "./useTodoListDragAndDrop";
@@ -29,13 +29,10 @@ export const useTodoListInteractionMode = ({
     if (sortModeActive) inlineInsert.closeInlineInsert();
   }, [sortModeActive, inlineInsert.closeInlineInsert]);
 
-  const openInlineInsert = useCallback(
-    (itemId: string) => {
-      if (sortModeActive) return;
-      inlineInsert.openInlineInsert(itemId);
-    },
-    [sortModeActive, inlineInsert.openInlineInsert],
-  );
+  const openInlineInsert = (itemId: string) => {
+    if (sortModeActive) return;
+    inlineInsert.openInlineInsert(itemId);
+  };
 
   const dnd = useTodoListDragAndDrop({
     items,

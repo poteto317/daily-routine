@@ -29,19 +29,19 @@ export const useTodoListHistory = ({
     saveLists(next);
   }, [saveLists]);
 
-  const undo = useCallback(() => {
+  const undo = () => {
     const prev = getPrevState(history);
     if (!prev) return;
     dispatch({ type: "UNDO" });
     saveLists(prev);
-  }, [history.past, saveLists]);
+  };
 
-  const redo = useCallback(() => {
+  const redo = () => {
     const next = getNextState(history);
     if (!next) return;
     dispatch({ type: "REDO" });
     saveLists(next);
-  }, [history.future, saveLists]);
+  };
 
   return {
     lists: history.present,

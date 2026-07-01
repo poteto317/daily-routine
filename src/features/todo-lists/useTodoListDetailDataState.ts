@@ -1,4 +1,3 @@
-import type { TodoList } from "./types";
 import { getTodoLists } from "./storage";
 import { findTodoListById } from "./selectors";
 import { useTodoListHistory } from "./useTodoListHistory";
