@@ -23,11 +23,12 @@ export const useTodoListInteractionMode = ({
   const sortModeActive = moveCompletedToBottom && !hideCompleted;
 
   const inlineInsert = useTodoListInlineInsert({ listId, onAddItem });
+  const { closeInlineInsert } = inlineInsert;
 
   // ソートモード中は表示順とデータ順が乖離し挿入位置が特定できないため、フォームを閉じ新規挿入も封じる
   useEffect(() => {
-    if (sortModeActive) inlineInsert.closeInlineInsert();
-  }, [sortModeActive, inlineInsert.closeInlineInsert]);
+    if (sortModeActive) closeInlineInsert();
+  }, [sortModeActive, closeInlineInsert]);
 
   const openInlineInsert = (itemId: string) => {
     if (sortModeActive) return;
@@ -38,7 +39,7 @@ export const useTodoListInteractionMode = ({
     items,
     listId,
     onReorderItems,
-    onDragStarted: inlineInsert.closeInlineInsert,
+    onDragStarted: closeInlineInsert,
     disabled: sortModeActive,
   });
 
@@ -50,7 +51,7 @@ export const useTodoListInteractionMode = ({
       inlineInputText: inlineInsert.inlineInputText,
       setInlineInputText: inlineInsert.setInlineInputText,
       openInlineInsert,
-      closeInlineInsert: inlineInsert.closeInlineInsert,
+      closeInlineInsert,
       handleInlineAdd: inlineInsert.handleInlineAdd,
     },
     dnd,
