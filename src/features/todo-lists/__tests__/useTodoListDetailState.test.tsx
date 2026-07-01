@@ -12,12 +12,7 @@ jest.mock("../todoListDetailHandlerBindings", () => ({
   createTodoListDetailHandlerBindings: jest.fn(),
 }));
 
-jest.mock("../todoListDetailStateResult", () => ({
-  createTodoListDetailStateResult: jest.fn(),
-}));
-
 import { createTodoListDetailHandlerBindings } from "../todoListDetailHandlerBindings";
-import { createTodoListDetailStateResult } from "../todoListDetailStateResult";
 import { useTodoListDetailDataState } from "../useTodoListDetailDataState";
 import { useTodoListDetailHandlers } from "../useTodoListDetailHandlers";
 import { useTodoListDetailState } from "../useTodoListDetailState";
@@ -36,6 +31,10 @@ describe("useTodoListDetailState", () => {
       list,
       lists: [list],
       persist: jest.fn(),
+      undo: jest.fn(),
+      redo: jest.fn(),
+      canUndo: false,
+      canRedo: true,
     });
     (createTodoListDetailHandlerBindings as jest.Mock).mockImplementation(
       (params) => params,
@@ -43,12 +42,9 @@ describe("useTodoListDetailState", () => {
     (useTodoListDetailHandlers as jest.Mock).mockReturnValue({
       detailHandlers: { onAddItem: jest.fn() },
     });
-    (createTodoListDetailStateResult as jest.Mock).mockImplementation(
-      (params) => params,
-    );
   });
 
-  it("detail data と handler/result helper を compose する", () => {
+  it("detail data と handlers を compose してフラットなオブジェクトを返す", () => {
     const { result } = renderHook(() => useTodoListDetailState("list-1"));
 
     expect(useTodoListDetailDataState).toHaveBeenCalledWith("list-1");
@@ -62,13 +58,62 @@ describe("useTodoListDetailState", () => {
       lists: [expect.objectContaining({ id: "list-1" })],
       persist: expect.any(Function),
     });
-    expect(createTodoListDetailStateResult).toHaveBeenCalledWith({
-      detailHandlers: { onAddItem: expect.any(Function) },
-      list: expect.objectContaining({ id: "list-1" }),
+    expect(result.current).toEqual(
+      expect.objectContaining({
+        detailHandlers: { onAddItem: expect.any(Function) },
+        list: expect.objectContaining({ id: "list-1" }),
+        undo: expect.any(Function),
+        redo: expect.any(Function),
+        canUndo: false,
+        canRedo: true,
+      }),
+    );
+  });
+
+  it("undo/redo/canUndo/canRedo を data state からスルーする", () => {
+    const { result } = renderHook(() => useTodoListDetailState("list-1"));
+
+    expect(result.current.canUndo).toBe(false);
+    expect(result.current.canRedo).toBe(true);
+    expect(result.current.undo).toEqual(expect.any(Function));
+    expect(result.current.redo).toEqual(expect.any(Function));
+  });
+
+  it("list が null のとき detailHandlers=null を返す", () => {
+    (useTodoListDetailDataState as jest.Mock).mockReturnValue({
+      list: null,
+      lists: [],
+      persist: jest.fn(),
+      undo: jest.fn(),
+      redo: jest.fn(),
+      canUndo: false,
+      canRedo: false,
     });
-    expect(result.current).toEqual({
-      detailHandlers: { onAddItem: expect.any(Function) },
-      list: expect.objectContaining({ id: "list-1" }),
+    (useTodoListDetailHandlers as jest.Mock).mockReturnValue({
+      detailHandlers: null,
     });
+
+    const { result } = renderHook(() => useTodoListDetailState("missing"));
+
+    expect(result.current.list).toBeNull();
+    expect(result.current.detailHandlers).toBeNull();
+    expect(result.current.undo).toEqual(expect.any(Function));
+    expect(result.current.redo).toEqual(expect.any(Function));
+  });
+
+  it("createTodoListDetailStateResult を経由せずフラットなオブジェクトを直接返す", () => {
+    const { result } = renderHook(() => useTodoListDetailState("list-1"));
+
+    // 余計なラッパー関数を経由せず、必要なキーを直接持つことを確認
+    expect(Object.keys(result.current)).toEqual(
+      expect.arrayContaining([
+        "detailHandlers",
+        "list",
+        "undo",
+        "redo",
+        "canUndo",
+        "canRedo",
+      ]),
+    );
   });
 });

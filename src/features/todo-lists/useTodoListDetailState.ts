@@ -1,5 +1,4 @@
 import { createTodoListDetailHandlerBindings } from "./todoListDetailHandlerBindings";
-import { createTodoListDetailStateResult } from "./todoListDetailStateResult";
 import { useTodoListDetailDataState } from "./useTodoListDetailDataState";
 import { useTodoListDetailHandlers } from "./useTodoListDetailHandlers";
 
@@ -13,8 +12,12 @@ export const useTodoListDetailState = (listId: string) => {
     }),
   );
 
-  return createTodoListDetailStateResult({
+  return {
     detailHandlers,
     list: data.list,
-  });
+    undo: data.undo,
+    redo: data.redo,
+    canUndo: data.canUndo,
+    canRedo: data.canRedo,
+  };
 };

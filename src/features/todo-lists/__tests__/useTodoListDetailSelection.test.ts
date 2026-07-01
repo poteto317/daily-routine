@@ -33,6 +33,7 @@ describe("useTodoListDetailSelection", () => {
     });
   });
 
+
   describe("選択操作", () => {
     it("toggleSelectItem でアイテムが選択される", () => {
       const { result } = renderHook(() =>
@@ -85,6 +86,33 @@ describe("useTodoListDetailSelection", () => {
       expect(onCutItems).toHaveBeenCalledWith("list-1", expect.any(Set));
       expect(onSetClipboard).toHaveBeenCalledWith(cutItems);
       // カット後は選択がクリアされる
+      expect(result.current.selectedItemIds.size).toBe(0);
+    });
+
+    it("複数アイテム選択後の handleCut で全選択済み ID が Set ごと onCutItems に渡る", () => {
+      const cutItems = [makeItem("x"), makeItem("y"), makeItem("z")];
+      const onCutItems = jest.fn().mockReturnValue(cutItems);
+      const onSetClipboard = jest.fn();
+
+      const { result } = renderHook(() =>
+        useTodoListDetailSelection(makeParams({ onCutItems, onSetClipboard })),
+      );
+
+      act(() => {
+        result.current.toggleSelectItem("x");
+        result.current.toggleSelectItem("y");
+        result.current.toggleSelectItem("z");
+      });
+      act(() => {
+        result.current.handleCut();
+      });
+
+      const passedSet: Set<string> = (onCutItems as jest.Mock).mock.calls[0][1];
+      expect(passedSet.has("x")).toBe(true);
+      expect(passedSet.has("y")).toBe(true);
+      expect(passedSet.has("z")).toBe(true);
+      expect(passedSet.size).toBe(3);
+      expect(onSetClipboard).toHaveBeenCalledWith(cutItems);
       expect(result.current.selectedItemIds.size).toBe(0);
     });
 
