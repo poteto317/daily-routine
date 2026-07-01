@@ -29,6 +29,17 @@ const initialState = (): HistoryState => ({
 });
 
 describe("todoListHistoryReducer", () => {
+  describe("default（未知アクション）", () => {
+    it("未知のアクションが来ても状態をそのまま返す（ランタイム安全）", () => {
+      const state = initialState();
+      const next = todoListHistoryReducer(
+        state,
+        { type: "UNKNOWN" } as unknown as Parameters<typeof todoListHistoryReducer>[1],
+      );
+      expect(next).toBe(state);
+    });
+  });
+
   describe("PERSIST", () => {
     it("present を past に積み、新しい present をセットし、future をクリアする", () => {
       const state = initialState();

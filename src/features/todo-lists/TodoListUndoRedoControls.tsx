@@ -16,7 +16,7 @@ export const TodoListUndoRedoControls = ({
   <>
     <button
       type="button"
-      disabled={!canUndo}
+      disabled={!canUndo || !onUndo}
       onClick={onUndo}
       aria-label="元に戻す"
       className="text-sm text-gray-500 dark:text-gray-600 hover:text-teal-600 dark:hover:text-teal-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
@@ -25,7 +25,7 @@ export const TodoListUndoRedoControls = ({
     </button>
     <button
       type="button"
-      disabled={!canRedo}
+      disabled={!canRedo || !onRedo}
       onClick={onRedo}
       aria-label="やり直す"
       className="text-sm text-gray-500 dark:text-gray-600 hover:text-teal-600 dark:hover:text-teal-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"

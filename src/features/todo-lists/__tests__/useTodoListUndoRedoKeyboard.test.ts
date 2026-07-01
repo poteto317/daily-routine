@@ -60,6 +60,32 @@ describe("useTodoListUndoRedoKeyboard", () => {
     expect(redo).not.toHaveBeenCalled();
   });
 
+  it("大文字 Z（Cmd+Z）でも undo が呼ばれる", () => {
+    renderHook(() => useTodoListUndoRedoKeyboard({ undo, redo }));
+    fireKeyDown("Z", { metaKey: true });
+    expect(undo).toHaveBeenCalledTimes(1);
+  });
+
+  it("大文字 Z + Shift（Cmd+Shift+Z）でも redo が呼ばれる", () => {
+    renderHook(() => useTodoListUndoRedoKeyboard({ undo, redo }));
+    fireKeyDown("Z", { metaKey: true, shiftKey: true });
+    expect(redo).toHaveBeenCalledTimes(1);
+  });
+
+  it("大文字 Y（Ctrl+Y）でも redo が呼ばれる", () => {
+    renderHook(() => useTodoListUndoRedoKeyboard({ undo, redo }));
+    fireKeyDown("Y", { ctrlKey: true });
+    expect(redo).toHaveBeenCalledTimes(1);
+  });
+
+  it("target が null のとき undo が呼ばれる（非HTMLElement は入力欄とみなさない）", () => {
+    renderHook(() => useTodoListUndoRedoKeyboard({ undo, redo }));
+    const event = new KeyboardEvent("keydown", { key: "z", metaKey: true, bubbles: true });
+    Object.defineProperty(event, "target", { value: null });
+    window.dispatchEvent(event);
+    expect(undo).toHaveBeenCalledTimes(1);
+  });
+
   it("input 要素がフォーカス中は undo を呼ばない", () => {
     renderHook(() => useTodoListUndoRedoKeyboard({ undo, redo }));
     const input = document.createElement("input");

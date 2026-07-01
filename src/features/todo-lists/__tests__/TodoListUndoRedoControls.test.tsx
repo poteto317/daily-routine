@@ -17,9 +17,14 @@ describe("TodoListUndoRedoControls", () => {
     expect(screen.getByRole("button", { name: "元に戻す" })).toBeDisabled();
   });
 
-  it("canUndo=true の時「元に戻す」ボタンが有効", () => {
-    render(<TodoListUndoRedoControls canUndo={true} />);
+  it("canUndo=true かつ onUndo 指定済みのとき「元に戻す」ボタンが有効", () => {
+    render(<TodoListUndoRedoControls canUndo={true} onUndo={jest.fn()} />);
     expect(screen.getByRole("button", { name: "元に戻す" })).not.toBeDisabled();
+  });
+
+  it("canUndo=true でも onUndo 未指定のとき「元に戻す」ボタンが disabled", () => {
+    render(<TodoListUndoRedoControls canUndo={true} />);
+    expect(screen.getByRole("button", { name: "元に戻す" })).toBeDisabled();
   });
 
   it("canRedo=false の時「やり直す」ボタンが disabled", () => {
@@ -27,9 +32,14 @@ describe("TodoListUndoRedoControls", () => {
     expect(screen.getByRole("button", { name: "やり直す" })).toBeDisabled();
   });
 
-  it("canRedo=true の時「やり直す」ボタンが有効", () => {
-    render(<TodoListUndoRedoControls canRedo={true} />);
+  it("canRedo=true かつ onRedo 指定済みのとき「やり直す」ボタンが有効", () => {
+    render(<TodoListUndoRedoControls canRedo={true} onRedo={jest.fn()} />);
     expect(screen.getByRole("button", { name: "やり直す" })).not.toBeDisabled();
+  });
+
+  it("canRedo=true でも onRedo 未指定のとき「やり直す」ボタンが disabled", () => {
+    render(<TodoListUndoRedoControls canRedo={true} />);
+    expect(screen.getByRole("button", { name: "やり直す" })).toBeDisabled();
   });
 
   it("props なしのデフォルト状態では両ボタンが disabled", () => {

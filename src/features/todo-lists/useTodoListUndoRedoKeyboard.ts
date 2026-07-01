@@ -12,17 +12,19 @@ export const useTodoListUndoRedoKeyboard = ({
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!(e.metaKey || e.ctrlKey)) return;
-      const target = e.target as HTMLElement;
+      const target = e.target;
       if (
-        target.tagName === "INPUT" ||
-        target.tagName === "TEXTAREA" ||
-        target.isContentEditable
+        target instanceof HTMLElement &&
+        (target.tagName === "INPUT" ||
+          target.tagName === "TEXTAREA" ||
+          target.isContentEditable)
       )
         return;
-      if (e.key === "z" && !e.shiftKey) {
+      const key = e.key.toLowerCase();
+      if (key === "z" && !e.shiftKey) {
         e.preventDefault();
         undo();
-      } else if ((e.key === "z" && e.shiftKey) || e.key === "y") {
+      } else if ((key === "z" && e.shiftKey) || key === "y") {
         e.preventDefault();
         redo();
       }

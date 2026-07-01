@@ -62,5 +62,10 @@ export function todoListHistoryReducer(
         future: state.future.slice(1),
       };
     }
+    default: {
+      const _exhaustiveCheck: never = action;
+      void _exhaustiveCheck;
+      return state;
+    }
   }
 }
