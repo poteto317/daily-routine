@@ -3,7 +3,7 @@ import { useTodoListUndoRedoKeyboard } from "../useTodoListUndoRedoKeyboard";
 
 const fireKeyDown = (
   key: string,
-  opts: { metaKey?: boolean; ctrlKey?: boolean; shiftKey?: boolean } = {},
+  opts: { metaKey?: boolean; ctrlKey?: boolean; shiftKey?: boolean; altKey?: boolean } = {},
   target: Element | null = null,
 ) => {
   const event = new KeyboardEvent("keydown", {
@@ -11,6 +11,7 @@ const fireKeyDown = (
     metaKey: opts.metaKey ?? false,
     ctrlKey: opts.ctrlKey ?? false,
     shiftKey: opts.shiftKey ?? false,
+    altKey: opts.altKey ?? false,
     bubbles: true,
   });
   // 要素が指定された場合はその要素から dispatch してバブリングで window に届かせる
@@ -128,6 +129,20 @@ describe("useTodoListUndoRedoKeyboard", () => {
       expect.any(Function),
     );
     removeEventListenerSpy.mockRestore();
+  });
+
+  it("AltGr（Ctrl+Alt+Z）では undo を呼ばない", () => {
+    renderHook(() => useTodoListUndoRedoKeyboard({ undo, redo }));
+    fireKeyDown("z", { ctrlKey: true, altKey: true });
+    expect(undo).not.toHaveBeenCalled();
+    expect(redo).not.toHaveBeenCalled();
+  });
+
+  it("AltGr（Ctrl+Alt+Shift+Z）では redo を呼ばない", () => {
+    renderHook(() => useTodoListUndoRedoKeyboard({ undo, redo }));
+    fireKeyDown("z", { ctrlKey: true, altKey: true, shiftKey: true });
+    expect(undo).not.toHaveBeenCalled();
+    expect(redo).not.toHaveBeenCalled();
   });
 
   it("undo/redo の参照が変わっても最新の関数が呼ばれる", () => {

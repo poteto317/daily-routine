@@ -11,7 +11,7 @@ export const useTodoListUndoRedoKeyboard = ({
 }: UseTodoListUndoRedoKeyboardParams): void => {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (!(e.metaKey || e.ctrlKey)) return;
+      if (!(e.metaKey || e.ctrlKey) || e.altKey) return;
       const target = e.target;
       if (
         target instanceof HTMLElement &&
