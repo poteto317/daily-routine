@@ -137,6 +137,38 @@ describe("useTodoListHistory", () => {
     });
   });
 
+  describe("関数の参照安定性", () => {
+    it("state が変化しないとき undo の参照が変わらない", () => {
+      const saveLists = jest.fn();
+      const { result, rerender } = renderHook(() =>
+        useTodoListHistory({ getInitialLists: () => [listA], saveLists }),
+      );
+      const undo1 = result.current.undo;
+      rerender();
+      expect(result.current.undo).toBe(undo1);
+    });
+
+    it("state が変化しないとき redo の参照が変わらない", () => {
+      const saveLists = jest.fn();
+      const { result, rerender } = renderHook(() =>
+        useTodoListHistory({ getInitialLists: () => [listA], saveLists }),
+      );
+      const redo1 = result.current.redo;
+      rerender();
+      expect(result.current.redo).toBe(redo1);
+    });
+
+    it("persist 後は history が変わるため undo の参照が更新される", () => {
+      const saveLists = jest.fn();
+      const { result } = renderHook(() =>
+        useTodoListHistory({ getInitialLists: () => [listA], saveLists }),
+      );
+      const undo1 = result.current.undo;
+      act(() => { result.current.persist([listA, listB]); });
+      expect(result.current.undo).not.toBe(undo1);
+    });
+  });
+
   describe("複合操作", () => {
     it("undo 後に新たな persist で future がクリアされる", () => {
       const { result } = renderHistory();

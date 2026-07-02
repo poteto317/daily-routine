@@ -29,19 +29,22 @@ export const useTodoListHistory = ({
     saveLists(next);
   }, [saveLists]);
 
-  const undo = () => {
+  // getPrevState/getNextState に history オブジェクト全体を渡すため
+  // React Compiler は history を依存として推論する。history.past/future を
+  // 個別に指定すると Compiler の推論と不一致でエラーになるため history 全体を dep にする
+  const undo = useCallback(() => {
     const prev = getPrevState(history);
     if (!prev) return;
     dispatch({ type: "UNDO" });
     saveLists(prev);
-  };
+  }, [history, saveLists]);
 
-  const redo = () => {
+  const redo = useCallback(() => {
     const next = getNextState(history);
     if (!next) return;
     dispatch({ type: "REDO" });
     saveLists(next);
-  };
+  }, [history, saveLists]);
 
   return {
     lists: history.present,
