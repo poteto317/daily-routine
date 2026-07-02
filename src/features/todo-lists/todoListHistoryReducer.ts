@@ -34,7 +34,7 @@ export const getNextState = (state: HistoryState): TodoList[] | null =>
   state.future.length > 0 ? state.future[0] : null;
 
 // lists.map() は常に新配列を返すため、要素参照がすべて同一の no-op を履歴から除外する
-const isNoOpPersist = (prev: TodoList[], next: TodoList[]): boolean =>
+export const isNoOpPersist = (prev: TodoList[], next: TodoList[]): boolean =>
   prev.length === next.length && next.every((list, i) => list === prev[i]);
 
 export function todoListHistoryReducer(

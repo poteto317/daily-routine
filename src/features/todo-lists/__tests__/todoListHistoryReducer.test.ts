@@ -5,6 +5,7 @@ import {
   isRedoable,
   getPrevState,
   getNextState,
+  isNoOpPersist,
   MAX_HISTORY,
   type HistoryState,
 } from "../todoListHistoryReducer";
@@ -326,5 +327,35 @@ describe("getNextState", () => {
       future: [[listB], [listC]],
     };
     expect(getNextState(state)).toEqual([listB]);
+  });
+});
+
+describe("isNoOpPersist", () => {
+  it("同じ要素参照・同じ順序のとき true を返す", () => {
+    expect(isNoOpPersist([listA, listB], [listA, listB])).toBe(true);
+  });
+
+  it("要素参照が同一でも順序が異なれば false を返す", () => {
+    expect(isNoOpPersist([listA, listB], [listB, listA])).toBe(false);
+  });
+
+  it("要素数が異なれば false を返す", () => {
+    expect(isNoOpPersist([listA], [listA, listB])).toBe(false);
+    expect(isNoOpPersist([listA, listB], [listA])).toBe(false);
+  });
+
+  it("内容が同じでも参照が異なれば false を返す", () => {
+    const listACopy = { ...listA };
+    expect(isNoOpPersist([listA], [listACopy])).toBe(false);
+  });
+
+  it("空配列どうしは true を返す", () => {
+    expect(isNoOpPersist([], [])).toBe(true);
+  });
+
+  it("lists.map() が返す新配列（全要素同一参照）は true を返す", () => {
+    const original = [listA, listB];
+    const mappedSame = original.map((l) => l);
+    expect(isNoOpPersist(original, mappedSame)).toBe(true);
   });
 });

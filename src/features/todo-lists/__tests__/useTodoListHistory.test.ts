@@ -44,6 +44,37 @@ describe("useTodoListHistory", () => {
       act(() => { result.current.persist([listA, listB]); });
       expect(saveLists).toHaveBeenCalledWith([listA, listB]);
     });
+
+    describe("no-op スキップ", () => {
+      it("全要素参照が同一の配列を persist しても saveLists が呼ばれない", () => {
+        const saveLists = jest.fn();
+        const { result } = renderHistory([listA], saveLists);
+        act(() => { result.current.persist([listA]); });
+        expect(saveLists).not.toHaveBeenCalled();
+      });
+
+      it("全要素参照が同一の配列を persist しても canUndo が true にならない", () => {
+        const { result } = renderHistory([listA]);
+        act(() => { result.current.persist([listA]); });
+        expect(result.current.canUndo).toBe(false);
+      });
+
+      it("lists.map() が返す新配列（全要素同一参照）を persist しても saveLists が呼ばれない", () => {
+        const saveLists = jest.fn();
+        const { result } = renderHistory([listA, listB], saveLists);
+        const mappedSame = [listA, listB].map((l) => l);
+        act(() => { result.current.persist(mappedSame); });
+        expect(saveLists).not.toHaveBeenCalled();
+      });
+
+      it("要素参照が変化した場合は saveLists が呼ばれる", () => {
+        const saveLists = jest.fn();
+        const { result } = renderHistory([listA], saveLists);
+        const updatedListA = { ...listA, title: "Updated" };
+        act(() => { result.current.persist([updatedListA]); });
+        expect(saveLists).toHaveBeenCalledWith([updatedListA]);
+      });
+    });
   });
 
   describe("undo", () => {

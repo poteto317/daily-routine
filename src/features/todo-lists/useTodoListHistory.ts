@@ -7,6 +7,7 @@ import {
   isRedoable,
   getPrevState,
   getNextState,
+  isNoOpPersist,
 } from "./todoListHistoryReducer";
 
 type UseTodoListHistoryParams = {
@@ -25,9 +26,10 @@ export const useTodoListHistory = ({
   );
 
   const persist = useCallback((next: TodoList[]) => {
+    if (isNoOpPersist(history.present, next)) return;
     dispatch({ type: "PERSIST", payload: next });
     saveLists(next);
-  }, [saveLists]);
+  }, [history, saveLists]);
 
   // getPrevState/getNextState に history オブジェクト全体を渡すため
   // React Compiler は history を依存として推論する。history.past/future を
