@@ -27,7 +27,7 @@ export const useTodoListHistory = ({
 
   // キーリピート等で同一レンダー内に複数回呼ばれても最新の履歴を参照するためのミラー ref。
   // render 中は current を読み書きせず、persist/undo/redo callbacks 内でのみ更新する。
-  const historyRef = useRef(createInitialHistoryState(getInitialLists));
+  const historyRef = useRef(history);
 
   const persist = useCallback((next: TodoList[]) => {
     if (isNoOpPersist(historyRef.current.present, next)) return;

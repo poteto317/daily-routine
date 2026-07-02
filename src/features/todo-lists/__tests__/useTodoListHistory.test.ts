@@ -74,6 +74,20 @@ describe("useTodoListHistory", () => {
         act(() => { result.current.persist([updatedListA]); });
         expect(saveLists).toHaveBeenCalledWith([updatedListA]);
       });
+
+      it("getInitialLists が呼ばれるたびに新しいオブジェクト参照を返す場合でも初期 lists の persist は no-op になる", () => {
+        // localStorage 復元のように毎回異なるオブジェクト参照を返すシミュレーション。
+        // historyRef が useReducer と別に getInitialLists() を呼ぶと present の要素参照が
+        // 不一致となり isNoOpPersist が false を返してしまうバグを検証する。
+        const saveLists = jest.fn();
+        const getInitialLists = () => [{ ...listA }];
+        const { result } = renderHook(() =>
+          useTodoListHistory({ getInitialLists, saveLists }),
+        );
+        act(() => { result.current.persist(result.current.lists); });
+        expect(saveLists).not.toHaveBeenCalled();
+        expect(result.current.canUndo).toBe(false);
+      });
     });
   });
 
