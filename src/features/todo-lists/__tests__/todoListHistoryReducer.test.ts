@@ -41,6 +41,60 @@ describe("todoListHistoryReducer", () => {
   });
 
   describe("PERSIST", () => {
+    describe("no-op スキップ（shallow-equal チェック）", () => {
+      it("同一参照のリスト配列を PERSIST すると状態が変化しない（同一参照を返す）", () => {
+        const state = initialState();
+        // lists.map() が new array を返しても要素参照が同じ場合は no-op
+        const sameElements = [...state.present];
+        const next = todoListHistoryReducer(state, { type: "PERSIST", payload: sameElements });
+        expect(next).toBe(state);
+      });
+
+      it("no-op PERSIST では canUndo が true にならない", () => {
+        const state = initialState();
+        const next = todoListHistoryReducer(state, {
+          type: "PERSIST",
+          payload: [...state.present],
+        });
+        expect(next.past).toHaveLength(0);
+      });
+
+      it("要素数が変わった場合は通常の PERSIST として履歴に積む", () => {
+        const state = initialState();
+        const next = todoListHistoryReducer(state, {
+          type: "PERSIST",
+          payload: [listA, listB],
+        });
+        expect(next).not.toBe(state);
+        expect(next.past).toHaveLength(1);
+      });
+
+      it("同じ要素数でも要素参照が異なれば履歴に積む", () => {
+        const state = initialState();
+        const updatedListA = { ...listA, title: "Updated" };
+        const next = todoListHistoryReducer(state, {
+          type: "PERSIST",
+          payload: [updatedListA],
+        });
+        expect(next).not.toBe(state);
+        expect(next.past).toHaveLength(1);
+      });
+
+      it("future が残っている状態で no-op PERSIST しても future が保持される", () => {
+        const state: HistoryState = {
+          past: [],
+          present: [listA],
+          future: [[listB]],
+        };
+        const next = todoListHistoryReducer(state, {
+          type: "PERSIST",
+          payload: [...state.present],
+        });
+        expect(next).toBe(state);
+        expect(next.future).toEqual([[listB]]);
+      });
+    });
+
     it("present を past に積み、新しい present をセットし、future をクリアする", () => {
       const state = initialState();
       const next = todoListHistoryReducer(state, {
