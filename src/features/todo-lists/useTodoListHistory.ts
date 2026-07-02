@@ -1,4 +1,4 @@
-import { useCallback, useReducer } from "react";
+import { useCallback, useReducer, useRef } from "react";
 import type { TodoList } from "./types";
 import {
   todoListHistoryReducer,
@@ -25,28 +25,32 @@ export const useTodoListHistory = ({
     () => createInitialHistoryState(getInitialLists),
   );
 
+  // キーリピート等で同一レンダー内に複数回呼ばれても最新の履歴を参照するためのミラー ref。
+  // render 中は current を読み書きせず、persist/undo/redo callbacks 内でのみ更新する。
+  const historyRef = useRef(createInitialHistoryState(getInitialLists));
+
   const persist = useCallback((next: TodoList[]) => {
-    if (isNoOpPersist(history.present, next)) return;
+    if (isNoOpPersist(historyRef.current.present, next)) return;
+    historyRef.current = todoListHistoryReducer(historyRef.current, { type: "PERSIST", payload: next });
     dispatch({ type: "PERSIST", payload: next });
     saveLists(next);
-  }, [history, saveLists]);
+  }, [saveLists]);
 
-  // getPrevState/getNextState に history オブジェクト全体を渡すため
-  // React Compiler は history を依存として推論する。history.past/future を
-  // 個別に指定すると Compiler の推論と不一致でエラーになるため history 全体を dep にする
   const undo = useCallback(() => {
-    const prev = getPrevState(history);
+    const prev = getPrevState(historyRef.current);
     if (!prev) return;
+    historyRef.current = todoListHistoryReducer(historyRef.current, { type: "UNDO" });
     dispatch({ type: "UNDO" });
     saveLists(prev);
-  }, [history, saveLists]);
+  }, [saveLists]);
 
   const redo = useCallback(() => {
-    const next = getNextState(history);
+    const next = getNextState(historyRef.current);
     if (!next) return;
+    historyRef.current = todoListHistoryReducer(historyRef.current, { type: "REDO" });
     dispatch({ type: "REDO" });
     saveLists(next);
-  }, [history, saveLists]);
+  }, [saveLists]);
 
   return {
     lists: history.present,

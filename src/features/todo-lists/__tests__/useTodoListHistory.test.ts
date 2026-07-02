@@ -169,7 +169,7 @@ describe("useTodoListHistory", () => {
   });
 
   describe("関数の参照安定性", () => {
-    it("state が変化しないとき undo の参照が変わらない", () => {
+    it("undo の参照は再レンダーをまたいでも常に安定している", () => {
       const saveLists = jest.fn();
       const { result, rerender } = renderHook(() =>
         useTodoListHistory({ getInitialLists: () => [listA], saveLists }),
@@ -179,7 +179,7 @@ describe("useTodoListHistory", () => {
       expect(result.current.undo).toBe(undo1);
     });
 
-    it("state が変化しないとき redo の参照が変わらない", () => {
+    it("redo の参照は再レンダーをまたいでも常に安定している", () => {
       const saveLists = jest.fn();
       const { result, rerender } = renderHook(() =>
         useTodoListHistory({ getInitialLists: () => [listA], saveLists }),
@@ -189,14 +189,72 @@ describe("useTodoListHistory", () => {
       expect(result.current.redo).toBe(redo1);
     });
 
-    it("persist 後は history が変わるため undo の参照が更新される", () => {
+    it("history が変化した後も undo の参照が変わらない（historyRef で追跡するため）", () => {
       const saveLists = jest.fn();
       const { result } = renderHook(() =>
         useTodoListHistory({ getInitialLists: () => [listA], saveLists }),
       );
       const undo1 = result.current.undo;
       act(() => { result.current.persist([listA, listB]); });
-      expect(result.current.undo).not.toBe(undo1);
+      expect(result.current.undo).toBe(undo1);
+    });
+  });
+
+  describe("同一 tick 内の複数呼び出し", () => {
+    it("undo を 2 回連続呼ぶと saveLists が異なる値で 2 回呼ばれる", () => {
+      const saveLists = jest.fn();
+      const { result } = renderHook(() =>
+        useTodoListHistory({ getInitialLists: () => [listA], saveLists }),
+      );
+      act(() => { result.current.persist([listA, listB]); });
+      act(() => { result.current.persist([listA, listB, listC]); });
+      saveLists.mockClear();
+
+      act(() => {
+        result.current.undo();
+        result.current.undo();
+      });
+
+      expect(saveLists).toHaveBeenCalledTimes(2);
+      expect(saveLists.mock.calls[0][0]).toEqual([listA, listB]);
+      expect(saveLists.mock.calls[1][0]).toEqual([listA]);
+    });
+
+    it("persist を 2 回連続呼ぶと 2 回目は更新済みの present を基準に no-op 判定する", () => {
+      const saveLists = jest.fn();
+      const { result } = renderHook(() =>
+        useTodoListHistory({ getInitialLists: () => [listA], saveLists }),
+      );
+
+      act(() => {
+        result.current.persist([listA, listB]);
+        // [listA, listB] が present になった後、同じ値での persist は no-op になる
+        result.current.persist([listA, listB]);
+      });
+
+      expect(saveLists).toHaveBeenCalledTimes(1);
+      expect(saveLists).toHaveBeenCalledWith([listA, listB]);
+    });
+
+    it("redo を 2 回連続呼ぶと saveLists が異なる値で 2 回呼ばれる", () => {
+      const saveLists = jest.fn();
+      const { result } = renderHook(() =>
+        useTodoListHistory({ getInitialLists: () => [listA], saveLists }),
+      );
+      act(() => { result.current.persist([listA, listB]); });
+      act(() => { result.current.persist([listA, listB, listC]); });
+      act(() => { result.current.undo(); });
+      act(() => { result.current.undo(); });
+      saveLists.mockClear();
+
+      act(() => {
+        result.current.redo();
+        result.current.redo();
+      });
+
+      expect(saveLists).toHaveBeenCalledTimes(2);
+      expect(saveLists.mock.calls[0][0]).toEqual([listA, listB]);
+      expect(saveLists.mock.calls[1][0]).toEqual([listA, listB, listC]);
     });
   });
 
