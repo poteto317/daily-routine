@@ -10,7 +10,7 @@ export const notifyRemoteChange = (): void => {
   try {
     new Notification(texts.syncNotification.title, {
       body: texts.syncNotification.body,
-      icon: "/icon-192x192.png",
+      icon: "/icon-192.png",
       tag: "sync-notification",
     });
   } catch {

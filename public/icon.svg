@@ -1,4 +1,10 @@
 <svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
   <rect width="512" height="512" fill="#2563eb"/>
-  <text x="256" y="320" font-family="Arial, sans-serif" font-size="200" fill="white" text-anchor="middle">📅</text>
+  <rect x="171" y="134" width="25" height="68" rx="12.5" fill="#ffffff"/>
+  <rect x="315" y="134" width="25" height="68" rx="12.5" fill="#ffffff"/>
+  <rect x="121" y="166" width="270" height="234" rx="25" fill="#ffffff"/>
+  <rect x="135" y="180" width="241" height="29" rx="7" fill="#2563eb"/>
+  <rect x="150" y="242" width="212" height="23" rx="11.5" fill="#2563eb"/>
+  <rect x="150" y="288" width="212" height="23" rx="11.5" fill="#2563eb"/>
+  <rect x="150" y="335" width="162" height="23" rx="11.5" fill="#2563eb"/>
 </svg>
