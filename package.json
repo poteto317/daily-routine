@@ -5,6 +5,8 @@
   "scripts": {
     "clean": "node -e \"require('fs').rmSync('.next', {recursive: true, force: true})\"",
     "generate:fcm-sw": "node tools/generate-firebase-messaging-sw.mjs",
+    "generate:icons": "node tools/generate-icons.mjs",
+    "verify:icons": "node tools/verify-icons-in-sync.mjs",
     "dev": "npm run generate:fcm-sw && next dev --webpack",
     "build": "npm run generate:fcm-sw && next build --webpack",
     "start": "npm run generate:fcm-sw && next start",
@@ -56,6 +58,7 @@
     "jest": "^30.2.0",
     "jest-environment-jsdom": "^30.2.0",
     "prettier": "^3.8.1",
+    "sharp": "^0.34.5",
     "storybook": "^10.4.0",
     "tailwindcss": "^4",
     "terser-webpack-plugin": "^5.3.16",

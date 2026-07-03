@@ -1,10 +1,8 @@
 import type { Dispatch, SetStateAction } from "react";
 import type { TimerState } from "./pomodoroDisplay";
-import {
-  getCompletionTransition,
-  notifyTimerCompletion,
-  playTimerCompletionSound,
-} from "./pomodoroTimerHelpers";
+import { getCompletionTransition } from "./pomodoroCompletionTransition";
+import { notifyTimerCompletion } from "./pomodoroCompletionNotification";
+import { playTimerCompletionSound } from "./pomodoroCompletionSound";
 
 type SetBoolean = Dispatch<SetStateAction<boolean>>;
 type SetNumber = Dispatch<SetStateAction<number>>;

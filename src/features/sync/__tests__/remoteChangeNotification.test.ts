@@ -70,7 +70,7 @@ describe("notifyRemoteChange", () => {
       expect.objectContaining({
         body: "他の端末でデータが更新されました。設定画面から同期してください。",
         tag: "sync-notification",
-        icon: "/icon-192x192.png",
+        icon: "/icon-192.png",
       }),
     );
   });

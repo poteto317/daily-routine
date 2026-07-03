@@ -5,21 +5,23 @@ import {
   createStartTimerState,
 } from "../pomodoroTimerActions";
 
-jest.mock("../pomodoroTimerHelpers", () => ({
+jest.mock("../pomodoroCompletionTransition", () => ({
   getCompletionTransition: jest.fn(() => ({
     nextState: "break",
     nextTimeLeft: 300,
     shouldIncrementPomodoros: true,
   })),
+}));
+jest.mock("../pomodoroCompletionNotification", () => ({
   notifyTimerCompletion: jest.fn(),
+}));
+jest.mock("../pomodoroCompletionSound", () => ({
   playTimerCompletionSound: jest.fn(),
 }));
 
-import {
-  getCompletionTransition,
-  notifyTimerCompletion,
-  playTimerCompletionSound,
-} from "../pomodoroTimerHelpers";
+import { getCompletionTransition } from "../pomodoroCompletionTransition";
+import { notifyTimerCompletion } from "../pomodoroCompletionNotification";
+import { playTimerCompletionSound } from "../pomodoroCompletionSound";
 
 describe("pomodoroTimerActions", () => {
   beforeEach(() => {
