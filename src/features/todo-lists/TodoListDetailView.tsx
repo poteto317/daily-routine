@@ -1,23 +1,15 @@
 "use client";
 
 import { CardPanel } from "@/components";
+import type { ReactNode } from "react";
 import type { TodoItemBgColorValue, TodoList, TodoListItem } from "./types";
 import { TodoListHeader } from "./TodoListHeader";
 import { TodoListProgressBar } from "./TodoListProgressBar";
 import { TodoListToolbar } from "./TodoListToolbar";
-import { TodoListSelectionBar } from "./TodoListSelectionBar";
-import { TodoListClipboardBar } from "./TodoListClipboardBar";
+import { TodoListActionStatusBar } from "./TodoListActionStatusBar";
 import { TodoListAddForm } from "./TodoListAddForm";
 import { TodoListSortableItems } from "./TodoListSortableItems";
-import { useCallback, useEffect } from "react";
-import {
-  useTodoListDetailViewState,
-} from "./useTodoListDetailViewState";
-import { useTodoListDetailSelection } from "./useTodoListDetailSelection";
-import { useColorPickerController } from "./useColorPickerController";
-import { useMobileActionMenuController } from "./useMobileActionMenuController";
-import { useTodoListDragAndDrop } from "./useTodoListDragAndDrop";
-import { useTodoListInlineInsert } from "./useTodoListInlineInsert";
+import { useTodoListDetailViewComposition } from "./useTodoListDetailViewComposition";
 
 export type TodoListDetailViewProps = {
   list: TodoList;
@@ -45,12 +37,9 @@ export type TodoListDetailViewProps = {
   onSetClipboard: (items: TodoListItem[]) => void;
   onClearClipboard: () => void;
   onUpdateListAddItemPosition: (listId: string, position: "last" | "first") => void;
+  historyControls?: ReactNode;
 };
 
-/**
- * Todo リスト詳細ビュー。
- * 各サブコンポーネントと hooks を組み合わせるコーディネーター。
- */
 export const TodoListDetailView = ({
   list,
   clipboardItems,
@@ -70,32 +59,41 @@ export const TodoListDetailView = ({
   onSetClipboard,
   onClearClipboard,
   onUpdateListAddItemPosition,
+  historyControls,
 }: TodoListDetailViewProps) => {
+  const { selection, hasClipboard, viewState, uiControllers, interactionMode, toolbar } =
+    useTodoListDetailViewComposition({
+      list,
+      clipboardItems,
+      onAddItem,
+      onUpdateItemTitle,
+      onUpdateListTitle,
+      onCutItems,
+      onPasteItems,
+      onSetClipboard,
+      onClearClipboard,
+      onReorderItems,
+      onUpdateAllItemsBgColor,
+      onUpdateListAddItemPosition,
+    });
+
   const {
+    hasSelection,
     selectedItemIds,
     toggleSelectItem,
-    clearSelection,
-    hasSelection,
     handleCut,
     handlePaste,
-  } = useTodoListDetailSelection({
-    listId: list.id,
-    clipboardItems,
-    onCutItems,
-    onPasteItems,
-    onSetClipboard,
-    onClearClipboard,
-  });
+    clearSelection,
+  } = selection;
 
-  const hasClipboard = clipboardItems.length > 0;
   const {
+    hideCompleted,
+    moveCompletedToBottom,
     collapsedItemIds,
     editingItemId,
     editingItemTitle,
     editingListTitle,
     editingListTitleValue,
-    hideCompleted,
-    moveCompletedToBottom,
     inputRef,
     inputText,
     listTitleInputRef,
@@ -114,60 +112,35 @@ export const TodoListDetailView = ({
     toggleCollapseItem,
     toggleHideCompleted,
     toggleMoveCompletedToBottom,
-  } = useTodoListDetailViewState({
-    list,
-    onAddItem,
-    onUpdateItemTitle,
-    onUpdateListTitle,
-  });
+  } = viewState;
 
   const {
-    colorPickerItemId,
-    showBulkColorPicker,
-    toggleItemColorPicker,
-    closeItemColorPicker,
-    toggleBulkColorPicker,
-    closeBulkColorPicker,
-  } = useColorPickerController();
+    colorPicker: {
+      colorPickerItemId,
+      showBulkColorPicker,
+      toggleItemColorPicker,
+      closeItemColorPicker,
+      toggleBulkColorPicker,
+      closeBulkColorPicker,
+    },
+    mobileMenu: { mobileMenuItemId, toggleMobileMenu, closeMobileMenu },
+  } = uiControllers;
 
   const {
-    mobileMenuItemId,
-    toggleMobileMenu,
-    closeMobileMenu,
-  } = useMobileActionMenuController();
+    inlineInsert: {
+      insertAfterId,
+      inlineInputText,
+      setInlineInputText,
+      openInlineInsert,
+      closeInlineInsert,
+      handleInlineAdd,
+    },
+    dnd: { activeId, sensors, handleDragStart, handleDragEnd, handleDragCancel },
+    activeItem,
+  } = interactionMode;
 
-  const {
-    insertAfterId,
-    inlineInputText,
-    setInlineInputText,
-    openInlineInsert,
-    closeInlineInsert,
-    handleInlineAdd,
-  } = useTodoListInlineInsert({ listId: list.id, onAddItem });
-
-  const {
-    activeId,
-    sensors,
-    handleDragStart,
-    handleDragEnd,
-    handleDragCancel,
-  } = useTodoListDragAndDrop({
-    items: list.items,
-    listId: list.id,
-    onReorderItems,
-    onDragStarted: closeInlineInsert,
-    disabled: moveCompletedToBottom && !hideCompleted,
-  });
-
-  // ソートビュー有効時（かつ hideCompleted=false）は表示順とデータ順が乖離するため、既存のインライン挿入フォームを閉じる
-  useEffect(() => {
-    if (moveCompletedToBottom && !hideCompleted) closeInlineInsert();
-  }, [moveCompletedToBottom, hideCompleted, closeInlineInsert]);
-
-  // moveCompletedToBottom=true 時はインライン挿入を封じる安定参照の no-op
-  const noOpOpenInlineInsert = useCallback(() => {}, []);
-
-  const activeItem = list.items.find((i) => i.id === activeId) ?? null;
+  const { hasCompletedItems, handleUpdateAllItemsBgColor, handleToggleAddItemPosition } =
+    toolbar;
 
   return (
     <div className="min-h-screen bg-linear-to-br from-teal-50 to-cyan-100 dark:from-slate-400 dark:to-slate-300">
@@ -197,34 +170,26 @@ export const TodoListDetailView = ({
             hideCompleted={hideCompleted}
             moveCompletedToBottom={moveCompletedToBottom}
             showBulkColorPicker={showBulkColorPicker}
-            hasCompletedItems={list.items.some((item) => item.isCompleted)}
+            hasCompletedItems={hasCompletedItems}
             onToggleBulkColorPicker={toggleBulkColorPicker}
             onCloseBulkColorPicker={closeBulkColorPicker}
-            onUpdateAllItemsBgColor={(bgColor) =>
-              onUpdateAllItemsBgColor(list.id, bgColor)
-            }
-            onToggleListAddItemPosition={(nextPosition) =>
-              onUpdateListAddItemPosition(list.id, nextPosition)
-            }
+            onUpdateAllItemsBgColor={handleUpdateAllItemsBgColor}
+            onToggleListAddItemPosition={handleToggleAddItemPosition}
             onToggleHideCompleted={toggleHideCompleted}
             onToggleMoveCompletedToBottom={toggleMoveCompletedToBottom}
+            historyControls={historyControls}
           />
 
-          {hasSelection && (
-            <TodoListSelectionBar
-              selectedCount={selectedItemIds.size}
-              onCut={handleCut}
-              onClearSelection={clearSelection}
-            />
-          )}
-
-          {hasClipboard && !hasSelection && (
-            <TodoListClipboardBar
-              clipboardCount={clipboardItems.length}
-              onPaste={handlePaste}
-              onClearClipboard={onClearClipboard}
-            />
-          )}
+          <TodoListActionStatusBar
+            hasSelection={hasSelection}
+            hasClipboard={hasClipboard}
+            selectedCount={selectedItemIds.size}
+            clipboardCount={clipboardItems.length}
+            onCut={handleCut}
+            onClearSelection={clearSelection}
+            onPaste={handlePaste}
+            onClearClipboard={onClearClipboard}
+          />
 
           <TodoListSortableItems
             list={list}
@@ -243,7 +208,7 @@ export const TodoListDetailView = ({
             onSetInlineInputText={setInlineInputText}
             onHandleInlineAdd={handleInlineAdd}
             onCloseInlineInsert={closeInlineInsert}
-            onOpenInlineInsert={(moveCompletedToBottom && !hideCompleted) ? noOpOpenInlineInsert : openInlineInsert}
+            onOpenInlineInsert={openInlineInsert}
             editingItemId={editingItemId}
             editingItemTitle={editingItemTitle}
             setEditingItemTitle={setEditingItemTitle}

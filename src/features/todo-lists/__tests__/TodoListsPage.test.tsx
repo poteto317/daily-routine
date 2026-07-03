@@ -1230,4 +1230,132 @@ describe("TodoListsPage", () => {
       });
     });
   });
+
+  // ============================================================
+  // Undo / Redo
+  // ============================================================
+  describe("Undo / Redo", () => {
+    it("初期状態では「元に戻す」「やり直す」ボタンが disabled", () => {
+      mockGetTodoLists.mockReturnValue([baseList]);
+      mockGetSelectedTodoListId.mockReturnValue("list-1");
+
+      render(<TodoListsPage />);
+
+      expect(screen.getByRole("button", { name: "元に戻す" })).toBeDisabled();
+      expect(screen.getByRole("button", { name: "やり直す" })).toBeDisabled();
+    });
+
+    it("Todo追加後に「元に戻す」ボタンが有効になる", async () => {
+      mockGetTodoLists.mockReturnValue([baseList]);
+      mockGetSelectedTodoListId.mockReturnValue("list-1");
+
+      render(<TodoListsPage />);
+
+      fireEvent.change(screen.getByPlaceholderText("Todoを追加..."), {
+        target: { value: "Undo Target" },
+      });
+      fireEvent.click(screen.getByText("追加"));
+
+      await waitFor(() => {
+        expect(screen.getByText("Undo Target")).toBeInTheDocument();
+      });
+
+      expect(screen.getByRole("button", { name: "元に戻す" })).not.toBeDisabled();
+      expect(screen.getByRole("button", { name: "やり直す" })).toBeDisabled();
+    });
+
+    it("「元に戻す」ボタンクリックで追加操作が取り消される", async () => {
+      mockGetTodoLists.mockReturnValue([baseList]);
+      mockGetSelectedTodoListId.mockReturnValue("list-1");
+
+      render(<TodoListsPage />);
+
+      fireEvent.change(screen.getByPlaceholderText("Todoを追加..."), {
+        target: { value: "Undo Target" },
+      });
+      fireEvent.click(screen.getByText("追加"));
+
+      await waitFor(() => {
+        expect(screen.getByText("Undo Target")).toBeInTheDocument();
+      });
+
+      fireEvent.click(screen.getByRole("button", { name: "元に戻す" }));
+
+      await waitFor(() => {
+        expect(screen.queryByText("Undo Target")).toBeNull();
+      });
+      expect(screen.getByRole("button", { name: "元に戻す" })).toBeDisabled();
+      expect(screen.getByRole("button", { name: "やり直す" })).not.toBeDisabled();
+    });
+
+    it("「やり直す」ボタンクリックで取り消した操作を再実行できる", async () => {
+      mockGetTodoLists.mockReturnValue([baseList]);
+      mockGetSelectedTodoListId.mockReturnValue("list-1");
+
+      render(<TodoListsPage />);
+
+      fireEvent.change(screen.getByPlaceholderText("Todoを追加..."), {
+        target: { value: "Redo Target" },
+      });
+      fireEvent.click(screen.getByText("追加"));
+
+      await waitFor(() => expect(screen.getByText("Redo Target")).toBeInTheDocument());
+
+      fireEvent.click(screen.getByRole("button", { name: "元に戻す" }));
+      await waitFor(() => expect(screen.queryByText("Redo Target")).toBeNull());
+
+      fireEvent.click(screen.getByRole("button", { name: "やり直す" }));
+
+      await waitFor(() => expect(screen.getByText("Redo Target")).toBeInTheDocument());
+      expect(screen.getByRole("button", { name: "元に戻す" })).not.toBeDisabled();
+      expect(screen.getByRole("button", { name: "やり直す" })).toBeDisabled();
+    });
+
+    it("Cmd+Z キーボードショートカットで元に戻せる", async () => {
+      mockGetTodoLists.mockReturnValue([baseList]);
+      mockGetSelectedTodoListId.mockReturnValue("list-1");
+
+      render(<TodoListsPage />);
+
+      fireEvent.change(screen.getByPlaceholderText("Todoを追加..."), {
+        target: { value: "Keyboard Undo" },
+      });
+      fireEvent.click(screen.getByText("追加"));
+
+      await waitFor(() =>
+        expect(screen.getByText("Keyboard Undo")).toBeInTheDocument(),
+      );
+
+      fireEvent.keyDown(window, { key: "z", metaKey: true });
+
+      await waitFor(() =>
+        expect(screen.queryByText("Keyboard Undo")).toBeNull(),
+      );
+    });
+
+    it("Cmd+Shift+Z キーボードショートカットでやり直せる", async () => {
+      mockGetTodoLists.mockReturnValue([baseList]);
+      mockGetSelectedTodoListId.mockReturnValue("list-1");
+
+      render(<TodoListsPage />);
+
+      fireEvent.change(screen.getByPlaceholderText("Todoを追加..."), {
+        target: { value: "Keyboard Redo" },
+      });
+      fireEvent.click(screen.getByText("追加"));
+
+      await waitFor(() =>
+        expect(screen.getByText("Keyboard Redo")).toBeInTheDocument(),
+      );
+
+      fireEvent.keyDown(window, { key: "z", metaKey: true });
+      await waitFor(() => expect(screen.queryByText("Keyboard Redo")).toBeNull());
+
+      fireEvent.keyDown(window, { key: "z", metaKey: true, shiftKey: true });
+
+      await waitFor(() =>
+        expect(screen.getByText("Keyboard Redo")).toBeInTheDocument(),
+      );
+    });
+  });
 });

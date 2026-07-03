@@ -1,15 +1,11 @@
-import { useState } from "react";
-import type { TodoList } from "./types";
 import { getTodoLists } from "./storage";
 import { findTodoListById } from "./selectors";
-import { createPersistTodoListsAction } from "./todoListDetailPersistActions";
+import { useTodoListHistory } from "./useTodoListHistory";
+import { saveTodoListsToLocal } from "./sync";
 
 export const useTodoListDetailDataState = (listId: string) => {
-  const [lists, setLists] = useState<TodoList[]>(() => getTodoLists());
-
-  const persist = createPersistTodoListsAction({
-    setLists,
-  });
+  const { lists, persist, undo, redo, canUndo, canRedo } =
+    useTodoListHistory({ getInitialLists: getTodoLists, saveLists: saveTodoListsToLocal });
 
   const list = findTodoListById(lists, listId);
 
@@ -17,5 +13,9 @@ export const useTodoListDetailDataState = (listId: string) => {
     list,
     lists,
     persist,
+    undo,
+    redo,
+    canUndo,
+    canRedo,
   };
 };

@@ -1,0 +1,336 @@
+import { render, screen } from "@testing-library/react";
+
+jest.mock("../useTodoListDetailViewComposition", () => ({
+  useTodoListDetailViewComposition: jest.fn(),
+}));
+
+jest.mock("@/components", () => ({
+  CardPanel: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+}));
+
+jest.mock("../TodoListHeader", () => ({
+  TodoListHeader: jest.fn(() => <div data-testid="list-header" />),
+}));
+
+jest.mock("../TodoListProgressBar", () => ({
+  TodoListProgressBar: jest.fn(() => <div data-testid="progress-bar" />),
+}));
+
+jest.mock("../TodoListToolbar", () => ({
+  TodoListToolbar: jest.fn(({ historyControls }: { historyControls?: React.ReactNode }) => (
+    <div data-testid="toolbar">{historyControls}</div>
+  )),
+}));
+
+jest.mock("../TodoListActionStatusBar", () => ({
+  TodoListActionStatusBar: jest.fn(() => <div data-testid="action-status-bar" />),
+}));
+
+jest.mock("../TodoListSortableItems", () => ({
+  TodoListSortableItems: jest.fn(() => <div data-testid="sortable-items" />),
+}));
+
+jest.mock("../TodoListAddForm", () => ({
+  TodoListAddForm: jest.fn(() => <div data-testid="add-form" />),
+}));
+
+import { useTodoListDetailViewComposition } from "../useTodoListDetailViewComposition";
+import { TodoListToolbar } from "../TodoListToolbar";
+import { TodoListActionStatusBar } from "../TodoListActionStatusBar";
+import { TodoListDetailView } from "../TodoListDetailView";
+
+const list = {
+  id: "list-1",
+  title: "Inbox",
+  items: [],
+  createdAt: "2026-03-07T00:00:00.000Z",
+  updatedAt: "2026-03-07T00:00:00.000Z",
+};
+
+const defaultProps = {
+  list,
+  clipboardItems: [],
+  onAddItem: jest.fn(),
+  onToggleItem: jest.fn(),
+  onDeleteItem: jest.fn(),
+  onDeleteList: jest.fn(),
+  onIndentItem: jest.fn(),
+  onOutdentItem: jest.fn(),
+  onReorderItems: jest.fn(),
+  onUpdateItemTitle: jest.fn(),
+  onUpdateListTitle: jest.fn(),
+  onUpdateItemBgColor: jest.fn(),
+  onUpdateAllItemsBgColor: jest.fn(),
+  onCutItems: jest.fn(),
+  onPasteItems: jest.fn(),
+  onSetClipboard: jest.fn(),
+  onClearClipboard: jest.fn(),
+  onUpdateListAddItemPosition: jest.fn(),
+};
+
+const defaultCompositionMock = {
+  selection: {
+    selectedItemIds: new Set<string>(),
+    toggleSelectItem: jest.fn(),
+    clearSelection: jest.fn(),
+    hasSelection: false,
+    handleCut: jest.fn(),
+    handlePaste: jest.fn(),
+  },
+  hasClipboard: false,
+  viewState: {
+    hideCompleted: false,
+    moveCompletedToBottom: false,
+    collapsedItemIds: new Set<string>(),
+    editingItemId: null,
+    editingItemTitle: "",
+    editingListTitle: false,
+    editingListTitleValue: "",
+    inputRef: { current: null },
+    inputText: "",
+    listTitleInputRef: { current: null },
+    progress: { completed: 0, total: 0, percentage: 0 },
+    visibleItems: [],
+    setEditingItemTitle: jest.fn(),
+    setEditingListTitleValue: jest.fn(),
+    setInputText: jest.fn(),
+    cancelEditItem: jest.fn(),
+    cancelEditListTitle: jest.fn(),
+    commitEditItem: jest.fn(),
+    commitEditListTitle: jest.fn(),
+    handleAdd: jest.fn(),
+    startEditItem: jest.fn(),
+    startEditListTitle: jest.fn(),
+    toggleCollapseItem: jest.fn(),
+    toggleHideCompleted: jest.fn(),
+    toggleMoveCompletedToBottom: jest.fn(),
+  },
+  uiControllers: {
+    colorPicker: {
+      colorPickerItemId: null,
+      showBulkColorPicker: false,
+      toggleItemColorPicker: jest.fn(),
+      closeItemColorPicker: jest.fn(),
+      toggleBulkColorPicker: jest.fn(),
+      closeBulkColorPicker: jest.fn(),
+    },
+    mobileMenu: {
+      mobileMenuItemId: null,
+      toggleMobileMenu: jest.fn(),
+      closeMobileMenu: jest.fn(),
+    },
+  },
+  interactionMode: {
+    inlineInsert: {
+      insertAfterId: null,
+      inlineInputText: "",
+      setInlineInputText: jest.fn(),
+      openInlineInsert: jest.fn(),
+      closeInlineInsert: jest.fn(),
+      handleInlineAdd: jest.fn(),
+    },
+    dnd: {
+      activeId: null,
+      sensors: [],
+      handleDragStart: jest.fn(),
+      handleDragEnd: jest.fn(),
+      handleDragCancel: jest.fn(),
+    },
+    activeItem: null,
+  },
+  toolbar: {
+    hasCompletedItems: false,
+    handleUpdateAllItemsBgColor: jest.fn(),
+    handleToggleAddItemPosition: jest.fn(),
+  },
+};
+
+describe("TodoListDetailView", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    (useTodoListDetailViewComposition as jest.Mock).mockReturnValue(defaultCompositionMock);
+  });
+
+  it("useTodoListDetailViewComposition を view 操作に必要なパラメータで呼ぶ", () => {
+    render(<TodoListDetailView {...defaultProps} />);
+
+    expect(useTodoListDetailViewComposition).toHaveBeenCalledWith({
+      list,
+      clipboardItems: [],
+      onAddItem: defaultProps.onAddItem,
+      onUpdateItemTitle: defaultProps.onUpdateItemTitle,
+      onUpdateListTitle: defaultProps.onUpdateListTitle,
+      onCutItems: defaultProps.onCutItems,
+      onPasteItems: defaultProps.onPasteItems,
+      onSetClipboard: defaultProps.onSetClipboard,
+      onClearClipboard: defaultProps.onClearClipboard,
+      onReorderItems: defaultProps.onReorderItems,
+      onUpdateAllItemsBgColor: defaultProps.onUpdateAllItemsBgColor,
+      onUpdateListAddItemPosition: defaultProps.onUpdateListAddItemPosition,
+    });
+  });
+
+  it("ヘッダー・進捗バー・ツールバー・アイテム・追加フォームを常に表示する", () => {
+    render(<TodoListDetailView {...defaultProps} />);
+
+    expect(screen.getByTestId("list-header")).toBeInTheDocument();
+    expect(screen.getByTestId("progress-bar")).toBeInTheDocument();
+    expect(screen.getByTestId("toolbar")).toBeInTheDocument();
+    expect(screen.getByTestId("sortable-items")).toBeInTheDocument();
+    expect(screen.getByTestId("add-form")).toBeInTheDocument();
+  });
+
+  it("historyControls を TodoListToolbar に渡す", () => {
+    const historyControls = <span data-testid="history-slot">↩↪</span>;
+    render(<TodoListDetailView {...defaultProps} historyControls={historyControls} />);
+
+    expect(screen.getByTestId("history-slot")).toBeInTheDocument();
+    expect(TodoListToolbar).toHaveBeenCalledWith(
+      expect.objectContaining({ historyControls }),
+      undefined,
+    );
+  });
+
+  it("historyControls が未指定のとき TodoListToolbar に undefined を渡す", () => {
+    render(<TodoListDetailView {...defaultProps} />);
+
+    expect(TodoListToolbar).toHaveBeenCalledWith(
+      expect.objectContaining({ historyControls: undefined }),
+      undefined,
+    );
+  });
+
+  describe("TodoListToolbar への委譲", () => {
+    it("viewState の hideCompleted・moveCompletedToBottom を TodoListToolbar に渡す", () => {
+      const composition = {
+        ...defaultCompositionMock,
+        viewState: {
+          ...defaultCompositionMock.viewState,
+          hideCompleted: true,
+          moveCompletedToBottom: true,
+        },
+      };
+      (useTodoListDetailViewComposition as jest.Mock).mockReturnValue(composition);
+
+      render(<TodoListDetailView {...defaultProps} />);
+
+      expect(TodoListToolbar).toHaveBeenCalledWith(
+        expect.objectContaining({
+          hideCompleted: true,
+          moveCompletedToBottom: true,
+        }),
+        undefined,
+      );
+    });
+
+    it("toolbar.hasCompletedItems=true のとき TodoListToolbar に hasCompletedItems=true を渡す", () => {
+      (useTodoListDetailViewComposition as jest.Mock).mockReturnValue({
+        ...defaultCompositionMock,
+        toolbar: { ...defaultCompositionMock.toolbar, hasCompletedItems: true },
+      });
+
+      render(<TodoListDetailView {...defaultProps} />);
+
+      expect(TodoListToolbar).toHaveBeenCalledWith(
+        expect.objectContaining({ hasCompletedItems: true }),
+        undefined,
+      );
+    });
+
+    it("toolbar.hasCompletedItems=false のとき TodoListToolbar に hasCompletedItems=false を渡す", () => {
+      render(<TodoListDetailView {...defaultProps} />);
+
+      expect(TodoListToolbar).toHaveBeenCalledWith(
+        expect.objectContaining({ hasCompletedItems: false }),
+        undefined,
+      );
+    });
+
+    it("toolbar.handleUpdateAllItemsBgColor を TodoListToolbar の onUpdateAllItemsBgColor にそのまま渡す", () => {
+      render(<TodoListDetailView {...defaultProps} />);
+
+      expect(TodoListToolbar).toHaveBeenCalledWith(
+        expect.objectContaining({
+          onUpdateAllItemsBgColor: defaultCompositionMock.toolbar.handleUpdateAllItemsBgColor,
+        }),
+        undefined,
+      );
+    });
+
+    it("toolbar.handleToggleAddItemPosition を TodoListToolbar の onToggleListAddItemPosition にそのまま渡す", () => {
+      render(<TodoListDetailView {...defaultProps} />);
+
+      expect(TodoListToolbar).toHaveBeenCalledWith(
+        expect.objectContaining({
+          onToggleListAddItemPosition: defaultCompositionMock.toolbar.handleToggleAddItemPosition,
+        }),
+        undefined,
+      );
+    });
+
+    it("colorPicker の showBulkColorPicker を TodoListToolbar に渡す", () => {
+      const composition = {
+        ...defaultCompositionMock,
+        uiControllers: {
+          ...defaultCompositionMock.uiControllers,
+          colorPicker: {
+            ...defaultCompositionMock.uiControllers.colorPicker,
+            showBulkColorPicker: true,
+          },
+        },
+      };
+      (useTodoListDetailViewComposition as jest.Mock).mockReturnValue(composition);
+
+      render(<TodoListDetailView {...defaultProps} />);
+
+      expect(TodoListToolbar).toHaveBeenCalledWith(
+        expect.objectContaining({ showBulkColorPicker: true }),
+        undefined,
+      );
+    });
+  });
+
+  describe("TodoListActionStatusBar への委譲", () => {
+    it("TodoListActionStatusBar を描画する", () => {
+      render(<TodoListDetailView {...defaultProps} />);
+
+      expect(screen.getByTestId("action-status-bar")).toBeInTheDocument();
+    });
+
+    it("selection/clipboard の状態と操作を TodoListActionStatusBar に渡す", () => {
+      const handleCut = jest.fn();
+      const clearSelection = jest.fn();
+      const handlePaste = jest.fn();
+      const composition = {
+        ...defaultCompositionMock,
+        hasClipboard: true,
+        selection: {
+          ...defaultCompositionMock.selection,
+          hasSelection: true,
+          selectedItemIds: new Set(["item-1", "item-2"]),
+          handleCut,
+          clearSelection,
+          handlePaste,
+        },
+      };
+      (useTodoListDetailViewComposition as jest.Mock).mockReturnValue(composition);
+
+      const props = { ...defaultProps, clipboardItems: [{ id: "c-1" }] as never };
+      render(<TodoListDetailView {...props} />);
+
+      expect(TodoListActionStatusBar).toHaveBeenCalledWith(
+        expect.objectContaining({
+          hasSelection: true,
+          hasClipboard: true,
+          selectedCount: 2,
+          clipboardCount: 1,
+          onCut: handleCut,
+          onClearSelection: clearSelection,
+          onPaste: handlePaste,
+          onClearClipboard: defaultProps.onClearClipboard,
+        }),
+        undefined,
+      );
+    });
+  });
+});

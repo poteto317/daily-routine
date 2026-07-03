@@ -5,7 +5,8 @@ import { setSelectedTodoListId } from "./selectedTodoList";
 import { sampleTodoLists } from "./__fixtures__/todoListFixtures";
 import { TodoListsPage } from "./TodoListsPage";
 
-// TodoListsPage は useTodoListSelectionState() / useTodoListDetailState() を内部で呼び出す。
+// TodoListsPage は useTodoListsPageState() を呼び出し、選択 ID とクリップボードを管理する。
+// リスト詳細の状態（undo/redo を含む）は TodoListDetail コンポーネント内で管理される。
 // localStorage が空のとき「リストを選択してください」の初期状態で描画される。
 // WithSelectedList では sampleTodoLists を保存しリスト選択状態を設定して
 // リスト詳細（アイテム一覧）が表示された状態を確認できる。
