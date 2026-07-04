@@ -23,11 +23,21 @@ export const useTodoListDetailItemOrder = ({
   // moveCompletedToBottom を反映済みか」を判定し、ズレていれば pending を
   // その場で同期してから反転する。ref の読み書きはこの関数内でのみ行い、
   // レンダー中には一切触れない（react-hooks/refs 対応）。
+  //
+  // 現状 TodoListsPage.tsx は key={selectedId} でリスト切替時に
+  // TodoListDetail を再マウントするため list.id が変わることはないが、
+  // その前提に暗黙に依存せずフック単体で正しく動くよう、listId も
+  // 比較対象に含めて防御する（別リストの pending 値を引き継がない）。
+  const renderedListIdRef = useRef(list.id);
   const renderedMoveCompletedToBottomRef = useRef(moveCompletedToBottom);
   const pendingMoveCompletedToBottomRef = useRef(moveCompletedToBottom);
 
   const toggleMoveCompletedToBottom = () => {
-    if (renderedMoveCompletedToBottomRef.current !== moveCompletedToBottom) {
+    if (
+      renderedListIdRef.current !== list.id ||
+      renderedMoveCompletedToBottomRef.current !== moveCompletedToBottom
+    ) {
+      renderedListIdRef.current = list.id;
       renderedMoveCompletedToBottomRef.current = moveCompletedToBottom;
       pendingMoveCompletedToBottomRef.current = moveCompletedToBottom;
     }

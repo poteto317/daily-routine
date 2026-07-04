@@ -20,11 +20,21 @@ export const useTodoListDetailHideCompleted = ({
   // 反映済みか」を判定し、ズレていれば pending をその場で同期してから
   // 反転する。ref の読み書きはこの関数内でのみ行い、レンダー中には
   // 一切触れない（react-hooks/refs 対応）。
+  //
+  // 現状 TodoListsPage.tsx は key={selectedId} でリスト切替時に
+  // TodoListDetail を再マウントするため list.id が変わることはないが、
+  // その前提に暗黙に依存せずフック単体で正しく動くよう、listId も
+  // 比較対象に含めて防御する（別リストの pending 値を引き継がない）。
+  const renderedListIdRef = useRef(list.id);
   const renderedHideCompletedRef = useRef(hideCompleted);
   const pendingHideCompletedRef = useRef(hideCompleted);
 
   const toggleHideCompleted = () => {
-    if (renderedHideCompletedRef.current !== hideCompleted) {
+    if (
+      renderedListIdRef.current !== list.id ||
+      renderedHideCompletedRef.current !== hideCompleted
+    ) {
+      renderedListIdRef.current = list.id;
       renderedHideCompletedRef.current = hideCompleted;
       pendingHideCompletedRef.current = hideCompleted;
     }

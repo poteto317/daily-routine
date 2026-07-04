@@ -146,4 +146,37 @@ describe("useTodoListDetailHideCompleted", () => {
     // 画面に表示されている最新値(true)を正しく反転してfalseを送る
     expect(onUpdateListHideCompleted).toHaveBeenCalledWith("list-1", false);
   });
+
+  it("リストA でトグルした直後に別リスト(B)へ切り替わっても、Bの現在値を基準に正しく反転する（前リストの pending を引き継がない）", () => {
+    const onUpdateListHideCompleted = jest.fn();
+    const listA: TodoList = { ...list, id: "list-a", hideCompleted: false };
+    const listB: TodoList = { ...list, id: "list-b", hideCompleted: false };
+
+    const { result, rerender } = renderHook(
+      ({ list }) =>
+        useTodoListDetailHideCompleted({ list, onUpdateListHideCompleted }),
+      { initialProps: { list: listA } },
+    );
+
+    // リストAでトグル（pending は A の反転結果 true を保持したままになる）
+    result.current.toggleHideCompleted();
+    expect(onUpdateListHideCompleted).toHaveBeenNthCalledWith(
+      1,
+      "list-a",
+      true,
+    );
+
+    // 再レンダーを挟まずリストBへ切り替え（実運用では key による再マウントで
+    // 発生しないが、フック単体としての防御性を検証する）
+    rerender({ list: listB });
+
+    result.current.toggleHideCompleted();
+
+    // Aのpending(true)を引き継がず、Bの現在値(false)を正しく反転してtrueを送る
+    expect(onUpdateListHideCompleted).toHaveBeenNthCalledWith(
+      2,
+      "list-b",
+      true,
+    );
+  });
 });

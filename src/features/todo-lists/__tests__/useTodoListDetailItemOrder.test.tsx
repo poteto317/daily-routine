@@ -144,4 +144,48 @@ describe("useTodoListDetailItemOrder", () => {
       false,
     );
   });
+
+  it("リストA でトグルした直後に別リスト(B)へ切り替わっても、Bの現在値を基準に正しく反転する（前リストの pending を引き継がない）", () => {
+    const onUpdateListMoveCompletedToBottom = jest.fn();
+    const listA: TodoList = {
+      ...list,
+      id: "list-a",
+      moveCompletedToBottom: false,
+    };
+    const listB: TodoList = {
+      ...list,
+      id: "list-b",
+      moveCompletedToBottom: false,
+    };
+
+    const { result, rerender } = renderHook(
+      ({ list }) =>
+        useTodoListDetailItemOrder({
+          list,
+          onUpdateListMoveCompletedToBottom,
+        }),
+      { initialProps: { list: listA } },
+    );
+
+    // リストAでトグル（pending は A の反転結果 true を保持したままになる）
+    result.current.toggleMoveCompletedToBottom();
+    expect(onUpdateListMoveCompletedToBottom).toHaveBeenNthCalledWith(
+      1,
+      "list-a",
+      true,
+    );
+
+    // 再レンダーを挟まずリストBへ切り替え（実運用では key による再マウントで
+    // 発生しないが、フック単体としての防御性を検証する）
+    rerender({ list: listB });
+
+    result.current.toggleMoveCompletedToBottom();
+
+    // Aのpending(true)を引き継がず、Bの現在値(false)を正しく反転してtrueを送る
+    expect(onUpdateListMoveCompletedToBottom).toHaveBeenNthCalledWith(
+      2,
+      "list-b",
+      true,
+    );
+  });
 });
