@@ -1,23 +1,12 @@
-import type { useTodoListMoveCompletedToBottomActions } from "./useTodoListMoveCompletedToBottomActions";
-import type { useTodoListMoveCompletedToBottomState } from "./useTodoListMoveCompletedToBottomState";
-
-type TodoListMoveCompletedToBottomState = ReturnType<
-  typeof useTodoListMoveCompletedToBottomState
->;
-type TodoListMoveCompletedToBottomActions = ReturnType<
-  typeof useTodoListMoveCompletedToBottomActions
->;
-
 type CreateTodoListDetailItemOrderResultParams = {
-  moveCompletedToBottomState: TodoListMoveCompletedToBottomState;
-  moveCompletedToBottomActions: TodoListMoveCompletedToBottomActions;
+  moveCompletedToBottom: boolean;
+  toggleMoveCompletedToBottom: () => void;
 };
 
 export const createTodoListDetailItemOrderResult = ({
-  moveCompletedToBottomState,
-  moveCompletedToBottomActions,
+  moveCompletedToBottom,
+  toggleMoveCompletedToBottom,
 }: CreateTodoListDetailItemOrderResultParams) => ({
-  moveCompletedToBottom: moveCompletedToBottomState.moveCompletedToBottom,
-  toggleMoveCompletedToBottom:
-    moveCompletedToBottomActions.toggleMoveCompletedToBottom,
+  moveCompletedToBottom,
+  toggleMoveCompletedToBottom,
 });

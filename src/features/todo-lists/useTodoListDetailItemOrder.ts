@@ -1,16 +1,24 @@
+import type { TodoList } from "./types";
 import { createTodoListDetailItemOrderResult } from "./todoListDetailItemOrderResult";
-import { useTodoListMoveCompletedToBottomActions } from "./useTodoListMoveCompletedToBottomActions";
-import { useTodoListMoveCompletedToBottomState } from "./useTodoListMoveCompletedToBottomState";
 
-export const useTodoListDetailItemOrder = () => {
-  const moveCompletedToBottomState = useTodoListMoveCompletedToBottomState();
-  const moveCompletedToBottomActions = useTodoListMoveCompletedToBottomActions({
-    setMoveCompletedToBottom:
-      moveCompletedToBottomState.setMoveCompletedToBottom,
-  });
+type UseTodoListDetailItemOrderParams = {
+  list: TodoList;
+  onUpdateListMoveCompletedToBottom: (
+    listId: string,
+    moveCompletedToBottom: boolean,
+  ) => void;
+};
+
+export const useTodoListDetailItemOrder = ({
+  list,
+  onUpdateListMoveCompletedToBottom,
+}: UseTodoListDetailItemOrderParams) => {
+  const moveCompletedToBottom = list.moveCompletedToBottom ?? false;
+  const toggleMoveCompletedToBottom = () =>
+    onUpdateListMoveCompletedToBottom(list.id, !moveCompletedToBottom);
 
   return createTodoListDetailItemOrderResult({
-    moveCompletedToBottomState,
-    moveCompletedToBottomActions,
+    moveCompletedToBottom,
+    toggleMoveCompletedToBottom,
   });
 };

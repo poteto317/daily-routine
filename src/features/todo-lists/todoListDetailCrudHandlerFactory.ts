@@ -16,6 +16,8 @@ import {
 import {
   createDeleteTodoListHandler,
   createUpdateListAddItemPositionHandler,
+  createUpdateListHideCompletedHandler,
+  createUpdateListMoveCompletedToBottomHandler,
   createUpdateListTitleHandler,
 } from "./todoListDetailListHandlers";
 import type { PersistTodoLists, TodoList } from "./types";
@@ -52,6 +54,14 @@ export const createTodoListDetailHandlers = (params: {
     onUpdateItemTitle: createUpdateTodoItemTitleHandler({ lists, persist }),
     onUpdateListTitle: createUpdateListTitleHandler({ lists, persist }),
     onUpdateListAddItemPosition: createUpdateListAddItemPositionHandler({
+      lists,
+      persist,
+    }),
+    onUpdateListMoveCompletedToBottom: createUpdateListMoveCompletedToBottomHandler({
+      lists,
+      persist,
+    }),
+    onUpdateListHideCompleted: createUpdateListHideCompletedHandler({
       lists,
       persist,
     }),

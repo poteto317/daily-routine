@@ -11,4 +11,8 @@ export {
   updateTodoItemTitleAndPersist,
 } from "./todoItemPageStateActions";
 
-export { updateTodoListAddItemPositionAndPersist } from "./todoListPageStateActions";
+export {
+  updateTodoListAddItemPositionAndPersist,
+  updateTodoListMoveCompletedToBottomAndPersist,
+  updateTodoListHideCompletedAndPersist,
+} from "./todoListPageStateActions";

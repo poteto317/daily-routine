@@ -6,6 +6,8 @@ import {
   reorderItemsInList,
   toggleItemInList,
   updateListAddItemPosition,
+  updateListHideCompleted,
+  updateListMoveCompletedToBottom,
 } from "../helpers";
 import { getItemIndentLevel } from "../todoListItemIndentLevel";
 import type { TodoList, TodoListItem } from "../types";
@@ -127,6 +129,49 @@ describe("todo list helpers", () => {
 
     expect(result[0].addItemPosition).toBe("last");
     expect(result[1].addItemPosition).toBe("first");
+  });
+
+  it("updateListMoveCompletedToBottom でリストの moveCompletedToBottom を更新する", () => {
+    const list = createList();
+
+    const result = updateListMoveCompletedToBottom([list], "list-1", true);
+
+    expect(result[0].moveCompletedToBottom).toBe(true);
+    expect(result[0].updatedAt).toBe("2026-03-07T12:00:00.000Z");
+  });
+
+  it("updateListMoveCompletedToBottom は対象外のリストを変更しない", () => {
+    const list1 = createList({ id: "list-1" });
+    const list2 = createList({ id: "list-2", moveCompletedToBottom: true });
+
+    const result = updateListMoveCompletedToBottom(
+      [list1, list2],
+      "list-1",
+      true,
+    );
+
+    expect(result[0].moveCompletedToBottom).toBe(true);
+    expect(result[1].moveCompletedToBottom).toBe(true);
+    expect(result[1]).toBe(list2);
+  });
+
+  it("updateListHideCompleted でリストの hideCompleted を更新する", () => {
+    const list = createList();
+
+    const result = updateListHideCompleted([list], "list-1", true);
+
+    expect(result[0].hideCompleted).toBe(true);
+    expect(result[0].updatedAt).toBe("2026-03-07T12:00:00.000Z");
+  });
+
+  it("updateListHideCompleted は対象外のリストを変更しない", () => {
+    const list1 = createList({ id: "list-1" });
+    const list2 = createList({ id: "list-2", hideCompleted: true });
+
+    const result = updateListHideCompleted([list1, list2], "list-1", true);
+
+    expect(result[0].hideCompleted).toBe(true);
+    expect(result[1]).toBe(list2);
   });
 
   it("指定アイテムの完了状態を切り替える", () => {

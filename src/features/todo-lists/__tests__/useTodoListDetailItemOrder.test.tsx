@@ -1,59 +1,69 @@
 import { renderHook } from "@testing-library/react";
-
-jest.mock("../useTodoListMoveCompletedToBottomState", () => ({
-  useTodoListMoveCompletedToBottomState: jest.fn(),
-}));
-
-jest.mock("../useTodoListMoveCompletedToBottomActions", () => ({
-  useTodoListMoveCompletedToBottomActions: jest.fn(),
-}));
-
-jest.mock("../todoListDetailItemOrderResult", () => ({
-  createTodoListDetailItemOrderResult: jest.fn(),
-}));
-
-import { createTodoListDetailItemOrderResult } from "../todoListDetailItemOrderResult";
-import { useTodoListMoveCompletedToBottomActions } from "../useTodoListMoveCompletedToBottomActions";
-import { useTodoListMoveCompletedToBottomState } from "../useTodoListMoveCompletedToBottomState";
+import type { TodoList } from "../types";
 import { useTodoListDetailItemOrder } from "../useTodoListDetailItemOrder";
 
+const list: TodoList = {
+  id: "list-1",
+  title: "Inbox",
+  items: [],
+  createdAt: "2026-03-07T00:00:00.000Z",
+  updatedAt: "2026-03-07T00:00:00.000Z",
+};
+
 describe("useTodoListDetailItemOrder", () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-    (useTodoListMoveCompletedToBottomState as jest.Mock).mockReturnValue({
-      moveCompletedToBottom: false,
-      setMoveCompletedToBottom: jest.fn(),
-    });
-    (useTodoListMoveCompletedToBottomActions as jest.Mock).mockReturnValue({
-      toggleMoveCompletedToBottom: jest.fn(),
-    });
-    (createTodoListDetailItemOrderResult as jest.Mock).mockReturnValue({
-      itemOrder: true,
-    });
+  it("list.moveCompletedToBottom が未設定の場合は false を返す", () => {
+    const { result } = renderHook(() =>
+      useTodoListDetailItemOrder({
+        list,
+        onUpdateListMoveCompletedToBottom: jest.fn(),
+      }),
+    );
+
+    expect(result.current.moveCompletedToBottom).toBe(false);
   });
 
-  it("moveCompletedToBottom の state と action を合成して result に委譲する", () => {
-    const { result } = renderHook(() => useTodoListDetailItemOrder());
+  it("list.moveCompletedToBottom の値をそのまま返す", () => {
+    const { result } = renderHook(() =>
+      useTodoListDetailItemOrder({
+        list: { ...list, moveCompletedToBottom: true },
+        onUpdateListMoveCompletedToBottom: jest.fn(),
+      }),
+    );
 
-    expect(useTodoListMoveCompletedToBottomState).toHaveBeenCalledWith();
-    expect(useTodoListMoveCompletedToBottomActions).toHaveBeenCalledWith({
-      setMoveCompletedToBottom: (
-        useTodoListMoveCompletedToBottomState as jest.Mock
-      ).mock.results[0].value.setMoveCompletedToBottom,
-    });
-    expect(createTodoListDetailItemOrderResult).toHaveBeenCalledWith({
-      moveCompletedToBottomState: {
-        moveCompletedToBottom: false,
-        setMoveCompletedToBottom: (
-          useTodoListMoveCompletedToBottomState as jest.Mock
-        ).mock.results[0].value.setMoveCompletedToBottom,
-      },
-      moveCompletedToBottomActions: {
-        toggleMoveCompletedToBottom: (
-          useTodoListMoveCompletedToBottomActions as jest.Mock
-        ).mock.results[0].value.toggleMoveCompletedToBottom,
-      },
-    });
-    expect(result.current).toEqual({ itemOrder: true });
+    expect(result.current.moveCompletedToBottom).toBe(true);
+  });
+
+  it("toggleMoveCompletedToBottom は現在値を反転させて onUpdateListMoveCompletedToBottom を呼ぶ", () => {
+    const onUpdateListMoveCompletedToBottom = jest.fn();
+    const { result } = renderHook(() =>
+      useTodoListDetailItemOrder({
+        list,
+        onUpdateListMoveCompletedToBottom,
+      }),
+    );
+
+    result.current.toggleMoveCompletedToBottom();
+
+    expect(onUpdateListMoveCompletedToBottom).toHaveBeenCalledWith(
+      "list-1",
+      true,
+    );
+  });
+
+  it("moveCompletedToBottom が true のとき toggle で false になる", () => {
+    const onUpdateListMoveCompletedToBottom = jest.fn();
+    const { result } = renderHook(() =>
+      useTodoListDetailItemOrder({
+        list: { ...list, moveCompletedToBottom: true },
+        onUpdateListMoveCompletedToBottom,
+      }),
+    );
+
+    result.current.toggleMoveCompletedToBottom();
+
+    expect(onUpdateListMoveCompletedToBottom).toHaveBeenCalledWith(
+      "list-1",
+      false,
+    );
   });
 });

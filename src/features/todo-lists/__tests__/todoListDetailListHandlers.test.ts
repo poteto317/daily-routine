@@ -3,9 +3,15 @@ import { deleteTodoListAndPersist } from "../todoListDeletePersistActions";
 import { updateTodoListTitleAndPersist } from "../todoListTitleUpdatePersistAction";
 import {
   createDeleteTodoListHandler,
+  createUpdateListHideCompletedHandler,
+  createUpdateListMoveCompletedToBottomHandler,
   createUpdateListTitleHandler,
 } from "../todoListDetailListHandlers";
 import { normalizeTitle } from "../todoListTitleNormalization";
+import {
+  updateTodoListHideCompletedAndPersist,
+  updateTodoListMoveCompletedToBottomAndPersist,
+} from "../pageStateActions";
 
 jest.mock("../todoListDeletePersistActions", () => ({
   deleteTodoListAndPersist: jest.fn(),
@@ -17,6 +23,12 @@ jest.mock("../todoListTitleUpdatePersistAction", () => ({
 
 jest.mock("../todoListTitleNormalization", () => ({
   normalizeTitle: jest.fn(),
+}));
+
+jest.mock("../pageStateActions", () => ({
+  updateTodoListAddItemPositionAndPersist: jest.fn(),
+  updateTodoListMoveCompletedToBottomAndPersist: jest.fn(),
+  updateTodoListHideCompletedAndPersist: jest.fn(),
 }));
 
 const baseList: TodoList = {
@@ -101,5 +113,37 @@ describe("todoListDetailListHandlers", () => {
     );
 
     expect(updateTodoListTitleAndPersist).not.toHaveBeenCalled();
+  });
+
+  it("moveCompletedToBottom 更新 handler が永続化アクションに委譲する", () => {
+    const persist = jest.fn();
+
+    createUpdateListMoveCompletedToBottomHandler({
+      lists: [baseList],
+      persist,
+    })("list-1", true);
+
+    expect(updateTodoListMoveCompletedToBottomAndPersist).toHaveBeenCalledWith({
+      lists: [baseList],
+      listId: "list-1",
+      moveCompletedToBottom: true,
+      persist,
+    });
+  });
+
+  it("hideCompleted 更新 handler が永続化アクションに委譲する", () => {
+    const persist = jest.fn();
+
+    createUpdateListHideCompletedHandler({
+      lists: [baseList],
+      persist,
+    })("list-1", true);
+
+    expect(updateTodoListHideCompletedAndPersist).toHaveBeenCalledWith({
+      lists: [baseList],
+      listId: "list-1",
+      hideCompleted: true,
+      persist,
+    });
   });
 });

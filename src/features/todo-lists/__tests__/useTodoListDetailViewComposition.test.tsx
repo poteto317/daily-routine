@@ -55,6 +55,8 @@ const defaultParams = {
   onReorderItems: jest.fn(),
   onUpdateAllItemsBgColor: jest.fn(),
   onUpdateListAddItemPosition: jest.fn(),
+  onUpdateListMoveCompletedToBottom: jest.fn(),
+  onUpdateListHideCompleted: jest.fn(),
 };
 
 const defaultViewStateMock = {
@@ -176,6 +178,9 @@ describe("useTodoListDetailViewComposition", () => {
       onAddItem: defaultParams.onAddItem,
       onUpdateItemTitle: defaultParams.onUpdateItemTitle,
       onUpdateListTitle: defaultParams.onUpdateListTitle,
+      onUpdateListMoveCompletedToBottom:
+        defaultParams.onUpdateListMoveCompletedToBottom,
+      onUpdateListHideCompleted: defaultParams.onUpdateListHideCompleted,
     });
   });
 

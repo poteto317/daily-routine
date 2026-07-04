@@ -66,6 +66,8 @@ const defaultProps = {
   onSetClipboard: jest.fn(),
   onClearClipboard: jest.fn(),
   onUpdateListAddItemPosition: jest.fn(),
+  onUpdateListMoveCompletedToBottom: jest.fn(),
+  onUpdateListHideCompleted: jest.fn(),
 };
 
 const defaultCompositionMock = {
@@ -167,6 +169,9 @@ describe("TodoListDetailView", () => {
       onReorderItems: defaultProps.onReorderItems,
       onUpdateAllItemsBgColor: defaultProps.onUpdateAllItemsBgColor,
       onUpdateListAddItemPosition: defaultProps.onUpdateListAddItemPosition,
+      onUpdateListMoveCompletedToBottom:
+        defaultProps.onUpdateListMoveCompletedToBottom,
+      onUpdateListHideCompleted: defaultProps.onUpdateListHideCompleted,
     });
   });
 

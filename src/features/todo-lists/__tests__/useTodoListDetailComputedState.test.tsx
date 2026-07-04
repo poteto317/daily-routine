@@ -1,7 +1,11 @@
 import { renderHook } from "@testing-library/react";
 
-jest.mock("../useTodoListDetailVisibility", () => ({
-  useTodoListDetailVisibility: jest.fn(),
+jest.mock("../useTodoListDetailHideCompleted", () => ({
+  useTodoListDetailHideCompleted: jest.fn(),
+}));
+
+jest.mock("../useTodoListDetailCollapsedItems", () => ({
+  useTodoListDetailCollapsedItems: jest.fn(),
 }));
 
 jest.mock("../useTodoListDetailItemOrder", () => ({
@@ -25,7 +29,8 @@ jest.mock("../todoListDetailComputedStateResult", () => ({
 }));
 
 import { createTodoListDetailComputedStateResult } from "../todoListDetailComputedStateResult";
-import { useTodoListDetailVisibility } from "../useTodoListDetailVisibility";
+import { useTodoListDetailCollapsedItems } from "../useTodoListDetailCollapsedItems";
+import { useTodoListDetailHideCompleted } from "../useTodoListDetailHideCompleted";
 import { useTodoListDetailItemOrder } from "../useTodoListDetailItemOrder";
 import { useTodoListDetailProgress } from "../useTodoListDetailProgress";
 import { useTodoListDetailVisibleItems } from "../useTodoListDetailVisibleItems";
@@ -56,11 +61,13 @@ describe("useTodoListDetailComputedState", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    (useTodoListDetailVisibility as jest.Mock).mockReturnValue({
-      collapsedItemIds: new Set<string>(),
+    (useTodoListDetailHideCompleted as jest.Mock).mockReturnValue({
       hideCompleted: false,
-      toggleCollapseItem: jest.fn(),
       toggleHideCompleted: jest.fn(),
+    });
+    (useTodoListDetailCollapsedItems as jest.Mock).mockReturnValue({
+      collapsedItemIds: new Set<string>(),
+      toggleCollapseItem: jest.fn(),
     });
     (useTodoListDetailItemOrder as jest.Mock).mockReturnValue({
       moveCompletedToBottom: false,
@@ -80,31 +87,81 @@ describe("useTodoListDetailComputedState", () => {
     });
   });
 
-  it("5つの独立フックを合成して result に委譲する", () => {
-    const { result } = renderHook(() =>
-      useTodoListDetailComputedState({ list }),
+  it("独立した各フックを正しい引数で呼ぶ", () => {
+    const onUpdateListMoveCompletedToBottom = jest.fn();
+    const onUpdateListHideCompleted = jest.fn();
+    renderHook(() =>
+      useTodoListDetailComputedState({
+        list,
+        onUpdateListMoveCompletedToBottom,
+        onUpdateListHideCompleted,
+      }),
     );
 
-    expect(useTodoListDetailVisibility).toHaveBeenCalledWith();
-    expect(useTodoListDetailItemOrder).toHaveBeenCalledWith();
+    expect(useTodoListDetailHideCompleted).toHaveBeenCalledWith({
+      list,
+      onUpdateListHideCompleted,
+    });
+    expect(useTodoListDetailCollapsedItems).toHaveBeenCalledWith();
+    expect(useTodoListDetailItemOrder).toHaveBeenCalledWith({
+      list,
+      onUpdateListMoveCompletedToBottom,
+    });
     expect(useTodoListDetailProgress).toHaveBeenCalledWith({ list });
+  });
+
+  it("useTodoListDetailVisibleItems に hideCompleted と collapsedItemIds をそれぞれの独立フックから渡す", () => {
+    renderHook(() =>
+      useTodoListDetailComputedState({
+        list,
+        onUpdateListMoveCompletedToBottom: jest.fn(),
+        onUpdateListHideCompleted: jest.fn(),
+      }),
+    );
+
     expect(useTodoListDetailVisibleItems).toHaveBeenCalledWith({
       hideCompleted: false,
       collapsedItemIds: expect.any(Set),
       list,
     });
+  });
+
+  it("useTodoListDetailOrderedItems に moveCompletedToBottom を itemOrder フックから渡す", () => {
+    renderHook(() =>
+      useTodoListDetailComputedState({
+        list,
+        onUpdateListMoveCompletedToBottom: jest.fn(),
+        onUpdateListHideCompleted: jest.fn(),
+      }),
+    );
+
     expect(useTodoListDetailOrderedItems).toHaveBeenCalledWith({
       filteredItems: list.items,
       moveCompletedToBottom: false,
     });
+  });
+
+  it("5つの独立フックを合成して result に委譲する", () => {
+    const onUpdateListMoveCompletedToBottom = jest.fn();
+    const onUpdateListHideCompleted = jest.fn();
+    const { result } = renderHook(() =>
+      useTodoListDetailComputedState({
+        list,
+        onUpdateListMoveCompletedToBottom,
+        onUpdateListHideCompleted,
+      }),
+    );
+
     expect(createTodoListDetailComputedStateResult).toHaveBeenCalledWith({
-      detailVisibility: {
-        collapsedItemIds: expect.any(Set),
+      detailHideCompleted: {
         hideCompleted: false,
-        toggleCollapseItem: (useTodoListDetailVisibility as jest.Mock).mock
-          .results[0].value.toggleCollapseItem,
-        toggleHideCompleted: (useTodoListDetailVisibility as jest.Mock).mock
+        toggleHideCompleted: (useTodoListDetailHideCompleted as jest.Mock).mock
           .results[0].value.toggleHideCompleted,
+      },
+      detailCollapsedItems: {
+        collapsedItemIds: expect.any(Set),
+        toggleCollapseItem: (useTodoListDetailCollapsedItems as jest.Mock).mock
+          .results[0].value.toggleCollapseItem,
       },
       detailItemOrder: {
         moveCompletedToBottom: false,

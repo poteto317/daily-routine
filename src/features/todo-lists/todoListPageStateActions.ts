@@ -1,5 +1,9 @@
 import type { PersistTodoLists, TodoList } from "./types";
-import { updateTodoListAddItemPositionInLists } from "./todoListDetailActions";
+import {
+  updateTodoListAddItemPositionInLists,
+  updateTodoListHideCompletedInLists,
+  updateTodoListMoveCompletedToBottomInLists,
+} from "./todoListDetailActions";
 
 type UpdateTodoListAddItemPositionArgs = {
   lists: TodoList[];
@@ -15,6 +19,50 @@ export const updateTodoListAddItemPositionAndPersist = ({
   persist,
 }: UpdateTodoListAddItemPositionArgs): TodoList[] => {
   const nextLists = updateTodoListAddItemPositionInLists({ lists, listId, position });
+  persist(nextLists);
+  return nextLists;
+};
+
+type UpdateTodoListMoveCompletedToBottomArgs = {
+  lists: TodoList[];
+  listId: string;
+  moveCompletedToBottom: boolean;
+  persist: PersistTodoLists;
+};
+
+export const updateTodoListMoveCompletedToBottomAndPersist = ({
+  lists,
+  listId,
+  moveCompletedToBottom,
+  persist,
+}: UpdateTodoListMoveCompletedToBottomArgs): TodoList[] => {
+  const nextLists = updateTodoListMoveCompletedToBottomInLists({
+    lists,
+    listId,
+    moveCompletedToBottom,
+  });
+  persist(nextLists);
+  return nextLists;
+};
+
+type UpdateTodoListHideCompletedArgs = {
+  lists: TodoList[];
+  listId: string;
+  hideCompleted: boolean;
+  persist: PersistTodoLists;
+};
+
+export const updateTodoListHideCompletedAndPersist = ({
+  lists,
+  listId,
+  hideCompleted,
+  persist,
+}: UpdateTodoListHideCompletedArgs): TodoList[] => {
+  const nextLists = updateTodoListHideCompletedInLists({
+    lists,
+    listId,
+    hideCompleted,
+  });
   persist(nextLists);
   return nextLists;
 };

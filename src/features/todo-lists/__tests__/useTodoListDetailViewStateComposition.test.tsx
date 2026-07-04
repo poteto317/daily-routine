@@ -69,6 +69,8 @@ describe("useTodoListDetailViewState composition", () => {
     const onAddItem = jest.fn();
     const onUpdateItemTitle = jest.fn();
     const onUpdateListTitle = jest.fn();
+    const onUpdateListMoveCompletedToBottom = jest.fn();
+    const onUpdateListHideCompleted = jest.fn();
 
     const { result } = renderHook(() =>
       useTodoListDetailViewState({
@@ -76,6 +78,8 @@ describe("useTodoListDetailViewState composition", () => {
         onAddItem,
         onUpdateItemTitle,
         onUpdateListTitle,
+        onUpdateListMoveCompletedToBottom,
+        onUpdateListHideCompleted,
       }),
     );
 
@@ -83,7 +87,11 @@ describe("useTodoListDetailViewState composition", () => {
       listId: "list-1",
       onAddItem,
     });
-    expect(useTodoListDetailComputedState).toHaveBeenCalledWith({ list });
+    expect(useTodoListDetailComputedState).toHaveBeenCalledWith({
+      list,
+      onUpdateListMoveCompletedToBottom,
+      onUpdateListHideCompleted,
+    });
     expect(useTodoListDetailEditingState).toHaveBeenCalledWith({
       listId: "list-1",
       listTitle: "Inbox",

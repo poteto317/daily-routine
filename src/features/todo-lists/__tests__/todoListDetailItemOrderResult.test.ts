@@ -6,11 +6,8 @@ describe("createTodoListDetailItemOrderResult", () => {
 
     expect(
       createTodoListDetailItemOrderResult({
-        moveCompletedToBottomState: {
-          moveCompletedToBottom: true,
-          setMoveCompletedToBottom: jest.fn(),
-        },
-        moveCompletedToBottomActions: { toggleMoveCompletedToBottom },
+        moveCompletedToBottom: true,
+        toggleMoveCompletedToBottom,
       }),
     ).toEqual({
       moveCompletedToBottom: true,
@@ -22,11 +19,8 @@ describe("createTodoListDetailItemOrderResult", () => {
     const toggleMoveCompletedToBottom = jest.fn();
 
     const result = createTodoListDetailItemOrderResult({
-      moveCompletedToBottomState: {
-        moveCompletedToBottom: false,
-        setMoveCompletedToBottom: jest.fn(),
-      },
-      moveCompletedToBottomActions: { toggleMoveCompletedToBottom },
+      moveCompletedToBottom: false,
+      toggleMoveCompletedToBottom,
     });
 
     expect(result.toggleMoveCompletedToBottom).toBe(toggleMoveCompletedToBottom);
