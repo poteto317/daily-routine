@@ -120,4 +120,28 @@ describe("useTodoListDetailItemOrder", () => {
       false,
     );
   });
+
+  it("一度もトグルを呼ばずに外部要因（リモート同期等）で list.moveCompletedToBottom が変わった直後でも、最新値を基準に正しく反転する", () => {
+    const onUpdateListMoveCompletedToBottom = jest.fn();
+    const { result, rerender } = renderHook(
+      ({ list }) =>
+        useTodoListDetailItemOrder({
+          list,
+          onUpdateListMoveCompletedToBottom,
+        }),
+      { initialProps: { list } },
+    );
+
+    // 自分でトグルを呼ばないまま、外部要因（別デバイスからの同期など）で
+    // list.moveCompletedToBottom が true に変わったことを想定した再レンダー
+    rerender({ list: { ...list, moveCompletedToBottom: true } });
+
+    result.current.toggleMoveCompletedToBottom();
+
+    // 画面に表示されている最新値(true)を正しく反転してfalseを送る
+    expect(onUpdateListMoveCompletedToBottom).toHaveBeenCalledWith(
+      "list-1",
+      false,
+    );
+  });
 });
