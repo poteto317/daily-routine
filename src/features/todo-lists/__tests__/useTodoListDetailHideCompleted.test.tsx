@@ -77,4 +77,55 @@ describe("useTodoListDetailHideCompleted", () => {
       expect.any(Boolean),
     );
   });
+
+  it("再レンダー前に toggleHideCompleted を連続で呼んでも、2回目は1回目の反転結果をさらに反転させる（取りこぼさない）", () => {
+    const onUpdateListHideCompleted = jest.fn();
+    const { result } = renderHook(() =>
+      useTodoListDetailHideCompleted({
+        list,
+        onUpdateListHideCompleted,
+      }),
+    );
+
+    // 再レンダーを挟まず連続で2回呼ぶ（ダブルクリック・連打を想定）
+    result.current.toggleHideCompleted();
+    result.current.toggleHideCompleted();
+
+    expect(onUpdateListHideCompleted).toHaveBeenNthCalledWith(
+      1,
+      "list-1",
+      true,
+    );
+    expect(onUpdateListHideCompleted).toHaveBeenNthCalledWith(
+      2,
+      "list-1",
+      false,
+    );
+  });
+
+  it("再レンダー後は list の最新値を基準にトグルする", () => {
+    const onUpdateListHideCompleted = jest.fn();
+    const { result, rerender } = renderHook(
+      ({ list }) =>
+        useTodoListDetailHideCompleted({ list, onUpdateListHideCompleted }),
+      { initialProps: { list } },
+    );
+
+    result.current.toggleHideCompleted();
+    expect(onUpdateListHideCompleted).toHaveBeenNthCalledWith(
+      1,
+      "list-1",
+      true,
+    );
+
+    // 永続化ハンドラの結果を list に反映して再レンダー
+    rerender({ list: { ...list, hideCompleted: true } });
+
+    result.current.toggleHideCompleted();
+    expect(onUpdateListHideCompleted).toHaveBeenNthCalledWith(
+      2,
+      "list-1",
+      false,
+    );
+  });
 });
