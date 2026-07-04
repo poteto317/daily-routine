@@ -1,6 +1,4 @@
 import { normalizeTitle } from "./todoListTitleNormalization";
-export { createTodoListDetailHandlers } from "./todoListDetailCrudHandlerFactory";
-export { createCompletedVisibilityToggleHandler } from "./todoListHideCompletedHandler";
 
 export const addTodoItemFromDetailInput = (params: {
   inputText: string;
