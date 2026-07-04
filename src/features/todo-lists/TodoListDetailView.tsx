@@ -37,6 +37,11 @@ export type TodoListDetailViewProps = {
   onSetClipboard: (items: TodoListItem[]) => void;
   onClearClipboard: () => void;
   onUpdateListAddItemPosition: (listId: string, position: "last" | "first") => void;
+  onUpdateListMoveCompletedToBottom: (
+    listId: string,
+    moveCompletedToBottom: boolean,
+  ) => void;
+  onUpdateListHideCompleted: (listId: string, hideCompleted: boolean) => void;
   historyControls?: ReactNode;
 };
 
@@ -59,6 +64,8 @@ export const TodoListDetailView = ({
   onSetClipboard,
   onClearClipboard,
   onUpdateListAddItemPosition,
+  onUpdateListMoveCompletedToBottom,
+  onUpdateListHideCompleted,
   historyControls,
 }: TodoListDetailViewProps) => {
   const { selection, hasClipboard, viewState, uiControllers, interactionMode, toolbar } =
@@ -75,6 +82,8 @@ export const TodoListDetailView = ({
       onReorderItems,
       onUpdateAllItemsBgColor,
       onUpdateListAddItemPosition,
+      onUpdateListMoveCompletedToBottom,
+      onUpdateListHideCompleted,
     });
 
   const {

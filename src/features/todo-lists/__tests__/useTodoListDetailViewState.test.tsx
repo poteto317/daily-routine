@@ -31,13 +31,34 @@ describe("useTodoListDetailViewState", () => {
     jest.useRealTimers();
   });
 
-  it("完了済み表示の切替と可視アイテムを管理する", () => {
+  it("list.hideCompleted に応じて可視アイテムをフィルタする", () => {
+    const { result } = renderHook(() =>
+      useTodoListDetailViewState({
+        list: { ...list, hideCompleted: true },
+        onAddItem: jest.fn(),
+        onUpdateItemTitle: jest.fn(),
+        onUpdateListTitle: jest.fn(),
+        onUpdateListMoveCompletedToBottom: jest.fn(),
+        onUpdateListHideCompleted: jest.fn(),
+      }),
+    );
+
+    expect(result.current.hideCompleted).toBe(true);
+    expect(result.current.visibleItems).toEqual([
+      expect.objectContaining({ id: "item-1" }),
+    ]);
+  });
+
+  it("toggleHideCompleted は onUpdateListHideCompleted をリストIDと反転値付きで呼ぶ", () => {
+    const onUpdateListHideCompleted = jest.fn();
     const { result } = renderHook(() =>
       useTodoListDetailViewState({
         list,
         onAddItem: jest.fn(),
         onUpdateItemTitle: jest.fn(),
         onUpdateListTitle: jest.fn(),
+        onUpdateListMoveCompletedToBottom: jest.fn(),
+        onUpdateListHideCompleted,
       }),
     );
 
@@ -47,10 +68,7 @@ describe("useTodoListDetailViewState", () => {
       result.current.toggleHideCompleted();
     });
 
-    expect(result.current.hideCompleted).toBe(true);
-    expect(result.current.visibleItems).toEqual([
-      expect.objectContaining({ id: "item-1" }),
-    ]);
+    expect(onUpdateListHideCompleted).toHaveBeenCalledWith("list-1", true);
   });
 
   it("アイテム編集状態を管理し、確定時に更新を通知する", () => {
@@ -61,6 +79,8 @@ describe("useTodoListDetailViewState", () => {
         onAddItem: jest.fn(),
         onUpdateItemTitle,
         onUpdateListTitle: jest.fn(),
+        onUpdateListMoveCompletedToBottom: jest.fn(),
+        onUpdateListHideCompleted: jest.fn(),
       }),
     );
 
@@ -95,6 +115,8 @@ describe("useTodoListDetailViewState", () => {
         onAddItem: jest.fn(),
         onUpdateItemTitle: jest.fn(),
         onUpdateListTitle,
+        onUpdateListMoveCompletedToBottom: jest.fn(),
+        onUpdateListHideCompleted: jest.fn(),
       }),
     );
 
@@ -126,6 +148,8 @@ describe("useTodoListDetailViewState", () => {
         onAddItem,
         onUpdateItemTitle: jest.fn(),
         onUpdateListTitle: jest.fn(),
+        onUpdateListMoveCompletedToBottom: jest.fn(),
+        onUpdateListHideCompleted: jest.fn(),
       }),
     );
 
@@ -151,6 +175,8 @@ describe("useTodoListDetailViewState", () => {
         onAddItem,
         onUpdateItemTitle: jest.fn(),
         onUpdateListTitle: jest.fn(),
+        onUpdateListMoveCompletedToBottom: jest.fn(),
+        onUpdateListHideCompleted: jest.fn(),
       }),
     );
 

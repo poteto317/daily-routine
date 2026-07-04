@@ -15,11 +15,13 @@ describe("todoListDetailComputedStateResult", () => {
         detailOrderedItems: {
           visibleItems: [{ id: "item-1" } as never],
         },
-        detailVisibility: {
-          collapsedItemIds,
+        detailHideCompleted: {
           hideCompleted: true,
-          toggleCollapseItem,
           toggleHideCompleted,
+        },
+        detailCollapsedItems: {
+          collapsedItemIds,
+          toggleCollapseItem,
         },
         detailItemOrder: {
           moveCompletedToBottom: false,
@@ -46,11 +48,13 @@ describe("todoListDetailComputedStateResult", () => {
     const result = createTodoListDetailComputedStateResult({
       detailProgress: { progress: { completed: 0, total: 0, percentage: 0 } },
       detailOrderedItems: { visibleItems: [] },
-      detailVisibility: {
-        collapsedItemIds: new Set<string>(),
+      detailHideCompleted: {
         hideCompleted: false,
-        toggleCollapseItem,
         toggleHideCompleted,
+      },
+      detailCollapsedItems: {
+        collapsedItemIds: new Set<string>(),
+        toggleCollapseItem,
       },
       detailItemOrder: {
         moveCompletedToBottom: false,
@@ -63,24 +67,23 @@ describe("todoListDetailComputedStateResult", () => {
     expect(result.toggleMoveCompletedToBottom).toBe(toggleMoveCompletedToBottom);
   });
 
-  it("collapsedItemIds を visibility からそのまま伝播する（参照同一性）", () => {
+  it("collapsedItemIds を detailCollapsedItems からそのまま伝播する（参照同一性）", () => {
     const collapsedItemIds = new Set<string>(["item-1", "item-2"]);
-    const toggleCollapseItem = jest.fn();
-    const toggleHideCompleted = jest.fn();
-    const toggleMoveCompletedToBottom = jest.fn();
 
     const result = createTodoListDetailComputedStateResult({
       detailProgress: { progress: { completed: 0, total: 1, percentage: 0 } },
       detailOrderedItems: { visibleItems: [] },
-      detailVisibility: {
-        collapsedItemIds,
+      detailHideCompleted: {
         hideCompleted: false,
-        toggleCollapseItem,
-        toggleHideCompleted,
+        toggleHideCompleted: jest.fn(),
+      },
+      detailCollapsedItems: {
+        collapsedItemIds,
+        toggleCollapseItem: jest.fn(),
       },
       detailItemOrder: {
         moveCompletedToBottom: false,
-        toggleMoveCompletedToBottom,
+        toggleMoveCompletedToBottom: jest.fn(),
       },
     });
 
@@ -93,11 +96,13 @@ describe("todoListDetailComputedStateResult", () => {
     const result = createTodoListDetailComputedStateResult({
       detailProgress: { progress: { completed: 0, total: 1, percentage: 0 } },
       detailOrderedItems: { visibleItems },
-      detailVisibility: {
-        collapsedItemIds: new Set<string>(),
+      detailHideCompleted: {
         hideCompleted: false,
-        toggleCollapseItem: jest.fn(),
         toggleHideCompleted: jest.fn(),
+      },
+      detailCollapsedItems: {
+        collapsedItemIds: new Set<string>(),
+        toggleCollapseItem: jest.fn(),
       },
       detailItemOrder: {
         moveCompletedToBottom: false,

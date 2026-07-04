@@ -21,6 +21,8 @@ jest.mock("../todoListDetailListHandlers", () => ({
   createDeleteTodoListHandler: jest.fn(),
   createUpdateListTitleHandler: jest.fn(),
   createUpdateListAddItemPositionHandler: jest.fn(),
+  createUpdateListMoveCompletedToBottomHandler: jest.fn(),
+  createUpdateListHideCompletedHandler: jest.fn(),
 }));
 
 import {
@@ -41,6 +43,8 @@ import {
 import {
   createDeleteTodoListHandler,
   createUpdateListAddItemPositionHandler,
+  createUpdateListHideCompletedHandler,
+  createUpdateListMoveCompletedToBottomHandler,
   createUpdateListTitleHandler,
 } from "../todoListDetailListHandlers";
 import type { TodoList } from "../types";
@@ -70,6 +74,8 @@ describe("todoListDetailCrudHandlerFactory", () => {
     const onUpdateItemTitle = jest.fn();
     const onUpdateListTitle = jest.fn();
     const onUpdateListAddItemPosition = jest.fn();
+    const onUpdateListMoveCompletedToBottom = jest.fn();
+    const onUpdateListHideCompleted = jest.fn();
     const onUpdateItemBgColor = jest.fn();
     const onUpdateAllItemsBgColor = jest.fn();
     const onCutItems = jest.fn();
@@ -99,6 +105,12 @@ describe("todoListDetailCrudHandlerFactory", () => {
     (createUpdateListAddItemPositionHandler as jest.Mock).mockReturnValue(
       onUpdateListAddItemPosition,
     );
+    (createUpdateListMoveCompletedToBottomHandler as jest.Mock).mockReturnValue(
+      onUpdateListMoveCompletedToBottom,
+    );
+    (createUpdateListHideCompletedHandler as jest.Mock).mockReturnValue(
+      onUpdateListHideCompleted,
+    );
     (createCutTodoItemsHandler as jest.Mock).mockReturnValue(onCutItems);
     (createPasteTodoItemsHandler as jest.Mock).mockReturnValue(onPasteItems);
 
@@ -125,6 +137,8 @@ describe("todoListDetailCrudHandlerFactory", () => {
       onUpdateItemTitle,
       onUpdateListTitle,
       onUpdateListAddItemPosition,
+      onUpdateListMoveCompletedToBottom,
+      onUpdateListHideCompleted,
       onUpdateItemBgColor,
       onUpdateAllItemsBgColor,
       onCutItems,
@@ -181,6 +195,14 @@ describe("todoListDetailCrudHandlerFactory", () => {
       persist,
     });
     expect(createUpdateListAddItemPositionHandler).toHaveBeenCalledWith({
+      lists: [list],
+      persist,
+    });
+    expect(createUpdateListMoveCompletedToBottomHandler).toHaveBeenCalledWith({
+      lists: [list],
+      persist,
+    });
+    expect(createUpdateListHideCompletedHandler).toHaveBeenCalledWith({
       lists: [list],
       persist,
     });

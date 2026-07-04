@@ -16,4 +16,6 @@ export {
 export {
   updateListTitle,
   updateListAddItemPosition,
+  updateListMoveCompletedToBottom,
+  updateListHideCompleted,
 } from "./todoListMutations";

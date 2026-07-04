@@ -1,5 +1,7 @@
 import {
   updateTodoListAddItemPositionInLists,
+  updateTodoListHideCompletedInLists,
+  updateTodoListMoveCompletedToBottomInLists,
   updateTodoListTitleInLists,
 } from "../todoListDetailActions";
 import type { TodoList } from "../types";
@@ -66,6 +68,54 @@ describe("todoListDetailActions", () => {
         lists: [createList(), list2],
         listId: "list-1",
         position: "first",
+      });
+
+      expect(result[1]).toBe(list2);
+    });
+  });
+
+  describe("updateTodoListMoveCompletedToBottomInLists", () => {
+    it("moveCompletedToBottom を true に設定する", () => {
+      const result = updateTodoListMoveCompletedToBottomInLists({
+        lists: [createList()],
+        listId: "list-1",
+        moveCompletedToBottom: true,
+      });
+
+      expect(result[0].moveCompletedToBottom).toBe(true);
+    });
+
+    it("対象リスト以外を変更しない", () => {
+      const list2 = createList({ id: "list-2", title: "Other" });
+
+      const result = updateTodoListMoveCompletedToBottomInLists({
+        lists: [createList(), list2],
+        listId: "list-1",
+        moveCompletedToBottom: true,
+      });
+
+      expect(result[1]).toBe(list2);
+    });
+  });
+
+  describe("updateTodoListHideCompletedInLists", () => {
+    it("hideCompleted を true に設定する", () => {
+      const result = updateTodoListHideCompletedInLists({
+        lists: [createList()],
+        listId: "list-1",
+        hideCompleted: true,
+      });
+
+      expect(result[0].hideCompleted).toBe(true);
+    });
+
+    it("対象リスト以外を変更しない", () => {
+      const list2 = createList({ id: "list-2", title: "Other" });
+
+      const result = updateTodoListHideCompletedInLists({
+        lists: [createList(), list2],
+        listId: "list-1",
+        hideCompleted: true,
       });
 
       expect(result[1]).toBe(list2);

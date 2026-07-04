@@ -21,6 +21,11 @@ export type UseTodoListDetailViewCompositionParams = {
     bgColor: TodoItemBgColorValue | undefined,
   ) => void;
   onUpdateListAddItemPosition: (listId: string, position: "last" | "first") => void;
+  onUpdateListMoveCompletedToBottom: (
+    listId: string,
+    moveCompletedToBottom: boolean,
+  ) => void;
+  onUpdateListHideCompleted: (listId: string, hideCompleted: boolean) => void;
 };
 
 export const useTodoListDetailViewComposition = ({
@@ -36,6 +41,8 @@ export const useTodoListDetailViewComposition = ({
   onReorderItems,
   onUpdateAllItemsBgColor,
   onUpdateListAddItemPosition,
+  onUpdateListMoveCompletedToBottom,
+  onUpdateListHideCompleted,
 }: UseTodoListDetailViewCompositionParams) => {
   const selection = useTodoListDetailSelection({
     listId: list.id,
@@ -51,6 +58,8 @@ export const useTodoListDetailViewComposition = ({
     onAddItem,
     onUpdateItemTitle,
     onUpdateListTitle,
+    onUpdateListMoveCompletedToBottom,
+    onUpdateListHideCompleted,
   });
 
   const uiControllers = useTodoListDetailUIControllers();

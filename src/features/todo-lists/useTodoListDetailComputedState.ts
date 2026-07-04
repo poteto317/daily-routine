@@ -1,24 +1,39 @@
 import type { TodoList } from "./types";
 import { createTodoListDetailComputedStateResult } from "./todoListDetailComputedStateResult";
+import { useTodoListDetailCollapsedItems } from "./useTodoListDetailCollapsedItems";
+import { useTodoListDetailHideCompleted } from "./useTodoListDetailHideCompleted";
 import { useTodoListDetailItemOrder } from "./useTodoListDetailItemOrder";
 import { useTodoListDetailOrderedItems } from "./useTodoListDetailOrderedItems";
 import { useTodoListDetailProgress } from "./useTodoListDetailProgress";
 import { useTodoListDetailVisibleItems } from "./useTodoListDetailVisibleItems";
-import { useTodoListDetailVisibility } from "./useTodoListDetailVisibility";
 
 type UseTodoListDetailComputedStateParams = {
   list: TodoList;
+  onUpdateListMoveCompletedToBottom: (
+    listId: string,
+    moveCompletedToBottom: boolean,
+  ) => void;
+  onUpdateListHideCompleted: (listId: string, hideCompleted: boolean) => void;
 };
 
 export const useTodoListDetailComputedState = ({
   list,
+  onUpdateListMoveCompletedToBottom,
+  onUpdateListHideCompleted,
 }: UseTodoListDetailComputedStateParams) => {
-  const detailVisibility = useTodoListDetailVisibility();
-  const detailItemOrder = useTodoListDetailItemOrder();
+  const detailHideCompleted = useTodoListDetailHideCompleted({
+    list,
+    onUpdateListHideCompleted,
+  });
+  const detailCollapsedItems = useTodoListDetailCollapsedItems();
+  const detailItemOrder = useTodoListDetailItemOrder({
+    list,
+    onUpdateListMoveCompletedToBottom,
+  });
   const detailProgress = useTodoListDetailProgress({ list });
   const detailVisibleItems = useTodoListDetailVisibleItems({
-    hideCompleted: detailVisibility.hideCompleted,
-    collapsedItemIds: detailVisibility.collapsedItemIds,
+    hideCompleted: detailHideCompleted.hideCompleted,
+    collapsedItemIds: detailCollapsedItems.collapsedItemIds,
     list,
   });
   const detailOrderedItems = useTodoListDetailOrderedItems({
@@ -29,7 +44,8 @@ export const useTodoListDetailComputedState = ({
   return createTodoListDetailComputedStateResult({
     detailProgress,
     detailOrderedItems,
-    detailVisibility,
+    detailHideCompleted,
+    detailCollapsedItems,
     detailItemOrder,
   });
 };
