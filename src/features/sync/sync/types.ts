@@ -1,5 +1,6 @@
 import type {
   AppSettings,
+  BudgetCategory,
   BudgetData,
   DailyHistory,
   DailyProgress,
@@ -25,6 +26,7 @@ export interface SyncPayload {
   weightHistory: WeightHistory;
   journalHistory: JournalHistory;
   budgetData: BudgetData;
+  budgetCategories: BudgetCategory[];
   mealHistory: MealHistory;
   presets: RoutinePreset[];
   todoLists: TodoList[];
@@ -41,6 +43,7 @@ export interface SyncData {
   weightHistory: SyncPayload["weightHistory"];
   journalHistory: SyncPayload["journalHistory"];
   budgetData: SyncPayload["budgetData"];
+  budgetCategories: SyncPayload["budgetCategories"];
   mealHistory: SyncPayload["mealHistory"];
   presets: SyncPayload["presets"];
   todoLists: SyncPayload["todoLists"];

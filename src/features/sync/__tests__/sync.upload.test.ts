@@ -64,6 +64,9 @@ describe("sync upload", () => {
       },
       expenses: { "2026-02": [{ id: "e1", date: "2026-02-12", amount: 1200 }] },
     });
+    (budgetStorage.getBudgetCategories as jest.Mock).mockReturnValue([
+      { id: "cat-1", name: "食料品", createdAt: "2026-02-01T00:00:00.000Z" },
+    ]);
     (mealStorage.getMealHistory as jest.Mock).mockReturnValue({
       "2026-02-12": [
         {
@@ -133,6 +136,9 @@ describe("sync upload", () => {
             "2026-02": [{ id: "e1", date: "2026-02-12", amount: 1200 }],
           },
         },
+        budgetCategories: [
+          { id: "cat-1", name: "食料品", createdAt: "2026-02-01T00:00:00.000Z" },
+        ],
         mealHistory: {
           "2026-02-12": [
             {
@@ -208,6 +214,9 @@ describe("sync upload", () => {
               "2026-02": [{ id: "e1", date: "2026-02-12", amount: 1200 }],
             },
           },
+          budgetCategories: [
+            { id: "cat-1", name: "食料品", createdAt: "2026-02-01T00:00:00.000Z" },
+          ],
           mealHistory: {
             "2026-02-12": [
               {

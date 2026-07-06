@@ -38,6 +38,7 @@ const createSyncPayload = (data: SyncData): SyncPayload => {
     weightHistory: data.weightHistory,
     journalHistory: data.journalHistory,
     budgetData: data.budgetData,
+    budgetCategories: data.budgetCategories,
     mealHistory: data.mealHistory,
     presets: data.presets,
     todoLists: data.todoLists,

@@ -29,6 +29,7 @@ describe("syncManagementPageStateResult", () => {
           weightHistory: {},
           journalHistory: {},
           budgetData: { budgets: {}, expenses: {} },
+          budgetCategories: [],
           mealHistory: {},
           presets: [],
           todoLists: [],

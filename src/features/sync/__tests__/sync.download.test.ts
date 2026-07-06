@@ -59,6 +59,9 @@ describe("sync download", () => {
           "2026-02": [{ id: "e1", date: "2026-02-12", amount: 1200 }],
         },
       },
+      budgetCategories: [
+        { id: "cat-1", name: "食料品", createdAt: "2026-02-01T00:00:00.000Z" },
+      ],
       mealHistory: {
         "2026-02-12": [
           {
@@ -120,6 +123,9 @@ describe("sync download", () => {
     expect(budgetStorage.saveBudgetData).toHaveBeenCalledWith(
       remoteData.budgetData,
     );
+    expect(budgetStorage.saveBudgetCategories).toHaveBeenCalledWith(
+      remoteData.budgetCategories,
+    );
     expect(mealStorage.saveMealHistory).toHaveBeenCalledWith(
       remoteData.mealHistory,
     );
@@ -159,6 +165,7 @@ describe("sync download", () => {
       budgets: {},
       expenses: {},
     });
+    expect(budgetStorage.saveBudgetCategories).toHaveBeenCalledWith([]);
     expect(mealStorage.saveMealHistory).toHaveBeenCalledWith({});
     expect(presetStorage.savePresets).toHaveBeenCalledWith([]);
     expect(todoListsStorage.saveTodoLists).toHaveBeenCalledWith([]);

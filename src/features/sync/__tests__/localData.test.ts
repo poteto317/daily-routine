@@ -39,6 +39,8 @@ jest.mock("@/features/journal/storage", () => ({
 jest.mock("@/features/budget/storage", () => ({
   getBudgetData: jest.fn(() => ({ budgets: {}, expenses: {} })),
   saveBudgetData: jest.fn(),
+  getBudgetCategories: jest.fn(() => []),
+  saveBudgetCategories: jest.fn(),
 }));
 jest.mock("@/features/meal/storage", () => ({
   getMealHistory: jest.fn(() => ({})),
@@ -98,6 +100,7 @@ describe("localData", () => {
       budgets: {},
       expenses: {},
     });
+    (budgetStorage.getBudgetCategories as jest.Mock).mockReturnValue([]);
     (mealStorage.getMealHistory as jest.Mock).mockReturnValue({});
     (presetStorage.getPresets as jest.Mock).mockReturnValue([]);
     (todoListsStorage.getTodoLists as jest.Mock).mockReturnValue([]);
@@ -113,12 +116,18 @@ describe("localData", () => {
         theme: "dark",
       });
       (presetStorage.getPresets as jest.Mock).mockReturnValue([{ id: "p1" }]);
+      (budgetStorage.getBudgetCategories as jest.Mock).mockReturnValue([
+        { id: "cat-1", name: "食料品", createdAt: "2026-05-01T00:00:00.000Z" },
+      ]);
 
       const result = collectLocalSyncData();
 
       expect(result.routines).toEqual([{ id: "r1" }]);
       expect(result.settings).toEqual({ theme: "dark" });
       expect(result.presets).toEqual([{ id: "p1" }]);
+      expect(result.budgetCategories).toEqual([
+        { id: "cat-1", name: "食料品", createdAt: "2026-05-01T00:00:00.000Z" },
+      ]);
     });
 
     it("全ストレージ getter を呼び出す", () => {
@@ -134,6 +143,7 @@ describe("localData", () => {
       expect(weightTrackerStorage.getWeightHistory).toHaveBeenCalled();
       expect(journalStorage.getJournalHistory).toHaveBeenCalled();
       expect(budgetStorage.getBudgetData).toHaveBeenCalled();
+      expect(budgetStorage.getBudgetCategories).toHaveBeenCalled();
       expect(mealStorage.getMealHistory).toHaveBeenCalled();
       expect(presetStorage.getPresets).toHaveBeenCalled();
       expect(todoListsStorage.getTodoLists).toHaveBeenCalled();
@@ -183,6 +193,24 @@ describe("localData", () => {
     it("withSyncBatch を使って一括で保存する", () => {
       saveSyncDataToLocal({});
       expect(storageCore.withSyncBatch).toHaveBeenCalledTimes(1);
+    });
+
+    it("budgetCategories を保存する", () => {
+      const budgetCategories = [
+        { id: "cat-1", name: "食料品", createdAt: "2026-05-01T00:00:00.000Z" },
+      ];
+
+      saveSyncDataToLocal({ budgetCategories });
+
+      expect(budgetStorage.saveBudgetCategories).toHaveBeenCalledWith(
+        budgetCategories,
+      );
+    });
+
+    it("budgetCategories が未指定の場合は空配列で保存する", () => {
+      saveSyncDataToLocal({});
+
+      expect(budgetStorage.saveBudgetCategories).toHaveBeenCalledWith([]);
     });
   });
 
