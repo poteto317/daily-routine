@@ -8,7 +8,7 @@ export type BudgetSavePayload = {
 export type ExpensePayload = {
   amount: number;
   date: string;
-  description?: string;
+  categoryId?: string;
 };
 
 export const buildBudgetSavePayload = (
@@ -27,9 +27,9 @@ export const buildBudgetSavePayload = (
 export const buildExpensePayload = (params: {
   expenseAmount: string;
   expenseDate: string;
-  expenseDescription: string;
+  expenseCategoryId: string;
 }): ExpensePayload | null => {
-  const { expenseAmount, expenseDate, expenseDescription } = params;
+  const { expenseAmount, expenseDate, expenseCategoryId } = params;
   const amount = parsePositiveAmount(expenseAmount);
 
   if (amount === null || !expenseDate) {
@@ -39,7 +39,7 @@ export const buildExpensePayload = (params: {
   return {
     amount,
     date: expenseDate,
-    description: expenseDescription || undefined,
+    categoryId: expenseCategoryId || undefined,
   };
 };
 

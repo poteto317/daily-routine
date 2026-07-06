@@ -20,7 +20,7 @@ export const createBudgetInputCloseHandler = (params: {
 export const createExpenseFormCloseHandler = (params: {
   setShowExpenseForm: SetValue<boolean>;
   setExpenseAmount: SetValue<string>;
-  setExpenseDescription: SetValue<string>;
+  setExpenseCategoryId: SetValue<string>;
 }) => {
   return () => {
     closeExpenseInputForm(params);

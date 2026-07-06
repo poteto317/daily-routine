@@ -17,7 +17,7 @@ describe("budgetPageActionBindings", () => {
         currentMonth: "2026-03",
         expenseAmount: "2500",
         expenseDate: "2026-03-05",
-        expenseDescription: "書籍",
+        expenseCategoryId: "category-books",
         setExpenses,
         setMonthBudget,
       }),
@@ -29,7 +29,7 @@ describe("budgetPageActionBindings", () => {
       currentMonth: "2026-03",
       expenseAmount: "2500",
       expenseDate: "2026-03-05",
-      expenseDescription: "書籍",
+      expenseCategoryId: "category-books",
       setExpenses,
       setMonthBudget,
     });

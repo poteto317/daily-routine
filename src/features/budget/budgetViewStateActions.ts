@@ -10,7 +10,7 @@ export type BudgetViewState = {
   budgetInputValue: string;
   showExpenseForm: boolean;
   expenseAmount: string;
-  expenseDescription: string;
+  expenseCategoryId: string;
   expenseDate: string;
 };
 
@@ -28,7 +28,7 @@ export const createInitialBudgetViewState = (
     budgetInputValue: "",
     showExpenseForm: false,
     expenseAmount: "",
-    expenseDescription: "",
+    expenseCategoryId: "",
     expenseDate: initialSnapshot.defaultExpenseDate,
   };
 };

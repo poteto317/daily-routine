@@ -11,8 +11,18 @@ const mockUseBudgetPageState = useBudgetPageState as jest.MockedFunction<
   typeof useBudgetPageState
 >;
 
+const categories = [
+  { id: "cat-lunch", name: "ランチ", createdAt: "2026-01-01T00:00:00.000Z" },
+  {
+    id: "cat-transport",
+    name: "交通費",
+    createdAt: "2026-01-01T00:00:00.000Z",
+  },
+];
+
 const createState = (overrides: Record<string, unknown> = {}) => ({
   budgetInputValue: "30000",
+  categories,
   closeBudgetInput: jest.fn(),
   closeExpenseForm: jest.fn(),
   currentDate: new Date("2026-03-07T00:00:00+09:00"),
@@ -21,13 +31,13 @@ const createState = (overrides: Record<string, unknown> = {}) => ({
   daysRemaining: 26,
   expenseAmount: "1500",
   expenseDate: "2026-03-07",
-  expenseDescription: "ランチ",
+  expenseCategoryId: "",
   expenses: [
     {
       id: "e1",
       date: "2026-03-06",
       amount: 1500,
-      description: "ランチ",
+      categoryId: "cat-lunch",
       createdAt: "2026-03-06T00:00:00.000Z",
     },
   ],
@@ -39,7 +49,7 @@ const createState = (overrides: Record<string, unknown> = {}) => ({
   handleDeleteExpense: jest.fn(),
   handleExpenseAmountChange: jest.fn(),
   handleExpenseDateChange: jest.fn(),
-  handleExpenseDescriptionChange: jest.fn(),
+  handleExpenseCategoryIdChange: jest.fn(),
   handleSaveBudget: jest.fn(),
   isCurrentMonth: true,
   monthBudget: 30000,
@@ -69,7 +79,7 @@ describe("BudgetPage", () => {
     expect(screen.getByText("￥18,000")).toBeInTheDocument();
     expect(screen.getByText("￥12,000")).toBeInTheDocument();
     expect(screen.getByText("￥1,500")).toBeInTheDocument();
-    expect(screen.getByText("ランチ")).toBeInTheDocument();
+    expect(screen.getByText("🏷️ ランチ")).toBeInTheDocument();
 
     fireEvent.click(screen.getByText("← 前月"));
     fireEvent.click(screen.getByText("次月 →"));
@@ -105,8 +115,8 @@ describe("BudgetPage", () => {
     fireEvent.change(screen.getByPlaceholderText("例: 1500"), {
       target: { value: "2000" },
     });
-    fireEvent.change(screen.getByPlaceholderText("例: ランチ、交通費など"), {
-      target: { value: "交通費" },
+    fireEvent.change(screen.getByRole("combobox"), {
+      target: { value: "cat-transport" },
     });
     fireEvent.click(screen.getByText("追加"));
     fireEvent.click(screen.getAllByText("キャンセル")[1]);
@@ -117,7 +127,9 @@ describe("BudgetPage", () => {
     expect(state.closeBudgetInput).toHaveBeenCalled();
     expect(state.handleExpenseDateChange).toHaveBeenCalledWith("2026-03-08");
     expect(state.handleExpenseAmountChange).toHaveBeenCalledWith("2000");
-    expect(state.handleExpenseDescriptionChange).toHaveBeenCalledWith("交通費");
+    expect(state.handleExpenseCategoryIdChange).toHaveBeenCalledWith(
+      "cat-transport",
+    );
     expect(state.handleAddExpense).toHaveBeenCalled();
     expect(state.closeExpenseForm).toHaveBeenCalled();
   });

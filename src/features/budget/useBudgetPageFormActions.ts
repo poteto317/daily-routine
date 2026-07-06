@@ -12,7 +12,7 @@ type UseBudgetPageFormActionsArgs = {
   setBudgetInputValue: Dispatch<SetStateAction<string>>;
   setShowExpenseForm: Dispatch<SetStateAction<boolean>>;
   setExpenseAmount: Dispatch<SetStateAction<string>>;
-  setExpenseDescription: Dispatch<SetStateAction<string>>;
+  setExpenseCategoryId: Dispatch<SetStateAction<string>>;
 };
 
 export const useBudgetPageFormActions = ({
@@ -21,7 +21,7 @@ export const useBudgetPageFormActions = ({
   setBudgetInputValue,
   setShowExpenseForm,
   setExpenseAmount,
-  setExpenseDescription,
+  setExpenseCategoryId,
 }: UseBudgetPageFormActionsArgs) => {
   return {
     closeBudgetInput: createBudgetInputCloseHandler({
@@ -31,7 +31,7 @@ export const useBudgetPageFormActions = ({
     closeExpenseForm: createExpenseFormCloseHandler({
       setShowExpenseForm,
       setExpenseAmount,
-      setExpenseDescription,
+      setExpenseCategoryId,
     }),
     openBudgetInput: createBudgetInputOpenHandler({
       monthBudget,

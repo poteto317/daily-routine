@@ -29,7 +29,7 @@ describe("budgetViewStateActions", () => {
       budgetInputValue: "",
       showExpenseForm: false,
       expenseAmount: "",
-      expenseDescription: "",
+      expenseCategoryId: "",
       expenseDate: "2026-03-07",
     });
   });

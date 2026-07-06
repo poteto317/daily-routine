@@ -11,10 +11,10 @@ describe("createBudgetPageFormStateResult", () => {
     const inputState = {
       budgetInputValue: "30000",
       expenseAmount: "1200",
-      expenseDescription: "ランチ",
+      expenseCategoryId: "category-lunch",
       setBudgetInputValue: jest.fn(),
       setExpenseAmount: jest.fn(),
-      setExpenseDescription: jest.fn(),
+      setExpenseCategoryId: jest.fn(),
     };
     const closeBudgetInput = jest.fn();
     const closeExpenseForm = jest.fn();

@@ -31,7 +31,7 @@ describe("useBudgetPageFormActions", () => {
       setBudgetInputValue: jest.fn(),
       setShowExpenseForm: jest.fn(),
       setExpenseAmount: jest.fn(),
-      setExpenseDescription: jest.fn(),
+      setExpenseCategoryId: jest.fn(),
     };
 
     (createBudgetInputCloseHandler as jest.Mock).mockReturnValue(
@@ -56,7 +56,7 @@ describe("useBudgetPageFormActions", () => {
     expect(createExpenseFormCloseHandler).toHaveBeenCalledWith({
       setShowExpenseForm: params.setShowExpenseForm,
       setExpenseAmount: params.setExpenseAmount,
-      setExpenseDescription: params.setExpenseDescription,
+      setExpenseCategoryId: params.setExpenseCategoryId,
     });
     expect(createBudgetInputOpenHandler).toHaveBeenCalledWith({
       monthBudget: params.monthBudget,

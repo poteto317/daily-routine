@@ -41,7 +41,7 @@ describe("useBudgetExpenseActions", () => {
       currentDate: new Date("2026-03-07T00:00:00.000Z"),
       expenseAmount: "2500",
       expenseDate: "2026-03-05",
-      expenseDescription: "書籍",
+      expenseCategoryId: "category-books",
       setExpenses: jest.fn(),
       closeExpenseForm: jest.fn(),
     };
@@ -68,7 +68,7 @@ describe("useBudgetExpenseActions", () => {
     expect(createExpenseAddHandler).toHaveBeenCalledWith({
       expenseAmount: "2500",
       expenseDate: "2026-03-05",
-      expenseDescription: "書籍",
+      expenseCategoryId: "category-books",
       currentDate: params.currentDate,
       setExpenses: params.setExpenses,
       closeExpenseForm: params.closeExpenseForm,

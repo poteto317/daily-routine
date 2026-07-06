@@ -10,8 +10,14 @@ export interface Expense {
   id: string;
   date: string;
   amount: number;
-  category?: string;
-  description?: string;
+  /** BudgetCategory.id への参照（未選択の場合は undefined） */
+  categoryId?: string;
+  createdAt: string;
+}
+
+export interface BudgetCategory {
+  id: string;
+  name: string;
   createdAt: string;
 }
 

@@ -1,7 +1,8 @@
-import type { Expense } from "@/types/routine";
+import type { BudgetCategory, Expense } from "@/types/routine";
 
 type BudgetPageStateResultArgs = {
   budgetInputValue: string;
+  categories: BudgetCategory[];
   closeBudgetInput: () => void;
   closeExpenseForm: () => void;
   currentDate: Date;
@@ -10,7 +11,7 @@ type BudgetPageStateResultArgs = {
   daysRemaining: number;
   expenseAmount: string;
   expenseDate: string;
-  expenseDescription: string;
+  expenseCategoryId: string;
   expenses: Expense[];
   goToCurrentMonth: () => void;
   goToNextMonth: () => void;
@@ -20,7 +21,7 @@ type BudgetPageStateResultArgs = {
   handleDeleteExpense: (expenseId: string) => void;
   handleExpenseAmountChange: (value: string) => void;
   handleExpenseDateChange: (value: string) => void;
-  handleExpenseDescriptionChange: (value: string) => void;
+  handleExpenseCategoryIdChange: (value: string) => void;
   handleSaveBudget: () => void;
   isCurrentMonth: boolean;
   monthBudget: number;
@@ -34,6 +35,7 @@ type BudgetPageStateResultArgs = {
 
 export const createBudgetPageStateResult = ({
   budgetInputValue,
+  categories,
   closeBudgetInput,
   closeExpenseForm,
   currentDate,
@@ -42,7 +44,7 @@ export const createBudgetPageStateResult = ({
   daysRemaining,
   expenseAmount,
   expenseDate,
-  expenseDescription,
+  expenseCategoryId,
   expenses,
   goToCurrentMonth,
   goToNextMonth,
@@ -52,7 +54,7 @@ export const createBudgetPageStateResult = ({
   handleDeleteExpense,
   handleExpenseAmountChange,
   handleExpenseDateChange,
-  handleExpenseDescriptionChange,
+  handleExpenseCategoryIdChange,
   handleSaveBudget,
   isCurrentMonth,
   monthBudget,
@@ -65,6 +67,7 @@ export const createBudgetPageStateResult = ({
 }: BudgetPageStateResultArgs) => {
   return {
     budgetInputValue,
+    categories,
     closeBudgetInput,
     closeExpenseForm,
     currentDate,
@@ -73,7 +76,7 @@ export const createBudgetPageStateResult = ({
     daysRemaining,
     expenseAmount,
     expenseDate,
-    expenseDescription,
+    expenseCategoryId,
     expenses,
     goToCurrentMonth,
     goToNextMonth,
@@ -83,7 +86,7 @@ export const createBudgetPageStateResult = ({
     handleDeleteExpense,
     handleExpenseAmountChange,
     handleExpenseDateChange,
-    handleExpenseDescriptionChange,
+    handleExpenseCategoryIdChange,
     handleSaveBudget,
     isCurrentMonth,
     monthBudget,

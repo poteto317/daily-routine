@@ -10,7 +10,7 @@ type UseBudgetExpenseActionsParams = {
   currentDate: Date;
   expenseAmount: string;
   expenseDate: string;
-  expenseDescription: string;
+  expenseCategoryId: string;
   setExpenses: (value: Expense[]) => void;
   closeExpenseForm: () => void;
 };
@@ -20,14 +20,14 @@ export const useBudgetExpenseActions = ({
   currentDate,
   expenseAmount,
   expenseDate,
-  expenseDescription,
+  expenseCategoryId,
   setExpenses,
   closeExpenseForm,
 }: UseBudgetExpenseActionsParams) => {
   const handleAddExpense = createExpenseAddHandler({
     expenseAmount,
     expenseDate,
-    expenseDescription,
+    expenseCategoryId,
     currentDate,
     setExpenses,
     closeExpenseForm,

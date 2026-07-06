@@ -37,7 +37,7 @@ export const createBudgetSaveHandler = (params: {
 export const createExpenseAddHandler = (params: {
   expenseAmount: string;
   expenseDate: string;
-  expenseDescription: string;
+  expenseCategoryId: string;
   currentDate: Date;
   setExpenses: SetValue<Expense[]>;
   closeExpenseForm: () => void;
@@ -45,7 +45,7 @@ export const createExpenseAddHandler = (params: {
   const {
     expenseAmount,
     expenseDate,
-    expenseDescription,
+    expenseCategoryId,
     currentDate,
     setExpenses,
     closeExpenseForm,
@@ -55,7 +55,7 @@ export const createExpenseAddHandler = (params: {
     addExpenseFromInput({
       expenseAmount,
       expenseDate,
-      expenseDescription,
+      expenseCategoryId,
       buildPayload: buildExpensePayload,
       saveExpense: addExpense,
       currentDate,

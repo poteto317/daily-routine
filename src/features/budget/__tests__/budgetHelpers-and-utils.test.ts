@@ -1,4 +1,5 @@
 import {
+  findExpenseCategory,
   formatBudgetMonthLabel,
   getBudgetActionLabel,
   getBudgetExpenseDateBounds,
@@ -90,6 +91,33 @@ describe("budget helpers and utils", () => {
       expect.objectContaining({ id: "e2" }),
       expect.objectContaining({ id: "e1" }),
     ]);
+  });
+
+  it("支出からcategoryIdに対応するカテゴリを解決できる", () => {
+    const categories = [
+      { id: "cat-1", name: "食料品", createdAt: "2026-03-01T00:00:00.000Z" },
+    ];
+    const expenseWithCategory = {
+      id: "e1",
+      date: "2026-03-03",
+      amount: 100,
+      categoryId: "cat-1",
+      createdAt: "2026-03-03T00:00:00.000Z",
+    };
+    const expenseWithoutMatch = {
+      id: "e2",
+      date: "2026-03-05",
+      amount: 200,
+      categoryId: "cat-404",
+      createdAt: "2026-03-05T00:00:00.000Z",
+    };
+
+    expect(findExpenseCategory(categories, expenseWithCategory)).toEqual(
+      categories[0],
+    );
+    expect(
+      findExpenseCategory(categories, expenseWithoutMatch),
+    ).toBeUndefined();
   });
 
   it("日付ユーティリティを扱える", () => {

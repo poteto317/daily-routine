@@ -60,18 +60,20 @@ export const BudgetPage = () => {
           )}
           {state.showExpenseForm && (
             <BudgetExpenseForm
+              categories={state.categories}
               currentDate={state.currentDate}
               expenseAmount={state.expenseAmount}
+              expenseCategoryId={state.expenseCategoryId}
               expenseDate={state.expenseDate}
-              expenseDescription={state.expenseDescription}
               onAdd={state.handleAddExpense}
               onAmountChange={state.handleExpenseAmountChange}
               onCancel={state.closeExpenseForm}
+              onCategoryIdChange={state.handleExpenseCategoryIdChange}
               onDateChange={state.handleExpenseDateChange}
-              onDescriptionChange={state.handleExpenseDescriptionChange}
             />
           )}
           <BudgetExpenseList
+            categories={state.categories}
             expenses={state.expenses}
             onDelete={(expenseId) => {
               if (window.confirm(budgetTexts.page.confirmDeleteExpense)) {

@@ -1,28 +1,31 @@
+import type { BudgetCategory } from "@/types/routine";
 import { getBudgetExpenseDateBounds } from "../helpers";
 import budgetTexts from "../locales/ja.json";
 
 type BudgetExpenseFormProps = {
+  categories: BudgetCategory[];
   currentDate: Date;
   expenseAmount: string;
+  expenseCategoryId: string;
   expenseDate: string;
-  expenseDescription: string;
   onAdd: () => void;
   onAmountChange: (value: string) => void;
   onCancel: () => void;
+  onCategoryIdChange: (value: string) => void;
   onDateChange: (value: string) => void;
-  onDescriptionChange: (value: string) => void;
 };
 
 export const BudgetExpenseForm = ({
+  categories,
   currentDate,
   expenseAmount,
+  expenseCategoryId,
   expenseDate,
-  expenseDescription,
   onAdd,
   onAmountChange,
   onCancel,
+  onCategoryIdChange,
   onDateChange,
-  onDescriptionChange,
 }: BudgetExpenseFormProps) => {
   const { minDate, maxDate } = getBudgetExpenseDateBounds(currentDate);
 
@@ -62,15 +65,22 @@ export const BudgetExpenseForm = ({
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-900 mb-1">
-            {budgetTexts.expenseForm.descriptionLabel}
+            {budgetTexts.expenseForm.categoryLabel}
           </label>
-          <input
-            type="text"
-            value={expenseDescription}
-            onChange={(e) => onDescriptionChange(e.target.value)}
-            placeholder={budgetTexts.expenseForm.descriptionPlaceholder}
+          <select
+            value={expenseCategoryId}
+            onChange={(e) => onCategoryIdChange(e.target.value)}
             className="w-full px-4 py-2 border border-gray-300 dark:border-gray-400 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-white text-gray-900"
-          />
+          >
+            <option value="">
+              {budgetTexts.expenseForm.categoryPlaceholder}
+            </option>
+            {categories.map((category) => (
+              <option key={category.id} value={category.id}>
+                {category.name}
+              </option>
+            ))}
+          </select>
         </div>
         <div className="flex gap-3">
           <button

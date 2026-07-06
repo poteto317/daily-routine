@@ -1,12 +1,13 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { expect, userEvent, within } from "storybook/test";
-import type { BudgetData } from "@/types/routine";
+import type { BudgetCategory, BudgetData } from "@/types/routine";
 import { BudgetPage } from "./BudgetPage";
 import { saveBudgetData } from "./storageData";
+import { saveBudgetCategories } from "./storageCategories";
 
 // BudgetPage は useBudgetPageState() を内部で呼び出す。
-// localStorage（budget-data キー）からデータを読み込む。
-// beforeEach で saveBudgetData() を使いデータを設定する。
+// localStorage（budget-data / budget-categories キー）からデータを読み込む。
+// beforeEach で saveBudgetData() / saveBudgetCategories() を使いデータを設定する。
 
 const meta = {
   title: "Features/Budget/BudgetPage",
@@ -21,6 +22,11 @@ const currentMonth = (() => {
   const now = new Date();
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
 })();
+
+const sampleCategories: BudgetCategory[] = [
+  { id: "cat-food", name: "食費", createdAt: new Date().toISOString() },
+  { id: "cat-transport", name: "交通費", createdAt: new Date().toISOString() },
+];
 
 const sampleBudgetData: BudgetData = {
   budgets: {
@@ -37,17 +43,15 @@ const sampleBudgetData: BudgetData = {
       {
         id: "exp-1",
         amount: 12000,
-        description: "スーパー食材",
         date: `${currentMonth}-10`,
-        category: "食費",
+        categoryId: "cat-food",
         createdAt: new Date().toISOString(),
       },
       {
         id: "exp-2",
         amount: 5000,
-        description: "電車代",
         date: `${currentMonth}-15`,
-        category: "交通費",
+        categoryId: "cat-transport",
         createdAt: new Date().toISOString(),
       },
     ],
@@ -59,14 +63,22 @@ const emptyBudgetData: BudgetData = { budgets: {}, expenses: {} };
 export const Default: Story = {
   beforeEach() {
     saveBudgetData(emptyBudgetData);
-    return () => saveBudgetData(emptyBudgetData);
+    saveBudgetCategories([]);
+    return () => {
+      saveBudgetData(emptyBudgetData);
+      saveBudgetCategories([]);
+    };
   },
 };
 
 export const WithData: Story = {
   beforeEach() {
     saveBudgetData(sampleBudgetData);
-    return () => saveBudgetData(emptyBudgetData);
+    saveBudgetCategories(sampleCategories);
+    return () => {
+      saveBudgetData(emptyBudgetData);
+      saveBudgetCategories([]);
+    };
   },
 };
 

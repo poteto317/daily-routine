@@ -32,6 +32,10 @@ jest.mock("../useBudgetMonthState", () => ({
   useBudgetMonthState: jest.fn(),
 }));
 
+jest.mock("../useBudgetCategoriesState", () => ({
+  useBudgetCategoriesState: jest.fn(),
+}));
+
 import { createBudgetPageActionBindings } from "../budgetPageActionBindings";
 import { createBudgetPageInputHandlers } from "../budgetPageInputHandlers";
 import { createBudgetPageStateResult } from "../budgetPageStateResult";
@@ -40,6 +44,7 @@ import { useBudgetPageFormState } from "../useBudgetPageFormState";
 import { useBudgetPageInitialState } from "../useBudgetPageInitialState";
 import { useBudgetPageMetricsState } from "../useBudgetPageMetricsState";
 import { useBudgetMonthState } from "../useBudgetMonthState";
+import { useBudgetCategoriesState } from "../useBudgetCategoriesState";
 import { useBudgetPageState } from "../useBudgetPageState";
 
 describe("useBudgetPageState composition", () => {
@@ -49,7 +54,7 @@ describe("useBudgetPageState composition", () => {
     (useBudgetPageInitialState as jest.Mock).mockReturnValue({
       budgetInputValue: "",
       expenseAmount: "",
-      expenseDescription: "",
+      expenseCategoryId: "",
       showBudgetInput: false,
       showExpenseForm: false,
     });
@@ -71,12 +76,12 @@ describe("useBudgetPageState composition", () => {
       closeBudgetInput: jest.fn(),
       closeExpenseForm: jest.fn(),
       expenseAmount: "",
-      expenseDescription: "",
+      expenseCategoryId: "",
       openBudgetInput: jest.fn(),
       openExpenseForm: jest.fn(),
       setBudgetInputValue: jest.fn(),
       setExpenseAmount: jest.fn(),
-      setExpenseDescription: jest.fn(),
+      setExpenseCategoryId: jest.fn(),
       showBudgetInput: false,
       showExpenseForm: false,
     });
@@ -100,10 +105,15 @@ describe("useBudgetPageState composition", () => {
       handleBudgetInputChange: jest.fn(),
       handleExpenseAmountChange: jest.fn(),
       handleExpenseDateChange: jest.fn(),
-      handleExpenseDescriptionChange: jest.fn(),
+      handleExpenseCategoryIdChange: jest.fn(),
     });
     (createBudgetPageStateResult as jest.Mock).mockReturnValue({
       composed: true,
+    });
+    (useBudgetCategoriesState as jest.Mock).mockReturnValue({
+      categories: [
+        { id: "cat-1", name: "食料品", createdAt: "2026-05-01T00:00:00.000Z" },
+      ],
     });
   });
 
@@ -141,11 +151,15 @@ describe("useBudgetPageState composition", () => {
         setExpenseAmount: expect.any(Function),
       }),
     );
+    expect(useBudgetCategoriesState).toHaveBeenCalledTimes(1);
     expect(createBudgetPageStateResult).toHaveBeenCalledWith(
       expect.objectContaining({
         currentDate: expect.any(Date),
         monthBudget: 30000,
         dailyBudget: 1000,
+        categories: [
+          { id: "cat-1", name: "食料品", createdAt: "2026-05-01T00:00:00.000Z" },
+        ],
       }),
     );
     expect(result.current).toEqual({ composed: true });

@@ -5,6 +5,7 @@ jest.mock("../storage", () => ({
   addExpense: jest.fn(),
   deleteExpense: jest.fn(),
   setMonthlyBudget: jest.fn(),
+  getBudgetCategories: jest.fn(() => []),
 }));
 
 jest.mock("../budgetPageStateHelpers", () => {
@@ -91,14 +92,14 @@ describe("useBudgetPageState", () => {
       result.current.closeBudgetInput();
       result.current.openExpenseForm();
       result.current.handleExpenseAmountChange("1200");
-      result.current.handleExpenseDescriptionChange("ランチ");
+      result.current.handleExpenseCategoryIdChange("category-lunch");
       result.current.closeExpenseForm();
     });
 
     expect(result.current.showBudgetInput).toBe(false);
     expect(result.current.showExpenseForm).toBe(false);
     expect(result.current.expenseAmount).toBe("");
-    expect(result.current.expenseDescription).toBe("");
+    expect(result.current.expenseCategoryId).toBe("");
   });
 
   it("有効な予算入力を保存する", () => {
@@ -136,7 +137,7 @@ describe("useBudgetPageState", () => {
     act(() => {
       result.current.openExpenseForm();
       result.current.handleExpenseAmountChange("2500");
-      result.current.handleExpenseDescriptionChange("書籍");
+      result.current.handleExpenseCategoryIdChange("category-books");
       result.current.handleExpenseDateChange("2026-03-05");
     });
 
@@ -147,14 +148,13 @@ describe("useBudgetPageState", () => {
     expect(mockAddExpense).toHaveBeenCalledWith(
       "2026-03-05",
       2500,
-      undefined,
-      "書籍",
+      "category-books",
     );
     expect(result.current.expenses).toEqual([
       expect.objectContaining({ id: "e-mar", amount: 1000 }),
     ]);
     expect(result.current.expenseAmount).toBe("");
-    expect(result.current.expenseDescription).toBe("");
+    expect(result.current.expenseCategoryId).toBe("");
     expect(result.current.showExpenseForm).toBe(false);
   });
 

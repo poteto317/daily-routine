@@ -3,26 +3,26 @@ import type { Dispatch, SetStateAction } from "react";
 type CreateBudgetPageInputStateResultArgs = {
   budgetInputValue: string;
   expenseAmount: string;
-  expenseDescription: string;
+  expenseCategoryId: string;
   setBudgetInputValue: Dispatch<SetStateAction<string>>;
   setExpenseAmount: Dispatch<SetStateAction<string>>;
-  setExpenseDescription: Dispatch<SetStateAction<string>>;
+  setExpenseCategoryId: Dispatch<SetStateAction<string>>;
 };
 
 export const createBudgetPageInputStateResult = ({
   budgetInputValue,
   expenseAmount,
-  expenseDescription,
+  expenseCategoryId,
   setBudgetInputValue,
   setExpenseAmount,
-  setExpenseDescription,
+  setExpenseCategoryId,
 }: CreateBudgetPageInputStateResultArgs) => {
   return {
     budgetInputValue,
     expenseAmount,
-    expenseDescription,
+    expenseCategoryId,
     setBudgetInputValue,
     setExpenseAmount,
-    setExpenseDescription,
+    setExpenseCategoryId,
   };
 };

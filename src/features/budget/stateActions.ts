@@ -51,14 +51,14 @@ export const closeBudgetInputForm = (params: {
 export const closeExpenseInputForm = (params: {
   setShowExpenseForm: SetValue<boolean>;
   setExpenseAmount: SetValue<string>;
-  setExpenseDescription: SetValue<string>;
+  setExpenseCategoryId: SetValue<string>;
 }): void => {
-  const { setShowExpenseForm, setExpenseAmount, setExpenseDescription } =
+  const { setShowExpenseForm, setExpenseAmount, setExpenseCategoryId } =
     params;
 
   setShowExpenseForm(false);
   setExpenseAmount("");
-  setExpenseDescription("");
+  setExpenseCategoryId("");
 };
 
 export const openBudgetInputForm = (params: {
@@ -123,18 +123,13 @@ export const saveBudgetFromInput = (params: {
 export const addExpenseFromInput = (params: {
   expenseAmount: string;
   expenseDate: string;
-  expenseDescription: string;
+  expenseCategoryId: string;
   buildPayload: (params: {
     expenseAmount: string;
     expenseDate: string;
-    expenseDescription: string;
+    expenseCategoryId: string;
   }) => ExpensePayload | null;
-  saveExpense: (
-    date: string,
-    amount: number,
-    category?: string,
-    description?: string,
-  ) => void;
+  saveExpense: (date: string, amount: number, categoryId?: string) => void;
   currentDate: Date;
   getSnapshot: (date: Date) => MonthStateSnapshot;
   setExpenses: SetValue<Expense[]>;
@@ -143,7 +138,7 @@ export const addExpenseFromInput = (params: {
   const {
     expenseAmount,
     expenseDate,
-    expenseDescription,
+    expenseCategoryId,
     buildPayload,
     saveExpense,
     currentDate,
@@ -154,14 +149,14 @@ export const addExpenseFromInput = (params: {
   const payload = buildPayload({
     expenseAmount,
     expenseDate,
-    expenseDescription,
+    expenseCategoryId,
   });
 
   if (!payload) {
     return false;
   }
 
-  saveExpense(payload.date, payload.amount, undefined, payload.description);
+  saveExpense(payload.date, payload.amount, payload.categoryId);
   setExpenses(getSnapshot(currentDate).expenses);
   closeExpenseForm();
   return true;

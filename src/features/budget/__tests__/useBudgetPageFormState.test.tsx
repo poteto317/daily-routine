@@ -7,7 +7,7 @@ describe("useBudgetPageFormState", () => {
     budgetInputValue: "",
     showExpenseForm: false,
     expenseAmount: "",
-    expenseDescription: "",
+    expenseCategoryId: "",
   };
 
   it("初期フォーム状態と変更ハンドラを管理する", () => {
@@ -24,12 +24,12 @@ describe("useBudgetPageFormState", () => {
     act(() => {
       result.current.setBudgetInputValue("45000");
       result.current.setExpenseAmount("1200");
-      result.current.setExpenseDescription("ランチ");
+      result.current.setExpenseCategoryId("category-lunch");
     });
 
     expect(result.current.budgetInputValue).toBe("45000");
     expect(result.current.expenseAmount).toBe("1200");
-    expect(result.current.expenseDescription).toBe("ランチ");
+    expect(result.current.expenseCategoryId).toBe("category-lunch");
   });
 
   it("予算入力と支出フォームの open/close を管理する", () => {
@@ -51,7 +51,7 @@ describe("useBudgetPageFormState", () => {
 
     act(() => {
       result.current.setExpenseAmount("999");
-      result.current.setExpenseDescription("書籍");
+      result.current.setExpenseCategoryId("category-books");
       result.current.closeBudgetInput();
       result.current.closeExpenseForm();
     });
@@ -60,7 +60,7 @@ describe("useBudgetPageFormState", () => {
     expect(result.current.budgetInputValue).toBe("");
     expect(result.current.showExpenseForm).toBe(false);
     expect(result.current.expenseAmount).toBe("");
-    expect(result.current.expenseDescription).toBe("");
+    expect(result.current.expenseCategoryId).toBe("");
   });
 
   it("monthBudget の変化に応じて openBudgetInput の初期値が変わる", () => {

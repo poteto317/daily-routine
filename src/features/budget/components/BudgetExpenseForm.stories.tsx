@@ -1,6 +1,12 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { expect, fn, userEvent, within } from "storybook/test";
+import type { BudgetCategory } from "@/types/routine";
 import { BudgetExpenseForm } from "./BudgetExpenseForm";
+
+const categories: BudgetCategory[] = [
+  { id: "cat-lunch", name: "ランチ", createdAt: "2026-05-01T00:00:00+09:00" },
+  { id: "cat-grocery", name: "食料品", createdAt: "2026-05-01T00:00:00+09:00" },
+];
 
 const meta = {
   title: "Features/Budget/BudgetExpenseForm",
@@ -9,12 +15,13 @@ const meta = {
     layout: "padded",
   },
   args: {
+    categories,
     currentDate: new Date(2026, 4, 22),
     onAdd: fn(),
     onAmountChange: fn(),
     onCancel: fn(),
     onDateChange: fn(),
-    onDescriptionChange: fn(),
+    onCategoryIdChange: fn(),
   },
 } satisfies Meta<typeof BudgetExpenseForm>;
 
@@ -22,14 +29,14 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Empty: Story = {
-  args: { expenseDate: "2026-05-22", expenseAmount: "", expenseDescription: "" },
+  args: { expenseDate: "2026-05-22", expenseAmount: "", expenseCategoryId: "" },
 };
 
 export const WithAmount: Story = {
   args: {
     expenseDate: "2026-05-22",
     expenseAmount: "1500",
-    expenseDescription: "",
+    expenseCategoryId: "",
   },
 };
 
@@ -37,7 +44,7 @@ export const WithAll: Story = {
   args: {
     expenseDate: "2026-05-22",
     expenseAmount: "850",
-    expenseDescription: "ランチ（定食）",
+    expenseCategoryId: "cat-lunch",
   },
 };
 
@@ -45,7 +52,7 @@ export const ClickAdd: Story = {
   args: {
     expenseDate: "2026-05-22",
     expenseAmount: "1500",
-    expenseDescription: "食料品",
+    expenseCategoryId: "cat-grocery",
   },
   play: async ({ canvasElement, args }) => {
     const canvas = within(canvasElement);

@@ -9,7 +9,7 @@ type UseBudgetPageActionHandlersParams = {
   budgetInputValue: string;
   expenseAmount: string;
   expenseDate: string;
-  expenseDescription: string;
+  expenseCategoryId: string;
   setMonthBudget: (value: number) => void;
   setExpenses: (value: Expense[]) => void;
   closeBudgetInput: () => void;
@@ -22,7 +22,7 @@ export const useBudgetPageActionHandlers = ({
   budgetInputValue,
   expenseAmount,
   expenseDate,
-  expenseDescription,
+  expenseCategoryId,
   setMonthBudget,
   setExpenses,
   closeBudgetInput,
@@ -40,7 +40,7 @@ export const useBudgetPageActionHandlers = ({
     currentDate,
     expenseAmount,
     expenseDate,
-    expenseDescription,
+    expenseCategoryId,
     setExpenses,
     closeExpenseForm,
   });
