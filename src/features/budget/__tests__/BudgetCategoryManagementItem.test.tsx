@@ -191,4 +191,75 @@ describe("BudgetCategoryManagementItem", () => {
 
     expect(onCommitEdit).toHaveBeenCalledTimes(2);
   });
+
+  it("IME変換中のEnterではonCommitEditを呼ばない", () => {
+    const onCommitEdit = jest.fn();
+
+    render(
+      <BudgetCategoryManagementItem
+        category={category}
+        editingCategoryId="cat-1"
+        editingCategoryNameValue="しょくひん"
+        onChangeNameValue={jest.fn()}
+        onCommitEdit={onCommitEdit}
+        onCancelEdit={jest.fn()}
+        onStartEdit={jest.fn()}
+        onDelete={jest.fn()}
+      />,
+    );
+
+    fireEvent.keyDown(screen.getByDisplayValue("しょくひん"), {
+      key: "Enter",
+      nativeEvent: { isComposing: true },
+      isComposing: true,
+    });
+
+    expect(onCommitEdit).not.toHaveBeenCalled();
+  });
+
+  it("IME変換確定のEnter（keyCode 229）でもonCommitEditを呼ばない", () => {
+    const onCommitEdit = jest.fn();
+
+    render(
+      <BudgetCategoryManagementItem
+        category={category}
+        editingCategoryId="cat-1"
+        editingCategoryNameValue="しょくひん"
+        onChangeNameValue={jest.fn()}
+        onCommitEdit={onCommitEdit}
+        onCancelEdit={jest.fn()}
+        onStartEdit={jest.fn()}
+        onDelete={jest.fn()}
+      />,
+    );
+
+    fireEvent.keyDown(screen.getByDisplayValue("しょくひん"), {
+      key: "Enter",
+      keyCode: 229,
+      which: 229,
+    });
+
+    expect(onCommitEdit).not.toHaveBeenCalled();
+  });
+
+  it("IME変換中でないEnterではonCommitEditを呼ぶ", () => {
+    const onCommitEdit = jest.fn();
+
+    render(
+      <BudgetCategoryManagementItem
+        category={category}
+        editingCategoryId="cat-1"
+        editingCategoryNameValue="食品"
+        onChangeNameValue={jest.fn()}
+        onCommitEdit={onCommitEdit}
+        onCancelEdit={jest.fn()}
+        onStartEdit={jest.fn()}
+        onDelete={jest.fn()}
+      />,
+    );
+
+    fireEvent.keyDown(screen.getByDisplayValue("食品"), { key: "Enter" });
+
+    expect(onCommitEdit).toHaveBeenCalledTimes(1);
+  });
 });

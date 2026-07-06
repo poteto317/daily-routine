@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef } from "react";
+import { isImeComposingKeyDown } from "@/lib/isImeComposingKeyDown";
 import type { BudgetCategory } from "@/types/routine";
 
 type Props = {
@@ -44,7 +45,7 @@ export const BudgetCategoryManagementItem = ({
             onCommitEdit();
           }}
           onKeyDown={(e) => {
-            if (e.key === "Enter") {
+            if (e.key === "Enter" && !isImeComposingKeyDown(e)) {
               suppressNextBlurCommitRef.current = true;
               onCommitEdit();
             }
