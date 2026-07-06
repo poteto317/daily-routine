@@ -1,4 +1,5 @@
 export { BudgetPage } from "./BudgetPage";
+export { BudgetCategoryManagementPage } from "./components/BudgetCategoryManagementPage";
 export {
   getBudgetData,
   saveBudgetData,
@@ -8,4 +9,6 @@ export {
   addExpense,
   deleteExpense,
   getMonthlyTotalExpense,
+  getBudgetCategories,
+  saveBudgetCategories,
 } from "./storage";
