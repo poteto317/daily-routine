@@ -53,8 +53,13 @@ export const sortExpensesByDateDesc = (expenses: Expense[]): Expense[] =>
     .slice()
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
-export const findExpenseCategory = (
+export const buildBudgetCategoryLookup = (
   categories: BudgetCategory[],
+): Map<string, BudgetCategory> =>
+  new Map(categories.map((category) => [category.id, category]));
+
+export const resolveExpenseCategory = (
+  categoryLookup: Map<string, BudgetCategory>,
   expense: Expense,
 ): BudgetCategory | undefined =>
-  categories.find((category) => category.id === expense.categoryId);
+  expense.categoryId ? categoryLookup.get(expense.categoryId) : undefined;

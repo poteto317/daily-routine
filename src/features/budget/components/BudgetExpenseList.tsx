@@ -1,5 +1,10 @@
+import { useMemo } from "react";
 import type { BudgetCategory, Expense } from "@/types/routine";
-import { findExpenseCategory, sortExpensesByDateDesc } from "../helpers";
+import {
+  buildBudgetCategoryLookup,
+  resolveExpenseCategory,
+  sortExpensesByDateDesc,
+} from "../helpers";
 import { formatExpenseDate } from "../utils/date";
 import { formatCurrency } from "../utils/format";
 import budgetTexts from "../locales/ja.json";
@@ -16,6 +21,10 @@ export const BudgetExpenseList = ({
   onDelete,
 }: BudgetExpenseListProps) => {
   const sortedExpenses = sortExpensesByDateDesc(expenses);
+  const categoryLookup = useMemo(
+    () => buildBudgetCategoryLookup(categories),
+    [categories],
+  );
 
   return (
     <div className="mt-6">
@@ -29,7 +38,7 @@ export const BudgetExpenseList = ({
       ) : (
         <div className="space-y-2">
           {sortedExpenses.map((expense) => {
-            const category = findExpenseCategory(categories, expense);
+            const category = resolveExpenseCategory(categoryLookup, expense);
 
             return (
               <div

@@ -1,5 +1,6 @@
 import {
-  findExpenseCategory,
+  buildBudgetCategoryLookup,
+  resolveExpenseCategory,
   formatBudgetMonthLabel,
   getBudgetActionLabel,
   getBudgetExpenseDateBounds,
@@ -97,6 +98,7 @@ describe("budget helpers and utils", () => {
     const categories = [
       { id: "cat-1", name: "食料品", createdAt: "2026-03-01T00:00:00.000Z" },
     ];
+    const categoryLookup = buildBudgetCategoryLookup(categories);
     const expenseWithCategory = {
       id: "e1",
       date: "2026-03-03",
@@ -111,13 +113,36 @@ describe("budget helpers and utils", () => {
       categoryId: "cat-404",
       createdAt: "2026-03-05T00:00:00.000Z",
     };
+    const expenseWithoutCategoryId = {
+      id: "e3",
+      date: "2026-03-06",
+      amount: 300,
+      createdAt: "2026-03-06T00:00:00.000Z",
+    };
 
-    expect(findExpenseCategory(categories, expenseWithCategory)).toEqual(
+    expect(resolveExpenseCategory(categoryLookup, expenseWithCategory)).toEqual(
       categories[0],
     );
     expect(
-      findExpenseCategory(categories, expenseWithoutMatch),
+      resolveExpenseCategory(categoryLookup, expenseWithoutMatch),
     ).toBeUndefined();
+    expect(
+      resolveExpenseCategory(categoryLookup, expenseWithoutCategoryId),
+    ).toBeUndefined();
+  });
+
+  it("buildBudgetCategoryLookupはid毎にO(1)で引けるMapを作る", () => {
+    const categories = [
+      { id: "cat-1", name: "食料品", createdAt: "2026-03-01T00:00:00.000Z" },
+      { id: "cat-2", name: "交通費", createdAt: "2026-03-01T00:00:00.000Z" },
+    ];
+
+    const lookup = buildBudgetCategoryLookup(categories);
+
+    expect(lookup.get("cat-1")).toEqual(categories[0]);
+    expect(lookup.get("cat-2")).toEqual(categories[1]);
+    expect(lookup.get("cat-404")).toBeUndefined();
+    expect(lookup.size).toBe(2);
   });
 
   it("日付ユーティリティを扱える", () => {
