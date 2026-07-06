@@ -144,8 +144,8 @@ describe("BudgetPage", () => {
 
     render(<BudgetPage />);
 
-    fireEvent.click(screen.getByText("🗑️"));
-    fireEvent.click(screen.getByText("🗑️"));
+    fireEvent.click(screen.getByRole("button", { name: /削除/ }));
+    fireEvent.click(screen.getByRole("button", { name: /削除/ }));
 
     expect(window.confirm).toHaveBeenCalledTimes(2);
     expect(state.handleDeleteExpense).toHaveBeenCalledTimes(1);

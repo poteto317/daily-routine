@@ -62,8 +62,10 @@ export const BudgetExpenseList = ({
                     </p>
                   </div>
                   <button
+                    type="button"
                     onClick={() => onDelete(expense.id)}
                     className="ml-4 px-3 py-2 bg-red-100 dark:bg-red-200 text-red-600 dark:text-red-800 rounded-lg hover:bg-red-200 dark:hover:bg-red-300 transition-colors shrink-0"
+                    aria-label={`${formatExpenseDate(expense.date)}の支出を削除`}
                   >
                     {budgetTexts.expenseList.delete}
                   </button>
