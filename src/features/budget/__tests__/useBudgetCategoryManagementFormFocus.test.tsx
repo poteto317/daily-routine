@@ -40,4 +40,40 @@ describe("useBudgetCategoryManagementFormFocus", () => {
 
     expect(focusSpy).not.toHaveBeenCalled();
   });
+
+  it("タイマー発火前にアンマウントされた場合はフォーカスしない（クリーンアップされる）", () => {
+    const inputRef = createRef<HTMLInputElement>();
+    const inputElement = document.createElement("input");
+    (inputRef as { current: HTMLInputElement | null }).current = inputElement;
+    const focusSpy = jest.spyOn(inputElement, "focus");
+    const clearTimeoutSpy = jest.spyOn(global, "clearTimeout");
+
+    const { unmount } = renderHook(() =>
+      useBudgetCategoryManagementFormFocus({ inputRef, showForm: true }),
+    );
+
+    unmount();
+    jest.advanceTimersByTime(50);
+
+    expect(clearTimeoutSpy).toHaveBeenCalled();
+    expect(focusSpy).not.toHaveBeenCalled();
+  });
+
+  it("タイマー発火前にshowFormがfalseへ変わった場合は古いタイマーをクリアする", () => {
+    const inputRef = createRef<HTMLInputElement>();
+    const inputElement = document.createElement("input");
+    (inputRef as { current: HTMLInputElement | null }).current = inputElement;
+    const focusSpy = jest.spyOn(inputElement, "focus");
+
+    const { rerender } = renderHook(
+      ({ showForm }) =>
+        useBudgetCategoryManagementFormFocus({ inputRef, showForm }),
+      { initialProps: { showForm: true } },
+    );
+
+    rerender({ showForm: false });
+    jest.advanceTimersByTime(50);
+
+    expect(focusSpy).not.toHaveBeenCalled();
+  });
 });

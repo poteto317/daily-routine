@@ -13,6 +13,7 @@ export const useBudgetCategoryManagementFormFocus = ({
 }: UseBudgetCategoryManagementFormFocusParams) => {
   useEffect(() => {
     if (!showForm) return;
-    setTimeout(() => inputRef.current?.focus(), 50);
+    const timerId = setTimeout(() => inputRef.current?.focus(), 50);
+    return () => clearTimeout(timerId);
   }, [inputRef, showForm]);
 };

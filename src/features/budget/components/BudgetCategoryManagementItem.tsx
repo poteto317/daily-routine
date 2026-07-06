@@ -1,5 +1,6 @@
 "use client";
 
+import { useRef } from "react";
 import type { BudgetCategory } from "@/types/routine";
 
 type Props = {
@@ -25,6 +26,7 @@ export const BudgetCategoryManagementItem = ({
   onDelete,
 }: Props) => {
   const isEditing = editingCategoryId === category.id;
+  const suppressNextBlurCommitRef = useRef(false);
 
   return (
     <div className="flex items-center justify-between gap-3 p-3 bg-gray-50 dark:bg-gray-200 rounded-lg">
@@ -34,10 +36,22 @@ export const BudgetCategoryManagementItem = ({
           autoFocus
           value={editingCategoryNameValue}
           onChange={(e) => onChangeNameValue(e.target.value)}
-          onBlur={onCommitEdit}
+          onBlur={() => {
+            if (suppressNextBlurCommitRef.current) {
+              suppressNextBlurCommitRef.current = false;
+              return;
+            }
+            onCommitEdit();
+          }}
           onKeyDown={(e) => {
-            if (e.key === "Enter") onCommitEdit();
-            if (e.key === "Escape") onCancelEdit();
+            if (e.key === "Enter") {
+              suppressNextBlurCommitRef.current = true;
+              onCommitEdit();
+            }
+            if (e.key === "Escape") {
+              suppressNextBlurCommitRef.current = true;
+              onCancelEdit();
+            }
           }}
           className="flex-1 min-w-0 text-sm px-2 py-0.5 border-b-2 border-blue-400 bg-transparent text-gray-800 dark:text-gray-900 focus:outline-none"
         />

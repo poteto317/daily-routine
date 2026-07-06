@@ -117,4 +117,78 @@ describe("BudgetCategoryManagementItem", () => {
 
     expect(onCommitEdit).toHaveBeenCalled();
   });
+
+  it("Escapeキャンセル直後のblurではonCommitEditを呼ばない", () => {
+    const onCommitEdit = jest.fn();
+    const onCancelEdit = jest.fn();
+
+    render(
+      <BudgetCategoryManagementItem
+        category={category}
+        editingCategoryId="cat-1"
+        editingCategoryNameValue="変更後の名前"
+        onChangeNameValue={jest.fn()}
+        onCommitEdit={onCommitEdit}
+        onCancelEdit={onCancelEdit}
+        onStartEdit={jest.fn()}
+        onDelete={jest.fn()}
+      />,
+    );
+
+    const input = screen.getByDisplayValue("変更後の名前");
+    fireEvent.keyDown(input, { key: "Escape" });
+    expect(onCancelEdit).toHaveBeenCalled();
+
+    fireEvent.blur(input);
+
+    expect(onCommitEdit).not.toHaveBeenCalled();
+  });
+
+  it("Enter確定直後のblurではonCommitEditを再度呼ばない", () => {
+    const onCommitEdit = jest.fn();
+
+    render(
+      <BudgetCategoryManagementItem
+        category={category}
+        editingCategoryId="cat-1"
+        editingCategoryNameValue="食費"
+        onChangeNameValue={jest.fn()}
+        onCommitEdit={onCommitEdit}
+        onCancelEdit={jest.fn()}
+        onStartEdit={jest.fn()}
+        onDelete={jest.fn()}
+      />,
+    );
+
+    const input = screen.getByDisplayValue("食費");
+    fireEvent.keyDown(input, { key: "Enter" });
+    expect(onCommitEdit).toHaveBeenCalledTimes(1);
+
+    fireEvent.blur(input);
+
+    expect(onCommitEdit).toHaveBeenCalledTimes(1);
+  });
+
+  it("Enter/Escapeを介さない通常のblurでは毎回onCommitEditを呼ぶ", () => {
+    const onCommitEdit = jest.fn();
+
+    render(
+      <BudgetCategoryManagementItem
+        category={category}
+        editingCategoryId="cat-1"
+        editingCategoryNameValue="食料品"
+        onChangeNameValue={jest.fn()}
+        onCommitEdit={onCommitEdit}
+        onCancelEdit={jest.fn()}
+        onStartEdit={jest.fn()}
+        onDelete={jest.fn()}
+      />,
+    );
+
+    const input = screen.getByDisplayValue("食料品");
+    fireEvent.blur(input);
+    fireEvent.blur(input);
+
+    expect(onCommitEdit).toHaveBeenCalledTimes(2);
+  });
 });
