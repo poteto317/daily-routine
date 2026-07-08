@@ -16,10 +16,10 @@
     "title": "支出を記録",
     "dateLabel": "日付",
     "amountLabel": "金額",
-    "descriptionLabel": "メモ（任意）",
+    "categoryLabel": "カテゴリ（任意）",
     "requiredMark": "*",
     "amountPlaceholder": "例: 1500",
-    "descriptionPlaceholder": "例: ランチ、交通費など",
+    "categoryPlaceholder": "選択しない",
     "addLabel": "追加",
     "cancelLabel": "キャンセル"
   },
@@ -27,6 +27,20 @@
     "title": "📋 支出一覧",
     "empty": "まだ支出の記録がありません",
     "delete": "🗑️"
+  },
+  "categoryManagement": {
+    "title": "🏷️ カテゴリ管理",
+    "description": "家計簿の支出に付けるカテゴリを管理します。カテゴリの追加・名前の変更・削除ができます。",
+    "addButton": "＋ 新しいカテゴリを追加",
+    "createTitle": "新しいカテゴリを作成",
+    "namePlaceholder": "カテゴリ名",
+    "createButton": "作成",
+    "cancelButton": "キャンセル",
+    "emptyMessage": "カテゴリはまだありません",
+    "emptyDescription": "「＋ 新しいカテゴリを追加」からカテゴリを作成してください",
+    "deleteConfirm": "「{name}」を削除しますか？この操作は元に戻せません。",
+    "editLabel": "編集",
+    "editNamePlaceholder": "カテゴリ名を入力"
   },
   "summary": {
     "monthlyLabel": "月の予算",

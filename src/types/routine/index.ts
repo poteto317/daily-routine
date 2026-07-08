@@ -24,7 +24,7 @@ export {
   type WorkTemplate,
 } from "./work-tracker";
 
-export type { BudgetData, Expense, MonthlyBudget } from "./budget";
+export type { BudgetCategory, BudgetData, Expense, MonthlyBudget } from "./budget";
 export type { JournalEntry, JournalHistory } from "./journal";
 export type { MealHistory, MealRecord, MealType } from "./meal";
 

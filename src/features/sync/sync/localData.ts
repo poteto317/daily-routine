@@ -30,7 +30,12 @@ import {
   getJournalHistory,
   saveJournalHistory,
 } from "@/features/journal/storage";
-import { getBudgetData, saveBudgetData } from "@/features/budget/storage";
+import {
+  getBudgetCategories,
+  getBudgetData,
+  saveBudgetCategories,
+  saveBudgetData,
+} from "@/features/budget/storage";
 import { getMealHistory, saveMealHistory } from "@/features/meal/storage";
 import { getPresets, savePresets } from "@/features/preset/storage";
 import { getTodoLists, saveTodoLists } from "@/features/todo-lists/storage";
@@ -52,6 +57,7 @@ export const collectLocalSyncData = (): Omit<
   weightHistory: getWeightHistory(),
   journalHistory: getJournalHistory(),
   budgetData: getBudgetData(),
+  budgetCategories: getBudgetCategories(),
   mealHistory: getMealHistory(),
   presets: getPresets(),
   todoLists: getTodoLists(),
@@ -74,6 +80,7 @@ export const saveSyncDataToLocal = (
     saveWeightHistory(data.weightHistory ?? {});
     saveJournalHistory(data.journalHistory ?? {});
     saveBudgetData(data.budgetData ?? { budgets: {}, expenses: {} });
+    saveBudgetCategories(data.budgetCategories ?? []);
     saveMealHistory(data.mealHistory ?? {});
     savePresets(data.presets ?? []);
     saveTodoLists(data.todoLists ?? []);

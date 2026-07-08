@@ -87,17 +87,17 @@ describe("budget stateActions", () => {
   it("支出フォームを閉じると入力をリセットする", () => {
     const setShowExpenseForm = jest.fn();
     const setExpenseAmount = jest.fn();
-    const setExpenseDescription = jest.fn();
+    const setExpenseCategoryId = jest.fn();
 
     closeExpenseInputForm({
       setShowExpenseForm,
       setExpenseAmount,
-      setExpenseDescription,
+      setExpenseCategoryId,
     });
 
     expect(setShowExpenseForm).toHaveBeenCalledWith(false);
     expect(setExpenseAmount).toHaveBeenCalledWith("");
-    expect(setExpenseDescription).toHaveBeenCalledWith("");
+    expect(setExpenseCategoryId).toHaveBeenCalledWith("");
   });
 
   it("月移動時に日付更新と再同期を行う", () => {
@@ -157,11 +157,11 @@ describe("budget stateActions", () => {
       addExpenseFromInput({
         expenseAmount: "2500",
         expenseDate: "2026-03-05",
-        expenseDescription: "書籍",
-        buildPayload: ({ expenseAmount, expenseDate, expenseDescription }) => ({
+        expenseCategoryId: "category-books",
+        buildPayload: ({ expenseAmount, expenseDate, expenseCategoryId }) => ({
           amount: Number(expenseAmount),
           date: expenseDate,
-          description: expenseDescription,
+          categoryId: expenseCategoryId || undefined,
         }),
         saveExpense,
         currentDate,
@@ -174,8 +174,7 @@ describe("budget stateActions", () => {
     expect(saveExpense).toHaveBeenCalledWith(
       "2026-03-05",
       2500,
-      undefined,
-      "書籍",
+      "category-books",
     );
     expect(setExpenses).toHaveBeenCalledWith(snapshot.expenses);
     expect(closeExpenseForm).toHaveBeenCalled();
@@ -184,7 +183,7 @@ describe("budget stateActions", () => {
       addExpenseFromInput({
         expenseAmount: "",
         expenseDate: "2026-03-05",
-        expenseDescription: "",
+        expenseCategoryId: "",
         buildPayload: () => null,
         saveExpense,
         currentDate,

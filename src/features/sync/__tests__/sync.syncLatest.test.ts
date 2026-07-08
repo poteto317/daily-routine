@@ -29,6 +29,7 @@ const setCommonStorages = (): void => {
     budgets: {},
     expenses: {},
   });
+  (budgetStorage.getBudgetCategories as jest.Mock).mockReturnValue([]);
   (mealStorage.getMealHistory as jest.Mock).mockReturnValue({});
   (presetStorage.getPresets as jest.Mock).mockReturnValue([]);
   (todoListsStorage.getTodoLists as jest.Mock).mockReturnValue([]);

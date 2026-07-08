@@ -71,7 +71,7 @@ describe("budgetMutationActions", () => {
     createExpenseAddHandler({
       expenseAmount: "2500",
       expenseDate: "2026-03-05",
-      expenseDescription: "書籍",
+      expenseCategoryId: "category-books",
       currentDate,
       setExpenses,
       closeExpenseForm,
@@ -80,7 +80,7 @@ describe("budgetMutationActions", () => {
     expect(addExpenseFromInput).toHaveBeenCalledWith({
       expenseAmount: "2500",
       expenseDate: "2026-03-05",
-      expenseDescription: "書籍",
+      expenseCategoryId: "category-books",
       buildPayload: buildExpensePayload,
       saveExpense: addExpense,
       currentDate,

@@ -37,7 +37,7 @@ describe("budgetFormActions", () => {
     const setShowBudgetInput = jest.fn();
     const setShowExpenseForm = jest.fn();
     const setExpenseAmount = jest.fn();
-    const setExpenseDescription = jest.fn();
+    const setExpenseCategoryId = jest.fn();
 
     createBudgetInputCloseHandler({
       setShowBudgetInput,
@@ -51,12 +51,12 @@ describe("budgetFormActions", () => {
     createExpenseFormCloseHandler({
       setShowExpenseForm,
       setExpenseAmount,
-      setExpenseDescription,
+      setExpenseCategoryId,
     })();
     expect(closeExpenseInputForm).toHaveBeenCalledWith({
       setShowExpenseForm,
       setExpenseAmount,
-      setExpenseDescription,
+      setExpenseCategoryId,
     });
 
     createBudgetInputOpenHandler({

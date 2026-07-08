@@ -50,7 +50,7 @@ describe("useBudgetPageActionHandlers", () => {
       budgetInputValue: "45000",
       expenseAmount: "2500",
       expenseDate: "2026-03-05",
-      expenseDescription: "書籍",
+      expenseCategoryId: "category-books",
       setMonthBudget: jest.fn(),
       setExpenses: jest.fn(),
       closeBudgetInput: jest.fn(),
@@ -90,7 +90,7 @@ describe("useBudgetPageActionHandlers", () => {
       currentDate: params.currentDate,
       expenseAmount: "2500",
       expenseDate: "2026-03-05",
-      expenseDescription: "書籍",
+      expenseCategoryId: "category-books",
       setExpenses: params.setExpenses,
       closeExpenseForm: params.closeExpenseForm,
     });

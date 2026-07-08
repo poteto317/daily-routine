@@ -1,4 +1,4 @@
-import type { Expense } from "@/types/routine";
+import type { BudgetCategory, Expense } from "@/types/routine";
 import { daysInMonth, toMonthKey } from "./utils/date";
 import budgetTexts from "./locales/ja.json";
 
@@ -52,3 +52,14 @@ export const sortExpensesByDateDesc = (expenses: Expense[]): Expense[] =>
   expenses
     .slice()
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+export const buildBudgetCategoryLookup = (
+  categories: BudgetCategory[],
+): Map<string, BudgetCategory> =>
+  new Map(categories.map((category) => [category.id, category]));
+
+export const resolveExpenseCategory = (
+  categoryLookup: Map<string, BudgetCategory>,
+  expense: Expense,
+): BudgetCategory | undefined =>
+  expense.categoryId ? categoryLookup.get(expense.categoryId) : undefined;

@@ -10,7 +10,7 @@ type BudgetFormInitialState = Pick<
   | "budgetInputValue"
   | "showExpenseForm"
   | "expenseAmount"
-  | "expenseDescription"
+  | "expenseCategoryId"
 >;
 
 type UseBudgetPageFormStateParams = {
@@ -29,7 +29,7 @@ export const useBudgetPageFormState = ({
   const inputState = useBudgetPageInputState({
     initialBudgetInputValue: initialState.budgetInputValue,
     initialExpenseAmount: initialState.expenseAmount,
-    initialExpenseDescription: initialState.expenseDescription,
+    initialExpenseCategoryId: initialState.expenseCategoryId,
   });
   const {
     closeBudgetInput,
@@ -42,7 +42,7 @@ export const useBudgetPageFormState = ({
     setBudgetInputValue: inputState.setBudgetInputValue,
     setShowExpenseForm: visibilityState.setShowExpenseForm,
     setExpenseAmount: inputState.setExpenseAmount,
-    setExpenseDescription: inputState.setExpenseDescription,
+    setExpenseCategoryId: inputState.setExpenseCategoryId,
   });
 
   return createBudgetPageFormStateResult({

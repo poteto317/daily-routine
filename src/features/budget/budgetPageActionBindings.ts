@@ -8,7 +8,7 @@ type BudgetPageActionBindingsArgs = {
   currentMonth: string;
   expenseAmount: string;
   expenseDate: string;
-  expenseDescription: string;
+  expenseCategoryId: string;
   setExpenses: (value: Expense[]) => void;
   setMonthBudget: (value: number) => void;
 };
@@ -21,7 +21,7 @@ export const createBudgetPageActionBindings = ({
   currentMonth,
   expenseAmount,
   expenseDate,
-  expenseDescription,
+  expenseCategoryId,
   setExpenses,
   setMonthBudget,
 }: BudgetPageActionBindingsArgs) => {
@@ -33,7 +33,7 @@ export const createBudgetPageActionBindings = ({
     currentMonth,
     expenseAmount,
     expenseDate,
-    expenseDescription,
+    expenseCategoryId,
     setExpenses,
     setMonthBudget,
   };

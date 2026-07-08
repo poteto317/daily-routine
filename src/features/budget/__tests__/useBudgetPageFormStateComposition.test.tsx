@@ -43,10 +43,10 @@ describe("useBudgetPageFormState composition", () => {
     const inputState = {
       budgetInputValue: "",
       expenseAmount: "",
-      expenseDescription: "",
+      expenseCategoryId: "",
       setBudgetInputValue: jest.fn(),
       setExpenseAmount: jest.fn(),
-      setExpenseDescription: jest.fn(),
+      setExpenseCategoryId: jest.fn(),
     };
     (useBudgetPageFormActions as jest.Mock).mockReturnValue(actions);
     (useBudgetPageFormVisibilityState as jest.Mock).mockReturnValue(
@@ -68,7 +68,7 @@ describe("useBudgetPageFormState composition", () => {
       budgetInputValue: "",
       showExpenseForm: false,
       expenseAmount: "",
-      expenseDescription: "",
+      expenseCategoryId: "",
     };
 
     const { result } = renderHook(() =>
@@ -85,7 +85,7 @@ describe("useBudgetPageFormState composition", () => {
     expect(useBudgetPageInputState).toHaveBeenCalledWith({
       initialBudgetInputValue: "",
       initialExpenseAmount: "",
-      initialExpenseDescription: "",
+      initialExpenseCategoryId: "",
     });
     expect(useBudgetPageFormActions).toHaveBeenCalledWith({
       monthBudget: 30000,
@@ -93,7 +93,7 @@ describe("useBudgetPageFormState composition", () => {
       setBudgetInputValue: inputState.setBudgetInputValue,
       setShowExpenseForm: visibilityState.setShowExpenseForm,
       setExpenseAmount: inputState.setExpenseAmount,
-      setExpenseDescription: inputState.setExpenseDescription,
+      setExpenseCategoryId: inputState.setExpenseCategoryId,
     });
     expect(createBudgetPageFormStateResult).toHaveBeenCalledWith({
       visibilityState,

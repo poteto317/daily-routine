@@ -4,24 +4,24 @@ describe("createBudgetPageInputStateResult", () => {
   it("input state の公開 shape を返す", () => {
     const setBudgetInputValue = jest.fn();
     const setExpenseAmount = jest.fn();
-    const setExpenseDescription = jest.fn();
+    const setExpenseCategoryId = jest.fn();
 
     expect(
       createBudgetPageInputStateResult({
         budgetInputValue: "45000",
         expenseAmount: "2500",
-        expenseDescription: "書籍",
+        expenseCategoryId: "category-books",
         setBudgetInputValue,
         setExpenseAmount,
-        setExpenseDescription,
+        setExpenseCategoryId,
       }),
     ).toEqual({
       budgetInputValue: "45000",
       expenseAmount: "2500",
-      expenseDescription: "書籍",
+      expenseCategoryId: "category-books",
       setBudgetInputValue,
       setExpenseAmount,
-      setExpenseDescription,
+      setExpenseCategoryId,
     });
   });
 });

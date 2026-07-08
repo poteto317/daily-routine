@@ -22,12 +22,26 @@ describe("budgetPageStateLogic", () => {
       buildExpensePayload({
         expenseAmount: "1500",
         expenseDate: "2026-03-07",
-        expenseDescription: "ランチ",
+        expenseCategoryId: "category-lunch",
       }),
     ).toEqual({
       amount: 1500,
       date: "2026-03-07",
-      description: "ランチ",
+      categoryId: "category-lunch",
+    });
+  });
+
+  it("カテゴリ未選択の場合は categoryId が undefined になる", () => {
+    expect(
+      buildExpensePayload({
+        expenseAmount: "1500",
+        expenseDate: "2026-03-07",
+        expenseCategoryId: "",
+      }),
+    ).toEqual({
+      amount: 1500,
+      date: "2026-03-07",
+      categoryId: undefined,
     });
   });
 
@@ -36,14 +50,14 @@ describe("budgetPageStateLogic", () => {
       buildExpensePayload({
         expenseAmount: "",
         expenseDate: "2026-03-07",
-        expenseDescription: "",
+        expenseCategoryId: "",
       }),
     ).toBeNull();
     expect(
       buildExpensePayload({
         expenseAmount: "1500",
         expenseDate: "",
-        expenseDescription: "",
+        expenseCategoryId: "",
       }),
     ).toBeNull();
   });

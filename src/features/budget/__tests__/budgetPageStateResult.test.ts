@@ -11,6 +11,9 @@ describe("budgetPageStateResult", () => {
         createdAt: "2026-03-06T00:00:00.000Z",
       },
     ];
+    const categories = [
+      { id: "category-books", name: "書籍", createdAt: "2026-03-01T00:00:00.000Z" },
+    ];
     const closeBudgetInput = jest.fn();
     const closeExpenseForm = jest.fn();
     const goToCurrentMonth = jest.fn();
@@ -21,7 +24,7 @@ describe("budgetPageStateResult", () => {
     const handleDeleteExpense = jest.fn();
     const handleExpenseAmountChange = jest.fn();
     const handleExpenseDateChange = jest.fn();
-    const handleExpenseDescriptionChange = jest.fn();
+    const handleExpenseCategoryIdChange = jest.fn();
     const handleSaveBudget = jest.fn();
     const openBudgetInput = jest.fn();
     const openExpenseForm = jest.fn();
@@ -29,6 +32,7 @@ describe("budgetPageStateResult", () => {
     expect(
       createBudgetPageStateResult({
         budgetInputValue: "45000",
+        categories,
         closeBudgetInput,
         closeExpenseForm,
         currentDate,
@@ -37,7 +41,7 @@ describe("budgetPageStateResult", () => {
         daysRemaining: 24,
         expenseAmount: "2500",
         expenseDate: "2026-03-05",
-        expenseDescription: "書籍",
+        expenseCategoryId: "category-books",
         expenses,
         goToCurrentMonth,
         goToNextMonth,
@@ -47,7 +51,7 @@ describe("budgetPageStateResult", () => {
         handleDeleteExpense,
         handleExpenseAmountChange,
         handleExpenseDateChange,
-        handleExpenseDescriptionChange,
+        handleExpenseCategoryIdChange,
         handleSaveBudget,
         isCurrentMonth: true,
         monthBudget: 45000,
@@ -60,6 +64,7 @@ describe("budgetPageStateResult", () => {
       }),
     ).toEqual({
       budgetInputValue: "45000",
+      categories,
       closeBudgetInput,
       closeExpenseForm,
       currentDate,
@@ -68,7 +73,7 @@ describe("budgetPageStateResult", () => {
       daysRemaining: 24,
       expenseAmount: "2500",
       expenseDate: "2026-03-05",
-      expenseDescription: "書籍",
+      expenseCategoryId: "category-books",
       expenses,
       goToCurrentMonth,
       goToNextMonth,
@@ -78,7 +83,7 @@ describe("budgetPageStateResult", () => {
       handleDeleteExpense,
       handleExpenseAmountChange,
       handleExpenseDateChange,
-      handleExpenseDescriptionChange,
+      handleExpenseCategoryIdChange,
       handleSaveBudget,
       isCurrentMonth: true,
       monthBudget: 45000,

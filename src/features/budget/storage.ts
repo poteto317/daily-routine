@@ -6,3 +6,4 @@ export {
   deleteExpense,
   getMonthlyTotalExpense,
 } from "./storageExpenses";
+export { getBudgetCategories, saveBudgetCategories } from "./storageCategories";

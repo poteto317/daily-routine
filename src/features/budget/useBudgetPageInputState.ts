@@ -4,28 +4,28 @@ import { createBudgetPageInputStateResult } from "./budgetPageInputStateResult";
 type UseBudgetPageInputStateParams = {
   initialBudgetInputValue: string;
   initialExpenseAmount: string;
-  initialExpenseDescription: string;
+  initialExpenseCategoryId: string;
 };
 
 export const useBudgetPageInputState = ({
   initialBudgetInputValue,
   initialExpenseAmount,
-  initialExpenseDescription,
+  initialExpenseCategoryId,
 }: UseBudgetPageInputStateParams) => {
   const [budgetInputValue, setBudgetInputValue] = useState(
     initialBudgetInputValue,
   );
   const [expenseAmount, setExpenseAmount] = useState(initialExpenseAmount);
-  const [expenseDescription, setExpenseDescription] = useState(
-    initialExpenseDescription,
+  const [expenseCategoryId, setExpenseCategoryId] = useState(
+    initialExpenseCategoryId,
   );
 
   return createBudgetPageInputStateResult({
     budgetInputValue,
     expenseAmount,
-    expenseDescription,
+    expenseCategoryId,
     setBudgetInputValue,
     setExpenseAmount,
-    setExpenseDescription,
+    setExpenseCategoryId,
   });
 };

@@ -117,6 +117,12 @@
         }
       },
       {
+        "id": "budget-category-management",
+        "label": "カテゴリ管理",
+        "icon": "🏷️",
+        "route": "budget-category-management"
+      },
+      {
         "id": "weather",
         "label": "天気予報",
         "icon": "🌤️",

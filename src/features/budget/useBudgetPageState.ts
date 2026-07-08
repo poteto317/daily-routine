@@ -1,6 +1,7 @@
 import { createBudgetPageActionBindings } from "./budgetPageActionBindings";
 import { createBudgetPageInputHandlers } from "./budgetPageInputHandlers";
 import { createBudgetPageStateResult } from "./budgetPageStateResult";
+import { useBudgetCategoriesState } from "./useBudgetCategoriesState";
 import { useBudgetPageActionHandlers } from "./useBudgetPageActionHandlers";
 import { useBudgetPageFormState } from "./useBudgetPageFormState";
 import { useBudgetPageInitialState } from "./useBudgetPageInitialState";
@@ -8,6 +9,7 @@ import { useBudgetPageMetricsState } from "./useBudgetPageMetricsState";
 import { useBudgetMonthState } from "./useBudgetMonthState";
 
 export const useBudgetPageState = () => {
+  const { categories } = useBudgetCategoriesState();
   const initialState = useBudgetPageInitialState();
   const monthState = useBudgetMonthState({ initialState });
   const {
@@ -15,12 +17,12 @@ export const useBudgetPageState = () => {
     closeBudgetInput,
     closeExpenseForm,
     expenseAmount,
-    expenseDescription,
+    expenseCategoryId,
     openBudgetInput,
     openExpenseForm,
     setBudgetInputValue,
     setExpenseAmount,
-    setExpenseDescription,
+    setExpenseCategoryId,
     showBudgetInput,
     showExpenseForm,
   } = useBudgetPageFormState({
@@ -41,7 +43,7 @@ export const useBudgetPageState = () => {
         budgetInputValue,
         expenseAmount,
         expenseDate: monthState.expenseDate,
-        expenseDescription,
+        expenseCategoryId,
         setMonthBudget: monthState.setMonthBudget,
         setExpenses: monthState.setExpenses,
         closeBudgetInput,
@@ -52,11 +54,12 @@ export const useBudgetPageState = () => {
     setBudgetInputValue,
     setExpenseAmount,
     setExpenseDate: monthState.setExpenseDate,
-    setExpenseDescription,
+    setExpenseCategoryId,
   });
 
   return createBudgetPageStateResult({
     budgetInputValue,
+    categories,
     closeBudgetInput,
     closeExpenseForm,
     currentDate: monthState.currentDate,
@@ -65,7 +68,7 @@ export const useBudgetPageState = () => {
     daysRemaining: metrics.daysRemaining,
     expenseAmount,
     expenseDate: monthState.expenseDate,
-    expenseDescription,
+    expenseCategoryId,
     expenses: monthState.expenses,
     goToCurrentMonth: monthState.goToCurrentMonth,
     goToNextMonth: monthState.goToNextMonth,
@@ -81,8 +84,8 @@ export const useBudgetPageState = () => {
     handleBudgetInputChange: inputHandlers.handleBudgetInputChange,
     handleExpenseAmountChange: inputHandlers.handleExpenseAmountChange,
     handleExpenseDateChange: inputHandlers.handleExpenseDateChange,
-    handleExpenseDescriptionChange:
-      inputHandlers.handleExpenseDescriptionChange,
+    handleExpenseCategoryIdChange:
+      inputHandlers.handleExpenseCategoryIdChange,
     showBudgetInput,
     showExpenseForm,
     totalExpense: metrics.totalExpense,
