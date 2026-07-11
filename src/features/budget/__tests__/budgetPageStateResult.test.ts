@@ -62,6 +62,7 @@ describe("budgetPageStateResult", () => {
         remaining: 43800,
         showBudgetInput: true,
         showExpenseForm: false,
+        todayExpense: 300,
         totalExpense: 1200,
       }),
     ).toEqual({
@@ -95,6 +96,7 @@ describe("budgetPageStateResult", () => {
       remaining: 43800,
       showBudgetInput: true,
       showExpenseForm: false,
+      todayExpense: 300,
       totalExpense: 1200,
     });
   });

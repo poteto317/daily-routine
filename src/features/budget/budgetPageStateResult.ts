@@ -31,6 +31,7 @@ type BudgetPageStateResultArgs = {
   remaining: number;
   showBudgetInput: boolean;
   showExpenseForm: boolean;
+  todayExpense: number;
   totalExpense: number;
 };
 
@@ -65,6 +66,7 @@ export const createBudgetPageStateResult = ({
   remaining,
   showBudgetInput,
   showExpenseForm,
+  todayExpense,
   totalExpense,
 }: BudgetPageStateResultArgs) => {
   return {
@@ -98,6 +100,7 @@ export const createBudgetPageStateResult = ({
     remaining,
     showBudgetInput,
     showExpenseForm,
+    todayExpense,
     totalExpense,
   };
 };

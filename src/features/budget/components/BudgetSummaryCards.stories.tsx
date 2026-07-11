@@ -20,6 +20,7 @@ export const WithinBudget: Story = {
   args: {
     monthBudget: 100000,
     totalExpense: 42000,
+    todayExpense: 1500,
     remaining: 58000,
     dailyBudget: 3226,
     dailyRemainingBudget: 2900,
@@ -33,6 +34,7 @@ export const NearLimit: Story = {
   args: {
     monthBudget: 100000,
     totalExpense: 88000,
+    todayExpense: 4200,
     remaining: 12000,
     dailyBudget: 3226,
     dailyRemainingBudget: 600,
@@ -46,6 +48,7 @@ export const OverBudget: Story = {
   args: {
     monthBudget: 100000,
     totalExpense: 115000,
+    todayExpense: 6000,
     remaining: -15000,
     dailyBudget: 3226,
     dailyRemainingBudget: 0,
@@ -59,6 +62,7 @@ export const NoBudgetSet: Story = {
   args: {
     monthBudget: 0,
     totalExpense: 32000,
+    todayExpense: 0,
     remaining: -32000,
     dailyBudget: 0,
     dailyRemainingBudget: 0,
@@ -72,6 +76,7 @@ export const PastMonth: Story = {
   args: {
     monthBudget: 100000,
     totalExpense: 78000,
+    todayExpense: 0,
     remaining: 22000,
     dailyBudget: 3226,
     dailyRemainingBudget: 0,
@@ -86,6 +91,7 @@ export const ClickChangeBudget: Story = {
   args: {
     monthBudget: 100000,
     totalExpense: 42000,
+    todayExpense: 1500,
     remaining: 58000,
     dailyBudget: 3226,
     dailyRemainingBudget: 2900,

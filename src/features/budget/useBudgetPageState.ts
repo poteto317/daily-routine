@@ -94,6 +94,7 @@ export const useBudgetPageState = ({ navigate }: UseBudgetPageStateParams) => {
       inputHandlers.handleExpenseCategoryIdChange,
     showBudgetInput,
     showExpenseForm,
+    todayExpense: metrics.todayExpense,
     totalExpense: metrics.totalExpense,
   });
 };

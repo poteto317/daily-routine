@@ -52,6 +52,7 @@
     "remainingLabel": "残り",
     "overLabel": "予算オーバー",
     "dailyRemainingLabel": "1日あたり使える金額",
+    "todayLabel": "今日の支出",
     "expenseCountSuffix": "件の支出",
     "daysRemainingPrefix": "残り",
     "daysRemainingSuffix": "日"

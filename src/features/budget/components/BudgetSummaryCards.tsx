@@ -17,6 +17,7 @@ type BudgetSummaryCardsProps = {
   monthBudget: number;
   onOpenBudgetInput: () => void;
   remaining: number;
+  todayExpense: number;
   totalExpense: number;
 };
 
@@ -29,6 +30,7 @@ export const BudgetSummaryCards = ({
   monthBudget,
   onOpenBudgetInput,
   remaining,
+  todayExpense,
   totalExpense,
 }: BudgetSummaryCardsProps) => {
   const remainingTone = getRemainingTone(remaining);
@@ -93,6 +95,17 @@ export const BudgetSummaryCards = ({
             {budgetTexts.summary.daysRemainingPrefix}
             {daysRemaining}
             {budgetTexts.summary.daysRemainingSuffix}
+          </p>
+        </div>
+      )}
+
+      {isCurrentMonth && (
+        <div className="bg-amber-50 dark:bg-amber-100 rounded-xl p-4">
+          <p className="text-sm text-gray-700 dark:text-gray-900 font-medium mb-2">
+            {budgetTexts.summary.todayLabel}
+          </p>
+          <p className="text-2xl font-bold text-amber-600 dark:text-amber-800">
+            {formatCurrency(todayExpense)}
           </p>
         </div>
       )}
