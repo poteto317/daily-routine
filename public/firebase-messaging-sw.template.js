@@ -34,8 +34,8 @@ if (hasFirebaseMessagingConfig) {
       payload.notification?.title || "ルーティンのリマインダー";
     const notificationOptions = {
       body: payload.notification?.body || "",
-      icon: "/icon.svg",
-      badge: "/icon.svg",
+      icon: "/icon-192.png",
+      badge: "/icon-192.png",
       tag: payload.data?.routineId || "routine-notification",
       requireInteraction: false,
       vibrate: [200, 100, 200],
@@ -187,8 +187,8 @@ const checkAndSendNotifications = async () => {
       try {
         await self.registration.showNotification(schedule.title, {
           body: schedule.body,
-          icon: "/icon.svg",
-          badge: "/icon.svg",
+          icon: "/icon-192.png",
+          badge: "/icon-192.png",
           tag: routineId,
           requireInteraction: false,
           silent: false,

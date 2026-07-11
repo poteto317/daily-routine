@@ -66,8 +66,8 @@ export const checkAndSendNotifications = async (schedules) => {
     try {
       await self.registration.showNotification(schedule.title, {
         body: schedule.body,
-        icon: "/icon.svg",
-        badge: "/icon.svg",
+        icon: "/icon-192.png",
+        badge: "/icon-192.png",
         tag: routineId,
         requireInteraction: false,
         silent: false,

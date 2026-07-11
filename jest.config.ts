@@ -16,6 +16,12 @@ const config: Config = {
         tsconfig: "<rootDir>/tsconfig.test.json",
       },
     ],
+    "src/service-worker/.+\\.js$": [
+      "ts-jest",
+      {
+        tsconfig: "<rootDir>/tsconfig.test.json",
+      },
+    ],
   },
   testMatch: [
     "**/__tests__/**/*.test.[jt]s?(x)",
