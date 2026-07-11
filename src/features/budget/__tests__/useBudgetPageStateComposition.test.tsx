@@ -91,6 +91,7 @@ describe("useBudgetPageState composition", () => {
       daysRemaining: 24,
       isCurrentMonth: true,
       remaining: 28800,
+      todayExpense: 400,
       totalExpense: 1200,
     });
     (createBudgetPageActionBindings as jest.Mock).mockReturnValue({
@@ -162,6 +163,7 @@ describe("useBudgetPageState composition", () => {
           { id: "cat-1", name: "食料品", createdAt: "2026-05-01T00:00:00.000Z" },
         ],
         navigateToCategoryManagement: expect.any(Function),
+        todayExpense: 400,
       }),
     );
     expect(result.current).toEqual({ composed: true });

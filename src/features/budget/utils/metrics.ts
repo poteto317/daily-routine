@@ -1,5 +1,5 @@
 import { type Expense } from "@/types/routine";
-import { daysInMonth, isCurrentMonthDate } from "./date";
+import { daysInMonth, isCurrentMonthDate, toDateKey } from "./date";
 
 type BudgetMetrics = {
   dailyBudget: number;
@@ -7,6 +7,7 @@ type BudgetMetrics = {
   daysRemaining: number;
   isCurrentMonth: boolean;
   remaining: number;
+  todayExpense: number;
   totalExpense: number;
 };
 
@@ -19,6 +20,10 @@ export const calculateBudgetMetrics = (
     (sum, expense) => sum + expense.amount,
     0,
   );
+  const todayKey = toDateKey(new Date());
+  const todayExpense = expenses
+    .filter((expense) => expense.date === todayKey)
+    .reduce((sum, expense) => sum + expense.amount, 0);
   const remaining = monthBudget - totalExpense;
   const currentMonthDays = daysInMonth(currentDate);
   const dailyBudget = monthBudget > 0 ? monthBudget / currentMonthDays : 0;
@@ -35,6 +40,7 @@ export const calculateBudgetMetrics = (
     daysRemaining,
     isCurrentMonth,
     remaining,
+    todayExpense,
     totalExpense,
   };
 };

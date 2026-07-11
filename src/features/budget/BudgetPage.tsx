@@ -51,6 +51,7 @@ export const BudgetPage = () => {
             monthBudget={state.monthBudget}
             onOpenBudgetInput={state.openBudgetInput}
             remaining={state.remaining}
+            todayExpense={state.todayExpense}
             totalExpense={state.totalExpense}
           />
           {state.showBudgetInput && (

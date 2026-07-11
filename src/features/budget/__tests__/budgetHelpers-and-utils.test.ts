@@ -16,6 +16,7 @@ import {
   getDefaultExpenseDate,
   isCurrentMonthDate,
   shiftMonth,
+  toDateKey,
   toMonthKey,
 } from "../utils/date";
 import { formatCurrency } from "../utils/format";
@@ -149,6 +150,7 @@ describe("budget helpers and utils", () => {
     const date = new Date("2026-03-15T00:00:00+09:00");
 
     expect(toMonthKey(date)).toBe("2026-03");
+    expect(toDateKey(date)).toBe("2026-03-15");
     expect(shiftMonth(date, 1).getMonth()).toBe(3);
     expect(isCurrentMonthDate(new Date("2026-03-01T00:00:00+09:00"))).toBe(
       true,
@@ -178,6 +180,7 @@ describe("budget helpers and utils", () => {
       daysRemaining: 25,
       isCurrentMonth: true,
       remaining: 26000,
+      todayExpense: 0,
       totalExpense: 5000,
     });
     expect(
@@ -188,8 +191,39 @@ describe("budget helpers and utils", () => {
       daysRemaining: 0,
       isCurrentMonth: false,
       remaining: 0,
+      todayExpense: 0,
       totalExpense: 0,
     });
+  });
+
+  it("todayExpenseは今日付の支出のみを合計し、他日の支出は含めない", () => {
+    expect(
+      calculateBudgetMetrics(new Date("2026-03-01T00:00:00+09:00"), 31000, [
+        {
+          id: "e1",
+          date: "2026-03-07",
+          amount: 1000,
+          createdAt: "2026-03-07T00:00:00.000Z",
+        },
+        {
+          id: "e2",
+          date: "2026-03-07",
+          amount: 2000,
+          createdAt: "2026-03-07T00:00:00.000Z",
+        },
+        {
+          id: "e3",
+          date: "2026-03-06",
+          amount: 9999,
+          createdAt: "2026-03-06T00:00:00.000Z",
+        },
+      ]),
+    ).toEqual(
+      expect.objectContaining({
+        todayExpense: 3000,
+        totalExpense: 12999,
+      }),
+    );
   });
 
   it("月スナップショットと金額解析を取得できる", () => {

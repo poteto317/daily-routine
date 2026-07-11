@@ -67,6 +67,7 @@ const createState = (overrides: Record<string, unknown> = {}) => ({
   remaining: 12000,
   showBudgetInput: false,
   showExpenseForm: false,
+  todayExpense: 3000,
   totalExpense: 18000,
   ...overrides,
 });
@@ -197,5 +198,26 @@ describe("BudgetPage", () => {
     expect(screen.getByText("まだ支出の記録がありません")).toBeInTheDocument();
     expect(screen.getByText("設定")).toBeInTheDocument();
     expect(screen.getByText("予算オーバー")).toBeInTheDocument();
+  });
+
+  it("isCurrentMonth=true のとき今日の支出カードを表示する", () => {
+    mockUseBudgetPageState.mockReturnValue(
+      createState({ isCurrentMonth: true, todayExpense: 3000 }) as never,
+    );
+
+    render(<BudgetPage />);
+
+    expect(screen.getByText("今日の支出")).toBeInTheDocument();
+    expect(screen.getByText("￥3,000")).toBeInTheDocument();
+  });
+
+  it("isCurrentMonth=false のとき今日の支出カードを表示しない", () => {
+    mockUseBudgetPageState.mockReturnValue(
+      createState({ isCurrentMonth: false, todayExpense: 3000 }) as never,
+    );
+
+    render(<BudgetPage />);
+
+    expect(screen.queryByText("今日の支出")).not.toBeInTheDocument();
   });
 });
