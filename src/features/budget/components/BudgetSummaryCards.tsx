@@ -100,11 +100,11 @@ export const BudgetSummaryCards = ({
       )}
 
       {isCurrentMonth && (
-        <div className="bg-amber-50 dark:bg-amber-100 rounded-xl p-4">
+        <div className="bg-cyan-50 dark:bg-cyan-100 rounded-xl p-4">
           <p className="text-sm text-gray-700 dark:text-gray-900 font-medium mb-2">
             {budgetTexts.summary.todayLabel}
           </p>
-          <p className="text-2xl font-bold text-amber-600 dark:text-amber-800">
+          <p className="text-2xl font-bold text-cyan-600 dark:text-cyan-800">
             {formatCurrency(todayExpense)}
           </p>
         </div>
