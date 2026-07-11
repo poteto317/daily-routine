@@ -218,12 +218,12 @@ describe("TodoListsPage", () => {
     mockGetSelectedTodoListId.mockReturnValue("list-1");
 
     render(<TodoListsPage />);
-    fireEvent.click(screen.getByText("完了済みを非表示"));
+    fireEvent.click(screen.getByText("完了済みを表示"));
 
     await waitFor(() => {
       expect(screen.queryByText("Done Task")).toBeNull();
     });
-    expect(screen.getByText("完了済みを表示")).toBeInTheDocument();
+    expect(screen.getByText("完了済みを非表示")).toBeInTheDocument();
   });
 
   it("hideCompleted中に表示対象の子がない親には折りたたみボタンを表示しない", async () => {
@@ -254,7 +254,7 @@ describe("TodoListsPage", () => {
 
     expect(screen.getByLabelText("子Todoを折りたたむ")).toBeInTheDocument();
 
-    fireEvent.click(screen.getByText("完了済みを非表示"));
+    fireEvent.click(screen.getByText("完了済みを表示"));
 
     await waitFor(() => {
       expect(screen.queryByText("Child Done")).not.toBeInTheDocument();
@@ -298,7 +298,7 @@ describe("TodoListsPage", () => {
 
     render(<TodoListsPage />);
 
-    fireEvent.click(screen.getByText("完了済みを非表示"));
+    fireEvent.click(screen.getByText("完了済みを表示"));
 
     await waitFor(() => {
       expect(screen.queryByText("Child Done")).not.toBeInTheDocument();
@@ -582,7 +582,7 @@ describe("TodoListsPage", () => {
 
     view.unmount();
     render(<TodoListsPage />);
-    fireEvent.click(screen.getByText("完了済みを非表示"));
+    fireEvent.click(screen.getByText("完了済みを表示"));
 
     await waitFor(() => {
       expect(screen.getByText("完了済みのみです")).toBeInTheDocument();

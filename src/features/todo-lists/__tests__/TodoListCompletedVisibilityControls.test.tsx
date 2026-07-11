@@ -1,5 +1,6 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { TodoListCompletedVisibilityControls } from "../TodoListCompletedVisibilityControls";
+import texts from "../locales/ja.json";
 
 const defaultProps = {
   hasCompletedItems: true,
@@ -27,14 +28,14 @@ describe("TodoListCompletedVisibilityControls", () => {
   });
 
   describe("完了済みを非表示/表示 トグル", () => {
-    it("hideCompleted=false のとき「完了済みを非表示」ボタンを表示する", () => {
+    it("hideCompleted=false のとき現在の状態を表す「完了済みを表示」ボタンを表示する", () => {
       render(<TodoListCompletedVisibilityControls {...defaultProps} />);
       expect(
-        screen.getByRole("button", { name: "完了済みを非表示" }),
+        screen.getByRole("button", { name: "完了済みを表示" }),
       ).toBeInTheDocument();
     });
 
-    it("hideCompleted=true のとき「完了済みを表示」ボタンを表示する", () => {
+    it("hideCompleted=true のとき現在の状態を表す「完了済みを非表示」ボタンを表示する", () => {
       render(
         <TodoListCompletedVisibilityControls
           {...defaultProps}
@@ -42,13 +43,13 @@ describe("TodoListCompletedVisibilityControls", () => {
         />,
       );
       expect(
-        screen.getByRole("button", { name: "完了済みを表示" }),
+        screen.getByRole("button", { name: "完了済みを非表示" }),
       ).toBeInTheDocument();
     });
 
     it("完了済みトグルクリックで onToggleHideCompleted が呼ばれる", () => {
       render(<TodoListCompletedVisibilityControls {...defaultProps} />);
-      fireEvent.click(screen.getByRole("button", { name: "完了済みを非表示" }));
+      fireEvent.click(screen.getByRole("button", { name: "完了済みを表示" }));
       expect(defaultProps.onToggleHideCompleted).toHaveBeenCalledTimes(1);
     });
 
@@ -60,7 +61,7 @@ describe("TodoListCompletedVisibilityControls", () => {
         />,
       );
       expect(
-        screen.getByRole("button", { name: "完了済みを非表示" }),
+        screen.getByRole("button", { name: "完了済みを表示" }),
       ).toHaveAttribute("aria-pressed", "false");
     });
 
@@ -72,20 +73,20 @@ describe("TodoListCompletedVisibilityControls", () => {
         />,
       );
       expect(
-        screen.getByRole("button", { name: "完了済みを表示" }),
+        screen.getByRole("button", { name: "完了済みを非表示" }),
       ).toHaveAttribute("aria-pressed", "true");
     });
   });
 
   describe("完了済みを下へ移動 トグル", () => {
-    it("hideCompleted=false のとき「完了済みを下へ移動」ボタンを表示する", () => {
+    it("moveCompletedToBottom=false のとき現在の状態を表す「元の順番で表示」ボタンを表示する", () => {
       render(<TodoListCompletedVisibilityControls {...defaultProps} />);
       expect(
-        screen.getByRole("button", { name: "完了済みを下へ移動" }),
+        screen.getByRole("button", { name: "元の順番で表示" }),
       ).toBeInTheDocument();
     });
 
-    it("moveCompletedToBottom=true のとき「元の順番で表示」ボタンを表示する", () => {
+    it("moveCompletedToBottom=true のとき現在の状態を表す「完了済みを下へ移動」ボタンを表示する", () => {
       render(
         <TodoListCompletedVisibilityControls
           {...defaultProps}
@@ -93,11 +94,11 @@ describe("TodoListCompletedVisibilityControls", () => {
         />,
       );
       expect(
-        screen.getByRole("button", { name: "元の順番で表示" }),
+        screen.getByRole("button", { name: "完了済みを下へ移動" }),
       ).toBeInTheDocument();
     });
 
-    it("hideCompleted=true のとき「完了済みを下へ移動」ボタンを表示しない", () => {
+    it("hideCompleted=true のとき完了済み並び替えトグルを表示しない", () => {
       render(
         <TodoListCompletedVisibilityControls
           {...defaultProps}
@@ -109,10 +110,10 @@ describe("TodoListCompletedVisibilityControls", () => {
       ).not.toBeInTheDocument();
     });
 
-    it("「完了済みを下へ移動」クリックで onToggleMoveCompletedToBottom が呼ばれる", () => {
+    it("「元の順番で表示」クリックで onToggleMoveCompletedToBottom が呼ばれる", () => {
       render(<TodoListCompletedVisibilityControls {...defaultProps} />);
       fireEvent.click(
-        screen.getByRole("button", { name: "完了済みを下へ移動" }),
+        screen.getByRole("button", { name: "元の順番で表示" }),
       );
       expect(defaultProps.onToggleMoveCompletedToBottom).toHaveBeenCalledTimes(1);
     });
@@ -125,7 +126,7 @@ describe("TodoListCompletedVisibilityControls", () => {
         />,
       );
       expect(
-        screen.getByRole("button", { name: "完了済みを下へ移動" }),
+        screen.getByRole("button", { name: "元の順番で表示" }),
       ).toHaveAttribute("aria-pressed", "false");
     });
 
@@ -137,8 +138,52 @@ describe("TodoListCompletedVisibilityControls", () => {
         />,
       );
       expect(
-        screen.getByRole("button", { name: "元の順番で表示" }),
+        screen.getByRole("button", { name: "完了済みを下へ移動" }),
       ).toHaveAttribute("aria-pressed", "true");
     });
+  });
+
+  describe("ロケールキーと表示ラベルの対応関係（キー名と真偽値の対応がズレる回帰の防止）", () => {
+    it.each([
+      { hideCompleted: false, expectedKey: "completedVisibleLabel" as const },
+      { hideCompleted: true, expectedKey: "completedHiddenLabel" as const },
+    ])(
+      "hideCompleted=$hideCompleted のとき texts.list.$expectedKey がそのまま表示される",
+      ({ hideCompleted, expectedKey }) => {
+        render(
+          <TodoListCompletedVisibilityControls
+            {...defaultProps}
+            hideCompleted={hideCompleted}
+          />,
+        );
+        expect(
+          screen.getByRole("button", { name: texts.list[expectedKey] }),
+        ).toBeInTheDocument();
+      },
+    );
+
+    it.each([
+      {
+        moveCompletedToBottom: false,
+        expectedKey: "completedOriginalOrderLabel" as const,
+      },
+      {
+        moveCompletedToBottom: true,
+        expectedKey: "completedMovedToBottomLabel" as const,
+      },
+    ])(
+      "moveCompletedToBottom=$moveCompletedToBottom のとき texts.list.$expectedKey がそのまま表示される",
+      ({ moveCompletedToBottom, expectedKey }) => {
+        render(
+          <TodoListCompletedVisibilityControls
+            {...defaultProps}
+            moveCompletedToBottom={moveCompletedToBottom}
+          />,
+        );
+        expect(
+          screen.getByRole("button", { name: texts.list[expectedKey] }),
+        ).toBeInTheDocument();
+      },
+    );
   });
 });
