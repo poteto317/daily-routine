@@ -16,20 +16,22 @@ export const calculateBudgetMetrics = (
   monthBudget: number,
   expenses: Expense[],
 ): BudgetMetrics => {
-  const totalExpense = expenses.reduce(
-    (sum, expense) => sum + expense.amount,
-    0,
+  const now = new Date();
+  const todayKey = toDateKey(now);
+  const { totalExpense, todayExpense } = expenses.reduce(
+    (sums, expense) => ({
+      totalExpense: sums.totalExpense + expense.amount,
+      todayExpense:
+        sums.todayExpense + (expense.date === todayKey ? expense.amount : 0),
+    }),
+    { totalExpense: 0, todayExpense: 0 },
   );
-  const todayKey = toDateKey(new Date());
-  const todayExpense = expenses
-    .filter((expense) => expense.date === todayKey)
-    .reduce((sum, expense) => sum + expense.amount, 0);
   const remaining = monthBudget - totalExpense;
   const currentMonthDays = daysInMonth(currentDate);
   const dailyBudget = monthBudget > 0 ? monthBudget / currentMonthDays : 0;
-  const isCurrentMonth = isCurrentMonthDate(currentDate);
+  const isCurrentMonth = isCurrentMonthDate(currentDate, now);
   const daysRemaining = isCurrentMonth
-    ? currentMonthDays - new Date().getDate() + 1
+    ? currentMonthDays - now.getDate() + 1
     : 0;
   const dailyRemainingBudget =
     daysRemaining > 0 ? remaining / daysRemaining : 0;

@@ -8,11 +8,13 @@ export const shiftMonth = (date: Date, offset: number): Date => {
   return next;
 };
 
-export const isCurrentMonthDate = (date: Date): boolean => {
-  const today = new Date();
+export const isCurrentMonthDate = (
+  date: Date,
+  now: Date = new Date(),
+): boolean => {
   return (
-    date.getFullYear() === today.getFullYear() &&
-    date.getMonth() === today.getMonth()
+    date.getFullYear() === now.getFullYear() &&
+    date.getMonth() === now.getMonth()
   );
 };
 
@@ -28,8 +30,9 @@ export const toDateKey = (date: Date): string => {
 };
 
 export const getDefaultExpenseDate = (targetMonth: Date): string => {
-  if (isCurrentMonthDate(targetMonth)) {
-    return toDateKey(new Date());
+  const now = new Date();
+  if (isCurrentMonthDate(targetMonth, now)) {
+    return toDateKey(now);
   }
   return `${toMonthKey(targetMonth)}-01`;
 };
