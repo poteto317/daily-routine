@@ -3,7 +3,8 @@
     "title": "💰 家計簿",
     "betaLabel": "BETA",
     "addExpenseLabel": "➕",
-    "confirmDeleteExpense": "この支出を削除しますか？"
+    "confirmDeleteExpense": "この支出を削除しますか？",
+    "categoryManagementLabel": "🏷️ カテゴリ管理"
   },
   "monthNavigation": {
     "previousMonth": "← 前月",

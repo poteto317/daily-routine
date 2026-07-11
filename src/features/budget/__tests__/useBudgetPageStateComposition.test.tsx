@@ -118,7 +118,8 @@ describe("useBudgetPageState composition", () => {
   });
 
   it("initial/month/form/metrics/actions/result を compose する", () => {
-    const { result } = renderHook(() => useBudgetPageState());
+    const navigate = jest.fn();
+    const { result } = renderHook(() => useBudgetPageState({ navigate }));
 
     expect(useBudgetPageInitialState).toHaveBeenCalledTimes(1);
     expect(useBudgetMonthState).toHaveBeenCalledWith({
@@ -160,8 +161,15 @@ describe("useBudgetPageState composition", () => {
         categories: [
           { id: "cat-1", name: "食料品", createdAt: "2026-05-01T00:00:00.000Z" },
         ],
+        navigateToCategoryManagement: expect.any(Function),
       }),
     );
     expect(result.current).toEqual({ composed: true });
+
+    const { navigateToCategoryManagement } = (
+      createBudgetPageStateResult as jest.Mock
+    ).mock.calls[0][0];
+    navigateToCategoryManagement();
+    expect(navigate).toHaveBeenCalledWith("budget-category-management");
   });
 });
