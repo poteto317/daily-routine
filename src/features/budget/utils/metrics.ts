@@ -18,14 +18,14 @@ export const calculateBudgetMetrics = (
 ): BudgetMetrics => {
   const now = new Date();
   const todayKey = toDateKey(now);
-  const { totalExpense, todayExpense } = expenses.reduce(
-    (sums, expense) => ({
-      totalExpense: sums.totalExpense + expense.amount,
-      todayExpense:
-        sums.todayExpense + (expense.date === todayKey ? expense.amount : 0),
-    }),
-    { totalExpense: 0, todayExpense: 0 },
-  );
+  let totalExpense = 0;
+  let todayExpense = 0;
+  for (const expense of expenses) {
+    totalExpense += expense.amount;
+    if (expense.date === todayKey) {
+      todayExpense += expense.amount;
+    }
+  }
   const remaining = monthBudget - totalExpense;
   const currentMonthDays = daysInMonth(currentDate);
   const dailyBudget = monthBudget > 0 ? monthBudget / currentMonthDays : 0;
