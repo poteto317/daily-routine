@@ -134,8 +134,8 @@ describe("notificationTestStateActions", () => {
     expect(showNotification).toHaveBeenCalledWith("🎉 通知テスト", {
       body: "バックグラウンド通知が有効になりました！",
       tag: "test-notification",
-      icon: "/icon.svg",
-      badge: "/icon.svg",
+      icon: "/icon-192.png",
+      badge: "/icon-192.png",
     });
   });
 

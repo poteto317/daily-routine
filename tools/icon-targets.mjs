@@ -1,21 +1,22 @@
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+// iconPipelineBuilders.jsはCommonJS（module.exports）のため、
+// named importではなくdefault importしてから分割代入する。
+// named importはNodeのcjs-module-lexerによる静的解析に依存しており、
+// module.exportsの記述方法を変えた際に検出できなくなる可能性がある。
+import iconPipelineBuildersModule from "./iconPipelineBuilders.js";
+
+const { buildIconPipeline } = iconPipelineBuildersModule;
 
 export const ICON_TARGETS = [
   { file: "icon-192.png", size: 192 },
   { file: "icon-512.png", size: 512 },
+  { file: "icon-maskable-192.png", size: 192, maskable: true },
+  { file: "icon-maskable-512.png", size: 512, maskable: true },
   { file: "apple-touch-icon.png", size: 180, flatten: true },
 ];
 
-export const buildIconPipeline = (sharp, svgBuffer, target) => {
-  let pipeline = sharp(svgBuffer).resize(target.size, target.size);
-  if (target.flatten) {
-    // iOSのapple-touch-iconはアルファチャンネルを持たない画像が推奨されるため、
-    // 背景色で不透明化してからPNGにエンコードする
-    pipeline = pipeline.flatten({ background: "#2563eb" });
-  }
-  return pipeline;
-};
+export { buildIconPipeline };
 
 export const readIconSvg = (workspaceRoot) => {
   const svgPath = join(workspaceRoot, "public", "icon.svg");

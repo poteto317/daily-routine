@@ -5,6 +5,6 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "jest.setup.ts"],
+  "include": ["src/**/*.ts", "src/**/*.tsx", "jest.setup.ts", "tools/**/*.ts"],
   "exclude": ["node_modules", ".next", "firebase-functions"]
 }

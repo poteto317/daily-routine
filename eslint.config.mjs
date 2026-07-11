@@ -26,6 +26,14 @@ const eslintConfig = defineConfig([
     "storybook-static/**",
   ]),
   {
+    // tools/配下の.jsファイルはCommonJS（module.exports/require）で書く方針のため、
+    // ESM前提のno-require-importsルールを適用しない。
+    files: ["tools/**/*.js"],
+    rules: {
+      "@typescript-eslint/no-require-imports": "off",
+    },
+  },
+  {
     files: ["**/*.{ts,tsx,mts,cts}"],
     rules: {
       // 型としてのみ使用する import は必ず `import type` にする（コーディングルール §2 を自動強制）。
