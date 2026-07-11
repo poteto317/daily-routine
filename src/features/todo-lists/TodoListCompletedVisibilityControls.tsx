@@ -29,8 +29,8 @@ export const TodoListCompletedVisibilityControls = ({
           className="text-xs text-gray-500 dark:text-gray-600 hover:text-teal-600 dark:hover:text-teal-700 transition-colors"
         >
           {moveCompletedToBottom
-            ? texts.list.moveCompletedToBottom
-            : texts.list.moveCompletedToBottomActive}
+            ? texts.list.completedMovedToBottomLabel
+            : texts.list.completedOriginalOrderLabel}
         </button>
       )}
       <button
@@ -39,7 +39,9 @@ export const TodoListCompletedVisibilityControls = ({
         onClick={onToggleHideCompleted}
         className="text-xs text-gray-500 dark:text-gray-600 hover:text-teal-600 dark:hover:text-teal-700 transition-colors"
       >
-        {hideCompleted ? texts.list.hideCompleted : texts.list.showCompleted}
+        {hideCompleted
+          ? texts.list.completedHiddenLabel
+          : texts.list.completedVisibleLabel}
       </button>
     </>
   );

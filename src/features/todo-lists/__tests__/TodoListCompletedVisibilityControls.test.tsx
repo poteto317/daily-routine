@@ -1,5 +1,6 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { TodoListCompletedVisibilityControls } from "../TodoListCompletedVisibilityControls";
+import texts from "../locales/ja.json";
 
 const defaultProps = {
   hasCompletedItems: true,
@@ -140,5 +141,49 @@ describe("TodoListCompletedVisibilityControls", () => {
         screen.getByRole("button", { name: "完了済みを下へ移動" }),
       ).toHaveAttribute("aria-pressed", "true");
     });
+  });
+
+  describe("ロケールキーと表示ラベルの対応関係（キー名と真偽値の対応がズレる回帰の防止）", () => {
+    it.each([
+      { hideCompleted: false, expectedKey: "completedVisibleLabel" as const },
+      { hideCompleted: true, expectedKey: "completedHiddenLabel" as const },
+    ])(
+      "hideCompleted=$hideCompleted のとき texts.list.$expectedKey がそのまま表示される",
+      ({ hideCompleted, expectedKey }) => {
+        render(
+          <TodoListCompletedVisibilityControls
+            {...defaultProps}
+            hideCompleted={hideCompleted}
+          />,
+        );
+        expect(
+          screen.getByRole("button", { name: texts.list[expectedKey] }),
+        ).toBeInTheDocument();
+      },
+    );
+
+    it.each([
+      {
+        moveCompletedToBottom: false,
+        expectedKey: "completedOriginalOrderLabel" as const,
+      },
+      {
+        moveCompletedToBottom: true,
+        expectedKey: "completedMovedToBottomLabel" as const,
+      },
+    ])(
+      "moveCompletedToBottom=$moveCompletedToBottom のとき texts.list.$expectedKey がそのまま表示される",
+      ({ moveCompletedToBottom, expectedKey }) => {
+        render(
+          <TodoListCompletedVisibilityControls
+            {...defaultProps}
+            moveCompletedToBottom={moveCompletedToBottom}
+          />,
+        );
+        expect(
+          screen.getByRole("button", { name: texts.list[expectedKey] }),
+        ).toBeInTheDocument();
+      },
+    );
   });
 });
