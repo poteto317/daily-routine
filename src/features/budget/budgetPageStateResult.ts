@@ -25,6 +25,7 @@ type BudgetPageStateResultArgs = {
   handleSaveBudget: () => void;
   isCurrentMonth: boolean;
   monthBudget: number;
+  navigateToCategoryManagement: () => void;
   openBudgetInput: () => void;
   openExpenseForm: () => void;
   remaining: number;
@@ -58,6 +59,7 @@ export const createBudgetPageStateResult = ({
   handleSaveBudget,
   isCurrentMonth,
   monthBudget,
+  navigateToCategoryManagement,
   openBudgetInput,
   openExpenseForm,
   remaining,
@@ -90,6 +92,7 @@ export const createBudgetPageStateResult = ({
     handleSaveBudget,
     isCurrentMonth,
     monthBudget,
+    navigateToCategoryManagement,
     openBudgetInput,
     openExpenseForm,
     remaining,

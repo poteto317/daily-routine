@@ -1,6 +1,7 @@
-import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { expect, userEvent, within } from "storybook/test";
+import type { Decorator, Meta, StoryObj } from "@storybook/nextjs-vite";
+import { expect, fn, userEvent, within } from "storybook/test";
 import type { BudgetCategory, BudgetData } from "@/types/routine";
+import { NavigationContextProvider } from "@/features/routine/pages/NavigationContext";
 import { BudgetPage } from "./BudgetPage";
 import { saveBudgetData } from "./storageData";
 import { saveBudgetCategories } from "./storageCategories";
@@ -8,11 +9,20 @@ import { saveBudgetCategories } from "./storageCategories";
 // BudgetPage は useBudgetPageState() を内部で呼び出す。
 // localStorage（budget-data / budget-categories キー）からデータを読み込む。
 // beforeEach で saveBudgetData() / saveBudgetCategories() を使いデータを設定する。
+// BudgetPage は useNavigationContext() も呼び出すため
+// NavigationContextProvider デコレーターで navigate 関数を注入する。
+
+const withNavigationContext: Decorator = (Story) => (
+  <NavigationContextProvider value={fn()}>
+    <Story />
+  </NavigationContextProvider>
+);
 
 const meta = {
   title: "Features/Budget/BudgetPage",
   component: BudgetPage,
   parameters: { layout: "fullscreen" },
+  decorators: [withNavigationContext],
 } satisfies Meta<typeof BudgetPage>;
 
 export default meta;

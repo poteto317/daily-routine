@@ -7,10 +7,12 @@ import { BudgetExpenseList } from "@/features/budget/components/BudgetExpenseLis
 import { BudgetMonthNavigation } from "@/features/budget/components/BudgetMonthNavigation";
 import { BudgetSummaryCards } from "@/features/budget/components/BudgetSummaryCards";
 import { useBudgetPageState } from "@/features/budget/useBudgetPageState";
+import { useNavigationContext } from "@/features/routine/pages/NavigationContext";
 import budgetTexts from "@/features/budget/locales/ja.json";
 
 export const BudgetPage = () => {
-  const state = useBudgetPageState();
+  const navigate = useNavigationContext();
+  const state = useBudgetPageState({ navigate });
 
   return (
     <div className="min-h-screen bg-linear-to-br from-green-50 to-emerald-100 dark:from-slate-400 dark:to-slate-300">
@@ -23,6 +25,15 @@ export const BudgetPage = () => {
             <span className="px-3 py-1 bg-orange-500 text-white text-xs font-bold rounded-full">
               {budgetTexts.page.betaLabel}
             </span>
+          </div>
+          <div className="flex justify-end mb-2">
+            <button
+              type="button"
+              onClick={state.navigateToCategoryManagement}
+              className="text-sm text-blue-600 dark:text-blue-800 hover:underline"
+            >
+              {budgetTexts.page.categoryManagementLabel}
+            </button>
           </div>
           <BudgetMonthNavigation
             currentDate={state.currentDate}

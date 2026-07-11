@@ -8,7 +8,11 @@ import { useBudgetPageInitialState } from "./useBudgetPageInitialState";
 import { useBudgetPageMetricsState } from "./useBudgetPageMetricsState";
 import { useBudgetMonthState } from "./useBudgetMonthState";
 
-export const useBudgetPageState = () => {
+type UseBudgetPageStateParams = {
+  navigate: (page: "budget-category-management") => void;
+};
+
+export const useBudgetPageState = ({ navigate }: UseBudgetPageStateParams) => {
   const { categories } = useBudgetCategoriesState();
   const initialState = useBudgetPageInitialState();
   const monthState = useBudgetMonthState({ initialState });
@@ -78,6 +82,8 @@ export const useBudgetPageState = () => {
     handleSaveBudget,
     isCurrentMonth: metrics.isCurrentMonth,
     monthBudget: monthState.monthBudget,
+    navigateToCategoryManagement: () =>
+      navigate("budget-category-management"),
     openBudgetInput,
     openExpenseForm,
     remaining: metrics.remaining,

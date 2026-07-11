@@ -5,10 +5,18 @@ jest.mock("../useBudgetPageState", () => ({
   useBudgetPageState: jest.fn(),
 }));
 
+jest.mock("@/features/routine/pages/NavigationContext", () => ({
+  useNavigationContext: jest.fn(() => jest.fn()),
+}));
+
 import { useBudgetPageState } from "../useBudgetPageState";
+import { useNavigationContext } from "@/features/routine/pages/NavigationContext";
 
 const mockUseBudgetPageState = useBudgetPageState as jest.MockedFunction<
   typeof useBudgetPageState
+>;
+const mockUseNavigationContext = useNavigationContext as jest.MockedFunction<
+  typeof useNavigationContext
 >;
 
 const categories = [
@@ -53,6 +61,7 @@ const createState = (overrides: Record<string, unknown> = {}) => ({
   handleSaveBudget: jest.fn(),
   isCurrentMonth: true,
   monthBudget: 30000,
+  navigateToCategoryManagement: jest.fn(),
   openBudgetInput: jest.fn(),
   openExpenseForm: jest.fn(),
   remaining: 12000,
@@ -65,6 +74,30 @@ const createState = (overrides: Record<string, unknown> = {}) => ({
 describe("BudgetPage", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+  });
+
+  it("カテゴリ管理ボタンをクリックするとstateのnavigateToCategoryManagementが呼ばれる", () => {
+    const state = createState();
+    mockUseBudgetPageState.mockReturnValue(state as never);
+
+    render(<BudgetPage />);
+
+    fireEvent.click(screen.getByText("🏷️ カテゴリ管理"));
+
+    expect(state.navigateToCategoryManagement).toHaveBeenCalled();
+  });
+
+  it("useNavigationContextから取得したnavigateをuseBudgetPageStateに渡す", () => {
+    const state = createState();
+    mockUseBudgetPageState.mockReturnValue(state as never);
+    const mockNavigate = jest.fn();
+    mockUseNavigationContext.mockReturnValue(mockNavigate);
+
+    render(<BudgetPage />);
+
+    expect(mockUseBudgetPageState).toHaveBeenCalledWith({
+      navigate: mockNavigate,
+    });
   });
 
   it("通常表示でサマリーと支出一覧を表示する", () => {

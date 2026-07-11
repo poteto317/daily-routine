@@ -26,6 +26,7 @@ describe("budgetPageStateResult", () => {
     const handleExpenseDateChange = jest.fn();
     const handleExpenseCategoryIdChange = jest.fn();
     const handleSaveBudget = jest.fn();
+    const navigateToCategoryManagement = jest.fn();
     const openBudgetInput = jest.fn();
     const openExpenseForm = jest.fn();
 
@@ -55,6 +56,7 @@ describe("budgetPageStateResult", () => {
         handleSaveBudget,
         isCurrentMonth: true,
         monthBudget: 45000,
+        navigateToCategoryManagement,
         openBudgetInput,
         openExpenseForm,
         remaining: 43800,
@@ -87,6 +89,7 @@ describe("budgetPageStateResult", () => {
       handleSaveBudget,
       isCurrentMonth: true,
       monthBudget: 45000,
+      navigateToCategoryManagement,
       openBudgetInput,
       openExpenseForm,
       remaining: 43800,

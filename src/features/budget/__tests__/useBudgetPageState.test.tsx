@@ -32,8 +32,11 @@ const mockGetMonthStateSnapshot = getMonthStateSnapshot as jest.MockedFunction<
 >;
 
 describe("useBudgetPageState", () => {
+  let mockNavigate: jest.Mock;
+
   beforeEach(() => {
     jest.clearAllMocks();
+    mockNavigate = jest.fn();
     jest.useFakeTimers().setSystemTime(new Date("2026-03-07T12:00:00+09:00"));
 
     mockGetMonthStateSnapshot.mockImplementation((date) => {
@@ -76,7 +79,7 @@ describe("useBudgetPageState", () => {
   });
 
   it("初期状態とフォーム開閉を扱える", () => {
-    const { result } = renderHook(() => useBudgetPageState());
+    const { result } = renderHook(() => useBudgetPageState({ navigate: mockNavigate }));
 
     expect(result.current.monthBudget).toBe(30000);
     expect(result.current.expenses).toHaveLength(1);
@@ -103,7 +106,7 @@ describe("useBudgetPageState", () => {
   });
 
   it("有効な予算入力を保存する", () => {
-    const { result } = renderHook(() => useBudgetPageState());
+    const { result } = renderHook(() => useBudgetPageState({ navigate: mockNavigate }));
 
     act(() => {
       result.current.openBudgetInput();
@@ -121,7 +124,7 @@ describe("useBudgetPageState", () => {
   });
 
   it("無効な予算入力では保存しない", () => {
-    const { result } = renderHook(() => useBudgetPageState());
+    const { result } = renderHook(() => useBudgetPageState({ navigate: mockNavigate }));
 
     act(() => {
       result.current.handleBudgetInputChange("0");
@@ -132,7 +135,7 @@ describe("useBudgetPageState", () => {
   });
 
   it("有効な支出を追加してフォームをリセットする", () => {
-    const { result } = renderHook(() => useBudgetPageState());
+    const { result } = renderHook(() => useBudgetPageState({ navigate: mockNavigate }));
 
     act(() => {
       result.current.openExpenseForm();
@@ -159,7 +162,7 @@ describe("useBudgetPageState", () => {
   });
 
   it("無効な支出では追加しない", () => {
-    const { result } = renderHook(() => useBudgetPageState());
+    const { result } = renderHook(() => useBudgetPageState({ navigate: mockNavigate }));
 
     act(() => {
       result.current.handleExpenseAmountChange("");
@@ -170,7 +173,7 @@ describe("useBudgetPageState", () => {
   });
 
   it("支出削除後に一覧を再取得する", () => {
-    const { result } = renderHook(() => useBudgetPageState());
+    const { result } = renderHook(() => useBudgetPageState({ navigate: mockNavigate }));
 
     act(() => {
       result.current.handleDeleteExpense("e-mar");
@@ -183,7 +186,7 @@ describe("useBudgetPageState", () => {
   });
 
   it("月移動でスナップショットを同期する", () => {
-    const { result } = renderHook(() => useBudgetPageState());
+    const { result } = renderHook(() => useBudgetPageState({ navigate: mockNavigate }));
 
     act(() => {
       result.current.goToNextMonth();
@@ -209,5 +212,17 @@ describe("useBudgetPageState", () => {
 
     expect(result.current.currentDate.getMonth()).toBe(2);
     expect(result.current.currentDate.getDate()).toBe(7);
+  });
+
+  it("カテゴリ管理へ遷移できる", () => {
+    const { result } = renderHook(() =>
+      useBudgetPageState({ navigate: mockNavigate }),
+    );
+
+    act(() => {
+      result.current.navigateToCategoryManagement();
+    });
+
+    expect(mockNavigate).toHaveBeenCalledWith("budget-category-management");
   });
 });
