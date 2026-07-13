@@ -252,13 +252,11 @@ describe("useBudgetPageState", () => {
       result.current.handleUpdateExpense();
     });
 
-    expect(mockUpdateExpense).toHaveBeenCalledWith(
-      "2026-03",
-      "e-mar",
-      "2026-03-10",
-      2000,
-      "category-books",
-    );
+    expect(mockUpdateExpense).toHaveBeenCalledWith("2026-03", "e-mar", {
+      date: "2026-03-10",
+      amount: 2000,
+      categoryId: "category-books",
+    });
     expect(result.current.editingExpenseId).toBeNull();
   });
 

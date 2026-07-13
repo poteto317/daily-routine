@@ -33,9 +33,7 @@ export const addExpense = (
 export const updateExpense = (
   month: string,
   expenseId: string,
-  date: string,
-  amount: number,
-  categoryId?: string,
+  updates: Partial<Pick<Expense, "date" | "amount" | "categoryId">>,
 ): void => {
   const data = getBudgetData();
   const monthExpenses = data.expenses[month];
@@ -46,21 +44,23 @@ export const updateExpense = (
 
   if (!existing) return;
 
-  const nextMonth = date.substring(0, 7);
+  // updates に含まれないキーは既存の値を保持する（例えば categoryId を
+  // 省略した場合はカテゴリを変更しない。undefined を明示的に渡した場合は
+  // カテゴリを未設定にクリアする）
+  const updated: Expense = { ...existing, ...updates };
+  const nextMonth = updated.date.substring(0, 7);
 
   if (nextMonth === month) {
     // 月をまたがない場合は配列内の並び順を保ったまま該当要素だけ書き換える
     data.expenses[month] = monthExpenses.map((expense) =>
-      expense.id === expenseId
-        ? { ...expense, date, amount, categoryId }
-        : expense,
+      expense.id === expenseId ? updated : expense,
     );
     saveBudgetData(data);
     return;
   }
 
   // 日付の変更で月をまたぐ場合は、旧月バケットから除去してから
-  // 新しい日付の月バケットへ id/createdAt を保持したまま入れ直す
+  // 新しい日付の月バケットへ入れ直す
   data.expenses[month] = monthExpenses.filter(
     (expense) => expense.id !== expenseId,
   );
@@ -69,7 +69,7 @@ export const updateExpense = (
     data.expenses[nextMonth] = [];
   }
 
-  data.expenses[nextMonth].push({ ...existing, date, amount, categoryId });
+  data.expenses[nextMonth].push(updated);
 
   saveBudgetData(data);
 };

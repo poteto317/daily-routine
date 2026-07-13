@@ -139,7 +139,11 @@ describe("budget storageExpenses", () => {
       },
     });
 
-    updateExpense("2026-05", "e1", "2026-05-20", 2000, "cat-2");
+    updateExpense("2026-05", "e1", {
+      date: "2026-05-20",
+      amount: 2000,
+      categoryId: "cat-2",
+    });
 
     expect(mockSaveBudgetData).toHaveBeenCalledWith({
       budgets: {},
@@ -190,7 +194,7 @@ describe("budget storageExpenses", () => {
       },
     });
 
-    updateExpense("2026-05", "e2", "2026-05-11", 700);
+    updateExpense("2026-05", "e2", { date: "2026-05-11", amount: 700 });
 
     const savedExpenses = mockSaveBudgetData.mock.calls[0][0].expenses[
       "2026-05"
@@ -226,7 +230,11 @@ describe("budget storageExpenses", () => {
       },
     });
 
-    updateExpense("2026-05", "e1", "2026-04-28", 1500, "cat-1");
+    updateExpense("2026-05", "e1", {
+      date: "2026-04-28",
+      amount: 1500,
+      categoryId: "cat-1",
+    });
 
     expect(mockSaveBudgetData).toHaveBeenCalledWith({
       budgets: {},
@@ -266,7 +274,7 @@ describe("budget storageExpenses", () => {
       },
     });
 
-    updateExpense("2026-05", "e1", "2026-06-02", 1500);
+    updateExpense("2026-05", "e1", { date: "2026-06-02", amount: 1500 });
 
     expect(mockSaveBudgetData).toHaveBeenCalledWith({
       budgets: {},
@@ -300,7 +308,7 @@ describe("budget storageExpenses", () => {
       },
     });
 
-    updateExpense("2026-05", "e-missing", "2026-05-20", 2000);
+    updateExpense("2026-05", "e-missing", { date: "2026-05-20", amount: 2000 });
 
     expect(mockSaveBudgetData).not.toHaveBeenCalled();
   });
@@ -308,8 +316,80 @@ describe("budget storageExpenses", () => {
   it("updateExpenseは月バケット自体が存在しない場合は何も保存しない", () => {
     mockGetBudgetData.mockReturnValue({ budgets: {}, expenses: {} });
 
-    updateExpense("2026-05", "e1", "2026-05-20", 2000);
+    updateExpense("2026-05", "e1", { date: "2026-05-20", amount: 2000 });
 
     expect(mockSaveBudgetData).not.toHaveBeenCalled();
+  });
+
+  it("updateExpenseはupdatesでcategoryIdを省略した場合は既存のcategoryIdを保持する", () => {
+    mockGetBudgetData.mockReturnValue({
+      budgets: {},
+      expenses: {
+        "2026-05": [
+          {
+            id: "e1",
+            date: "2026-05-10",
+            amount: 1500,
+            categoryId: "cat-1",
+            createdAt: "2026-05-01T00:00:00.000Z",
+          },
+        ],
+      },
+    });
+
+    updateExpense("2026-05", "e1", { date: "2026-05-20", amount: 2000 });
+
+    expect(mockSaveBudgetData).toHaveBeenCalledWith({
+      budgets: {},
+      expenses: {
+        "2026-05": [
+          {
+            id: "e1",
+            date: "2026-05-20",
+            amount: 2000,
+            categoryId: "cat-1",
+            createdAt: "2026-05-01T00:00:00.000Z",
+          },
+        ],
+      },
+    });
+  });
+
+  it("updateExpenseはupdatesでcategoryIdをundefinedとして明示した場合はカテゴリをクリアする", () => {
+    mockGetBudgetData.mockReturnValue({
+      budgets: {},
+      expenses: {
+        "2026-05": [
+          {
+            id: "e1",
+            date: "2026-05-10",
+            amount: 1500,
+            categoryId: "cat-1",
+            createdAt: "2026-05-01T00:00:00.000Z",
+          },
+        ],
+      },
+    });
+
+    updateExpense("2026-05", "e1", {
+      date: "2026-05-20",
+      amount: 2000,
+      categoryId: undefined,
+    });
+
+    expect(mockSaveBudgetData).toHaveBeenCalledWith({
+      budgets: {},
+      expenses: {
+        "2026-05": [
+          {
+            id: "e1",
+            date: "2026-05-20",
+            amount: 2000,
+            categoryId: undefined,
+            createdAt: "2026-05-01T00:00:00.000Z",
+          },
+        ],
+      },
+    });
   });
 });

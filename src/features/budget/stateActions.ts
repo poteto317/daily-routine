@@ -176,9 +176,7 @@ export const updateExpenseFromInput = (params: {
   saveExpense: (
     monthKey: string,
     expenseId: string,
-    date: string,
-    amount: number,
-    categoryId?: string,
+    updates: { date: string; amount: number; categoryId?: string },
   ) => void;
   currentDate: Date;
   getSnapshot: (date: Date) => MonthStateSnapshot;
@@ -208,13 +206,11 @@ export const updateExpenseFromInput = (params: {
     return false;
   }
 
-  saveExpense(
-    currentMonth,
-    expenseId,
-    payload.date,
-    payload.amount,
-    payload.categoryId,
-  );
+  saveExpense(currentMonth, expenseId, {
+    date: payload.date,
+    amount: payload.amount,
+    categoryId: payload.categoryId,
+  });
   setExpenses(getSnapshot(currentDate).expenses);
   closeExpenseEdit();
   return true;

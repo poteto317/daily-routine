@@ -222,15 +222,47 @@ describe("budget stateActions", () => {
       }),
     ).toBe(true);
 
-    expect(saveExpense).toHaveBeenCalledWith(
-      "2026-03",
-      "e1",
-      "2026-03-05",
-      2500,
-      "category-books",
-    );
+    expect(saveExpense).toHaveBeenCalledWith("2026-03", "e1", {
+      date: "2026-03-05",
+      amount: 2500,
+      categoryId: "category-books",
+    });
     expect(setExpenses).toHaveBeenCalledWith(snapshot.expenses);
     expect(closeExpenseEdit).toHaveBeenCalled();
+  });
+
+  it("支出編集でcategoryIdが未指定の場合はupdatesにcategoryId: undefinedを含めて渡す", () => {
+    const saveExpense = jest.fn();
+    const getSnapshot = jest.fn(() => snapshot);
+    const setExpenses = jest.fn();
+    const closeExpenseEdit = jest.fn();
+    const currentDate = new Date("2026-03-07T00:00:00.000Z");
+
+    expect(
+      updateExpenseFromInput({
+        currentMonth: "2026-03",
+        expenseId: "e1",
+        expenseAmount: "2500",
+        expenseDate: "2026-03-05",
+        expenseCategoryId: "",
+        buildPayload: ({ expenseAmount, expenseDate, expenseCategoryId }) => ({
+          amount: Number(expenseAmount),
+          date: expenseDate,
+          categoryId: expenseCategoryId || undefined,
+        }),
+        saveExpense,
+        currentDate,
+        getSnapshot,
+        setExpenses,
+        closeExpenseEdit,
+      }),
+    ).toBe(true);
+
+    expect(saveExpense).toHaveBeenCalledWith("2026-03", "e1", {
+      date: "2026-03-05",
+      amount: 2500,
+      categoryId: undefined,
+    });
   });
 
   it("無効な支出編集では何も保存せず編集を開いたままにする", () => {
