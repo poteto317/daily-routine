@@ -3,6 +3,7 @@ import { useBudgetPageState } from "../useBudgetPageState";
 
 jest.mock("../storage", () => ({
   addExpense: jest.fn(),
+  updateExpense: jest.fn(),
   deleteExpense: jest.fn(),
   setMonthlyBudget: jest.fn(),
   getBudgetCategories: jest.fn(() => []),
@@ -17,10 +18,18 @@ jest.mock("../budgetPageStateHelpers", () => {
   };
 });
 
-import { addExpense, deleteExpense, setMonthlyBudget } from "../storage";
+import {
+  addExpense,
+  deleteExpense,
+  setMonthlyBudget,
+  updateExpense,
+} from "../storage";
 import { getMonthStateSnapshot } from "../budgetPageStateHelpers";
 
 const mockAddExpense = addExpense as jest.MockedFunction<typeof addExpense>;
+const mockUpdateExpense = updateExpense as jest.MockedFunction<
+  typeof updateExpense
+>;
 const mockDeleteExpense = deleteExpense as jest.MockedFunction<
   typeof deleteExpense
 >;
@@ -212,6 +221,139 @@ describe("useBudgetPageState", () => {
 
     expect(result.current.currentDate.getMonth()).toBe(2);
     expect(result.current.currentDate.getDate()).toBe(7);
+  });
+
+  it("支出の編集を開始・入力変更・保存できる", () => {
+    const { result } = renderHook(() =>
+      useBudgetPageState({ navigate: mockNavigate }),
+    );
+
+    act(() => {
+      result.current.startEditExpense({
+        id: "e-mar",
+        date: "2026-03-03",
+        amount: 1000,
+        createdAt: "2026-03-03T00:00:00.000Z",
+      });
+    });
+
+    expect(result.current.editingExpenseId).toBe("e-mar");
+    expect(result.current.editingExpenseDate).toBe("2026-03-03");
+    expect(result.current.editingExpenseAmount).toBe("1000");
+    expect(result.current.editingExpenseCategoryId).toBe("");
+
+    act(() => {
+      result.current.handleEditExpenseDateChange("2026-03-10");
+      result.current.handleEditExpenseAmountChange("2000");
+      result.current.handleEditExpenseCategoryIdChange("category-books");
+    });
+
+    act(() => {
+      result.current.handleUpdateExpense();
+    });
+
+    expect(mockUpdateExpense).toHaveBeenCalledWith(
+      "2026-03",
+      "e-mar",
+      "2026-03-10",
+      2000,
+      "category-books",
+    );
+    expect(result.current.editingExpenseId).toBeNull();
+  });
+
+  it("無効な金額では支出の編集を保存せず編集を継続する", () => {
+    const { result } = renderHook(() =>
+      useBudgetPageState({ navigate: mockNavigate }),
+    );
+
+    act(() => {
+      result.current.startEditExpense({
+        id: "e-mar",
+        date: "2026-03-03",
+        amount: 1000,
+        createdAt: "2026-03-03T00:00:00.000Z",
+      });
+    });
+
+    act(() => {
+      result.current.handleEditExpenseAmountChange("0");
+    });
+
+    act(() => {
+      result.current.handleUpdateExpense();
+    });
+
+    expect(mockUpdateExpense).not.toHaveBeenCalled();
+    expect(result.current.editingExpenseId).toBe("e-mar");
+  });
+
+  it("支出の編集をキャンセルすると保存せず編集対象を解除する", () => {
+    const { result } = renderHook(() =>
+      useBudgetPageState({ navigate: mockNavigate }),
+    );
+
+    act(() => {
+      result.current.startEditExpense({
+        id: "e-mar",
+        date: "2026-03-03",
+        amount: 1000,
+        createdAt: "2026-03-03T00:00:00.000Z",
+      });
+    });
+
+    act(() => {
+      result.current.cancelEditExpense();
+    });
+
+    expect(mockUpdateExpense).not.toHaveBeenCalled();
+    expect(result.current.editingExpenseId).toBeNull();
+  });
+
+  it("編集開始時に支出追加フォームを閉じる", () => {
+    const { result } = renderHook(() =>
+      useBudgetPageState({ navigate: mockNavigate }),
+    );
+
+    act(() => {
+      result.current.openExpenseForm();
+    });
+    expect(result.current.showExpenseForm).toBe(true);
+
+    act(() => {
+      result.current.startEditExpense({
+        id: "e-mar",
+        date: "2026-03-03",
+        amount: 1000,
+        createdAt: "2026-03-03T00:00:00.000Z",
+      });
+    });
+
+    expect(result.current.showExpenseForm).toBe(false);
+    expect(result.current.editingExpenseId).toBe("e-mar");
+  });
+
+  it("支出追加フォームを開くと編集中の行をキャンセルする", () => {
+    const { result } = renderHook(() =>
+      useBudgetPageState({ navigate: mockNavigate }),
+    );
+
+    act(() => {
+      result.current.startEditExpense({
+        id: "e-mar",
+        date: "2026-03-03",
+        amount: 1000,
+        createdAt: "2026-03-03T00:00:00.000Z",
+      });
+    });
+    expect(result.current.editingExpenseId).toBe("e-mar");
+
+    act(() => {
+      result.current.openExpenseForm();
+    });
+
+    expect(result.current.editingExpenseId).toBeNull();
+    expect(result.current.showExpenseForm).toBe(true);
   });
 
   it("カテゴリ管理へ遷移できる", () => {

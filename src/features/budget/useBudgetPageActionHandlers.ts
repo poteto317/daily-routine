@@ -10,10 +10,15 @@ type UseBudgetPageActionHandlersParams = {
   expenseAmount: string;
   expenseDate: string;
   expenseCategoryId: string;
+  editingExpenseId: string | null;
+  editingExpenseAmount: string;
+  editingExpenseDate: string;
+  editingExpenseCategoryId: string;
   setMonthBudget: (value: number) => void;
   setExpenses: (value: Expense[]) => void;
   closeBudgetInput: () => void;
   closeExpenseForm: () => void;
+  closeExpenseEdit: () => void;
 };
 
 export const useBudgetPageActionHandlers = ({
@@ -23,10 +28,15 @@ export const useBudgetPageActionHandlers = ({
   expenseAmount,
   expenseDate,
   expenseCategoryId,
+  editingExpenseId,
+  editingExpenseAmount,
+  editingExpenseDate,
+  editingExpenseCategoryId,
   setMonthBudget,
   setExpenses,
   closeBudgetInput,
   closeExpenseForm,
+  closeExpenseEdit,
 }: UseBudgetPageActionHandlersParams) => {
   const { handleSaveBudget } = useBudgetSaveAction({
     currentMonth,
@@ -35,18 +45,25 @@ export const useBudgetPageActionHandlers = ({
     closeBudgetInput,
   });
 
-  const { handleAddExpense, handleDeleteExpense } = useBudgetExpenseActions({
-    currentMonth,
-    currentDate,
-    expenseAmount,
-    expenseDate,
-    expenseCategoryId,
-    setExpenses,
-    closeExpenseForm,
-  });
+  const { handleAddExpense, handleUpdateExpense, handleDeleteExpense } =
+    useBudgetExpenseActions({
+      currentMonth,
+      currentDate,
+      expenseAmount,
+      expenseDate,
+      expenseCategoryId,
+      editingExpenseId,
+      editingExpenseAmount,
+      editingExpenseDate,
+      editingExpenseCategoryId,
+      setExpenses,
+      closeExpenseForm,
+      closeExpenseEdit,
+    });
 
   return createBudgetPageActionHandlersResult({
     handleAddExpense,
+    handleUpdateExpense,
     handleDeleteExpense,
     handleSaveBudget,
   });

@@ -27,7 +27,10 @@
   "expenseList": {
     "title": "📋 支出一覧",
     "empty": "まだ支出の記録がありません",
-    "delete": "🗑️"
+    "delete": "🗑️",
+    "edit": "✏️",
+    "save": "保存",
+    "cancelEdit": "キャンセル"
   },
   "categoryManagement": {
     "title": "🏷️ カテゴリ管理",

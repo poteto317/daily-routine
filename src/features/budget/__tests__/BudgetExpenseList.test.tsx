@@ -5,11 +5,26 @@ const categories = [
   { id: "cat-lunch", name: "ランチ", createdAt: "2026-05-01T00:00:00.000Z" },
 ];
 
+const createProps = (overrides: Record<string, unknown> = {}) => ({
+  categories,
+  expenses: [],
+  editingExpenseId: null as string | null,
+  editingExpenseDate: "",
+  editingExpenseAmount: "",
+  editingExpenseCategoryId: "",
+  onStartEdit: jest.fn(),
+  onCancelEdit: jest.fn(),
+  onSaveEdit: jest.fn(),
+  onEditDateChange: jest.fn(),
+  onEditAmountChange: jest.fn(),
+  onEditCategoryIdChange: jest.fn(),
+  onDelete: jest.fn(),
+  ...overrides,
+});
+
 describe("BudgetExpenseList", () => {
   it("支出が無い場合は空状態を表示する", () => {
-    render(
-      <BudgetExpenseList categories={categories} expenses={[]} onDelete={jest.fn()} />,
-    );
+    render(<BudgetExpenseList {...createProps()} />);
 
     expect(screen.getByText("まだ支出の記録がありません")).toBeInTheDocument();
   });
@@ -17,17 +32,17 @@ describe("BudgetExpenseList", () => {
   it("カテゴリが解決できる支出には🏷️タグを表示する", () => {
     render(
       <BudgetExpenseList
-        categories={categories}
-        expenses={[
-          {
-            id: "e1",
-            date: "2026-05-22",
-            amount: 850,
-            categoryId: "cat-lunch",
-            createdAt: "2026-05-22T00:00:00.000Z",
-          },
-        ]}
-        onDelete={jest.fn()}
+        {...createProps({
+          expenses: [
+            {
+              id: "e1",
+              date: "2026-05-22",
+              amount: 850,
+              categoryId: "cat-lunch",
+              createdAt: "2026-05-22T00:00:00.000Z",
+            },
+          ],
+        })}
       />,
     );
 
@@ -37,23 +52,23 @@ describe("BudgetExpenseList", () => {
   it("categoryIdが無い、または解決できない支出には🏷️タグを表示しない", () => {
     render(
       <BudgetExpenseList
-        categories={categories}
-        expenses={[
-          {
-            id: "e1",
-            date: "2026-05-22",
-            amount: 850,
-            createdAt: "2026-05-22T00:00:00.000Z",
-          },
-          {
-            id: "e2",
-            date: "2026-05-21",
-            amount: 300,
-            categoryId: "cat-404",
-            createdAt: "2026-05-21T00:00:00.000Z",
-          },
-        ]}
-        onDelete={jest.fn()}
+        {...createProps({
+          expenses: [
+            {
+              id: "e1",
+              date: "2026-05-22",
+              amount: 850,
+              createdAt: "2026-05-22T00:00:00.000Z",
+            },
+            {
+              id: "e2",
+              date: "2026-05-21",
+              amount: 300,
+              categoryId: "cat-404",
+              createdAt: "2026-05-21T00:00:00.000Z",
+            },
+          ],
+        })}
       />,
     );
 
@@ -64,23 +79,24 @@ describe("BudgetExpenseList", () => {
     const onDelete = jest.fn();
     render(
       <BudgetExpenseList
-        categories={categories}
-        expenses={[
-          {
-            id: "e1",
-            date: "2026-05-22",
-            amount: 850,
-            categoryId: "cat-lunch",
-            createdAt: "2026-05-22T00:00:00.000Z",
-          },
-          {
-            id: "e2",
-            date: "2026-05-21",
-            amount: 300,
-            createdAt: "2026-05-21T00:00:00.000Z",
-          },
-        ]}
-        onDelete={onDelete}
+        {...createProps({
+          onDelete,
+          expenses: [
+            {
+              id: "e1",
+              date: "2026-05-22",
+              amount: 850,
+              categoryId: "cat-lunch",
+              createdAt: "2026-05-22T00:00:00.000Z",
+            },
+            {
+              id: "e2",
+              date: "2026-05-21",
+              amount: 300,
+              createdAt: "2026-05-21T00:00:00.000Z",
+            },
+          ],
+        })}
       />,
     );
 
@@ -103,16 +119,16 @@ describe("BudgetExpenseList", () => {
   it("削除ボタンにtype=buttonが設定されている", () => {
     render(
       <BudgetExpenseList
-        categories={categories}
-        expenses={[
-          {
-            id: "e1",
-            date: "2026-05-22",
-            amount: 850,
-            createdAt: "2026-05-22T00:00:00.000Z",
-          },
-        ]}
-        onDelete={jest.fn()}
+        {...createProps({
+          expenses: [
+            {
+              id: "e1",
+              date: "2026-05-22",
+              amount: 850,
+              createdAt: "2026-05-22T00:00:00.000Z",
+            },
+          ],
+        })}
       />,
     );
 
@@ -120,5 +136,169 @@ describe("BudgetExpenseList", () => {
       "type",
       "button",
     );
+  });
+
+  it("編集ボタンを押すとonStartEditへ対象の支出を渡す", () => {
+    const onStartEdit = jest.fn();
+    const expense = {
+      id: "e1",
+      date: "2026-05-22",
+      amount: 850,
+      categoryId: "cat-lunch",
+      createdAt: "2026-05-22T00:00:00.000Z",
+    };
+    render(
+      <BudgetExpenseList
+        {...createProps({ onStartEdit, expenses: [expense] })}
+      />,
+    );
+
+    fireEvent.click(
+      screen.getByRole("button", { name: "5月22日の支出を編集" }),
+    );
+
+    expect(onStartEdit).toHaveBeenCalledWith(expense);
+  });
+
+  it("編集中の行は入力フィールドと保存/キャンセルボタンを表示し、編集/削除ボタンを表示しない", () => {
+    render(
+      <BudgetExpenseList
+        {...createProps({
+          editingExpenseId: "e1",
+          editingExpenseDate: "2026-05-22",
+          editingExpenseAmount: "850",
+          editingExpenseCategoryId: "cat-lunch",
+          expenses: [
+            {
+              id: "e1",
+              date: "2026-05-22",
+              amount: 850,
+              categoryId: "cat-lunch",
+              createdAt: "2026-05-22T00:00:00.000Z",
+            },
+          ],
+        })}
+      />,
+    );
+
+    expect(screen.getByLabelText("日付")).toHaveValue("2026-05-22");
+    expect(screen.getByLabelText(/金額/)).toHaveValue(850);
+    expect(screen.getByLabelText(/カテゴリ/)).toHaveValue("cat-lunch");
+    expect(screen.getByRole("button", { name: "保存" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "キャンセル" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /編集/ }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /削除/ }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("編集中でない行は通常表示のまま残る", () => {
+    render(
+      <BudgetExpenseList
+        {...createProps({
+          editingExpenseId: "e1",
+          editingExpenseDate: "2026-05-22",
+          editingExpenseAmount: "850",
+          editingExpenseCategoryId: "",
+          expenses: [
+            {
+              id: "e1",
+              date: "2026-05-22",
+              amount: 850,
+              createdAt: "2026-05-22T00:00:00.000Z",
+            },
+            {
+              id: "e2",
+              date: "2026-05-21",
+              amount: 300,
+              createdAt: "2026-05-21T00:00:00.000Z",
+            },
+          ],
+        })}
+      />,
+    );
+
+    expect(
+      screen.getByRole("button", { name: "5月21日の支出を編集" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "5月21日の支出を削除" }),
+    ).toBeInTheDocument();
+  });
+
+  it("編集フィールドの変更が対応するハンドラへ委譲される", () => {
+    const onEditDateChange = jest.fn();
+    const onEditAmountChange = jest.fn();
+    const onEditCategoryIdChange = jest.fn();
+    render(
+      <BudgetExpenseList
+        {...createProps({
+          editingExpenseId: "e1",
+          editingExpenseDate: "2026-05-22",
+          editingExpenseAmount: "850",
+          editingExpenseCategoryId: "",
+          onEditDateChange,
+          onEditAmountChange,
+          onEditCategoryIdChange,
+          expenses: [
+            {
+              id: "e1",
+              date: "2026-05-22",
+              amount: 850,
+              createdAt: "2026-05-22T00:00:00.000Z",
+            },
+          ],
+        })}
+      />,
+    );
+
+    fireEvent.change(screen.getByLabelText("日付"), {
+      target: { value: "2026-05-25" },
+    });
+    fireEvent.change(screen.getByLabelText(/金額/), {
+      target: { value: "1000" },
+    });
+    fireEvent.change(screen.getByLabelText(/カテゴリ/), {
+      target: { value: "cat-lunch" },
+    });
+
+    expect(onEditDateChange).toHaveBeenCalledWith("2026-05-25");
+    expect(onEditAmountChange).toHaveBeenCalledWith("1000");
+    expect(onEditCategoryIdChange).toHaveBeenCalledWith("cat-lunch");
+  });
+
+  it("保存/キャンセルボタンがonSaveEdit/onCancelEditを呼ぶ", () => {
+    const onSaveEdit = jest.fn();
+    const onCancelEdit = jest.fn();
+    render(
+      <BudgetExpenseList
+        {...createProps({
+          editingExpenseId: "e1",
+          editingExpenseDate: "2026-05-22",
+          editingExpenseAmount: "850",
+          editingExpenseCategoryId: "",
+          onSaveEdit,
+          onCancelEdit,
+          expenses: [
+            {
+              id: "e1",
+              date: "2026-05-22",
+              amount: 850,
+              createdAt: "2026-05-22T00:00:00.000Z",
+            },
+          ],
+        })}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "保存" }));
+    fireEvent.click(screen.getByRole("button", { name: "キャンセル" }));
+
+    expect(onSaveEdit).toHaveBeenCalledTimes(1);
+    expect(onCancelEdit).toHaveBeenCalledTimes(1);
   });
 });

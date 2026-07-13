@@ -5,6 +5,7 @@ export {
   setMonthlyBudget,
   getMonthlyExpenses,
   addExpense,
+  updateExpense,
   deleteExpense,
   getMonthlyTotalExpense,
 } from "@/features/budget/storage";

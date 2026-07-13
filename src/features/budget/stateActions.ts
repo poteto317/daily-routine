@@ -162,6 +162,64 @@ export const addExpenseFromInput = (params: {
   return true;
 };
 
+export const updateExpenseFromInput = (params: {
+  currentMonth: string;
+  expenseId: string;
+  expenseAmount: string;
+  expenseDate: string;
+  expenseCategoryId: string;
+  buildPayload: (params: {
+    expenseAmount: string;
+    expenseDate: string;
+    expenseCategoryId: string;
+  }) => ExpensePayload | null;
+  saveExpense: (
+    monthKey: string,
+    expenseId: string,
+    date: string,
+    amount: number,
+    categoryId?: string,
+  ) => void;
+  currentDate: Date;
+  getSnapshot: (date: Date) => MonthStateSnapshot;
+  setExpenses: SetValue<Expense[]>;
+  closeExpenseEdit: () => void;
+}): boolean => {
+  const {
+    currentMonth,
+    expenseId,
+    expenseAmount,
+    expenseDate,
+    expenseCategoryId,
+    buildPayload,
+    saveExpense,
+    currentDate,
+    getSnapshot,
+    setExpenses,
+    closeExpenseEdit,
+  } = params;
+  const payload = buildPayload({
+    expenseAmount,
+    expenseDate,
+    expenseCategoryId,
+  });
+
+  if (!payload) {
+    return false;
+  }
+
+  saveExpense(
+    currentMonth,
+    expenseId,
+    payload.date,
+    payload.amount,
+    payload.categoryId,
+  );
+  setExpenses(getSnapshot(currentDate).expenses);
+  closeExpenseEdit();
+  return true;
+};
+
 export const deleteExpenseAndRefresh = (params: {
   currentMonth: string;
   expenseId: string;

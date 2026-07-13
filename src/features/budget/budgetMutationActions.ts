@@ -8,8 +8,14 @@ import {
   addExpenseFromInput,
   deleteExpenseAndRefresh,
   saveBudgetFromInput,
+  updateExpenseFromInput,
 } from "./stateActions";
-import { addExpense, deleteExpense, setMonthlyBudget } from "./storage";
+import {
+  addExpense,
+  deleteExpense,
+  setMonthlyBudget,
+  updateExpense,
+} from "./storage";
 
 type SetValue<T> = (value: T) => void;
 
@@ -62,6 +68,48 @@ export const createExpenseAddHandler = (params: {
       getSnapshot: getMonthStateSnapshot,
       setExpenses,
       closeExpenseForm,
+    });
+  };
+};
+
+export const createExpenseUpdateHandler = (params: {
+  currentMonth: string;
+  editingExpenseId: string | null;
+  editingExpenseAmount: string;
+  editingExpenseDate: string;
+  editingExpenseCategoryId: string;
+  currentDate: Date;
+  setExpenses: SetValue<Expense[]>;
+  closeExpenseEdit: () => void;
+}) => {
+  const {
+    currentMonth,
+    editingExpenseId,
+    editingExpenseAmount,
+    editingExpenseDate,
+    editingExpenseCategoryId,
+    currentDate,
+    setExpenses,
+    closeExpenseEdit,
+  } = params;
+
+  return () => {
+    if (!editingExpenseId) {
+      return;
+    }
+
+    updateExpenseFromInput({
+      currentMonth,
+      expenseId: editingExpenseId,
+      expenseAmount: editingExpenseAmount,
+      expenseDate: editingExpenseDate,
+      expenseCategoryId: editingExpenseCategoryId,
+      buildPayload: buildExpensePayload,
+      saveExpense: updateExpense,
+      currentDate,
+      getSnapshot: getMonthStateSnapshot,
+      setExpenses,
+      closeExpenseEdit,
     });
   };
 };

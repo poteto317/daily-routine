@@ -11,6 +11,16 @@ const meta = {
   },
   args: {
     categories: [],
+    editingExpenseId: null,
+    editingExpenseDate: "",
+    editingExpenseAmount: "",
+    editingExpenseCategoryId: "",
+    onStartEdit: fn(),
+    onCancelEdit: fn(),
+    onSaveEdit: fn(),
+    onEditDateChange: fn(),
+    onEditAmountChange: fn(),
+    onEditCategoryIdChange: fn(),
     onDelete: fn(),
   },
 } satisfies Meta<typeof BudgetExpenseList>;
@@ -66,6 +76,18 @@ export const MultipleExpenses: Story = {
   args: { categories, expenses },
 };
 
+/** 1行が編集モードで表示された状態 */
+export const EditingExpense: Story = {
+  args: {
+    categories,
+    expenses,
+    editingExpenseId: "e-1",
+    editingExpenseDate: "2026-05-22",
+    editingExpenseAmount: "850",
+    editingExpenseCategoryId: "cat-lunch",
+  },
+};
+
 export const ClickDelete: Story = {
   args: { categories, expenses: [expenses[0]] },
   play: async ({ canvasElement, args }) => {
@@ -73,5 +95,16 @@ export const ClickDelete: Story = {
     const deleteButton = canvas.getByRole("button", { name: /削除/ });
     await userEvent.click(deleteButton);
     expect(args.onDelete).toHaveBeenCalledWith("e-1");
+  },
+};
+
+/** ✏️ボタンをクリック → onStartEdit が対象の支出で呼ばれる */
+export const ClickEdit: Story = {
+  args: { categories, expenses: [expenses[0]] },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    const editButton = canvas.getByRole("button", { name: /編集/ });
+    await userEvent.click(editButton);
+    expect(args.onStartEdit).toHaveBeenCalledWith(expenses[0]);
   },
 };

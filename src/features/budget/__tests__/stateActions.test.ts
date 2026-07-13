@@ -9,6 +9,7 @@ import {
   openBudgetInputForm,
   saveBudgetFromInput,
   syncBudgetMonthData,
+  updateExpenseFromInput,
 } from "../stateActions";
 
 const snapshot: MonthStateSnapshot = {
@@ -192,6 +193,71 @@ describe("budget stateActions", () => {
         closeExpenseForm,
       }),
     ).toBe(false);
+  });
+
+  it("有効な支出編集だけ保存して一覧を更新し編集を閉じる", () => {
+    const saveExpense = jest.fn();
+    const getSnapshot = jest.fn(() => snapshot);
+    const setExpenses = jest.fn();
+    const closeExpenseEdit = jest.fn();
+    const currentDate = new Date("2026-03-07T00:00:00.000Z");
+
+    expect(
+      updateExpenseFromInput({
+        currentMonth: "2026-03",
+        expenseId: "e1",
+        expenseAmount: "2500",
+        expenseDate: "2026-03-05",
+        expenseCategoryId: "category-books",
+        buildPayload: ({ expenseAmount, expenseDate, expenseCategoryId }) => ({
+          amount: Number(expenseAmount),
+          date: expenseDate,
+          categoryId: expenseCategoryId || undefined,
+        }),
+        saveExpense,
+        currentDate,
+        getSnapshot,
+        setExpenses,
+        closeExpenseEdit,
+      }),
+    ).toBe(true);
+
+    expect(saveExpense).toHaveBeenCalledWith(
+      "2026-03",
+      "e1",
+      "2026-03-05",
+      2500,
+      "category-books",
+    );
+    expect(setExpenses).toHaveBeenCalledWith(snapshot.expenses);
+    expect(closeExpenseEdit).toHaveBeenCalled();
+  });
+
+  it("無効な支出編集では何も保存せず編集を開いたままにする", () => {
+    const saveExpense = jest.fn();
+    const getSnapshot = jest.fn(() => snapshot);
+    const setExpenses = jest.fn();
+    const closeExpenseEdit = jest.fn();
+
+    expect(
+      updateExpenseFromInput({
+        currentMonth: "2026-03",
+        expenseId: "e1",
+        expenseAmount: "",
+        expenseDate: "2026-03-05",
+        expenseCategoryId: "",
+        buildPayload: () => null,
+        saveExpense,
+        currentDate: new Date("2026-03-07T00:00:00.000Z"),
+        getSnapshot,
+        setExpenses,
+        closeExpenseEdit,
+      }),
+    ).toBe(false);
+
+    expect(saveExpense).not.toHaveBeenCalled();
+    expect(setExpenses).not.toHaveBeenCalled();
+    expect(closeExpenseEdit).not.toHaveBeenCalled();
   });
 
   it("支出削除後に一覧を更新する", () => {

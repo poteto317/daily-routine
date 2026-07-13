@@ -7,17 +7,23 @@ describe("budgetPageActionBindings", () => {
     const setMonthBudget = jest.fn();
     const closeBudgetInput = jest.fn();
     const closeExpenseForm = jest.fn();
+    const closeExpenseEdit = jest.fn();
 
     expect(
       createBudgetPageActionBindings({
         budgetInputValue: "45000",
         closeBudgetInput,
         closeExpenseForm,
+        closeExpenseEdit,
         currentDate,
         currentMonth: "2026-03",
         expenseAmount: "2500",
         expenseDate: "2026-03-05",
         expenseCategoryId: "category-books",
+        editingExpenseId: "e-mar",
+        editingExpenseAmount: "3000",
+        editingExpenseDate: "2026-03-10",
+        editingExpenseCategoryId: "category-food",
         setExpenses,
         setMonthBudget,
       }),
@@ -25,11 +31,16 @@ describe("budgetPageActionBindings", () => {
       budgetInputValue: "45000",
       closeBudgetInput,
       closeExpenseForm,
+      closeExpenseEdit,
       currentDate,
       currentMonth: "2026-03",
       expenseAmount: "2500",
       expenseDate: "2026-03-05",
       expenseCategoryId: "category-books",
+      editingExpenseId: "e-mar",
+      editingExpenseAmount: "3000",
+      editingExpenseDate: "2026-03-10",
+      editingExpenseCategoryId: "category-food",
       setExpenses,
       setMonthBudget,
     });

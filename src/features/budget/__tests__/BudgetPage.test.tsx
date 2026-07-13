@@ -49,16 +49,26 @@ const createState = (overrides: Record<string, unknown> = {}) => ({
       createdAt: "2026-03-06T00:00:00.000Z",
     },
   ],
+  editingExpenseId: null,
+  editingExpenseDate: "",
+  editingExpenseAmount: "",
+  editingExpenseCategoryId: "",
   goToCurrentMonth: jest.fn(),
   goToNextMonth: jest.fn(),
   goToPreviousMonth: jest.fn(),
   handleAddExpense: jest.fn(),
+  handleUpdateExpense: jest.fn(),
   handleBudgetInputChange: jest.fn(),
   handleDeleteExpense: jest.fn(),
   handleExpenseAmountChange: jest.fn(),
   handleExpenseDateChange: jest.fn(),
   handleExpenseCategoryIdChange: jest.fn(),
+  handleEditExpenseAmountChange: jest.fn(),
+  handleEditExpenseDateChange: jest.fn(),
+  handleEditExpenseCategoryIdChange: jest.fn(),
   handleSaveBudget: jest.fn(),
+  startEditExpense: jest.fn(),
+  cancelEditExpense: jest.fn(),
   isCurrentMonth: true,
   monthBudget: 30000,
   navigateToCategoryManagement: jest.fn(),
@@ -219,5 +229,53 @@ describe("BudgetPage", () => {
     render(<BudgetPage />);
 
     expect(screen.queryByText("今日の支出")).not.toBeInTheDocument();
+  });
+
+  it("支出の編集ボタンでstartEditExpenseが呼ばれる", () => {
+    const state = createState();
+    mockUseBudgetPageState.mockReturnValue(state as never);
+
+    render(<BudgetPage />);
+
+    fireEvent.click(
+      screen.getByRole("button", { name: "3月6日の支出を編集" }),
+    );
+
+    expect(state.startEditExpense).toHaveBeenCalledWith(state.expenses[0]);
+  });
+
+  it("編集中の行でフィールド変更と保存/キャンセルが対応するハンドラを呼ぶ", () => {
+    const state = createState({
+      editingExpenseId: "e1",
+      editingExpenseDate: "2026-03-06",
+      editingExpenseAmount: "1500",
+      editingExpenseCategoryId: "cat-lunch",
+    });
+    mockUseBudgetPageState.mockReturnValue(state as never);
+
+    render(<BudgetPage />);
+
+    fireEvent.change(screen.getByLabelText("日付"), {
+      target: { value: "2026-03-08" },
+    });
+    fireEvent.change(screen.getByLabelText(/金額/), {
+      target: { value: "2000" },
+    });
+    fireEvent.change(screen.getByLabelText(/カテゴリ/), {
+      target: { value: "cat-transport" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "保存" }));
+
+    expect(state.handleEditExpenseDateChange).toHaveBeenCalledWith(
+      "2026-03-08",
+    );
+    expect(state.handleEditExpenseAmountChange).toHaveBeenCalledWith("2000");
+    expect(state.handleEditExpenseCategoryIdChange).toHaveBeenCalledWith(
+      "cat-transport",
+    );
+    expect(state.handleUpdateExpense).toHaveBeenCalledTimes(1);
+
+    fireEvent.click(screen.getByRole("button", { name: "キャンセル" }));
+    expect(state.cancelEditExpense).toHaveBeenCalledTimes(1);
   });
 });

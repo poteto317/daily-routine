@@ -7,6 +7,7 @@ export {
   setMonthlyBudget,
   getMonthlyExpenses,
   addExpense,
+  updateExpense,
   deleteExpense,
   getMonthlyTotalExpense,
   getBudgetCategories,
