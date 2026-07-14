@@ -11,5 +11,6 @@ export {
 export {
   createBudgetSaveHandler,
   createExpenseAddHandler,
+  createExpenseUpdateHandler,
   createExpenseDeleteHandler,
 } from "./budgetMutationActions";

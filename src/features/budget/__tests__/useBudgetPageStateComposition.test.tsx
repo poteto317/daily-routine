@@ -99,6 +99,7 @@ describe("useBudgetPageState composition", () => {
     });
     (useBudgetPageActionHandlers as jest.Mock).mockReturnValue({
       handleAddExpense: jest.fn(),
+      handleUpdateExpense: jest.fn(),
       handleDeleteExpense: jest.fn(),
       handleSaveBudget: jest.fn(),
     });
@@ -107,6 +108,9 @@ describe("useBudgetPageState composition", () => {
       handleExpenseAmountChange: jest.fn(),
       handleExpenseDateChange: jest.fn(),
       handleExpenseCategoryIdChange: jest.fn(),
+      handleEditExpenseAmountChange: jest.fn(),
+      handleEditExpenseDateChange: jest.fn(),
+      handleEditExpenseCategoryIdChange: jest.fn(),
     });
     (createBudgetPageStateResult as jest.Mock).mockReturnValue({
       composed: true,
@@ -147,10 +151,22 @@ describe("useBudgetPageState composition", () => {
       }),
     );
     expect(useBudgetPageActionHandlers).toHaveBeenCalledWith({ bound: true });
+    expect(createBudgetPageActionBindings).toHaveBeenCalledWith(
+      expect.objectContaining({
+        editingExpenseId: null,
+        editingExpenseAmount: "",
+        editingExpenseDate: "",
+        editingExpenseCategoryId: "",
+        closeExpenseEdit: expect.any(Function),
+      }),
+    );
     expect(createBudgetPageInputHandlers).toHaveBeenCalledWith(
       expect.objectContaining({
         setBudgetInputValue: expect.any(Function),
         setExpenseAmount: expect.any(Function),
+        setEditingExpenseAmount: expect.any(Function),
+        setEditingExpenseDate: expect.any(Function),
+        setEditingExpenseCategoryId: expect.any(Function),
       }),
     );
     expect(useBudgetCategoriesState).toHaveBeenCalledTimes(1);
@@ -164,6 +180,13 @@ describe("useBudgetPageState composition", () => {
         ],
         navigateToCategoryManagement: expect.any(Function),
         todayExpense: 400,
+        handleUpdateExpense: expect.any(Function),
+        editingExpenseId: null,
+        handleEditExpenseAmountChange: expect.any(Function),
+        handleEditExpenseDateChange: expect.any(Function),
+        handleEditExpenseCategoryIdChange: expect.any(Function),
+        startEditExpense: expect.any(Function),
+        cancelEditExpense: expect.any(Function),
       }),
     );
     expect(result.current).toEqual({ composed: true });

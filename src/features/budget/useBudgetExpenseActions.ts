@@ -3,6 +3,7 @@ import { createBudgetExpenseActionsResult } from "./budgetExpenseActionsResult";
 import {
   createExpenseAddHandler,
   createExpenseDeleteHandler,
+  createExpenseUpdateHandler,
 } from "./budgetPageStateActions";
 
 type UseBudgetExpenseActionsParams = {
@@ -11,8 +12,13 @@ type UseBudgetExpenseActionsParams = {
   expenseAmount: string;
   expenseDate: string;
   expenseCategoryId: string;
+  editingExpenseId: string | null;
+  editingExpenseAmount: string;
+  editingExpenseDate: string;
+  editingExpenseCategoryId: string;
   setExpenses: (value: Expense[]) => void;
   closeExpenseForm: () => void;
+  closeExpenseEdit: () => void;
 };
 
 export const useBudgetExpenseActions = ({
@@ -21,8 +27,13 @@ export const useBudgetExpenseActions = ({
   expenseAmount,
   expenseDate,
   expenseCategoryId,
+  editingExpenseId,
+  editingExpenseAmount,
+  editingExpenseDate,
+  editingExpenseCategoryId,
   setExpenses,
   closeExpenseForm,
+  closeExpenseEdit,
 }: UseBudgetExpenseActionsParams) => {
   const handleAddExpense = createExpenseAddHandler({
     expenseAmount,
@@ -33,6 +44,17 @@ export const useBudgetExpenseActions = ({
     closeExpenseForm,
   });
 
+  const handleUpdateExpense = createExpenseUpdateHandler({
+    currentMonth,
+    editingExpenseId,
+    editingExpenseAmount,
+    editingExpenseDate,
+    editingExpenseCategoryId,
+    currentDate,
+    setExpenses,
+    closeExpenseEdit,
+  });
+
   const handleDeleteExpense = createExpenseDeleteHandler({
     currentMonth,
     currentDate,
@@ -41,6 +63,7 @@ export const useBudgetExpenseActions = ({
 
   return createBudgetExpenseActionsResult({
     handleAddExpense,
+    handleUpdateExpense,
     handleDeleteExpense,
   });
 };

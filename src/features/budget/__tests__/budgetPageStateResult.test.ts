@@ -20,15 +20,21 @@ describe("budgetPageStateResult", () => {
     const goToNextMonth = jest.fn();
     const goToPreviousMonth = jest.fn();
     const handleAddExpense = jest.fn();
+    const handleUpdateExpense = jest.fn();
     const handleBudgetInputChange = jest.fn();
     const handleDeleteExpense = jest.fn();
     const handleExpenseAmountChange = jest.fn();
     const handleExpenseDateChange = jest.fn();
     const handleExpenseCategoryIdChange = jest.fn();
+    const handleEditExpenseAmountChange = jest.fn();
+    const handleEditExpenseDateChange = jest.fn();
+    const handleEditExpenseCategoryIdChange = jest.fn();
     const handleSaveBudget = jest.fn();
     const navigateToCategoryManagement = jest.fn();
     const openBudgetInput = jest.fn();
     const openExpenseForm = jest.fn();
+    const startEditExpense = jest.fn();
+    const cancelEditExpense = jest.fn();
 
     expect(
       createBudgetPageStateResult({
@@ -40,6 +46,10 @@ describe("budgetPageStateResult", () => {
         dailyBudget: 1000,
         dailyRemainingBudget: 1200,
         daysRemaining: 24,
+        editingExpenseId: "e1",
+        editingExpenseAmount: "3000",
+        editingExpenseDate: "2026-03-10",
+        editingExpenseCategoryId: "category-books",
         expenseAmount: "2500",
         expenseDate: "2026-03-05",
         expenseCategoryId: "category-books",
@@ -48,11 +58,15 @@ describe("budgetPageStateResult", () => {
         goToNextMonth,
         goToPreviousMonth,
         handleAddExpense,
+        handleUpdateExpense,
         handleBudgetInputChange,
         handleDeleteExpense,
         handleExpenseAmountChange,
         handleExpenseDateChange,
         handleExpenseCategoryIdChange,
+        handleEditExpenseAmountChange,
+        handleEditExpenseDateChange,
+        handleEditExpenseCategoryIdChange,
         handleSaveBudget,
         isCurrentMonth: true,
         monthBudget: 45000,
@@ -60,6 +74,8 @@ describe("budgetPageStateResult", () => {
         openBudgetInput,
         openExpenseForm,
         remaining: 43800,
+        startEditExpense,
+        cancelEditExpense,
         showBudgetInput: true,
         showExpenseForm: false,
         todayExpense: 300,
@@ -74,6 +90,10 @@ describe("budgetPageStateResult", () => {
       dailyBudget: 1000,
       dailyRemainingBudget: 1200,
       daysRemaining: 24,
+      editingExpenseId: "e1",
+      editingExpenseAmount: "3000",
+      editingExpenseDate: "2026-03-10",
+      editingExpenseCategoryId: "category-books",
       expenseAmount: "2500",
       expenseDate: "2026-03-05",
       expenseCategoryId: "category-books",
@@ -82,11 +102,15 @@ describe("budgetPageStateResult", () => {
       goToNextMonth,
       goToPreviousMonth,
       handleAddExpense,
+      handleUpdateExpense,
       handleBudgetInputChange,
       handleDeleteExpense,
       handleExpenseAmountChange,
       handleExpenseDateChange,
       handleExpenseCategoryIdChange,
+      handleEditExpenseAmountChange,
+      handleEditExpenseDateChange,
+      handleEditExpenseCategoryIdChange,
       handleSaveBudget,
       isCurrentMonth: true,
       monthBudget: 45000,
@@ -94,6 +118,8 @@ describe("budgetPageStateResult", () => {
       openBudgetInput,
       openExpenseForm,
       remaining: 43800,
+      startEditExpense,
+      cancelEditExpense,
       showBudgetInput: true,
       showExpenseForm: false,
       todayExpense: 300,
