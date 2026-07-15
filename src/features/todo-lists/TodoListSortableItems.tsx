@@ -29,7 +29,6 @@ type ItemHandlers = Omit<
   | "item"
   | "list"
   | "origIndex"
-  | "hideCompleted"
   | "isDragActive"
   | "isSelected"
   | "isParent"
@@ -140,7 +139,6 @@ export const TodoListSortableItems = ({
                   item={item}
                   list={list}
                   origIndex={origIndex}
-                  hideCompleted={hideCompleted}
                   isDragActive={activeId !== null}
                   isSelected={isSelected}
                   isParent={isParent}

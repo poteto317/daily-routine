@@ -10,6 +10,7 @@ import {
   updateListMoveCompletedToBottom,
 } from "../helpers";
 import { getItemIndentLevel } from "../todoListItemIndentLevel";
+import { sortCompletedToBottom } from "../todoListCompletedToBottomSort";
 import type { TodoList, TodoListItem } from "../types";
 
 jest.mock("../todoListItemIndentLevel", () => ({
@@ -261,6 +262,130 @@ describe("todo list helpers", () => {
       "item-2",
       "item-3",
     ]);
+  });
+
+  describe("表示順とデータ順が乖離する場合の並び替え（reorderItemsInList / sortCompletedToBottom の組み合わせ挙動）", () => {
+    /**
+     * dnd-kit の handleDragEnd と同じ方式（表示中のアイテムIDを生配列上で
+     * findIndex する）でドラッグ操作をシミュレートするヘルパー。
+     *
+     * 注意: このdescribeブロックの moveCompletedToBottom 関連のテストは
+     * reorderItemsInList と sortCompletedToBottom という純粋関数の組み合わせ挙動を
+     * 検証するものであり、UI経由での到達可能性を保証するものではない。
+     * 実際には useTodoListInteractionMode.ts で moveCompletedToBottom=true かつ
+     * hideCompleted=false のときは DnD 自体が無効化されており
+     * （完了状態の異なる親子ブロックの再構造化を防止するため。後述の
+     * 「完了状態の異なる親子ブロックは並び替えで再構造化されうる」テストを参照）、
+     * これらのシナリオはドラッグ操作としては現状発生しない。
+     */
+    const simulateDrag = (
+      list: TodoList,
+      activeId: string,
+      overId: string,
+    ): TodoList => {
+      const fromIndex = list.items.findIndex((item) => item.id === activeId);
+      const toIndex = list.items.findIndex((item) => item.id === overId);
+      return reorderItemsInList([list], "list-1", fromIndex, toIndex)[0];
+    };
+
+    it("完了状態の異なる親子ブロックは、同一完了状態同士のドラッグでも並び替えで再構造化されうる（既知の制約。このためmoveCompletedToBottom表示中はDnDを無効化している）", () => {
+      const items = [
+        createItem({ id: "parent", title: "Parent" }),
+        createItem({
+          id: "child",
+          title: "Child",
+          indent: 1,
+          isCompleted: true,
+        }),
+        createItem({ id: "other", title: "Other" }),
+        createItem({ id: "item2", title: "Item2", isCompleted: true }),
+      ];
+      const list = createList({ items });
+      // 表示順（完了を下へ）: [Parent, Other, Child, Item2]
+      // item2（完了）を child（完了、同一完了状態）の前へドラッグしても、
+      // 生配列上では child と parent の間に item2 が挿入され、
+      // child は parent ではなく item2 の子として誤検出される
+      const updated = simulateDrag(list, "item2", "child");
+
+      expect(updated.items.map((i) => i.id)).toEqual([
+        "parent",
+        "item2",
+        "child",
+        "other",
+      ]);
+      // child (indent=1) は parent ではなく item2 に隣接してしまっている
+      expect(updated.items[1].id).toBe("item2");
+      expect(updated.items[2].id).toBe("child");
+    });
+
+    it("moveCompletedToBottom 表示中に未完了アイテム同士をドラッグすると表示上も意図通りに入れ替わる", () => {
+      const items = [
+        createItem({ id: "a", title: "A" }),
+        createItem({ id: "b", title: "B", isCompleted: true }),
+        createItem({ id: "c", title: "C" }),
+        createItem({ id: "d", title: "D" }),
+      ];
+      const list = createList({ items });
+      // 表示順（完了を下へ）: [A, C, D, B]
+      // D を C の前にドラッグする操作をシミュレート
+      const updated = simulateDrag(list, "d", "c");
+
+      const displayAfter = sortCompletedToBottom(updated.items);
+      expect(displayAfter.map((i) => i.id)).toEqual(["a", "d", "c", "b"]);
+    });
+
+    it("hideCompleted 表示中に非表示アイテムの位置を保ったまま並び替える", () => {
+      const items = [
+        createItem({ id: "a", title: "A" }),
+        createItem({ id: "b", title: "B", isCompleted: true }),
+        createItem({ id: "c", title: "C" }),
+      ];
+      const list = createList({ items });
+      // hideCompleted 表示では b は非表示。a と c を入れ替える
+      const updated = simulateDrag(list, "a", "c");
+
+      expect(updated.items.map((i) => i.id)).toEqual(["b", "c", "a"]);
+      // 非表示だった b はリストから失われていない
+      expect(updated.items.find((i) => i.id === "b")).toBeDefined();
+    });
+
+    it("未完了アイテムを完了グループの境界付近にドロップしてもデータが破損しない", () => {
+      const items = [
+        createItem({ id: "a", title: "A" }),
+        createItem({ id: "b", title: "B", isCompleted: true }),
+        createItem({ id: "c", title: "C" }),
+        createItem({ id: "d", title: "D", isCompleted: true }),
+      ];
+      const list = createList({ items });
+      // moveCompletedToBottom 表示: [A, C, B, D]
+      // A（未完了）を D（完了、末尾）の位置へドラッグ
+      const updated = simulateDrag(list, "a", "d");
+
+      // 件数・IDの集合が保たれている（消失・重複がない）
+      expect(updated.items).toHaveLength(4);
+      expect(new Set(updated.items.map((i) => i.id))).toEqual(
+        new Set(["a", "b", "c", "d"]),
+      );
+    });
+
+    it("moveCompletedToBottom 表示中でも親子ブロックはまとめて移動する", () => {
+      const items = [
+        createItem({ id: "parent", title: "Parent" }),
+        createItem({ id: "child", title: "Child", indent: 1 }),
+        createItem({ id: "done", title: "Done", isCompleted: true }),
+        createItem({ id: "other", title: "Other" }),
+      ];
+      const list = createList({ items });
+      // parent（子 child 持ち）を other の後ろへドラッグ
+      const updated = simulateDrag(list, "parent", "other");
+
+      expect(updated.items.map((i) => i.id)).toEqual([
+        "done",
+        "other",
+        "parent",
+        "child",
+      ]);
+    });
   });
 
   it("indentItemInList は getItemIndentLevel に委譲してインデントを読み取る", () => {
