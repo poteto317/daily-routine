@@ -334,19 +334,23 @@ describe("todo list helpers", () => {
       expect(displayAfter.map((i) => i.id)).toEqual(["a", "d", "c", "b"]);
     });
 
-    it("hideCompleted 表示中に非表示アイテムの位置を保ったまま並び替える", () => {
+    it("hideCompleted 表示中に非表示アイテムを巻き込まずに並び替えても非表示アイテムは失われない（生配列上の並び位置自体は変わりうる）", () => {
       const items = [
         createItem({ id: "a", title: "A" }),
         createItem({ id: "b", title: "B", isCompleted: true }),
         createItem({ id: "c", title: "C" }),
       ];
       const list = createList({ items });
-      // hideCompleted 表示では b は非表示。a と c を入れ替える
+      // hideCompleted 表示では b は非表示。ドラッグ操作の対象は a と c のみだが、
+      // 生配列全体に対するインデックスベースの並び替えのため、
+      // 非表示だった b の生配列上の位置自体はずれる（インデックス1→0）。
+      // ここで保証したいのは「消失・重複しない」ことであり、位置の不変ではない。
       const updated = simulateDrag(list, "a", "c");
 
       expect(updated.items.map((i) => i.id)).toEqual(["b", "c", "a"]);
-      // 非表示だった b はリストから失われていない
-      expect(updated.items.find((i) => i.id === "b")).toBeDefined();
+      // 非表示だった b が失われず、重複もなく、ちょうど1件存在する
+      expect(updated.items).toHaveLength(3);
+      expect(updated.items.filter((i) => i.id === "b")).toHaveLength(1);
     });
 
     it("未完了アイテムを完了グループの境界付近にドロップしてもデータが破損しない", () => {
