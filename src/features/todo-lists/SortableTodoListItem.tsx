@@ -23,7 +23,6 @@ export type SortableTodoListItemProps = {
   item: TodoListItem;
   list: TodoList;
   origIndex: number;
-  hideCompleted: boolean;
   isDragActive: boolean;
   editingItemId: string | null;
   editingItemTitle: string;
@@ -63,7 +62,6 @@ export const SortableTodoListItem = ({
   item,
   list,
   origIndex,
-  hideCompleted,
   isDragActive,
   editingItemId,
   editingItemTitle,
@@ -97,7 +95,7 @@ export const SortableTodoListItem = ({
     transform,
     transition,
     isDragging,
-  } = useSortable({ id: item.id, disabled: hideCompleted });
+  } = useSortable({ id: item.id });
 
   const currentIndent = getItemIndentLevel(item);
   const maxIndent = getMaxAllowedIndent(list.items, origIndex);
@@ -136,11 +134,7 @@ export const SortableTodoListItem = ({
             onToggleSelect={toggleSelectItem}
           />
 
-          <TodoItemDragHandle
-            attributes={attributes}
-            listeners={listeners}
-            hideCompleted={hideCompleted}
-          />
+          <TodoItemDragHandle attributes={attributes} listeners={listeners} />
 
           <TodoItemIndentButtons
             listId={list.id}

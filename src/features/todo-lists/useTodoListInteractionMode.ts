@@ -35,6 +35,12 @@ export const useTodoListInteractionMode = ({
     inlineInsert.openInlineInsert(itemId);
   };
 
+  // sortModeActive中はsortCompletedToBottomが完了状態のみでフラットに再グルーピングする一方、
+  // reorderItemsInListは生配列のインデント隣接関係でブロック（親子）を判定するため、
+  // 完了状態の異なる親子ブロックが存在すると並び替えで意図しない再親子付けが起きうる
+  // （同一完了状態同士のドラッグでも、対象アイテム間に他アイテムが挿入されることで発生しうる）。
+  // また完了/未完了の境界を跨ぐドラッグは再描画時のグルーピングで見た目上無効化される。
+  // hideCompleted中は表示中アイテムが単一の完了状態のみのため、この問題は発生しない。
   const dnd = useTodoListDragAndDrop({
     items,
     listId,

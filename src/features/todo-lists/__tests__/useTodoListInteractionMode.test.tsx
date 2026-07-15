@@ -56,17 +56,21 @@ describe("useTodoListInteractionMode", () => {
     (useTodoListDragAndDrop as jest.Mock).mockReturnValue(dndMock);
   });
 
-  describe("sortModeActive の計算", () => {
-    it("moveCompletedToBottom=false のとき DnD は disabled=false で呼ばれる", () => {
+  describe("DnD の有効化（hideCompleted=trueなら常に有効、moveCompletedToBottom単独は無効）", () => {
+    it("moveCompletedToBottom=false, hideCompleted=false のとき DnD は disabled=false で呼ばれる", () => {
       renderHook(() =>
-        useTodoListInteractionMode({ ...defaultParams, moveCompletedToBottom: false }),
+        useTodoListInteractionMode({
+          ...defaultParams,
+          moveCompletedToBottom: false,
+          hideCompleted: false,
+        }),
       );
       expect(useTodoListDragAndDrop).toHaveBeenCalledWith(
         expect.objectContaining({ disabled: false }),
       );
     });
 
-    it("moveCompletedToBottom=true かつ hideCompleted=false のとき DnD は disabled=true で呼ばれる", () => {
+    it("moveCompletedToBottom=true かつ hideCompleted=false のとき DnD は disabled=true で呼ばれる（完了状態の異なる親子ブロックの再構造化・境界跨ぎドラッグの無反応を防止）", () => {
       renderHook(() =>
         useTodoListInteractionMode({
           ...defaultParams,
@@ -79,11 +83,24 @@ describe("useTodoListInteractionMode", () => {
       );
     });
 
-    it("moveCompletedToBottom=true かつ hideCompleted=true のとき DnD は disabled=false で呼ばれる", () => {
+    it("moveCompletedToBottom=true かつ hideCompleted=true のときも DnD は disabled=false で呼ばれる", () => {
       renderHook(() =>
         useTodoListInteractionMode({
           ...defaultParams,
           moveCompletedToBottom: true,
+          hideCompleted: true,
+        }),
+      );
+      expect(useTodoListDragAndDrop).toHaveBeenCalledWith(
+        expect.objectContaining({ disabled: false }),
+      );
+    });
+
+    it("moveCompletedToBottom=false かつ hideCompleted=true のときも DnD は disabled=false で呼ばれる", () => {
+      renderHook(() =>
+        useTodoListInteractionMode({
+          ...defaultParams,
+          moveCompletedToBottom: false,
           hideCompleted: true,
         }),
       );
