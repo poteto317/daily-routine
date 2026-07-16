@@ -7,6 +7,7 @@ import { TodoListCreateForm } from "./TodoListCreateForm";
 import { TodoListManagementItem } from "./TodoListManagementItem";
 import { TodoListManagementHeader } from "./TodoListManagementHeader";
 import { TodoListManagementEmptyState } from "./TodoListManagementEmptyState";
+import texts from "./locales/ja.json";
 
 export const TodoListManagementPage = () => {
   const navigate = useNavigationContext();
@@ -35,6 +36,16 @@ export const TodoListManagementPage = () => {
       <main className="max-w-2xl mx-auto px-4 py-8">
         <CardPanel>
           <TodoListManagementHeader showForm={showForm} onOpenForm={openForm} />
+
+          <div className="flex justify-end mb-4">
+            <button
+              type="button"
+              onClick={() => navigate("todo-category-management")}
+              className="text-sm text-teal-600 dark:text-teal-800 hover:underline"
+            >
+              {texts.list.manageCategoriesLabel}
+            </button>
+          </div>
 
           {showForm && (
             <TodoListCreateForm

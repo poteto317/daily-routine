@@ -3,10 +3,12 @@
 import { TodoListDetail } from "./TodoListDetail";
 import { TodoListNoSelectionView } from "./TodoListNoSelectionView";
 import { useTodoListsPageState } from "./useTodoListsPageState";
+import { useTodoCategoriesState } from "./useTodoCategoriesState";
 
 export const TodoListsPage = () => {
   const { effectiveSelectedId, clipboardItems, setClipboard, clearClipboard } =
     useTodoListsPageState();
+  const { categories } = useTodoCategoriesState();
 
   if (!effectiveSelectedId) {
     return <TodoListNoSelectionView />;
@@ -18,6 +20,7 @@ export const TodoListsPage = () => {
     <TodoListDetail
       key={effectiveSelectedId}
       listId={effectiveSelectedId}
+      categories={categories}
       clipboardItems={clipboardItems}
       onSetClipboard={setClipboard}
       onClearClipboard={clearClipboard}

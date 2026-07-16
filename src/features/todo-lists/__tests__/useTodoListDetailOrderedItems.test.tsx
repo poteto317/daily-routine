@@ -8,8 +8,13 @@ jest.mock("../todoListCompletedToBottomSort", () => ({
   sortCompletedToBottom: jest.fn((items) => items),
 }));
 
+jest.mock("../todoListCategoryGroupSort", () => ({
+  groupItemsByCategory: jest.fn((items) => items),
+}));
+
 import { createTodoListDetailOrderedItemsResult } from "../todoListDetailOrderedItemsResult";
 import { sortCompletedToBottom } from "../todoListCompletedToBottomSort";
+import { groupItemsByCategory } from "../todoListCategoryGroupSort";
 import { useTodoListDetailOrderedItems } from "../useTodoListDetailOrderedItems";
 
 describe("useTodoListDetailOrderedItems", () => {
@@ -17,6 +22,7 @@ describe("useTodoListDetailOrderedItems", () => {
     { id: "a", isCompleted: false } as never,
     { id: "b", isCompleted: true } as never,
   ];
+  const categoryLookup = new Map();
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -24,9 +30,10 @@ describe("useTodoListDetailOrderedItems", () => {
       (args) => args,
     );
     (sortCompletedToBottom as jest.Mock).mockImplementation((items) => items);
+    (groupItemsByCategory as jest.Mock).mockImplementation((items) => items);
   });
 
-  it("moveCompletedToBottom=true のとき sortCompletedToBottom を適用して result に委譲する", () => {
+  it("moveCompletedToBottom=true かつ groupByCategory=false のとき sortCompletedToBottom を適用して result に委譲する", () => {
     const sorted = [filteredItems[0]];
     (sortCompletedToBottom as jest.Mock).mockReturnValue(sorted);
 
@@ -34,24 +41,30 @@ describe("useTodoListDetailOrderedItems", () => {
       useTodoListDetailOrderedItems({
         filteredItems,
         moveCompletedToBottom: true,
+        groupByCategory: false,
+        categoryLookup,
       }),
     );
 
     expect(sortCompletedToBottom).toHaveBeenCalledWith(filteredItems);
+    expect(groupItemsByCategory).not.toHaveBeenCalled();
     expect(createTodoListDetailOrderedItemsResult).toHaveBeenCalledWith({
       visibleItems: sorted,
     });
   });
 
-  it("moveCompletedToBottom=false のとき sortCompletedToBottom を呼ばず filteredItems をそのまま result に委譲する", () => {
+  it("moveCompletedToBottom=false かつ groupByCategory=false のとき何も適用せず filteredItems をそのまま result に委譲する", () => {
     renderHook(() =>
       useTodoListDetailOrderedItems({
         filteredItems,
         moveCompletedToBottom: false,
+        groupByCategory: false,
+        categoryLookup,
       }),
     );
 
     expect(sortCompletedToBottom).not.toHaveBeenCalled();
+    expect(groupItemsByCategory).not.toHaveBeenCalled();
     expect(createTodoListDetailOrderedItemsResult).toHaveBeenCalledWith({
       visibleItems: filteredItems,
     });
@@ -63,7 +76,12 @@ describe("useTodoListDetailOrderedItems", () => {
 
     const { rerender } = renderHook(
       ({ moveCompletedToBottom }) =>
-        useTodoListDetailOrderedItems({ filteredItems, moveCompletedToBottom }),
+        useTodoListDetailOrderedItems({
+          filteredItems,
+          moveCompletedToBottom,
+          groupByCategory: false,
+          categoryLookup,
+        }),
       { initialProps: { moveCompletedToBottom: false } },
     );
 
@@ -72,5 +90,74 @@ describe("useTodoListDetailOrderedItems", () => {
     rerender({ moveCompletedToBottom: true });
 
     expect(sortCompletedToBottom).toHaveBeenCalledWith(filteredItems);
+  });
+
+  describe("groupByCategory=true のとき", () => {
+    it("sortCompletedToBottom を呼ばず groupItemsByCategory へ委譲する", () => {
+      const grouped = [filteredItems[1]];
+      (groupItemsByCategory as jest.Mock).mockReturnValue(grouped);
+
+      renderHook(() =>
+        useTodoListDetailOrderedItems({
+          filteredItems,
+          moveCompletedToBottom: false,
+          groupByCategory: true,
+          categoryLookup,
+        }),
+      );
+
+      expect(sortCompletedToBottom).not.toHaveBeenCalled();
+      expect(groupItemsByCategory).toHaveBeenCalledWith(
+        filteredItems,
+        categoryLookup,
+        { sortCompletedToBottomWithinGroup: false },
+      );
+      expect(createTodoListDetailOrderedItemsResult).toHaveBeenCalledWith({
+        visibleItems: grouped,
+      });
+    });
+
+    it("moveCompletedToBottomも同時にtrueの場合、グループ内完了ソートを有効にしてgroupItemsByCategoryへ委譲する（グループを跨がない）", () => {
+      renderHook(() =>
+        useTodoListDetailOrderedItems({
+          filteredItems,
+          moveCompletedToBottom: true,
+          groupByCategory: true,
+          categoryLookup,
+        }),
+      );
+
+      expect(sortCompletedToBottom).not.toHaveBeenCalled();
+      expect(groupItemsByCategory).toHaveBeenCalledWith(
+        filteredItems,
+        categoryLookup,
+        { sortCompletedToBottomWithinGroup: true },
+      );
+    });
+
+    it("categoryLookupが変わると再計算される", () => {
+      const { rerender } = renderHook(
+        ({ categoryLookup }) =>
+          useTodoListDetailOrderedItems({
+            filteredItems,
+            moveCompletedToBottom: false,
+            groupByCategory: true,
+            categoryLookup,
+          }),
+        { initialProps: { categoryLookup } },
+      );
+
+      expect(groupItemsByCategory).toHaveBeenCalledTimes(1);
+
+      const nextLookup = new Map([["cat-1", { id: "cat-1" } as never]]);
+      rerender({ categoryLookup: nextLookup });
+
+      expect(groupItemsByCategory).toHaveBeenCalledTimes(2);
+      expect(groupItemsByCategory).toHaveBeenLastCalledWith(
+        filteredItems,
+        nextLookup,
+        { sortCompletedToBottomWithinGroup: false },
+      );
+    });
   });
 });

@@ -1,12 +1,14 @@
 "use client";
 
-import type { TodoItemBgColorValue, TodoListItem } from "./types";
+import type { TodoCategory, TodoItemBgColorValue, TodoListItem } from "./types";
 import { TodoItemColorSwatches } from "./TodoItemColorSwatches";
+import { TodoCategorySwatches } from "./TodoCategorySwatches";
 import texts from "./locales/ja.json";
 
 type TodoItemMobileMenuProps = {
-  item: Pick<TodoListItem, "id" | "title" | "bgColor">;
+  item: Pick<TodoListItem, "id" | "title" | "bgColor" | "categoryId">;
   listId: string;
+  categories: TodoCategory[];
   currentIndent: number;
   maxIndent: number;
   mobileMenuItemId: string | null;
@@ -20,6 +22,11 @@ type TodoItemMobileMenuProps = {
     listId: string,
     itemId: string,
     bgColor: TodoItemBgColorValue | undefined,
+  ) => void;
+  onUpdateItemCategory: (
+    listId: string,
+    itemId: string,
+    categoryId: string | undefined,
   ) => void;
   onDeleteItem: (listId: string, itemId: string, title: string) => void;
 };
@@ -63,6 +70,7 @@ export const TodoItemMobileTrigger = ({
 export const TodoItemMobileDropdown = ({
   item,
   listId,
+  categories,
   currentIndent,
   maxIndent,
   mobileMenuItemId,
@@ -72,6 +80,7 @@ export const TodoItemMobileDropdown = ({
   onOutdentItem,
   onIndentItem,
   onUpdateItemBgColor,
+  onUpdateItemCategory,
   onDeleteItem,
 }: Omit<TodoItemMobileMenuProps, "toggleMobileMenu">) => {
   if (mobileMenuItemId !== item.id) return null;
@@ -135,6 +144,20 @@ export const TodoItemMobileDropdown = ({
           className="flex flex-wrap gap-1.5"
           onSelect={(value) => {
             onUpdateItemBgColor(listId, item.id, value);
+            closeMobileMenu();
+          }}
+        />
+      </div>
+      <div className="px-3 py-1.5 border-t border-gray-100 dark:border-gray-600">
+        <p className="text-xs text-gray-400 dark:text-gray-500 mb-1.5">
+          {texts.list.categoryPickerLabel}
+        </p>
+        <TodoCategorySwatches
+          categories={categories}
+          selectedCategoryId={item.categoryId}
+          className="flex flex-wrap gap-1.5"
+          onSelect={(categoryId) => {
+            onUpdateItemCategory(listId, item.id, categoryId);
             closeMobileMenu();
           }}
         />

@@ -100,6 +100,16 @@ describe("TodoListManagementPage", () => {
     ]);
   });
 
+  it("カテゴリ管理リンクをクリックするとカテゴリ管理ページに遷移する", () => {
+    const mockNavigate = jest.fn();
+    mockUseNavigationContext.mockReturnValue(mockNavigate);
+
+    render(<TodoListManagementPage />);
+    fireEvent.click(screen.getByText("🏷️ カテゴリ管理"));
+
+    expect(mockNavigate).toHaveBeenCalledWith("todo-category-management");
+  });
+
   it("リストタイトルをクリックするとそのリストに遷移する", () => {
     const mockNavigate = jest.fn();
     mockUseNavigationContext.mockReturnValue(mockNavigate);

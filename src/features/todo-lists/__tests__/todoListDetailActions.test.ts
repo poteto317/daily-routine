@@ -1,5 +1,6 @@
 import {
   updateTodoListAddItemPositionInLists,
+  updateTodoListGroupByCategoryInLists,
   updateTodoListHideCompletedInLists,
   updateTodoListMoveCompletedToBottomInLists,
   updateTodoListTitleInLists,
@@ -116,6 +117,30 @@ describe("todoListDetailActions", () => {
         lists: [createList(), list2],
         listId: "list-1",
         hideCompleted: true,
+      });
+
+      expect(result[1]).toBe(list2);
+    });
+  });
+
+  describe("updateTodoListGroupByCategoryInLists", () => {
+    it("groupByCategory を true に設定する", () => {
+      const result = updateTodoListGroupByCategoryInLists({
+        lists: [createList()],
+        listId: "list-1",
+        groupByCategory: true,
+      });
+
+      expect(result[0].groupByCategory).toBe(true);
+    });
+
+    it("対象リスト以外を変更しない", () => {
+      const list2 = createList({ id: "list-2", title: "Other" });
+
+      const result = updateTodoListGroupByCategoryInLists({
+        lists: [createList(), list2],
+        listId: "list-1",
+        groupByCategory: true,
       });
 
       expect(result[1]).toBe(list2);

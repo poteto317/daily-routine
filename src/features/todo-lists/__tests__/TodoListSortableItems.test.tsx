@@ -2,6 +2,7 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import { TodoListSortableItems } from "../TodoListSortableItems";
 import type { TodoListSortableItemsProps } from "../TodoListSortableItems";
 import type { TodoList } from "../types";
+import { buildTodoCategoryLookup } from "../todoCategoryLookup";
 
 // ---------- dnd-kit モック ----------
 jest.mock("@dnd-kit/core", () => ({
@@ -31,8 +32,11 @@ jest.mock("@dnd-kit/utilities", () => ({
   CSS: { Transform: { toString: jest.fn(() => "") } },
 }));
 jest.mock("@/components/SwipeableRoutineItem", () => ({
-  SwipeableRoutineItem: ({ children }: React.PropsWithChildren) => (
-    <div>{children}</div>
+  SwipeableRoutineItem: ({
+    children,
+    isEditMode,
+  }: React.PropsWithChildren<{ isEditMode: boolean }>) => (
+    <div data-edit-mode={isEditMode}>{children}</div>
   ),
 }));
 jest.mock("@/components", () => ({
@@ -66,6 +70,8 @@ const defaultHandlers: Omit<
   | "list"
   | "visibleItems"
   | "hideCompleted"
+  | "categoryLookup"
+  | "sortModeActive"
   | "activeId"
   | "activeItem"
   | "selectedItemIds"
@@ -89,10 +95,15 @@ const defaultHandlers: Omit<
   startEditItem: jest.fn(),
   toggleSelectItem: jest.fn(),
   toggleCollapseItem: jest.fn(),
+  categories: [],
   colorPickerItemId: null,
   toggleItemColorPicker: jest.fn(),
   closeItemColorPicker: jest.fn(),
+  categoryPickerItemId: null,
+  toggleItemCategoryPicker: jest.fn(),
+  closeItemCategoryPicker: jest.fn(),
   onUpdateItemBgColor: jest.fn(),
+  onUpdateItemCategory: jest.fn(),
   onToggleItem: jest.fn(),
   onDeleteItem: jest.fn(),
   onIndentItem: jest.fn(),
@@ -106,6 +117,8 @@ const defaultProps: TodoListSortableItemsProps = {
   list: baseList,
   visibleItems: baseList.items,
   hideCompleted: false,
+  categoryLookup: buildTodoCategoryLookup([]),
+  sortModeActive: false,
   activeId: null,
   activeItem: null,
   selectedItemIds: new Set(),
@@ -216,6 +229,47 @@ describe("TodoListSortableItems", () => {
       expect(
         screen.queryByRole("button", { name: "追加" }),
       ).not.toBeInTheDocument();
+    });
+  });
+
+  describe("sortModeActive中のスワイプインデント無効化", () => {
+    const listWithIndentRoom: TodoList = {
+      ...baseList,
+      items: [
+        baseList.items[0],
+        {
+          id: "item-3",
+          title: "Task 3",
+          isCompleted: false,
+          createdAt: "2024-01-01T00:00:00.000Z",
+        },
+      ],
+    };
+
+    it("sortModeActive=false のとき、インデント可能なアイテムは isEditMode=true になる", () => {
+      const { container } = render(
+        <TodoListSortableItems
+          {...defaultProps}
+          list={listWithIndentRoom}
+          visibleItems={listWithIndentRoom.items}
+          sortModeActive={false}
+        />,
+      );
+      const editModeDivs = container.querySelectorAll('[data-edit-mode="true"]');
+      expect(editModeDivs.length).toBeGreaterThan(0);
+    });
+
+    it("sortModeActive=true のとき、生配列の隣接関係が画面表示と乖離しうるため isEditMode は常に false になる（意図しない再親子付けの防止）", () => {
+      const { container } = render(
+        <TodoListSortableItems
+          {...defaultProps}
+          list={listWithIndentRoom}
+          visibleItems={listWithIndentRoom.items}
+          sortModeActive={true}
+        />,
+      );
+      const editModeDivs = container.querySelectorAll('[data-edit-mode="true"]');
+      expect(editModeDivs.length).toBe(0);
     });
   });
 

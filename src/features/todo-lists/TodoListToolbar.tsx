@@ -5,6 +5,7 @@ import type { TodoItemBgColorValue, TodoListItem } from "./types";
 import { AddItemPositionToggleButton } from "./AddItemPositionToggleButton";
 import { TodoListBulkColorPicker } from "./TodoListBulkColorPicker";
 import { TodoListCompletedVisibilityControls } from "./TodoListCompletedVisibilityControls";
+import { TodoListCategoryGroupingControls } from "./TodoListCategoryGroupingControls";
 
 export type TodoListToolbarProps = {
   items: TodoListItem[];
@@ -13,6 +14,8 @@ export type TodoListToolbarProps = {
   moveCompletedToBottom: boolean;
   showBulkColorPicker: boolean;
   hasCompletedItems: boolean;
+  hasCategories: boolean;
+  groupByCategory: boolean;
   onToggleBulkColorPicker: () => void;
   onCloseBulkColorPicker: () => void;
   onUpdateAllItemsBgColor: (
@@ -21,6 +24,7 @@ export type TodoListToolbarProps = {
   onToggleListAddItemPosition: (nextPosition: "first" | "last") => void;
   onToggleHideCompleted: () => void;
   onToggleMoveCompletedToBottom: () => void;
+  onToggleGroupByCategory: () => void;
   historyControls?: ReactNode;
 };
 
@@ -31,12 +35,15 @@ export const TodoListToolbar = ({
   moveCompletedToBottom,
   showBulkColorPicker,
   hasCompletedItems,
+  hasCategories,
+  groupByCategory,
   onToggleBulkColorPicker,
   onCloseBulkColorPicker,
   onUpdateAllItemsBgColor,
   onToggleListAddItemPosition,
   onToggleHideCompleted,
   onToggleMoveCompletedToBottom,
+  onToggleGroupByCategory,
   historyControls,
 }: TodoListToolbarProps) => (
   <div className="mb-4 flex items-center justify-between">
@@ -54,6 +61,11 @@ export const TodoListToolbar = ({
       <AddItemPositionToggleButton
         addItemPosition={addItemPosition}
         onToggle={onToggleListAddItemPosition}
+      />
+      <TodoListCategoryGroupingControls
+        hasCategories={hasCategories}
+        groupByCategory={groupByCategory}
+        onToggleGroupByCategory={onToggleGroupByCategory}
       />
       <TodoListCompletedVisibilityControls
         hasCompletedItems={hasCompletedItems}

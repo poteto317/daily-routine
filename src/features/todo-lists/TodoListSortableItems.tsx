@@ -14,8 +14,9 @@ import {
   SortableContext,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import type { TodoList, TodoListItem } from "./types";
+import type { TodoCategory, TodoList, TodoListItem } from "./types";
 import { getTodoItemBgClass } from "./todoItemBgColor";
+import { resolveTodoItemDisplayBgColor } from "./todoCategoryLookup";
 import { filterIncompleteItems } from "./todoListIncompleteItemsFilter";
 import { hasChildren } from "./todoListItemHasChildren";
 import { InlineInsertForm } from "./InlineInsertForm";
@@ -29,6 +30,8 @@ type ItemHandlers = Omit<
   | "item"
   | "list"
   | "origIndex"
+  | "categoryLookup"
+  | "sortModeActive"
   | "isDragActive"
   | "isSelected"
   | "isParent"
@@ -41,6 +44,8 @@ export type TodoListSortableItemsProps = {
   list: TodoList;
   visibleItems: TodoListItem[];
   hideCompleted: boolean;
+  categoryLookup: Map<string, TodoCategory>;
+  sortModeActive: boolean;
   activeId: string | null;
   activeItem: TodoListItem | null;
   selectedItemIds: ReadonlySet<string>;
@@ -65,6 +70,8 @@ export const TodoListSortableItems = ({
   list,
   visibleItems,
   hideCompleted,
+  categoryLookup,
+  sortModeActive,
   activeId,
   activeItem,
   selectedItemIds,
@@ -139,6 +146,8 @@ export const TodoListSortableItems = ({
                   item={item}
                   list={list}
                   origIndex={origIndex}
+                  categoryLookup={categoryLookup}
+                  sortModeActive={sortModeActive}
                   isDragActive={activeId !== null}
                   isSelected={isSelected}
                   isParent={isParent}
@@ -162,7 +171,7 @@ export const TodoListSortableItems = ({
       <DragOverlay>
         {activeItem ? (
           <div
-            className={`p-3 ${getTodoItemBgClass(activeItem.bgColor)} border border-teal-400 dark:border-teal-500 rounded-xl shadow-lg text-sm text-gray-800 dark:text-gray-100 opacity-90 cursor-grabbing`}
+            className={`p-3 ${getTodoItemBgClass(resolveTodoItemDisplayBgColor(categoryLookup, activeItem))} border border-teal-400 dark:border-teal-500 rounded-xl shadow-lg text-sm text-gray-800 dark:text-gray-100 opacity-90 cursor-grabbing`}
           >
             {activeItem.title}
           </div>

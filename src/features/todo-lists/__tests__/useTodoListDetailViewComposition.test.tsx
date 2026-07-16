@@ -44,6 +44,7 @@ const list = {
 
 const defaultParams = {
   list,
+  categories: [],
   clipboardItems: [],
   onAddItem: jest.fn(),
   onUpdateItemTitle: jest.fn(),
@@ -57,11 +58,13 @@ const defaultParams = {
   onUpdateListAddItemPosition: jest.fn(),
   onUpdateListMoveCompletedToBottom: jest.fn(),
   onUpdateListHideCompleted: jest.fn(),
+  onUpdateListGroupByCategory: jest.fn(),
 };
 
 const defaultViewStateMock = {
   hideCompleted: false,
   moveCompletedToBottom: false,
+  groupByCategory: false,
   collapsedItemIds: new Set<string>(),
   editingItemId: null,
   editingItemTitle: "",
@@ -175,12 +178,14 @@ describe("useTodoListDetailViewComposition", () => {
 
     expect(useTodoListDetailViewState).toHaveBeenCalledWith({
       list,
+      categories: defaultParams.categories,
       onAddItem: defaultParams.onAddItem,
       onUpdateItemTitle: defaultParams.onUpdateItemTitle,
       onUpdateListTitle: defaultParams.onUpdateListTitle,
       onUpdateListMoveCompletedToBottom:
         defaultParams.onUpdateListMoveCompletedToBottom,
       onUpdateListHideCompleted: defaultParams.onUpdateListHideCompleted,
+      onUpdateListGroupByCategory: defaultParams.onUpdateListGroupByCategory,
     });
   });
 
@@ -190,7 +195,7 @@ describe("useTodoListDetailViewComposition", () => {
     expect(useTodoListDetailUIControllers).toHaveBeenCalled();
   });
 
-  it("useTodoListInteractionMode を viewState の moveCompletedToBottom/hideCompleted とともに呼ぶ", () => {
+  it("useTodoListInteractionMode を viewState の moveCompletedToBottom/hideCompleted/groupByCategory とともに呼ぶ", () => {
     renderHook(() => useTodoListDetailViewComposition(defaultParams));
 
     expect(useTodoListInteractionMode).toHaveBeenCalledWith({
@@ -200,6 +205,7 @@ describe("useTodoListDetailViewComposition", () => {
       onReorderItems: defaultParams.onReorderItems,
       moveCompletedToBottom: false,
       hideCompleted: false,
+      groupByCategory: false,
     });
   });
 
@@ -226,6 +232,19 @@ describe("useTodoListDetailViewComposition", () => {
 
     expect(useTodoListInteractionMode).toHaveBeenCalledWith(
       expect.objectContaining({ hideCompleted: true }),
+    );
+  });
+
+  it("viewState が groupByCategory=true のとき useTodoListInteractionMode に伝播する", () => {
+    (useTodoListDetailViewState as jest.Mock).mockReturnValue({
+      ...defaultViewStateMock,
+      groupByCategory: true,
+    });
+
+    renderHook(() => useTodoListDetailViewComposition(defaultParams));
+
+    expect(useTodoListInteractionMode).toHaveBeenCalledWith(
+      expect.objectContaining({ groupByCategory: true }),
     );
   });
 

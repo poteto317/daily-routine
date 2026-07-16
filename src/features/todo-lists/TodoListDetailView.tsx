@@ -2,7 +2,12 @@
 
 import { CardPanel } from "@/components";
 import type { ReactNode } from "react";
-import type { TodoItemBgColorValue, TodoList, TodoListItem } from "./types";
+import type {
+  TodoCategory,
+  TodoItemBgColorValue,
+  TodoList,
+  TodoListItem,
+} from "./types";
 import { TodoListHeader } from "./TodoListHeader";
 import { TodoListProgressBar } from "./TodoListProgressBar";
 import { TodoListToolbar } from "./TodoListToolbar";
@@ -13,6 +18,7 @@ import { useTodoListDetailViewComposition } from "./useTodoListDetailViewComposi
 
 export type TodoListDetailViewProps = {
   list: TodoList;
+  categories: TodoCategory[];
   clipboardItems: TodoListItem[];
   onAddItem: (listId: string, title: string, insertAfterIndex?: number) => void;
   onToggleItem: (listId: string, itemId: string) => void;
@@ -42,11 +48,21 @@ export type TodoListDetailViewProps = {
     moveCompletedToBottom: boolean,
   ) => void;
   onUpdateListHideCompleted: (listId: string, hideCompleted: boolean) => void;
+  onUpdateItemCategory: (
+    listId: string,
+    itemId: string,
+    categoryId: string | undefined,
+  ) => void;
+  onUpdateListGroupByCategory: (
+    listId: string,
+    groupByCategory: boolean,
+  ) => void;
   historyControls?: ReactNode;
 };
 
 export const TodoListDetailView = ({
   list,
+  categories,
   clipboardItems,
   onAddItem,
   onToggleItem,
@@ -66,11 +82,14 @@ export const TodoListDetailView = ({
   onUpdateListAddItemPosition,
   onUpdateListMoveCompletedToBottom,
   onUpdateListHideCompleted,
+  onUpdateItemCategory,
+  onUpdateListGroupByCategory,
   historyControls,
 }: TodoListDetailViewProps) => {
   const { selection, hasClipboard, viewState, uiControllers, interactionMode, toolbar } =
     useTodoListDetailViewComposition({
       list,
+      categories,
       clipboardItems,
       onAddItem,
       onUpdateItemTitle,
@@ -84,6 +103,7 @@ export const TodoListDetailView = ({
       onUpdateListAddItemPosition,
       onUpdateListMoveCompletedToBottom,
       onUpdateListHideCompleted,
+      onUpdateListGroupByCategory,
     });
 
   const {
@@ -98,6 +118,8 @@ export const TodoListDetailView = ({
   const {
     hideCompleted,
     moveCompletedToBottom,
+    groupByCategory,
+    categoryLookup,
     collapsedItemIds,
     editingItemId,
     editingItemTitle,
@@ -121,6 +143,7 @@ export const TodoListDetailView = ({
     toggleCollapseItem,
     toggleHideCompleted,
     toggleMoveCompletedToBottom,
+    toggleGroupByCategory,
   } = viewState;
 
   const {
@@ -131,6 +154,11 @@ export const TodoListDetailView = ({
       closeItemColorPicker,
       toggleBulkColorPicker,
       closeBulkColorPicker,
+    },
+    categoryPicker: {
+      categoryPickerItemId,
+      toggleItemCategoryPicker,
+      closeItemCategoryPicker,
     },
     mobileMenu: { mobileMenuItemId, toggleMobileMenu, closeMobileMenu },
   } = uiControllers;
@@ -146,6 +174,7 @@ export const TodoListDetailView = ({
     },
     dnd: { activeId, sensors, handleDragStart, handleDragEnd, handleDragCancel },
     activeItem,
+    sortModeActive,
   } = interactionMode;
 
   const { hasCompletedItems, handleUpdateAllItemsBgColor, handleToggleAddItemPosition } =
@@ -180,12 +209,15 @@ export const TodoListDetailView = ({
             moveCompletedToBottom={moveCompletedToBottom}
             showBulkColorPicker={showBulkColorPicker}
             hasCompletedItems={hasCompletedItems}
+            hasCategories={categories.length > 0}
+            groupByCategory={groupByCategory}
             onToggleBulkColorPicker={toggleBulkColorPicker}
             onCloseBulkColorPicker={closeBulkColorPicker}
             onUpdateAllItemsBgColor={handleUpdateAllItemsBgColor}
             onToggleListAddItemPosition={handleToggleAddItemPosition}
             onToggleHideCompleted={toggleHideCompleted}
             onToggleMoveCompletedToBottom={toggleMoveCompletedToBottom}
+            onToggleGroupByCategory={toggleGroupByCategory}
             historyControls={historyControls}
           />
 
@@ -204,6 +236,9 @@ export const TodoListDetailView = ({
             list={list}
             visibleItems={visibleItems}
             hideCompleted={hideCompleted}
+            categories={categories}
+            categoryLookup={categoryLookup}
+            sortModeActive={sortModeActive}
             activeId={activeId}
             activeItem={activeItem}
             selectedItemIds={selectedItemIds}
@@ -229,7 +264,11 @@ export const TodoListDetailView = ({
             colorPickerItemId={colorPickerItemId}
             toggleItemColorPicker={toggleItemColorPicker}
             closeItemColorPicker={closeItemColorPicker}
+            categoryPickerItemId={categoryPickerItemId}
+            toggleItemCategoryPicker={toggleItemCategoryPicker}
+            closeItemCategoryPicker={closeItemCategoryPicker}
             onUpdateItemBgColor={onUpdateItemBgColor}
+            onUpdateItemCategory={onUpdateItemCategory}
             onToggleItem={onToggleItem}
             onDeleteItem={onDeleteItem}
             onIndentItem={onIndentItem}

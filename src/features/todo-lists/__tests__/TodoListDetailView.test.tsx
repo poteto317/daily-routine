@@ -49,6 +49,7 @@ const list = {
 
 const defaultProps = {
   list,
+  categories: [],
   clipboardItems: [],
   onAddItem: jest.fn(),
   onToggleItem: jest.fn(),
@@ -68,6 +69,8 @@ const defaultProps = {
   onUpdateListAddItemPosition: jest.fn(),
   onUpdateListMoveCompletedToBottom: jest.fn(),
   onUpdateListHideCompleted: jest.fn(),
+  onUpdateItemCategory: jest.fn(),
+  onUpdateListGroupByCategory: jest.fn(),
 };
 
 const defaultCompositionMock = {
@@ -83,6 +86,7 @@ const defaultCompositionMock = {
   viewState: {
     hideCompleted: false,
     moveCompletedToBottom: false,
+    categoryLookup: new Map(),
     collapsedItemIds: new Set<string>(),
     editingItemId: null,
     editingItemTitle: "",
@@ -116,6 +120,11 @@ const defaultCompositionMock = {
       toggleBulkColorPicker: jest.fn(),
       closeBulkColorPicker: jest.fn(),
     },
+    categoryPicker: {
+      categoryPickerItemId: null,
+      toggleItemCategoryPicker: jest.fn(),
+      closeItemCategoryPicker: jest.fn(),
+    },
     mobileMenu: {
       mobileMenuItemId: null,
       toggleMobileMenu: jest.fn(),
@@ -139,6 +148,7 @@ const defaultCompositionMock = {
       handleDragCancel: jest.fn(),
     },
     activeItem: null,
+    sortModeActive: false,
   },
   toolbar: {
     hasCompletedItems: false,
@@ -158,6 +168,7 @@ describe("TodoListDetailView", () => {
 
     expect(useTodoListDetailViewComposition).toHaveBeenCalledWith({
       list,
+      categories: defaultProps.categories,
       clipboardItems: [],
       onAddItem: defaultProps.onAddItem,
       onUpdateItemTitle: defaultProps.onUpdateItemTitle,
@@ -172,6 +183,7 @@ describe("TodoListDetailView", () => {
       onUpdateListMoveCompletedToBottom:
         defaultProps.onUpdateListMoveCompletedToBottom,
       onUpdateListHideCompleted: defaultProps.onUpdateListHideCompleted,
+      onUpdateListGroupByCategory: defaultProps.onUpdateListGroupByCategory,
     });
   });
 
@@ -224,6 +236,49 @@ describe("TodoListDetailView", () => {
           hideCompleted: true,
           moveCompletedToBottom: true,
         }),
+        undefined,
+      );
+    });
+
+    it("viewState の groupByCategory を TodoListToolbar に渡す", () => {
+      const composition = {
+        ...defaultCompositionMock,
+        viewState: {
+          ...defaultCompositionMock.viewState,
+          groupByCategory: true,
+        },
+      };
+      (useTodoListDetailViewComposition as jest.Mock).mockReturnValue(composition);
+
+      render(<TodoListDetailView {...defaultProps} />);
+
+      expect(TodoListToolbar).toHaveBeenCalledWith(
+        expect.objectContaining({ groupByCategory: true }),
+        undefined,
+      );
+    });
+
+    it("categories.length > 0 のとき TodoListToolbar に hasCategories=true を渡す", () => {
+      render(
+        <TodoListDetailView
+          {...defaultProps}
+          categories={[
+            { id: "cat-1", name: "仕事", createdAt: "" },
+          ]}
+        />,
+      );
+
+      expect(TodoListToolbar).toHaveBeenCalledWith(
+        expect.objectContaining({ hasCategories: true }),
+        undefined,
+      );
+    });
+
+    it("categoriesが空のとき TodoListToolbar に hasCategories=false を渡す", () => {
+      render(<TodoListDetailView {...defaultProps} categories={[]} />);
+
+      expect(TodoListToolbar).toHaveBeenCalledWith(
+        expect.objectContaining({ hasCategories: false }),
         undefined,
       );
     });

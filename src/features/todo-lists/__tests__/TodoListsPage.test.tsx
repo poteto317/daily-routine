@@ -67,6 +67,7 @@ jest.mock("@/lib/isImeComposingKeyDown", () => ({
 
 jest.mock("../storage", () => ({
   getTodoLists: jest.fn(),
+  getTodoCategories: jest.fn(() => []),
 }));
 
 jest.mock("../sync", () => ({

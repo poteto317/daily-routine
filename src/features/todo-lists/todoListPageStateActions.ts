@@ -1,6 +1,7 @@
 import type { PersistTodoLists, TodoList } from "./types";
 import {
   updateTodoListAddItemPositionInLists,
+  updateTodoListGroupByCategoryInLists,
   updateTodoListHideCompletedInLists,
   updateTodoListMoveCompletedToBottomInLists,
 } from "./todoListDetailActions";
@@ -62,6 +63,28 @@ export const updateTodoListHideCompletedAndPersist = ({
     lists,
     listId,
     hideCompleted,
+  });
+  persist(nextLists);
+  return nextLists;
+};
+
+type UpdateTodoListGroupByCategoryArgs = {
+  lists: TodoList[];
+  listId: string;
+  groupByCategory: boolean;
+  persist: PersistTodoLists;
+};
+
+export const updateTodoListGroupByCategoryAndPersist = ({
+  lists,
+  listId,
+  groupByCategory,
+  persist,
+}: UpdateTodoListGroupByCategoryArgs): TodoList[] => {
+  const nextLists = updateTodoListGroupByCategoryInLists({
+    lists,
+    listId,
+    groupByCategory,
   });
   persist(nextLists);
   return nextLists;

@@ -16,4 +16,8 @@ describe("pageComponentResolver", () => {
   it("同期履歴管理ページはコンポーネントを解決できる", () => {
     expect(resolvePageComponent("sync-management")).toBeDefined();
   });
+
+  it("Todoカテゴリ管理ページはコンポーネントを解決できる", () => {
+    expect(resolvePageComponent("todo-category-management")).toBeDefined();
+  });
 });

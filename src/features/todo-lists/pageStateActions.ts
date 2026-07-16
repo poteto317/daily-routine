@@ -15,4 +15,5 @@ export {
   updateTodoListAddItemPositionAndPersist,
   updateTodoListMoveCompletedToBottomAndPersist,
   updateTodoListHideCompletedAndPersist,
+  updateTodoListGroupByCategoryAndPersist,
 } from "./todoListPageStateActions";

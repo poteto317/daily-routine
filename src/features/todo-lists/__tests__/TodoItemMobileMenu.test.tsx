@@ -1,18 +1,25 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import {
   TodoItemMobileTrigger,
   TodoItemMobileDropdown,
 } from "../TodoItemMobileMenu";
-import type { TodoListItem } from "../types";
+import type { TodoCategory, TodoListItem } from "../types";
 
 const createItem = (
-  overrides: Partial<Pick<TodoListItem, "id" | "title" | "bgColor">> = {},
-): Pick<TodoListItem, "id" | "title" | "bgColor"> => ({
+  overrides: Partial<
+    Pick<TodoListItem, "id" | "title" | "bgColor" | "categoryId">
+  > = {},
+): Pick<TodoListItem, "id" | "title" | "bgColor" | "categoryId"> => ({
   id: "item-1",
   title: "テストTodo",
   bgColor: undefined,
+  categoryId: undefined,
   ...overrides,
 });
+
+const categories: TodoCategory[] = [
+  { id: "cat-work", name: "仕事", createdAt: "" },
+];
 
 describe("TodoItemMobileTrigger", () => {
   const item = createItem();
@@ -75,6 +82,7 @@ describe("TodoItemMobileDropdown", () => {
   const defaultProps = {
     item,
     listId: "list-1",
+    categories,
     currentIndent: 1,
     maxIndent: 3,
     mobileMenuItemId: "item-1",
@@ -84,6 +92,7 @@ describe("TodoItemMobileDropdown", () => {
     onOutdentItem: jest.fn(),
     onIndentItem: jest.fn(),
     onUpdateItemBgColor: jest.fn(),
+    onUpdateItemCategory: jest.fn(),
     onDeleteItem: jest.fn(),
   };
 
@@ -165,13 +174,33 @@ describe("TodoItemMobileDropdown", () => {
 
   it("背景色スウォッチ選択で onUpdateItemBgColor と closeMobileMenu が呼ばれる", () => {
     render(<TodoItemMobileDropdown {...defaultProps} />);
+    const radiogroup = screen.getByRole("radiogroup", { name: "背景色" });
     // index=1（赤: "bg-red-50"）を選択してデフォルト undefined を避ける
-    const swatches = screen.getAllByRole("radio");
+    const swatches = within(radiogroup).getAllByRole("radio");
     fireEvent.click(swatches[1]);
     expect(defaultProps.onUpdateItemBgColor).toHaveBeenCalledWith(
       "list-1",
       "item-1",
       "bg-red-50",
+    );
+    expect(defaultProps.closeMobileMenu).toHaveBeenCalledTimes(1);
+  });
+
+  it("カテゴリの radiogroup を表示する", () => {
+    render(<TodoItemMobileDropdown {...defaultProps} />);
+    expect(
+      screen.getByRole("radiogroup", { name: "カテゴリ" }),
+    ).toBeInTheDocument();
+  });
+
+  it("カテゴリスウォッチ選択で onUpdateItemCategory と closeMobileMenu が呼ばれる", () => {
+    render(<TodoItemMobileDropdown {...defaultProps} />);
+    const radiogroup = screen.getByRole("radiogroup", { name: "カテゴリ" });
+    fireEvent.click(within(radiogroup).getByRole("radio", { name: "仕事" }));
+    expect(defaultProps.onUpdateItemCategory).toHaveBeenCalledWith(
+      "list-1",
+      "item-1",
+      "cat-work",
     );
     expect(defaultProps.closeMobileMenu).toHaveBeenCalledTimes(1);
   });

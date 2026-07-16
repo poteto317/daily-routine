@@ -3,12 +3,14 @@ import { deleteTodoListAndPersist } from "../todoListDeletePersistActions";
 import { updateTodoListTitleAndPersist } from "../todoListTitleUpdatePersistAction";
 import {
   createDeleteTodoListHandler,
+  createUpdateListGroupByCategoryHandler,
   createUpdateListHideCompletedHandler,
   createUpdateListMoveCompletedToBottomHandler,
   createUpdateListTitleHandler,
 } from "../todoListDetailListHandlers";
 import { normalizeTitle } from "../todoListTitleNormalization";
 import {
+  updateTodoListGroupByCategoryAndPersist,
   updateTodoListHideCompletedAndPersist,
   updateTodoListMoveCompletedToBottomAndPersist,
 } from "../pageStateActions";
@@ -29,6 +31,7 @@ jest.mock("../pageStateActions", () => ({
   updateTodoListAddItemPositionAndPersist: jest.fn(),
   updateTodoListMoveCompletedToBottomAndPersist: jest.fn(),
   updateTodoListHideCompletedAndPersist: jest.fn(),
+  updateTodoListGroupByCategoryAndPersist: jest.fn(),
 }));
 
 const baseList: TodoList = {
@@ -143,6 +146,22 @@ describe("todoListDetailListHandlers", () => {
       lists: [baseList],
       listId: "list-1",
       hideCompleted: true,
+      persist,
+    });
+  });
+
+  it("groupByCategory 更新 handler が永続化アクションに委譲する", () => {
+    const persist = jest.fn();
+
+    createUpdateListGroupByCategoryHandler({
+      lists: [baseList],
+      persist,
+    })("list-1", true);
+
+    expect(updateTodoListGroupByCategoryAndPersist).toHaveBeenCalledWith({
+      lists: [baseList],
+      listId: "list-1",
+      groupByCategory: true,
       persist,
     });
   });

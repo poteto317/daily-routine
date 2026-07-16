@@ -1,4 +1,4 @@
-import type { TodoItemBgColorValue, TodoList, TodoListItem } from "./types";
+import type { TodoCategory, TodoItemBgColorValue, TodoList, TodoListItem } from "./types";
 import { createToolbarState } from "./todoListDetailToolbarState";
 import { useTodoListDetailSelection } from "./useTodoListDetailSelection";
 import { useTodoListDetailViewState } from "./useTodoListDetailViewState";
@@ -7,6 +7,7 @@ import { useTodoListInteractionMode } from "./useTodoListInteractionMode";
 
 export type UseTodoListDetailViewCompositionParams = {
   list: TodoList;
+  categories: TodoCategory[];
   clipboardItems: TodoListItem[];
   onAddItem: (listId: string, title: string, insertAfterIndex?: number) => void;
   onUpdateItemTitle: (listId: string, itemId: string, title: string) => void;
@@ -26,10 +27,15 @@ export type UseTodoListDetailViewCompositionParams = {
     moveCompletedToBottom: boolean,
   ) => void;
   onUpdateListHideCompleted: (listId: string, hideCompleted: boolean) => void;
+  onUpdateListGroupByCategory: (
+    listId: string,
+    groupByCategory: boolean,
+  ) => void;
 };
 
 export const useTodoListDetailViewComposition = ({
   list,
+  categories,
   clipboardItems,
   onAddItem,
   onUpdateItemTitle,
@@ -43,6 +49,7 @@ export const useTodoListDetailViewComposition = ({
   onUpdateListAddItemPosition,
   onUpdateListMoveCompletedToBottom,
   onUpdateListHideCompleted,
+  onUpdateListGroupByCategory,
 }: UseTodoListDetailViewCompositionParams) => {
   const selection = useTodoListDetailSelection({
     listId: list.id,
@@ -55,11 +62,13 @@ export const useTodoListDetailViewComposition = ({
 
   const viewState = useTodoListDetailViewState({
     list,
+    categories,
     onAddItem,
     onUpdateItemTitle,
     onUpdateListTitle,
     onUpdateListMoveCompletedToBottom,
     onUpdateListHideCompleted,
+    onUpdateListGroupByCategory,
   });
 
   const uiControllers = useTodoListDetailUIControllers();
@@ -71,6 +80,7 @@ export const useTodoListDetailViewComposition = ({
     onReorderItems,
     moveCompletedToBottom: viewState.moveCompletedToBottom,
     hideCompleted: viewState.hideCompleted,
+    groupByCategory: viewState.groupByCategory,
   });
 
   const toolbar = createToolbarState({ list, onUpdateAllItemsBgColor, onUpdateListAddItemPosition });

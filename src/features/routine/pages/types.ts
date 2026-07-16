@@ -17,6 +17,7 @@ export type PageType =
   | "preset"
   | "todo-lists"
   | "todo-list-management"
+  | "todo-category-management"
   | "sync-management"
   | "test-matrix"
   | "account-admin";
@@ -38,6 +39,7 @@ export const VALID_PAGES: PageType[] = [
   "preset",
   "todo-lists",
   "todo-list-management",
+  "todo-category-management",
   "sync-management",
   "test-matrix",
   "account-admin",

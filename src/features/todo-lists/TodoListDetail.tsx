@@ -1,6 +1,6 @@
 "use client";
 
-import type { TodoListItem } from "./types";
+import type { TodoCategory, TodoListItem } from "./types";
 import { TodoListDetailView } from "./TodoListDetailView";
 import { TodoListNoSelectionView } from "./TodoListNoSelectionView";
 import { TodoListUndoRedoControls } from "./TodoListUndoRedoControls";
@@ -9,6 +9,7 @@ import { useTodoListUndoRedoKeyboard } from "./useTodoListUndoRedoKeyboard";
 
 export type TodoListDetailProps = {
   listId: string;
+  categories: TodoCategory[];
   clipboardItems: TodoListItem[];
   onSetClipboard: (items: TodoListItem[]) => void;
   onClearClipboard: () => void;
@@ -16,6 +17,7 @@ export type TodoListDetailProps = {
 
 export const TodoListDetail = ({
   listId,
+  categories,
   clipboardItems,
   onSetClipboard,
   onClearClipboard,
@@ -32,6 +34,7 @@ export const TodoListDetail = ({
   return (
     <TodoListDetailView
       list={list}
+      categories={categories}
       {...detailHandlers}
       clipboardItems={clipboardItems}
       onSetClipboard={onSetClipboard}
