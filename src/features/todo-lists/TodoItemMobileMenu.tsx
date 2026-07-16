@@ -11,6 +11,7 @@ type TodoItemMobileMenuProps = {
   categories: TodoCategory[];
   currentIndent: number;
   maxIndent: number;
+  sortModeActive: boolean;
   mobileMenuItemId: string | null;
   toggleMobileMenu: (id: string) => void;
   closeMobileMenu: () => void;
@@ -66,6 +67,8 @@ export const TodoItemMobileTrigger = ({
 /**
  * モバイル用ドロップダウンメニュー本体。
  * `mobileMenuItemId === item.id` の場合のみ表示する。
+ * インデント上げ/下げボタンは、sortModeActive中は生配列の隣接関係が
+ * 画面表示と乖離しうるため無効化する（TodoItemIndentButtons.tsx と同じ理由）。
  */
 export const TodoItemMobileDropdown = ({
   item,
@@ -73,6 +76,7 @@ export const TodoItemMobileDropdown = ({
   categories,
   currentIndent,
   maxIndent,
+  sortModeActive,
   mobileMenuItemId,
   closeMobileMenu,
   startEditItem,
@@ -118,7 +122,7 @@ export const TodoItemMobileDropdown = ({
           onOutdentItem(listId, item.id);
           closeMobileMenu();
         }}
-        disabled={currentIndent === 0}
+        disabled={currentIndent === 0 || sortModeActive}
         className="w-full text-left px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2"
       >
         ← インデントを下げる
@@ -129,7 +133,7 @@ export const TodoItemMobileDropdown = ({
           onIndentItem(listId, item.id);
           closeMobileMenu();
         }}
-        disabled={currentIndent >= maxIndent}
+        disabled={currentIndent >= maxIndent || sortModeActive}
         className="w-full text-left px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2"
       >
         → インデントを上げる

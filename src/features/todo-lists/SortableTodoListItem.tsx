@@ -170,6 +170,7 @@ export const SortableTodoListItem = ({
             itemId={item.id}
             currentIndent={currentIndent}
             maxIndent={maxIndent}
+            sortModeActive={sortModeActive}
             onIndent={onIndentItem}
             onOutdent={onOutdentItem}
           />
@@ -238,6 +239,7 @@ export const SortableTodoListItem = ({
         categories={categories}
         currentIndent={currentIndent}
         maxIndent={maxIndent}
+        sortModeActive={sortModeActive}
         mobileMenuItemId={mobileMenuItemId}
         closeMobileMenu={closeMobileMenu}
         startEditItem={startEditItem}

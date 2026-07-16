@@ -85,6 +85,7 @@ describe("TodoItemMobileDropdown", () => {
     categories,
     currentIndent: 1,
     maxIndent: 3,
+    sortModeActive: false,
     mobileMenuItemId: "item-1",
     closeMobileMenu: jest.fn(),
     startEditItem: jest.fn(),
@@ -203,5 +204,29 @@ describe("TodoItemMobileDropdown", () => {
       "cat-work",
     );
     expect(defaultProps.closeMobileMenu).toHaveBeenCalledTimes(1);
+  });
+
+  describe("sortModeActive=true のとき（表示順と生配列順の乖離による意図しない再構造化の防止）", () => {
+    it("インデント可能な状態でも「上げる」「下げる」両方が disabled になる", () => {
+      render(<TodoItemMobileDropdown {...defaultProps} sortModeActive={true} />);
+      expect(
+        screen.getByRole("button", { name: /インデントを下げる/ }),
+      ).toBeDisabled();
+      expect(
+        screen.getByRole("button", { name: /インデントを上げる/ }),
+      ).toBeDisabled();
+    });
+
+    it("「下げる」クリックしても onOutdentItem は呼ばれない", () => {
+      render(<TodoItemMobileDropdown {...defaultProps} sortModeActive={true} />);
+      fireEvent.click(screen.getByRole("button", { name: /インデントを下げる/ }));
+      expect(defaultProps.onOutdentItem).not.toHaveBeenCalled();
+    });
+
+    it("「上げる」クリックしても onIndentItem は呼ばれない", () => {
+      render(<TodoItemMobileDropdown {...defaultProps} sortModeActive={true} />);
+      fireEvent.click(screen.getByRole("button", { name: /インデントを上げる/ }));
+      expect(defaultProps.onIndentItem).not.toHaveBeenCalled();
+    });
   });
 });

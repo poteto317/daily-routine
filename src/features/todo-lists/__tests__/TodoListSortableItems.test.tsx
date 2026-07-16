@@ -271,6 +271,23 @@ describe("TodoListSortableItems", () => {
       const editModeDivs = container.querySelectorAll('[data-edit-mode="true"]');
       expect(editModeDivs.length).toBe(0);
     });
+
+    it("sortModeActive=true のとき、デスクトップのインデント上げ/下げボタンも disabled になる", () => {
+      render(
+        <TodoListSortableItems
+          {...defaultProps}
+          list={listWithIndentRoom}
+          visibleItems={listWithIndentRoom.items}
+          sortModeActive={true}
+        />,
+      );
+      for (const button of screen.getAllByLabelText("インデントを上げる")) {
+        expect(button).toBeDisabled();
+      }
+      for (const button of screen.getAllByLabelText("インデントを下げる")) {
+        expect(button).toBeDisabled();
+      }
+    });
   });
 
   describe("DragOverlay", () => {
