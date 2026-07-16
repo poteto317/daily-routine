@@ -59,6 +59,33 @@ describe("TodoCategorySwatches", () => {
     expect(defaultProps.onSelect).toHaveBeenCalledWith(undefined);
   });
 
+  it("selectedCategoryId が categories に存在しない（削除済みなど）とき未分類が aria-checked=\"true\" になる（レビュー指摘対応）", () => {
+    render(
+      <TodoCategorySwatches
+        {...defaultProps}
+        selectedCategoryId="cat-deleted"
+      />,
+    );
+    expect(
+      screen.getByRole("radio", { name: "未分類" }),
+    ).toHaveAttribute("aria-checked", "true");
+  });
+
+  it("selectedCategoryId が categories に存在しないとき、実在するカテゴリのスウォッチは aria-checked=\"false\" のままになる", () => {
+    render(
+      <TodoCategorySwatches
+        {...defaultProps}
+        selectedCategoryId="cat-deleted"
+      />,
+    );
+    expect(
+      screen.getByRole("radio", { name: "仕事" }),
+    ).toHaveAttribute("aria-checked", "false");
+    expect(
+      screen.getByRole("radio", { name: "プライベート" }),
+    ).toHaveAttribute("aria-checked", "false");
+  });
+
   it("categoriesが空でも未分類スウォッチは表示される", () => {
     render(<TodoCategorySwatches {...defaultProps} categories={[]} />);
     expect(screen.getAllByRole("radio")).toHaveLength(1);

@@ -24,40 +24,50 @@ export const TodoCategorySwatches = ({
   selectedCategoryId,
   onSelect,
   className = "",
-}: TodoCategorySwatchesProps) => (
-  <div role="radiogroup" aria-label={texts.list.categoryPickerLabel} className={className}>
-    <button
-      role="radio"
-      aria-checked={selectedCategoryId === undefined}
-      type="button"
-      onClick={() => onSelect(undefined)}
-      className={`px-2 py-1 rounded-lg border text-xs transition-all ${
-        selectedCategoryId === undefined
-          ? "border-teal-500 ring-2 ring-teal-300 bg-white dark:bg-gray-700"
-          : "border-gray-200 dark:border-gray-500 hover:border-teal-400 bg-white dark:bg-gray-700"
-      }`}
-      aria-label={texts.list.uncategorizedLabel}
-      title={texts.list.uncategorizedLabel}
-    >
-      {texts.list.uncategorizedLabel}
-    </button>
-    {categories.map((category) => (
+}: TodoCategorySwatchesProps) => {
+  // カテゴリ削除後などで selectedCategoryId が categories に存在しない場合は
+  // 未分類として扱う（todoCategoryLookup.ts の resolveTodoItemCategory と
+  // 同じフォールバック方針）。これを正規化しないと、どのボタンも
+  // aria-checked=true にならない状態になってしまう。
+  const isUncategorized =
+    selectedCategoryId === undefined ||
+    !categories.some((category) => category.id === selectedCategoryId);
+
+  return (
+    <div role="radiogroup" aria-label={texts.list.categoryPickerLabel} className={className}>
       <button
-        key={category.id}
         role="radio"
-        aria-checked={selectedCategoryId === category.id}
+        aria-checked={isUncategorized}
         type="button"
-        onClick={() => onSelect(category.id)}
-        className={`px-2 py-1 rounded-lg border text-xs transition-all ${getTodoItemBgClass(category.color)} ${
-          selectedCategoryId === category.id
-            ? "border-teal-500 ring-2 ring-teal-300"
-            : "border-gray-200 dark:border-gray-500 hover:border-teal-400"
+        onClick={() => onSelect(undefined)}
+        className={`px-2 py-1 rounded-lg border text-xs transition-all ${
+          isUncategorized
+            ? "border-teal-500 ring-2 ring-teal-300 bg-white dark:bg-gray-700"
+            : "border-gray-200 dark:border-gray-500 hover:border-teal-400 bg-white dark:bg-gray-700"
         }`}
-        aria-label={category.name}
-        title={category.name}
+        aria-label={texts.list.uncategorizedLabel}
+        title={texts.list.uncategorizedLabel}
       >
-        {category.name}
+        {texts.list.uncategorizedLabel}
       </button>
-    ))}
-  </div>
-);
+      {categories.map((category) => (
+        <button
+          key={category.id}
+          role="radio"
+          aria-checked={selectedCategoryId === category.id}
+          type="button"
+          onClick={() => onSelect(category.id)}
+          className={`px-2 py-1 rounded-lg border text-xs transition-all ${getTodoItemBgClass(category.color)} ${
+            selectedCategoryId === category.id
+              ? "border-teal-500 ring-2 ring-teal-300"
+              : "border-gray-200 dark:border-gray-500 hover:border-teal-400"
+          }`}
+          aria-label={category.name}
+          title={category.name}
+        >
+          {category.name}
+        </button>
+      ))}
+    </div>
+  );
+};
