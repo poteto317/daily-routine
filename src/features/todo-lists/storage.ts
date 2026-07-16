@@ -5,6 +5,8 @@ import {
 } from "@/lib/storage/core";
 import type { TodoList } from "./types";
 
+export { getTodoCategories, saveTodoCategories } from "./storageCategories";
+
 const STORAGE_KEY = "todo-lists";
 const SELECTED_TODO_LIST_ID_KEY = "selected-todo-list-id";
 

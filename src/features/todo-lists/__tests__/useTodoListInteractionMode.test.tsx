@@ -47,6 +47,7 @@ const defaultParams = {
   onReorderItems: jest.fn(),
   moveCompletedToBottom: false,
   hideCompleted: false,
+  groupByCategory: false,
 };
 
 describe("useTodoListInteractionMode", () => {
@@ -56,13 +57,14 @@ describe("useTodoListInteractionMode", () => {
     (useTodoListDragAndDrop as jest.Mock).mockReturnValue(dndMock);
   });
 
-  describe("DnD の有効化（hideCompleted=trueなら常に有効、moveCompletedToBottom単独は無効）", () => {
-    it("moveCompletedToBottom=false, hideCompleted=false のとき DnD は disabled=false で呼ばれる", () => {
+  describe("DnD の有効化（hideCompleted=trueなら常に有効、moveCompletedToBottom単独・groupByCategory単独は無効）", () => {
+    it("moveCompletedToBottom=false, hideCompleted=false, groupByCategory=false のとき DnD は disabled=false で呼ばれる", () => {
       renderHook(() =>
         useTodoListInteractionMode({
           ...defaultParams,
           moveCompletedToBottom: false,
           hideCompleted: false,
+          groupByCategory: false,
         }),
       );
       expect(useTodoListDragAndDrop).toHaveBeenCalledWith(
@@ -76,6 +78,7 @@ describe("useTodoListInteractionMode", () => {
           ...defaultParams,
           moveCompletedToBottom: true,
           hideCompleted: false,
+          groupByCategory: false,
         }),
       );
       expect(useTodoListDragAndDrop).toHaveBeenCalledWith(
@@ -89,6 +92,7 @@ describe("useTodoListInteractionMode", () => {
           ...defaultParams,
           moveCompletedToBottom: true,
           hideCompleted: true,
+          groupByCategory: false,
         }),
       );
       expect(useTodoListDragAndDrop).toHaveBeenCalledWith(
@@ -102,10 +106,53 @@ describe("useTodoListInteractionMode", () => {
           ...defaultParams,
           moveCompletedToBottom: false,
           hideCompleted: true,
+          groupByCategory: false,
         }),
       );
       expect(useTodoListDragAndDrop).toHaveBeenCalledWith(
         expect.objectContaining({ disabled: false }),
+      );
+    });
+
+    it("groupByCategory=true のとき DnD は disabled=true で呼ばれる（表示順とデータ順の乖離を防止）", () => {
+      renderHook(() =>
+        useTodoListInteractionMode({
+          ...defaultParams,
+          moveCompletedToBottom: false,
+          hideCompleted: false,
+          groupByCategory: true,
+        }),
+      );
+      expect(useTodoListDragAndDrop).toHaveBeenCalledWith(
+        expect.objectContaining({ disabled: true }),
+      );
+    });
+
+    it("groupByCategory=true かつ hideCompleted=true のときも DnD は disabled=true で呼ばれる（hideCompletedのようなエスケープハッチは設けない）", () => {
+      renderHook(() =>
+        useTodoListInteractionMode({
+          ...defaultParams,
+          moveCompletedToBottom: false,
+          hideCompleted: true,
+          groupByCategory: true,
+        }),
+      );
+      expect(useTodoListDragAndDrop).toHaveBeenCalledWith(
+        expect.objectContaining({ disabled: true }),
+      );
+    });
+
+    it("groupByCategory=true かつ moveCompletedToBottom=true のときも DnD は disabled=true で呼ばれる", () => {
+      renderHook(() =>
+        useTodoListInteractionMode({
+          ...defaultParams,
+          moveCompletedToBottom: true,
+          hideCompleted: false,
+          groupByCategory: true,
+        }),
+      );
+      expect(useTodoListDragAndDrop).toHaveBeenCalledWith(
+        expect.objectContaining({ disabled: true }),
       );
     });
   });
@@ -165,6 +212,32 @@ describe("useTodoListInteractionMode", () => {
       jest.clearAllMocks();
       rerender({ sortMode: false });
       expect(closeInlineInsert).not.toHaveBeenCalled();
+    });
+
+    it("groupByCategory=true のときも openInlineInsert は no-op になる", () => {
+      const { result } = renderHook(() =>
+        useTodoListInteractionMode({
+          ...defaultParams,
+          groupByCategory: true,
+        }),
+      );
+      act(() => {
+        result.current.inlineInsert.openInlineInsert("item-1");
+      });
+      expect(inlineInsertMock.openInlineInsert).not.toHaveBeenCalled();
+    });
+
+    it("groupByCategory が false → true に変わっても closeInlineInsert が呼ばれる", () => {
+      const { rerender } = renderHook(
+        ({ groupByCategory }: { groupByCategory: boolean }) =>
+          useTodoListInteractionMode({
+            ...defaultParams,
+            groupByCategory,
+          }),
+        { initialProps: { groupByCategory: false } },
+      );
+      rerender({ groupByCategory: true });
+      expect(closeInlineInsert).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -289,6 +362,47 @@ describe("useTodoListInteractionMode", () => {
         useTodoListInteractionMode(defaultParams),
       );
       expect(result.current.inlineInsert).not.toBe(result.current.dnd);
+    });
+  });
+
+  describe("sortModeActive の公開（スワイプインデントなど他の操作からの参照用）", () => {
+    it("moveCompletedToBottom=false, hideCompleted=false, groupByCategory=false のとき sortModeActive=false", () => {
+      const { result } = renderHook(() =>
+        useTodoListInteractionMode({
+          ...defaultParams,
+          moveCompletedToBottom: false,
+          hideCompleted: false,
+          groupByCategory: false,
+        }),
+      );
+      expect(result.current.sortModeActive).toBe(false);
+    });
+
+    it("moveCompletedToBottom=true かつ hideCompleted=false のとき sortModeActive=true", () => {
+      const { result } = renderHook(() =>
+        useTodoListInteractionMode({
+          ...defaultParams,
+          moveCompletedToBottom: true,
+          hideCompleted: false,
+          groupByCategory: false,
+        }),
+      );
+      expect(result.current.sortModeActive).toBe(true);
+    });
+
+    it("groupByCategory=true のとき sortModeActive=true（disabled の値と一致する）", () => {
+      const { result } = renderHook(() =>
+        useTodoListInteractionMode({
+          ...defaultParams,
+          moveCompletedToBottom: false,
+          hideCompleted: false,
+          groupByCategory: true,
+        }),
+      );
+      expect(result.current.sortModeActive).toBe(true);
+      expect(useTodoListDragAndDrop).toHaveBeenCalledWith(
+        expect.objectContaining({ disabled: true }),
+      );
     });
   });
 });

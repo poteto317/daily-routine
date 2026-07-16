@@ -13,9 +13,11 @@ import {
   createUpdateTodoItemBgColorHandler,
   createUpdateAllTodoItemsBgColorHandler,
 } from "./todoListDetailBgColorHandlers";
+import { createUpdateTodoItemCategoryHandler } from "./todoListDetailCategoryHandlers";
 import {
   createDeleteTodoListHandler,
   createUpdateListAddItemPositionHandler,
+  createUpdateListGroupByCategoryHandler,
   createUpdateListHideCompletedHandler,
   createUpdateListMoveCompletedToBottomHandler,
   createUpdateListTitleHandler,
@@ -65,8 +67,16 @@ export const createTodoListDetailHandlers = (params: {
       lists,
       persist,
     }),
+    onUpdateListGroupByCategory: createUpdateListGroupByCategoryHandler({
+      lists,
+      persist,
+    }),
     onUpdateItemBgColor: createUpdateTodoItemBgColorHandler({ lists, persist }),
     onUpdateAllItemsBgColor: createUpdateAllTodoItemsBgColorHandler({
+      lists,
+      persist,
+    }),
+    onUpdateItemCategory: createUpdateTodoItemCategoryHandler({
       lists,
       persist,
     }),

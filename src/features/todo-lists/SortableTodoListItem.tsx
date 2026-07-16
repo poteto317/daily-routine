@@ -3,8 +3,14 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { SwipeableRoutineItem } from "@/components/SwipeableRoutineItem";
-import type { TodoItemBgColorValue, TodoList, TodoListItem } from "./types";
+import type {
+  TodoCategory,
+  TodoItemBgColorValue,
+  TodoList,
+  TodoListItem,
+} from "./types";
 import { getTodoItemBgClass } from "./todoItemBgColor";
+import { resolveTodoItemDisplayBgColor } from "./todoCategoryLookup";
 import { getItemIndentLevel } from "./todoListItemIndentLevel";
 import { getMaxAllowedIndent } from "./todoListItemMaxIndent";
 import { TodoItemTitleArea } from "./TodoItemTitleArea";
@@ -23,6 +29,9 @@ export type SortableTodoListItemProps = {
   item: TodoListItem;
   list: TodoList;
   origIndex: number;
+  categories: TodoCategory[];
+  categoryLookup: Map<string, TodoCategory>;
+  sortModeActive: boolean;
   isDragActive: boolean;
   editingItemId: string | null;
   editingItemTitle: string;
@@ -38,10 +47,18 @@ export type SortableTodoListItemProps = {
   colorPickerItemId: string | null;
   toggleItemColorPicker: (id: string) => void;
   closeItemColorPicker: () => void;
+  categoryPickerItemId: string | null;
+  toggleItemCategoryPicker: (id: string) => void;
+  closeItemCategoryPicker: () => void;
   onUpdateItemBgColor: (
     listId: string,
     itemId: string,
     bgColor: TodoItemBgColorValue | undefined,
+  ) => void;
+  onUpdateItemCategory: (
+    listId: string,
+    itemId: string,
+    categoryId: string | undefined,
   ) => void;
   onToggleItem: (listId: string, itemId: string) => void;
   onDeleteItem: (listId: string, itemId: string, title: string) => void;
@@ -62,6 +79,9 @@ export const SortableTodoListItem = ({
   item,
   list,
   origIndex,
+  categories,
+  categoryLookup,
+  sortModeActive,
   isDragActive,
   editingItemId,
   editingItemTitle,
@@ -77,7 +97,11 @@ export const SortableTodoListItem = ({
   colorPickerItemId,
   toggleItemColorPicker,
   closeItemColorPicker,
+  categoryPickerItemId,
+  toggleItemCategoryPicker,
+  closeItemCategoryPicker,
   onUpdateItemBgColor,
+  onUpdateItemCategory,
   onToggleItem,
   onDeleteItem,
   onIndentItem,
@@ -99,7 +123,12 @@ export const SortableTodoListItem = ({
 
   const currentIndent = getItemIndentLevel(item);
   const maxIndent = getMaxAllowedIndent(list.items, origIndex);
-  const canSwipeIndent = editingItemId !== item.id && currentIndent < maxIndent;
+  // sortModeActive中はスワイプによるインデント変更も、生配列の隣接関係が
+  // 画面表示と乖離した状態で「直前のアイテムの子にする」操作になりうるため、
+  // DnDと同じ理由で封じる（useTodoListInteractionMode.ts参照）。
+  const canSwipeIndent =
+    editingItemId !== item.id && currentIndent < maxIndent && !sortModeActive;
+  const displayBgColor = resolveTodoItemDisplayBgColor(categoryLookup, item);
 
   return (
     <li
@@ -121,10 +150,10 @@ export const SortableTodoListItem = ({
         <div
           className={`flex items-center gap-2 p-3 border rounded-xl hover:shadow-sm transition-shadow ${
             isDragging
-              ? `${getTodoItemBgClass(item.bgColor)} border-teal-400 dark:border-teal-500 shadow-md`
+              ? `${getTodoItemBgClass(displayBgColor)} border-teal-400 dark:border-teal-500 shadow-md`
               : isSelected
                 ? "bg-teal-50 dark:bg-teal-900/20 border-teal-300 dark:border-teal-400"
-                : `${getTodoItemBgClass(item.bgColor)} border-gray-100 dark:border-gray-500`
+                : `${getTodoItemBgClass(displayBgColor)} border-gray-100 dark:border-gray-500`
           }`}
         >
           <TodoItemSelectCheckbox
@@ -141,6 +170,7 @@ export const SortableTodoListItem = ({
             itemId={item.id}
             currentIndent={currentIndent}
             maxIndent={maxIndent}
+            sortModeActive={sortModeActive}
             onIndent={onIndentItem}
             onOutdent={onOutdentItem}
           />
@@ -178,11 +208,16 @@ export const SortableTodoListItem = ({
               <TodoItemDesktopActions
                 item={item}
                 listId={list.id}
+                categories={categories}
                 colorPickerItemId={colorPickerItemId}
+                categoryPickerItemId={categoryPickerItemId}
                 isInlineInsertOpen={isInlineInsertOpen}
                 toggleItemColorPicker={toggleItemColorPicker}
                 closeItemColorPicker={closeItemColorPicker}
+                toggleItemCategoryPicker={toggleItemCategoryPicker}
+                closeItemCategoryPicker={closeItemCategoryPicker}
                 onUpdateItemBgColor={onUpdateItemBgColor}
+                onUpdateItemCategory={onUpdateItemCategory}
                 startEditItem={startEditItem}
                 onDeleteItem={onDeleteItem}
                 onInsertAfter={onInsertAfter}
@@ -201,8 +236,10 @@ export const SortableTodoListItem = ({
       <TodoItemMobileDropdown
         item={item}
         listId={list.id}
+        categories={categories}
         currentIndent={currentIndent}
         maxIndent={maxIndent}
+        sortModeActive={sortModeActive}
         mobileMenuItemId={mobileMenuItemId}
         closeMobileMenu={closeMobileMenu}
         startEditItem={startEditItem}
@@ -210,6 +247,7 @@ export const SortableTodoListItem = ({
         onOutdentItem={onOutdentItem}
         onIndentItem={onIndentItem}
         onUpdateItemBgColor={onUpdateItemBgColor}
+        onUpdateItemCategory={onUpdateItemCategory}
         onDeleteItem={onDeleteItem}
       />
     </li>

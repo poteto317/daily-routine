@@ -10,6 +10,7 @@ export type UseTodoListInteractionModeParams = {
   onReorderItems: (listId: string, fromIndex: number, toIndex: number) => void;
   moveCompletedToBottom: boolean;
   hideCompleted: boolean;
+  groupByCategory: boolean;
 };
 
 export const useTodoListInteractionMode = ({
@@ -19,8 +20,15 @@ export const useTodoListInteractionMode = ({
   onReorderItems,
   moveCompletedToBottom,
   hideCompleted,
+  groupByCategory,
 }: UseTodoListInteractionModeParams) => {
-  const sortModeActive = moveCompletedToBottom && !hideCompleted;
+  // groupByCategory中は表示順序がカテゴリでグルーピングされ生配列の順序と
+  // 乖離するため、moveCompletedToBottomと同様の理由（親子ブロックの意図しない
+  // 再構造化・境界跨ぎドラッグの見た目上の無反応）で常に無効化する。
+  // hideCompletedのようなエスケープハッチは設けない
+  // （複数カテゴリ＋未分類が同時に表示される一般的なケースを安全に収束させる
+  // 手段がないため）。
+  const sortModeActive = (moveCompletedToBottom && !hideCompleted) || groupByCategory;
 
   const inlineInsert = useTodoListInlineInsert({ listId, onAddItem });
   const { closeInlineInsert } = inlineInsert;
@@ -52,6 +60,7 @@ export const useTodoListInteractionMode = ({
   const activeItem = items.find((i) => i.id === dnd.activeId) ?? null;
 
   return {
+    sortModeActive,
     inlineInsert: {
       insertAfterId: inlineInsert.insertAfterId,
       inlineInputText: inlineInsert.inlineInputText,

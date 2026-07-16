@@ -4,6 +4,7 @@ import { deleteTodoListAndPersist } from "./todoListDeletePersistActions";
 import { updateTodoListTitleAndPersist } from "./todoListTitleUpdatePersistAction";
 import {
   updateTodoListAddItemPositionAndPersist,
+  updateTodoListGroupByCategoryAndPersist,
   updateTodoListHideCompletedAndPersist,
   updateTodoListMoveCompletedToBottomAndPersist,
 } from "./pageStateActions";
@@ -78,6 +79,20 @@ export const createUpdateListHideCompletedHandler = ({
       lists,
       listId,
       hideCompleted,
+      persist,
+    });
+  };
+};
+
+export const createUpdateListGroupByCategoryHandler = ({
+  lists,
+  persist,
+}: TodoListsHandlerArgs) => {
+  return (listId: string, groupByCategory: boolean) => {
+    updateTodoListGroupByCategoryAndPersist({
+      lists,
+      listId,
+      groupByCategory,
       persist,
     });
   };

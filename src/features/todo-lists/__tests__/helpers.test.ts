@@ -8,6 +8,7 @@ import {
   updateListAddItemPosition,
   updateListHideCompleted,
   updateListMoveCompletedToBottom,
+  updateListGroupByCategory,
 } from "../helpers";
 import { getItemIndentLevel } from "../todoListItemIndentLevel";
 import { sortCompletedToBottom } from "../todoListCompletedToBottomSort";
@@ -172,6 +173,25 @@ describe("todo list helpers", () => {
     const result = updateListHideCompleted([list1, list2], "list-1", true);
 
     expect(result[0].hideCompleted).toBe(true);
+    expect(result[1]).toBe(list2);
+  });
+
+  it("updateListGroupByCategory でリストの groupByCategory を更新する", () => {
+    const list = createList();
+
+    const result = updateListGroupByCategory([list], "list-1", true);
+
+    expect(result[0].groupByCategory).toBe(true);
+    expect(result[0].updatedAt).toBe("2026-03-07T12:00:00.000Z");
+  });
+
+  it("updateListGroupByCategory は対象外のリストを変更しない", () => {
+    const list1 = createList({ id: "list-1" });
+    const list2 = createList({ id: "list-2", groupByCategory: true });
+
+    const result = updateListGroupByCategory([list1, list2], "list-1", true);
+
+    expect(result[0].groupByCategory).toBe(true);
     expect(result[1]).toBe(list2);
   });
 

@@ -40,6 +40,8 @@ describe("useTodoListDetailViewState", () => {
         onUpdateListTitle: jest.fn(),
         onUpdateListMoveCompletedToBottom: jest.fn(),
         onUpdateListHideCompleted: jest.fn(),
+        categories: [],
+        onUpdateListGroupByCategory: jest.fn(),
       }),
     );
 
@@ -59,6 +61,8 @@ describe("useTodoListDetailViewState", () => {
         onUpdateListTitle: jest.fn(),
         onUpdateListMoveCompletedToBottom: jest.fn(),
         onUpdateListHideCompleted,
+        categories: [],
+        onUpdateListGroupByCategory: jest.fn(),
       }),
     );
 
@@ -81,6 +85,8 @@ describe("useTodoListDetailViewState", () => {
         onUpdateListTitle: jest.fn(),
         onUpdateListMoveCompletedToBottom: jest.fn(),
         onUpdateListHideCompleted: jest.fn(),
+        categories: [],
+        onUpdateListGroupByCategory: jest.fn(),
       }),
     );
 
@@ -117,6 +123,8 @@ describe("useTodoListDetailViewState", () => {
         onUpdateListTitle,
         onUpdateListMoveCompletedToBottom: jest.fn(),
         onUpdateListHideCompleted: jest.fn(),
+        categories: [],
+        onUpdateListGroupByCategory: jest.fn(),
       }),
     );
 
@@ -150,6 +158,8 @@ describe("useTodoListDetailViewState", () => {
         onUpdateListTitle: jest.fn(),
         onUpdateListMoveCompletedToBottom: jest.fn(),
         onUpdateListHideCompleted: jest.fn(),
+        categories: [],
+        onUpdateListGroupByCategory: jest.fn(),
       }),
     );
 
@@ -177,6 +187,8 @@ describe("useTodoListDetailViewState", () => {
         onUpdateListTitle: jest.fn(),
         onUpdateListMoveCompletedToBottom: jest.fn(),
         onUpdateListHideCompleted: jest.fn(),
+        categories: [],
+        onUpdateListGroupByCategory: jest.fn(),
       }),
     );
 

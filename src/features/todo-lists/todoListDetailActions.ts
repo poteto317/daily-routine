@@ -1,5 +1,6 @@
 import {
   updateListAddItemPosition,
+  updateListGroupByCategory,
   updateListHideCompleted,
   updateListMoveCompletedToBottom,
   updateListTitle,
@@ -44,4 +45,14 @@ export const updateTodoListHideCompletedInLists = (params: {
   const { lists, listId, hideCompleted } = params;
 
   return updateListHideCompleted(lists, listId, hideCompleted);
+};
+
+export const updateTodoListGroupByCategoryInLists = (params: {
+  lists: TodoList[];
+  listId: string;
+  groupByCategory: boolean;
+}): TodoList[] => {
+  const { lists, listId, groupByCategory } = params;
+
+  return updateListGroupByCategory(lists, listId, groupByCategory);
 };

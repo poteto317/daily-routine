@@ -59,3 +59,17 @@ export const updateListHideCompleted = (
       ? { ...list, hideCompleted, updatedAt: new Date().toISOString() }
       : list,
   );
+
+/**
+ * リストのアイテムをカテゴリでグルーピング表示する設定を更新する。
+ */
+export const updateListGroupByCategory = (
+  lists: TodoList[],
+  listId: string,
+  groupByCategory: boolean,
+): TodoList[] =>
+  lists.map((list) =>
+    list.id === listId
+      ? { ...list, groupByCategory, updatedAt: new Date().toISOString() }
+      : list,
+  );

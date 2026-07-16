@@ -46,6 +46,7 @@ const detailHandlers = { onAddItem: jest.fn() };
 
 const defaultProps = {
   listId: "list-1",
+  categories: [],
   clipboardItems: [],
   onSetClipboard: jest.fn(),
   onClearClipboard: jest.fn(),
@@ -239,6 +240,17 @@ describe("TodoListDetail", () => {
           onSetClipboard,
           onClearClipboard,
         }),
+        undefined,
+      );
+    });
+
+    it("categories を TodoListDetailView にそのまま渡す", () => {
+      const categories = [
+        { id: "cat-1", name: "仕事", createdAt: "2026-03-07T00:00:00.000Z" },
+      ];
+      render(<TodoListDetail {...defaultProps} categories={categories} />);
+      expect(TodoListDetailView).toHaveBeenCalledWith(
+        expect.objectContaining({ categories }),
         undefined,
       );
     });
