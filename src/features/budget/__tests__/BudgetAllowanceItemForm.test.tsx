@@ -74,6 +74,12 @@ describe("BudgetAllowanceItemForm", () => {
     expect(onCancel).toHaveBeenCalled();
   });
 
+  it("項目名の入力欄にaria-labelが付与されている（スクリーンリーダー対応）", () => {
+    setup();
+
+    expect(screen.getByLabelText("項目名")).toBeInTheDocument();
+  });
+
   it("名前が空のときは作成ボタンが無効になる", () => {
     setup({ nameInput: "" });
 

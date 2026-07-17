@@ -62,6 +62,7 @@ export const BudgetAllowanceItemRow = <T extends Item>({
             onChange={(e) => onChangeEditingName(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder={texts.allowanceSettings.editNamePlaceholder}
+            aria-label={texts.allowanceSettings.nameLabel}
             className="flex-1 min-w-0 text-sm px-2 py-1 border-b-2 border-blue-400 bg-transparent text-gray-800 dark:text-gray-100 focus:outline-none"
           />
           <input

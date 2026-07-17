@@ -17,12 +17,15 @@ export const calculateMonthlyAllowance = (
   expenseItems: BudgetExpenseItem[],
 ): MonthlyAllowance => {
   const totalIncome = incomeItems.reduce((sum, item) => sum + item.amount, 0);
-  const totalFixed = expenseItems
-    .filter((item) => item.kind === "fixed")
-    .reduce((sum, item) => sum + item.amount, 0);
-  const totalVariable = expenseItems
-    .filter((item) => item.kind === "variable")
-    .reduce((sum, item) => sum + item.amount, 0);
+  let totalFixed = 0;
+  let totalVariable = 0;
+  for (const item of expenseItems) {
+    if (item.kind === "fixed") {
+      totalFixed += item.amount;
+    } else {
+      totalVariable += item.amount;
+    }
+  }
   const totalExpenseItems = totalFixed + totalVariable;
 
   return {

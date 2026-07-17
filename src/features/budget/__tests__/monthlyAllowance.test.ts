@@ -103,6 +103,26 @@ describe("calculateMonthlyAllowance", () => {
     });
   });
 
+  it("固定費・変動費が配列内で交互に並んでいても正しく按分する（単一ループでの集計を検証）", () => {
+    const result = calculateMonthlyAllowance(
+      [incomeItem({ amount: 300000 })],
+      [
+        expenseItem({ id: "expense-1", amount: 30000, kind: "variable" }),
+        expenseItem({ id: "expense-2", amount: 80000, kind: "fixed" }),
+        expenseItem({ id: "expense-3", amount: 10000, kind: "variable" }),
+        expenseItem({ id: "expense-4", amount: 1000, kind: "fixed" }),
+      ],
+    );
+
+    expect(result).toEqual({
+      totalIncome: 300000,
+      totalFixed: 81000,
+      totalVariable: 40000,
+      totalExpenseItems: 121000,
+      allowance: 179000,
+    });
+  });
+
   it("支出が収入を上回る場合、allowanceは負の値になる（赤字）", () => {
     const result = calculateMonthlyAllowance(
       [incomeItem({ amount: 100000 })],

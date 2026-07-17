@@ -4,6 +4,33 @@ import { getBudgetExpenseItems, getBudgetIncomeItems } from "./storage";
 import { calculateMonthlyAllowance } from "./utils/monthlyAllowance";
 import { LOCAL_DATA_UPDATED_AT_EVENT } from "@/lib/storage/core";
 
+/** 同じ順序である前提で、id/name/amountのみを比較する（JSON.stringifyより低コスト）。 */
+const areIncomeItemsEqual = (
+  a: BudgetIncomeItem[],
+  b: BudgetIncomeItem[],
+): boolean =>
+  a.length === b.length &&
+  a.every(
+    (item, i) =>
+      item.id === b[i].id &&
+      item.name === b[i].name &&
+      item.amount === b[i].amount,
+  );
+
+/** 同じ順序である前提で、id/name/amount/kindのみを比較する（JSON.stringifyより低コスト）。 */
+const areExpenseItemsEqual = (
+  a: BudgetExpenseItem[],
+  b: BudgetExpenseItem[],
+): boolean =>
+  a.length === b.length &&
+  a.every(
+    (item, i) =>
+      item.id === b[i].id &&
+      item.name === b[i].name &&
+      item.amount === b[i].amount &&
+      item.kind === b[i].kind,
+  );
+
 /**
  * 収入項目・支出項目（固定費/変動費）から「月に使える金額」の内訳を算出する。
  * 項目は月に紐付かないテンプレートのため、マウント時に読み込み、
@@ -24,11 +51,11 @@ export const useBudgetAllowanceState = () => {
     const handleLocalDataUpdated = () => {
       setIncomeItems((prev) => {
         const next = getBudgetIncomeItems();
-        return JSON.stringify(next) === JSON.stringify(prev) ? prev : next;
+        return areIncomeItemsEqual(next, prev) ? prev : next;
       });
       setExpenseItems((prev) => {
         const next = getBudgetExpenseItems();
-        return JSON.stringify(next) === JSON.stringify(prev) ? prev : next;
+        return areExpenseItemsEqual(next, prev) ? prev : next;
       });
     };
 

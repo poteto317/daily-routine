@@ -71,6 +71,7 @@
     "addButton": "＋ 新しい項目を追加",
     "createTitle": "新しい項目を作成",
     "namePlaceholder": "項目名（例: 家賃）",
+    "nameLabel": "項目名",
     "amountLabel": "金額",
     "amountPlaceholder": "例: 80000",
     "createButton": "作成",

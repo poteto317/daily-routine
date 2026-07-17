@@ -160,6 +160,63 @@ describe("useBudgetAllowanceState", () => {
     expect(result.current.monthlyAllowance).toBe(monthlyAllowanceBefore);
   });
 
+  it("支出項目のkindだけが変わった場合も変化として検知し再計算する", () => {
+    mockGetBudgetIncomeItems.mockReturnValue([]);
+    mockGetBudgetExpenseItems.mockReturnValue([
+      {
+        id: "expense-1",
+        name: "家賃",
+        amount: 80000,
+        kind: "fixed",
+        createdAt: "2026-05-01T00:00:00.000Z",
+      },
+    ]);
+
+    const { result } = renderHook(() => useBudgetAllowanceState());
+
+    expect(result.current.monthlyAllowance.totalFixed).toBe(80000);
+    expect(result.current.monthlyAllowance.totalVariable).toBe(0);
+
+    mockGetBudgetExpenseItems.mockReturnValue([
+      {
+        id: "expense-1",
+        name: "家賃",
+        amount: 80000,
+        kind: "variable",
+        createdAt: "2026-05-01T00:00:00.000Z",
+      },
+    ]);
+
+    act(() => {
+      window.dispatchEvent(new CustomEvent(LOCAL_DATA_UPDATED_AT_EVENT));
+    });
+
+    expect(result.current.monthlyAllowance.totalFixed).toBe(0);
+    expect(result.current.monthlyAllowance.totalVariable).toBe(80000);
+  });
+
+  it("項目数が変わった場合（追加・削除）は変化として検知し再計算する", () => {
+    mockGetBudgetIncomeItems.mockReturnValue([
+      { id: "income-1", name: "給与", amount: 300000, createdAt: "2026-05-01T00:00:00.000Z" },
+    ]);
+    mockGetBudgetExpenseItems.mockReturnValue([]);
+
+    const { result } = renderHook(() => useBudgetAllowanceState());
+
+    expect(result.current.monthlyAllowance.totalIncome).toBe(300000);
+
+    mockGetBudgetIncomeItems.mockReturnValue([
+      { id: "income-1", name: "給与", amount: 300000, createdAt: "2026-05-01T00:00:00.000Z" },
+      { id: "income-2", name: "副業", amount: 50000, createdAt: "2026-05-02T00:00:00.000Z" },
+    ]);
+
+    act(() => {
+      window.dispatchEvent(new CustomEvent(LOCAL_DATA_UPDATED_AT_EVENT));
+    });
+
+    expect(result.current.monthlyAllowance.totalIncome).toBe(350000);
+  });
+
   it("アンマウント後はLOCAL_DATA_UPDATED_AT_EVENTのリスナーを解除する", () => {
     mockGetBudgetIncomeItems.mockReturnValue([]);
     mockGetBudgetExpenseItems.mockReturnValue([]);
