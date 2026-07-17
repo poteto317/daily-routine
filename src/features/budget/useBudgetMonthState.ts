@@ -8,7 +8,7 @@ import {
 
 type BudgetMonthInitialState = Pick<
   BudgetViewState,
-  "currentDate" | "monthBudget" | "expenses" | "expenseDate"
+  "currentDate" | "expenses" | "expenseDate"
 >;
 
 type UseBudgetMonthStateParams = {
@@ -19,14 +19,10 @@ export const useBudgetMonthState = ({
   initialState,
 }: UseBudgetMonthStateParams) => {
   const [currentDate, setCurrentDate] = useState(initialState.currentDate);
-  const [monthBudget, setMonthBudget] = useState(
-    () => initialState.monthBudget,
-  );
   const [expenses, setExpenses] = useState(() => initialState.expenses);
   const [expenseDate, setExpenseDate] = useState(initialState.expenseDate);
 
   const syncMonthData = createBudgetMonthSyncAction({
-    setMonthBudget,
     setExpenses,
     setExpenseDate,
   });
@@ -54,9 +50,7 @@ export const useBudgetMonthState = ({
       setCurrentDate,
       syncMonthData,
     }),
-    monthBudget,
     setExpenseDate,
     setExpenses,
-    setMonthBudget,
   };
 };

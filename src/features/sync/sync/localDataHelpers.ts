@@ -8,10 +8,11 @@ type LocalSyncDataSummary = {
   weightHistory: Record<string, unknown>;
   journalHistory: Record<string, unknown>;
   budgetData: {
-    budgets?: Record<string, unknown>;
     expenses?: Record<string, unknown>;
   };
   budgetCategories: unknown[];
+  budgetIncomeItems: unknown[];
+  budgetExpenseItems: unknown[];
   mealHistory: Record<string, unknown>;
   presets: unknown[];
   todoLists: unknown[];
@@ -31,9 +32,10 @@ export const hasAnyLocalSyncData = (data: LocalSyncDataSummary): boolean => {
     data.workTemplates.length > 0 ||
     Object.keys(data.weightHistory).length > 0 ||
     Object.keys(data.journalHistory).length > 0 ||
-    Object.keys(data.budgetData.budgets || {}).length > 0 ||
     Object.keys(data.budgetData.expenses || {}).length > 0 ||
     data.budgetCategories.length > 0 ||
+    data.budgetIncomeItems.length > 0 ||
+    data.budgetExpenseItems.length > 0 ||
     Object.keys(data.mealHistory).length > 0 ||
     data.presets.length > 0 ||
     data.todoLists.length > 0

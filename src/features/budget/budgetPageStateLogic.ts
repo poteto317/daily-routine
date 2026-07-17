@@ -1,27 +1,9 @@
 import { parsePositiveAmount } from "./budgetPageStateHelpers";
 
-export type BudgetSavePayload = {
-  monthKey: string;
-  amount: number;
-};
-
 export type ExpensePayload = {
   amount: number;
   date: string;
   categoryId?: string;
-};
-
-export const buildBudgetSavePayload = (
-  monthKey: string,
-  budgetInputValue: string,
-): BudgetSavePayload | null => {
-  const amount = parsePositiveAmount(budgetInputValue);
-
-  if (amount === null) {
-    return null;
-  }
-
-  return { monthKey, amount };
 };
 
 export const buildExpensePayload = (params: {
@@ -41,8 +23,4 @@ export const buildExpensePayload = (params: {
     date: expenseDate,
     categoryId: expenseCategoryId || undefined,
   };
-};
-
-export const getBudgetInputInitialValue = (monthBudget: number): string => {
-  return monthBudget > 0 ? String(monthBudget) : "";
 };

@@ -1,8 +1,6 @@
 export {
   getBudgetData,
   saveBudgetData,
-  getMonthlyBudget,
-  setMonthlyBudget,
   getMonthlyExpenses,
   addExpense,
   updateExpense,

@@ -28,10 +28,16 @@ const categories = [
   },
 ];
 
+const defaultMonthlyAllowance = {
+  totalIncome: 300000,
+  totalFixed: 80000,
+  totalVariable: 30000,
+  totalExpenseItems: 110000,
+  allowance: 190000,
+};
+
 const createState = (overrides: Record<string, unknown> = {}) => ({
-  budgetInputValue: "30000",
   categories,
-  closeBudgetInput: jest.fn(),
   closeExpenseForm: jest.fn(),
   currentDate: new Date("2026-03-07T00:00:00+09:00"),
   dailyBudget: 1000,
@@ -58,7 +64,6 @@ const createState = (overrides: Record<string, unknown> = {}) => ({
   goToPreviousMonth: jest.fn(),
   handleAddExpense: jest.fn(),
   handleUpdateExpense: jest.fn(),
-  handleBudgetInputChange: jest.fn(),
   handleDeleteExpense: jest.fn(),
   handleExpenseAmountChange: jest.fn(),
   handleExpenseDateChange: jest.fn(),
@@ -66,16 +71,15 @@ const createState = (overrides: Record<string, unknown> = {}) => ({
   handleEditExpenseAmountChange: jest.fn(),
   handleEditExpenseDateChange: jest.fn(),
   handleEditExpenseCategoryIdChange: jest.fn(),
-  handleSaveBudget: jest.fn(),
   startEditExpense: jest.fn(),
   cancelEditExpense: jest.fn(),
   isCurrentMonth: true,
   monthBudget: 30000,
+  monthlyAllowance: defaultMonthlyAllowance,
   navigateToCategoryManagement: jest.fn(),
-  openBudgetInput: jest.fn(),
+  navigateToAllowanceSettings: jest.fn(),
   openExpenseForm: jest.fn(),
   remaining: 12000,
-  showBudgetInput: false,
   showExpenseForm: false,
   todayExpense: 3000,
   totalExpense: 18000,
@@ -96,6 +100,17 @@ describe("BudgetPage", () => {
     fireEvent.click(screen.getByText("🏷️ カテゴリ管理"));
 
     expect(state.navigateToCategoryManagement).toHaveBeenCalled();
+  });
+
+  it("収入・固定費・変動費を編集ボタンをクリックするとstateのnavigateToAllowanceSettingsが呼ばれる", () => {
+    const state = createState();
+    mockUseBudgetPageState.mockReturnValue(state as never);
+
+    render(<BudgetPage />);
+
+    fireEvent.click(screen.getByText("収入・固定費・変動費を編集"));
+
+    expect(state.navigateToAllowanceSettings).toHaveBeenCalled();
   });
 
   it("useNavigationContextから取得したnavigateをuseBudgetPageStateに渡す", () => {
@@ -127,19 +142,16 @@ describe("BudgetPage", () => {
 
     fireEvent.click(screen.getByText("← 前月"));
     fireEvent.click(screen.getByText("次月 →"));
-    fireEvent.click(screen.getByText("変更"));
     fireEvent.click(screen.getByText("➕"));
 
     expect(state.goToPreviousMonth).toHaveBeenCalled();
     expect(state.goToNextMonth).toHaveBeenCalled();
-    expect(state.openBudgetInput).toHaveBeenCalled();
     expect(state.openExpenseForm).toHaveBeenCalled();
   });
 
   it("フォーム表示時に入力イベントを委譲する", () => {
     const state = createState({
       isCurrentMonth: false,
-      showBudgetInput: true,
       showExpenseForm: true,
     });
     mockUseBudgetPageState.mockReturnValue(state as never);
@@ -147,11 +159,6 @@ describe("BudgetPage", () => {
     render(<BudgetPage />);
 
     fireEvent.click(screen.getByText("今月に戻る"));
-    fireEvent.change(screen.getByPlaceholderText("例: 50000"), {
-      target: { value: "40000" },
-    });
-    fireEvent.click(screen.getByText("保存"));
-    fireEvent.click(screen.getAllByText("キャンセル")[0]);
 
     fireEvent.change(screen.getByDisplayValue("2026-03-07"), {
       target: { value: "2026-03-08" },
@@ -163,12 +170,9 @@ describe("BudgetPage", () => {
       target: { value: "cat-transport" },
     });
     fireEvent.click(screen.getByText("追加"));
-    fireEvent.click(screen.getAllByText("キャンセル")[1]);
+    fireEvent.click(screen.getByText("キャンセル"));
 
     expect(state.goToCurrentMonth).toHaveBeenCalled();
-    expect(state.handleBudgetInputChange).toHaveBeenCalledWith("40000");
-    expect(state.handleSaveBudget).toHaveBeenCalled();
-    expect(state.closeBudgetInput).toHaveBeenCalled();
     expect(state.handleExpenseDateChange).toHaveBeenCalledWith("2026-03-08");
     expect(state.handleExpenseAmountChange).toHaveBeenCalledWith("2000");
     expect(state.handleExpenseCategoryIdChange).toHaveBeenCalledWith(
@@ -206,7 +210,6 @@ describe("BudgetPage", () => {
     render(<BudgetPage />);
 
     expect(screen.getByText("まだ支出の記録がありません")).toBeInTheDocument();
-    expect(screen.getByText("設定")).toBeInTheDocument();
     expect(screen.getByText("予算オーバー")).toBeInTheDocument();
   });
 

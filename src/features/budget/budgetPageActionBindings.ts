@@ -1,8 +1,6 @@
 import type { Expense } from "@/types/routine";
 
 type BudgetPageActionBindingsArgs = {
-  budgetInputValue: string;
-  closeBudgetInput: () => void;
   closeExpenseForm: () => void;
   closeExpenseEdit: () => void;
   currentDate: Date;
@@ -15,12 +13,9 @@ type BudgetPageActionBindingsArgs = {
   editingExpenseDate: string;
   editingExpenseCategoryId: string;
   setExpenses: (value: Expense[]) => void;
-  setMonthBudget: (value: number) => void;
 };
 
 export const createBudgetPageActionBindings = ({
-  budgetInputValue,
-  closeBudgetInput,
   closeExpenseForm,
   closeExpenseEdit,
   currentDate,
@@ -33,11 +28,8 @@ export const createBudgetPageActionBindings = ({
   editingExpenseDate,
   editingExpenseCategoryId,
   setExpenses,
-  setMonthBudget,
 }: BudgetPageActionBindingsArgs) => {
   return {
-    budgetInputValue,
-    closeBudgetInput,
     closeExpenseForm,
     closeExpenseEdit,
     currentDate,
@@ -50,6 +42,5 @@ export const createBudgetPageActionBindings = ({
     editingExpenseDate,
     editingExpenseCategoryId,
     setExpenses,
-    setMonthBudget,
   };
 };

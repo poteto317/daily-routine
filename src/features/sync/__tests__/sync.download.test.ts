@@ -162,10 +162,11 @@ describe("sync download", () => {
     expect(weightTrackerStorage.saveWeightHistory).toHaveBeenCalledWith({});
     expect(journalStorage.saveJournalHistory).toHaveBeenCalledWith({});
     expect(budgetStorage.saveBudgetData).toHaveBeenCalledWith({
-      budgets: {},
       expenses: {},
     });
     expect(budgetStorage.saveBudgetCategories).toHaveBeenCalledWith([]);
+    expect(budgetStorage.saveBudgetIncomeItems).toHaveBeenCalledWith([]);
+    expect(budgetStorage.saveBudgetExpenseItems).toHaveBeenCalledWith([]);
     expect(mealStorage.saveMealHistory).toHaveBeenCalledWith({});
     expect(presetStorage.savePresets).toHaveBeenCalledWith([]);
     expect(todoListsStorage.saveTodoLists).toHaveBeenCalledWith([]);

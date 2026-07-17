@@ -23,7 +23,6 @@ const mockCreateBudgetMonthSyncAction =
 describe("useBudgetMonthState", () => {
   const initialState = {
     currentDate: new Date("2026-03-07T00:00:00+09:00"),
-    monthBudget: 30000,
     expenses: [
       {
         id: "e-mar",
@@ -48,11 +47,9 @@ describe("useBudgetMonthState", () => {
     const { result } = renderHook(() => useBudgetMonthState({ initialState }));
 
     expect(result.current.currentMonth).toBe("2026-03");
-    expect(result.current.monthBudget).toBe(30000);
     expect(result.current.expenses).toEqual(initialState.expenses);
     expect(result.current.expenseDate).toBe("2026-03-07");
     expect(mockCreateBudgetMonthSyncAction).toHaveBeenCalledWith({
-      setMonthBudget: expect.any(Function),
       setExpenses: expect.any(Function),
       setExpenseDate: expect.any(Function),
     });
@@ -80,7 +77,6 @@ describe("useBudgetMonthState", () => {
     const { result } = renderHook(() => useBudgetMonthState({ initialState }));
 
     act(() => {
-      result.current.setMonthBudget(50000);
       result.current.setExpenses([
         {
           id: "e-apr",
@@ -92,7 +88,6 @@ describe("useBudgetMonthState", () => {
       result.current.setExpenseDate("2026-04-01");
     });
 
-    expect(result.current.monthBudget).toBe(50000);
     expect(result.current.expenses).toEqual([
       expect.objectContaining({ id: "e-apr", amount: 3000 }),
     ]);

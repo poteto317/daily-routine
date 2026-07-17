@@ -1,10 +1,9 @@
 export { BudgetPage } from "./BudgetPage";
 export { BudgetCategoryManagementPage } from "./components/BudgetCategoryManagementPage";
+export { BudgetAllowanceSettingsPage } from "./components/BudgetAllowanceSettingsPage";
 export {
   getBudgetData,
   saveBudgetData,
-  getMonthlyBudget,
-  setMonthlyBudget,
   getMonthlyExpenses,
   addExpense,
   updateExpense,
@@ -12,4 +11,8 @@ export {
   getMonthlyTotalExpense,
   getBudgetCategories,
   saveBudgetCategories,
+  getBudgetIncomeItems,
+  saveBudgetIncomeItems,
+  getBudgetExpenseItems,
+  saveBudgetExpenseItems,
 } from "./storage";

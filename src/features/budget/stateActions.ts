@@ -1,18 +1,16 @@
 import type { Expense } from "@/types/routine";
 import type { MonthStateSnapshot } from "./budgetPageStateHelpers";
-import type { BudgetSavePayload, ExpensePayload } from "./budgetPageStateLogic";
+import type { ExpensePayload } from "./budgetPageStateLogic";
 
 type SetValue<T> = (value: T) => void;
 
 export const applyMonthSnapshot = (params: {
   snapshot: MonthStateSnapshot;
-  setMonthBudget: SetValue<number>;
   setExpenses: SetValue<Expense[]>;
   setExpenseDate: SetValue<string>;
 }): void => {
-  const { snapshot, setMonthBudget, setExpenses, setExpenseDate } = params;
+  const { snapshot, setExpenses, setExpenseDate } = params;
 
-  setMonthBudget(snapshot.monthBudget);
   setExpenses(snapshot.expenses);
   setExpenseDate(snapshot.defaultExpenseDate);
 };
@@ -20,32 +18,19 @@ export const applyMonthSnapshot = (params: {
 export const syncBudgetMonthData = (params: {
   date: Date;
   getSnapshot: (date: Date) => MonthStateSnapshot;
-  setMonthBudget: SetValue<number>;
   setExpenses: SetValue<Expense[]>;
   setExpenseDate: SetValue<string>;
 }): MonthStateSnapshot => {
-  const { date, getSnapshot, setMonthBudget, setExpenses, setExpenseDate } =
-    params;
+  const { date, getSnapshot, setExpenses, setExpenseDate } = params;
   const snapshot = getSnapshot(date);
 
   applyMonthSnapshot({
     snapshot,
-    setMonthBudget,
     setExpenses,
     setExpenseDate,
   });
 
   return snapshot;
-};
-
-export const closeBudgetInputForm = (params: {
-  setShowBudgetInput: SetValue<boolean>;
-  setBudgetInputValue: SetValue<string>;
-}): void => {
-  const { setShowBudgetInput, setBudgetInputValue } = params;
-
-  setShowBudgetInput(false);
-  setBudgetInputValue("");
 };
 
 export const closeExpenseInputForm = (params: {
@@ -61,23 +46,6 @@ export const closeExpenseInputForm = (params: {
   setExpenseCategoryId("");
 };
 
-export const openBudgetInputForm = (params: {
-  monthBudget: number;
-  getInitialValue: (monthBudget: number) => string;
-  setBudgetInputValue: SetValue<string>;
-  setShowBudgetInput: SetValue<boolean>;
-}): void => {
-  const {
-    monthBudget,
-    getInitialValue,
-    setBudgetInputValue,
-    setShowBudgetInput,
-  } = params;
-
-  setBudgetInputValue(getInitialValue(monthBudget));
-  setShowBudgetInput(true);
-};
-
 export const navigateBudgetMonth = (params: {
   nextDate: Date;
   setCurrentDate: SetValue<Date>;
@@ -87,37 +55,6 @@ export const navigateBudgetMonth = (params: {
 
   setCurrentDate(nextDate);
   syncMonthData(nextDate);
-};
-
-export const saveBudgetFromInput = (params: {
-  currentMonth: string;
-  budgetInputValue: string;
-  buildPayload: (
-    monthKey: string,
-    budgetInputValue: string,
-  ) => BudgetSavePayload | null;
-  saveBudget: (monthKey: string, amount: number) => void;
-  setMonthBudget: SetValue<number>;
-  closeBudgetInput: () => void;
-}): boolean => {
-  const {
-    currentMonth,
-    budgetInputValue,
-    buildPayload,
-    saveBudget,
-    setMonthBudget,
-    closeBudgetInput,
-  } = params;
-  const payload = buildPayload(currentMonth, budgetInputValue);
-
-  if (!payload) {
-    return false;
-  }
-
-  saveBudget(payload.monthKey, payload.amount);
-  setMonthBudget(payload.amount);
-  closeBudgetInput();
-  return true;
 };
 
 export const addExpenseFromInput = (params: {

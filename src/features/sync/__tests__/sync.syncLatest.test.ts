@@ -26,10 +26,11 @@ const setCommonStorages = (): void => {
   (weightTrackerStorage.getWeightHistory as jest.Mock).mockReturnValue({});
   (journalStorage.getJournalHistory as jest.Mock).mockReturnValue({});
   (budgetStorage.getBudgetData as jest.Mock).mockReturnValue({
-    budgets: {},
     expenses: {},
   });
   (budgetStorage.getBudgetCategories as jest.Mock).mockReturnValue([]);
+  (budgetStorage.getBudgetIncomeItems as jest.Mock).mockReturnValue([]);
+  (budgetStorage.getBudgetExpenseItems as jest.Mock).mockReturnValue([]);
   (mealStorage.getMealHistory as jest.Mock).mockReturnValue({});
   (presetStorage.getPresets as jest.Mock).mockReturnValue([]);
   (todoListsStorage.getTodoLists as jest.Mock).mockReturnValue([]);
@@ -55,7 +56,7 @@ describe("sync latest", () => {
       workTemplates: [],
       weightHistory: {},
       journalHistory: {},
-      budgetData: { budgets: {}, expenses: {} },
+      budgetData: { expenses: {} },
       mealHistory: {},
       presets: [],
       deviceId: "device-1",
@@ -90,7 +91,7 @@ describe("sync latest", () => {
         workTemplates: [],
         weightHistory: {},
         journalHistory: {},
-        budgetData: { budgets: {}, expenses: {} },
+        budgetData: { expenses: {} },
         mealHistory: {},
         presets: [],
         deviceId: "device-1",
@@ -142,7 +143,7 @@ describe("sync latest", () => {
         workTemplates: [],
         weightHistory: {},
         journalHistory: {},
-        budgetData: { budgets: {}, expenses: {} },
+        budgetData: { expenses: {} },
         mealHistory: {},
         presets: [],
         todoLists: [],

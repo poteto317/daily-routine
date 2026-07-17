@@ -47,10 +47,12 @@
     "editNamePlaceholder": "カテゴリ名を入力"
   },
   "summary": {
-    "monthlyLabel": "月の予算",
-    "changeLabel": "変更",
-    "setLabel": "設定",
+    "monthlyLabel": "月に使える金額",
+    "editAllowanceSettingsLabel": "収入・固定費・変動費を編集",
     "dailyLabel": "1日あたり",
+    "totalIncomeLabel": "収入",
+    "totalFixedLabel": "固定費",
+    "totalVariableLabel": "変動費",
     "usedLabel": "使った金額",
     "remainingLabel": "残り",
     "overLabel": "予算オーバー",
@@ -60,10 +62,28 @@
     "daysRemainingPrefix": "残り",
     "daysRemainingSuffix": "日"
   },
-  "budgetInputForm": {
-    "title": "月の予算を設定",
-    "placeholder": "例: 50000",
-    "save": "保存",
-    "cancel": "キャンセル"
+  "allowanceSettings": {
+    "title": "💰 収入・固定費・変動費の設定",
+    "description": "毎月の収入と支出（固定費・変動費）を項目ごとに登録します。金額が変わったときだけ編集してください。",
+    "incomeSectionTitle": "収入",
+    "fixedExpenseSectionTitle": "固定費",
+    "variableExpenseSectionTitle": "変動費",
+    "addButton": "＋ 新しい項目を追加",
+    "createTitle": "新しい項目を作成",
+    "namePlaceholder": "項目名（例: 家賃）",
+    "amountLabel": "金額",
+    "amountPlaceholder": "例: 80000",
+    "createButton": "作成",
+    "cancelButton": "キャンセル",
+    "emptyMessage": "項目はまだありません",
+    "emptyDescription": "「＋ 新しい項目を追加」から項目を作成してください",
+    "deleteConfirm": "「{name}」を削除しますか？この操作は元に戻せません。",
+    "editLabel": "編集",
+    "editNamePlaceholder": "項目名を入力",
+    "editAmountPlaceholder": "金額を入力",
+    "saveLabel": "保存",
+    "kindLabel": "分類",
+    "fixedLabel": "固定費",
+    "variableLabel": "変動費"
   }
 }

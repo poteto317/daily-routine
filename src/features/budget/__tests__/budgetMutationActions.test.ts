@@ -1,5 +1,4 @@
 import {
-  createBudgetSaveHandler,
   createExpenseAddHandler,
   createExpenseDeleteHandler,
   createExpenseUpdateHandler,
@@ -10,66 +9,33 @@ jest.mock("../budgetPageStateHelpers", () => ({
 }));
 
 jest.mock("../budgetPageStateLogic", () => ({
-  buildBudgetSavePayload: jest.fn(),
   buildExpensePayload: jest.fn(),
 }));
 
 jest.mock("../stateActions", () => ({
   addExpenseFromInput: jest.fn(),
   deleteExpenseAndRefresh: jest.fn(),
-  saveBudgetFromInput: jest.fn(),
   updateExpenseFromInput: jest.fn(),
 }));
 
 jest.mock("../storage", () => ({
   addExpense: jest.fn(),
   deleteExpense: jest.fn(),
-  setMonthlyBudget: jest.fn(),
   updateExpense: jest.fn(),
 }));
 
 import { getMonthStateSnapshot } from "../budgetPageStateHelpers";
-import {
-  buildBudgetSavePayload,
-  buildExpensePayload,
-} from "../budgetPageStateLogic";
+import { buildExpensePayload } from "../budgetPageStateLogic";
 import {
   addExpenseFromInput,
   deleteExpenseAndRefresh,
-  saveBudgetFromInput,
   updateExpenseFromInput,
 } from "../stateActions";
-import {
-  addExpense,
-  deleteExpense,
-  setMonthlyBudget,
-  updateExpense,
-} from "../storage";
+import { addExpense, deleteExpense, updateExpense } from "../storage";
 
 describe("budgetMutationActions", () => {
   beforeEach(() => {
     jest.clearAllMocks();
-  });
-
-  it("予算保存 handler が保存 action を構築する", () => {
-    const setMonthBudget = jest.fn();
-    const closeBudgetInput = jest.fn();
-
-    createBudgetSaveHandler({
-      currentMonth: "2026-03",
-      budgetInputValue: "45000",
-      setMonthBudget,
-      closeBudgetInput,
-    })();
-
-    expect(saveBudgetFromInput).toHaveBeenCalledWith({
-      currentMonth: "2026-03",
-      budgetInputValue: "45000",
-      buildPayload: buildBudgetSavePayload,
-      saveBudget: setMonthlyBudget,
-      setMonthBudget,
-      closeBudgetInput,
-    });
   });
 
   it("支出追加 handler が追加 action を構築する", () => {

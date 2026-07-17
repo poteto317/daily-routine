@@ -4,10 +4,7 @@ import { shiftMonth } from "./utils/date";
 
 export type BudgetViewState = {
   currentDate: Date;
-  monthBudget: number;
   expenses: Expense[];
-  showBudgetInput: boolean;
-  budgetInputValue: string;
   showExpenseForm: boolean;
   expenseAmount: string;
   expenseCategoryId: string;
@@ -22,10 +19,7 @@ export const createInitialBudgetViewState = (
 ): BudgetViewState => {
   return {
     currentDate: initialDate,
-    monthBudget: initialSnapshot.monthBudget,
     expenses: initialSnapshot.expenses,
-    showBudgetInput: false,
-    budgetInputValue: "",
     showExpenseForm: false,
     expenseAmount: "",
     expenseCategoryId: "",

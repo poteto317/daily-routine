@@ -29,22 +29,16 @@ describe("useBudgetPageFormState composition", () => {
 
   it("form state と form action hook を compose する", () => {
     const actions = {
-      closeBudgetInput: jest.fn(),
       closeExpenseForm: jest.fn(),
-      openBudgetInput: jest.fn(),
       openExpenseForm: jest.fn(),
     };
     const visibilityState = {
-      showBudgetInput: false,
       showExpenseForm: false,
-      setShowBudgetInput: jest.fn(),
       setShowExpenseForm: jest.fn(),
     };
     const inputState = {
-      budgetInputValue: "",
       expenseAmount: "",
       expenseCategoryId: "",
-      setBudgetInputValue: jest.fn(),
       setExpenseAmount: jest.fn(),
       setExpenseCategoryId: jest.fn(),
     };
@@ -56,41 +50,29 @@ describe("useBudgetPageFormState composition", () => {
     const resultState = {
       ...inputState,
       ...visibilityState,
-      closeBudgetInput: actions.closeBudgetInput,
       closeExpenseForm: actions.closeExpenseForm,
-      openBudgetInput: actions.openBudgetInput,
       openExpenseForm: actions.openExpenseForm,
     };
     (createBudgetPageFormStateResult as jest.Mock).mockReturnValue(resultState);
 
     const initialState = {
-      showBudgetInput: false,
-      budgetInputValue: "",
       showExpenseForm: false,
       expenseAmount: "",
       expenseCategoryId: "",
     };
 
     const { result } = renderHook(() =>
-      useBudgetPageFormState({
-        initialState,
-        monthBudget: 30000,
-      }),
+      useBudgetPageFormState({ initialState }),
     );
 
     expect(useBudgetPageFormVisibilityState).toHaveBeenCalledWith({
-      initialShowBudgetInput: false,
       initialShowExpenseForm: false,
     });
     expect(useBudgetPageInputState).toHaveBeenCalledWith({
-      initialBudgetInputValue: "",
       initialExpenseAmount: "",
       initialExpenseCategoryId: "",
     });
     expect(useBudgetPageFormActions).toHaveBeenCalledWith({
-      monthBudget: 30000,
-      setShowBudgetInput: visibilityState.setShowBudgetInput,
-      setBudgetInputValue: inputState.setBudgetInputValue,
       setShowExpenseForm: visibilityState.setShowExpenseForm,
       setExpenseAmount: inputState.setExpenseAmount,
       setExpenseCategoryId: inputState.setExpenseCategoryId,
@@ -98,9 +80,7 @@ describe("useBudgetPageFormState composition", () => {
     expect(createBudgetPageFormStateResult).toHaveBeenCalledWith({
       visibilityState,
       inputState,
-      closeBudgetInput: actions.closeBudgetInput,
       closeExpenseForm: actions.closeExpenseForm,
-      openBudgetInput: actions.openBudgetInput,
       openExpenseForm: actions.openExpenseForm,
     });
     expect(result.current).toBe(resultState);
