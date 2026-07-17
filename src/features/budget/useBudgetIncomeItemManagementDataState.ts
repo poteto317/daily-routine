@@ -4,8 +4,7 @@ import { getBudgetIncomeItems, saveBudgetIncomeItems } from "./storage";
 import {
   createBudgetIncomeItemAndPersist,
   deleteBudgetIncomeItemAndPersist,
-  renameBudgetIncomeItemAndPersist,
-  updateBudgetIncomeItemAmountAndPersist,
+  updateBudgetIncomeItemAndPersist,
 } from "./budgetIncomeItemCrudPersistActions";
 import { parsePositiveAmount } from "./budgetPageStateHelpers";
 import texts from "./locales/ja.json";
@@ -46,12 +45,8 @@ export const useBudgetIncomeItemManagementDataState = ({
     closeForm();
   };
 
-  const handleRename = (itemId: string, name: string) => {
-    renameBudgetIncomeItemAndPersist({ items, itemId, name, persist });
-  };
-
-  const handleUpdateAmount = (itemId: string, amount: number) => {
-    updateBudgetIncomeItemAmountAndPersist({ items, itemId, amount, persist });
+  const handleUpdateItem = (itemId: string, name: string, amount: number) => {
+    updateBudgetIncomeItemAndPersist({ items, itemId, name, amount, persist });
   };
 
   const handleDelete = (item: BudgetIncomeItem) => {
@@ -69,8 +64,7 @@ export const useBudgetIncomeItemManagementDataState = ({
   return {
     items,
     handleCreate,
-    handleRename,
-    handleUpdateAmount,
+    handleUpdateItem,
     handleDelete,
   };
 };

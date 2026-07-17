@@ -22,8 +22,7 @@ export const useBudgetExpenseItemManagementPageState = () => {
   const {
     items,
     handleCreate,
-    handleRename,
-    handleUpdateAmount,
+    handleUpdateItem,
     toggleItemKind,
     handleDelete,
   } = useBudgetExpenseItemManagementDataState({
@@ -52,8 +51,7 @@ export const useBudgetExpenseItemManagementPageState = () => {
     const amount = parsePositiveAmount(editingItemAmount);
     if (amount === null) return;
 
-    handleRename(editingItemId, editingItemName);
-    handleUpdateAmount(editingItemId, amount);
+    handleUpdateItem(editingItemId, editingItemName, amount);
     cancelEditItem();
   };
 

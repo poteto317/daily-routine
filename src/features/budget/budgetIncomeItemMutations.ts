@@ -17,24 +17,17 @@ export const addBudgetIncomeItem = (
 };
 
 /**
- * 収入項目の名前を変更する。
+ * 収入項目の名前と金額を同時に変更する。
  */
-export const renameBudgetIncomeItem = (
+export const updateBudgetIncomeItem = (
   items: BudgetIncomeItem[],
   itemId: string,
   name: string,
-): BudgetIncomeItem[] =>
-  items.map((item) => (item.id === itemId ? { ...item, name } : item));
-
-/**
- * 収入項目の金額を変更する。
- */
-export const updateBudgetIncomeItemAmount = (
-  items: BudgetIncomeItem[],
-  itemId: string,
   amount: number,
 ): BudgetIncomeItem[] =>
-  items.map((item) => (item.id === itemId ? { ...item, amount } : item));
+  items.map((item) =>
+    item.id === itemId ? { ...item, name, amount } : item,
+  );
 
 /**
  * 収入項目を削除する。

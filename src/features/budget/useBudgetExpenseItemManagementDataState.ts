@@ -4,8 +4,7 @@ import { getBudgetExpenseItems, saveBudgetExpenseItems } from "./storage";
 import {
   createBudgetExpenseItemAndPersist,
   deleteBudgetExpenseItemAndPersist,
-  renameBudgetExpenseItemAndPersist,
-  updateBudgetExpenseItemAmountAndPersist,
+  updateBudgetExpenseItemAndPersist,
   updateBudgetExpenseItemKindAndPersist,
 } from "./budgetExpenseItemCrudPersistActions";
 import { parsePositiveAmount } from "./budgetPageStateHelpers";
@@ -50,12 +49,8 @@ export const useBudgetExpenseItemManagementDataState = ({
     closeForm();
   };
 
-  const handleRename = (itemId: string, name: string) => {
-    renameBudgetExpenseItemAndPersist({ items, itemId, name, persist });
-  };
-
-  const handleUpdateAmount = (itemId: string, amount: number) => {
-    updateBudgetExpenseItemAmountAndPersist({ items, itemId, amount, persist });
+  const handleUpdateItem = (itemId: string, name: string, amount: number) => {
+    updateBudgetExpenseItemAndPersist({ items, itemId, name, amount, persist });
   };
 
   const handleUpdateKind = (itemId: string, kind: BudgetExpenseItemKind) => {
@@ -88,8 +83,7 @@ export const useBudgetExpenseItemManagementDataState = ({
   return {
     items,
     handleCreate,
-    handleRename,
-    handleUpdateAmount,
+    handleUpdateItem,
     handleUpdateKind,
     toggleItemKind,
     handleDelete,

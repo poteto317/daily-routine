@@ -1,8 +1,7 @@
 import {
   addBudgetExpenseItem,
   removeBudgetExpenseItem,
-  renameBudgetExpenseItem,
-  updateBudgetExpenseItemAmount,
+  updateBudgetExpenseItem,
   updateBudgetExpenseItemKind,
 } from "../budgetExpenseItemMutations";
 import { createBudgetExpenseItem } from "../budgetExpenseItemFactory";
@@ -68,35 +67,39 @@ describe("budgetExpenseItemMutations", () => {
     });
   });
 
-  describe("renameBudgetExpenseItem", () => {
-    it("指定したidの項目名だけを変更する", () => {
+  describe("updateBudgetExpenseItem", () => {
+    it("指定したidの名前と金額を同時に変更する", () => {
       const items = [
-        item({ id: "expense-1", name: "家賃" }),
-        item({ id: "expense-2", name: "食費", kind: "variable" }),
+        item({ id: "expense-1", name: "家賃", amount: 80000 }),
+        item({ id: "expense-2", name: "食費", amount: 30000, kind: "variable" }),
       ];
 
-      const result = renameBudgetExpenseItem(items, "expense-1", "マンション家賃");
+      const result = updateBudgetExpenseItem(
+        items,
+        "expense-1",
+        "マンション家賃",
+        85000,
+      );
 
       expect(result).toEqual([
-        item({ id: "expense-1", name: "マンション家賃" }),
-        item({ id: "expense-2", name: "食費", kind: "variable" }),
+        item({ id: "expense-1", name: "マンション家賃", amount: 85000 }),
+        item({ id: "expense-2", name: "食費", amount: 30000, kind: "variable" }),
       ]);
     });
-  });
 
-  describe("updateBudgetExpenseItemAmount", () => {
-    it("指定したidの金額だけを変更する", () => {
+    it("該当するidがなければ変更されない", () => {
       const items = [
-        item({ id: "expense-1", amount: 80000 }),
-        item({ id: "expense-2", amount: 30000, kind: "variable" }),
+        item({ id: "expense-1", name: "家賃", amount: 80000 }),
       ];
 
-      const result = updateBudgetExpenseItemAmount(items, "expense-1", 85000);
+      const result = updateBudgetExpenseItem(
+        items,
+        "expense-404",
+        "マンション家賃",
+        85000,
+      );
 
-      expect(result).toEqual([
-        item({ id: "expense-1", amount: 85000 }),
-        item({ id: "expense-2", amount: 30000, kind: "variable" }),
-      ]);
+      expect(result).toEqual(items);
     });
   });
 

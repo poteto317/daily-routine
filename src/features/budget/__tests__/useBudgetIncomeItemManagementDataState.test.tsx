@@ -4,8 +4,7 @@ import { getBudgetIncomeItems, saveBudgetIncomeItems } from "../storage";
 import {
   createBudgetIncomeItemAndPersist,
   deleteBudgetIncomeItemAndPersist,
-  renameBudgetIncomeItemAndPersist,
-  updateBudgetIncomeItemAmountAndPersist,
+  updateBudgetIncomeItemAndPersist,
 } from "../budgetIncomeItemCrudPersistActions";
 
 jest.mock("../storage", () => ({
@@ -15,8 +14,7 @@ jest.mock("../storage", () => ({
 
 jest.mock("../budgetIncomeItemCrudPersistActions", () => ({
   createBudgetIncomeItemAndPersist: jest.fn(),
-  renameBudgetIncomeItemAndPersist: jest.fn(),
-  updateBudgetIncomeItemAmountAndPersist: jest.fn(),
+  updateBudgetIncomeItemAndPersist: jest.fn(),
   deleteBudgetIncomeItemAndPersist: jest.fn(),
 }));
 
@@ -27,13 +25,9 @@ const mockCreateBudgetIncomeItemAndPersist =
   createBudgetIncomeItemAndPersist as jest.MockedFunction<
     typeof createBudgetIncomeItemAndPersist
   >;
-const mockRenameBudgetIncomeItemAndPersist =
-  renameBudgetIncomeItemAndPersist as jest.MockedFunction<
-    typeof renameBudgetIncomeItemAndPersist
-  >;
-const mockUpdateBudgetIncomeItemAmountAndPersist =
-  updateBudgetIncomeItemAmountAndPersist as jest.MockedFunction<
-    typeof updateBudgetIncomeItemAmountAndPersist
+const mockUpdateBudgetIncomeItemAndPersist =
+  updateBudgetIncomeItemAndPersist as jest.MockedFunction<
+    typeof updateBudgetIncomeItemAndPersist
   >;
 const mockDeleteBudgetIncomeItemAndPersist =
   deleteBudgetIncomeItemAndPersist as jest.MockedFunction<
@@ -114,7 +108,7 @@ describe("useBudgetIncomeItemManagementDataState", () => {
     expect(closeForm).not.toHaveBeenCalled();
   });
 
-  it("handleRenameはrenameBudgetIncomeItemAndPersistへ委譲する", () => {
+  it("handleUpdateItemはupdateBudgetIncomeItemAndPersistへ名前と金額をまとめて委譲する", () => {
     const { result } = renderHook(() =>
       useBudgetIncomeItemManagementDataState({
         nameInput: "",
@@ -124,33 +118,13 @@ describe("useBudgetIncomeItemManagementDataState", () => {
     );
 
     act(() => {
-      result.current.handleRename("income-1", "本業給与");
+      result.current.handleUpdateItem("income-1", "本業給与", 320000);
     });
 
-    expect(mockRenameBudgetIncomeItemAndPersist).toHaveBeenCalledWith({
+    expect(mockUpdateBudgetIncomeItemAndPersist).toHaveBeenCalledWith({
       items: [item],
       itemId: "income-1",
       name: "本業給与",
-      persist: expect.any(Function),
-    });
-  });
-
-  it("handleUpdateAmountはupdateBudgetIncomeItemAmountAndPersistへ委譲する", () => {
-    const { result } = renderHook(() =>
-      useBudgetIncomeItemManagementDataState({
-        nameInput: "",
-        amountInput: "",
-        closeForm: jest.fn(),
-      }),
-    );
-
-    act(() => {
-      result.current.handleUpdateAmount("income-1", 320000);
-    });
-
-    expect(mockUpdateBudgetIncomeItemAmountAndPersist).toHaveBeenCalledWith({
-      items: [item],
-      itemId: "income-1",
       amount: 320000,
       persist: expect.any(Function),
     });

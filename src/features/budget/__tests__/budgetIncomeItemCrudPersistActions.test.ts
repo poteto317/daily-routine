@@ -1,21 +1,18 @@
 import {
   createBudgetIncomeItemAndPersist,
   deleteBudgetIncomeItemAndPersist,
-  renameBudgetIncomeItemAndPersist,
-  updateBudgetIncomeItemAmountAndPersist,
+  updateBudgetIncomeItemAndPersist,
 } from "../budgetIncomeItemCrudPersistActions";
 import {
   addBudgetIncomeItem,
   removeBudgetIncomeItem,
-  renameBudgetIncomeItem,
-  updateBudgetIncomeItemAmount,
+  updateBudgetIncomeItem,
 } from "../budgetIncomeItemMutations";
 
 jest.mock("../budgetIncomeItemMutations", () => ({
   addBudgetIncomeItem: jest.fn(),
   removeBudgetIncomeItem: jest.fn(),
-  renameBudgetIncomeItem: jest.fn(),
-  updateBudgetIncomeItemAmount: jest.fn(),
+  updateBudgetIncomeItem: jest.fn(),
 }));
 
 const mockAddBudgetIncomeItem = addBudgetIncomeItem as jest.MockedFunction<
@@ -23,12 +20,8 @@ const mockAddBudgetIncomeItem = addBudgetIncomeItem as jest.MockedFunction<
 >;
 const mockRemoveBudgetIncomeItem =
   removeBudgetIncomeItem as jest.MockedFunction<typeof removeBudgetIncomeItem>;
-const mockRenameBudgetIncomeItem =
-  renameBudgetIncomeItem as jest.MockedFunction<typeof renameBudgetIncomeItem>;
-const mockUpdateBudgetIncomeItemAmount =
-  updateBudgetIncomeItemAmount as jest.MockedFunction<
-    typeof updateBudgetIncomeItemAmount
-  >;
+const mockUpdateBudgetIncomeItem =
+  updateBudgetIncomeItem as jest.MockedFunction<typeof updateBudgetIncomeItem>;
 
 const item = {
   id: "income-1",
@@ -82,97 +75,98 @@ describe("budgetIncomeItemCrudPersistActions", () => {
     });
   });
 
-  describe("renameBudgetIncomeItemAndPersist", () => {
-    it("有効な名前ならリネームしてpersistする", () => {
+  describe("updateBudgetIncomeItemAndPersist", () => {
+    it("名前と金額が両方変わる場合は1回のpersistで両方反映する", () => {
       const items = [item];
-      const nextItems = [{ ...item, name: "本業給与" }];
-      mockRenameBudgetIncomeItem.mockReturnValue(nextItems);
+      const nextItems = [{ ...item, name: "本業給与", amount: 320000 }];
+      mockUpdateBudgetIncomeItem.mockReturnValue(nextItems);
       const persist = jest.fn();
 
-      const result = renameBudgetIncomeItemAndPersist({
+      const result = updateBudgetIncomeItemAndPersist({
         items,
         itemId: "income-1",
         name: "  本業給与  ",
-        persist,
-      });
-
-      expect(mockRenameBudgetIncomeItem).toHaveBeenCalledWith(
-        items,
-        "income-1",
-        "本業給与",
-      );
-      expect(persist).toHaveBeenCalledWith(nextItems);
-      expect(result).toBe(nextItems);
-    });
-
-    it("名前が変わらない場合はpersistせずnullを返す", () => {
-      const items = [item];
-      const persist = jest.fn();
-
-      const result = renameBudgetIncomeItemAndPersist({
-        items,
-        itemId: "income-1",
-        name: "  給与  ",
-        persist,
-      });
-
-      expect(mockRenameBudgetIncomeItem).not.toHaveBeenCalled();
-      expect(persist).not.toHaveBeenCalled();
-      expect(result).toBeNull();
-    });
-
-    it("itemIdが存在しない場合はpersistせずnullを返す", () => {
-      const items = [item];
-      const persist = jest.fn();
-
-      const result = renameBudgetIncomeItemAndPersist({
-        items,
-        itemId: "income-404",
-        name: "本業給与",
-        persist,
-      });
-
-      expect(mockRenameBudgetIncomeItem).not.toHaveBeenCalled();
-      expect(persist).not.toHaveBeenCalled();
-      expect(result).toBeNull();
-    });
-  });
-
-  describe("updateBudgetIncomeItemAmountAndPersist", () => {
-    it("金額が変わる場合はpersistする", () => {
-      const items = [item];
-      const nextItems = [{ ...item, amount: 320000 }];
-      mockUpdateBudgetIncomeItemAmount.mockReturnValue(nextItems);
-      const persist = jest.fn();
-
-      const result = updateBudgetIncomeItemAmountAndPersist({
-        items,
-        itemId: "income-1",
         amount: 320000,
         persist,
       });
 
-      expect(mockUpdateBudgetIncomeItemAmount).toHaveBeenCalledWith(
+      expect(mockUpdateBudgetIncomeItem).toHaveBeenCalledWith(
         items,
         "income-1",
+        "本業給与",
         320000,
       );
+      expect(persist).toHaveBeenCalledTimes(1);
       expect(persist).toHaveBeenCalledWith(nextItems);
       expect(result).toBe(nextItems);
     });
 
-    it("金額が変わらない場合はpersistせずnullを返す", () => {
+    it("名前だけが変わる場合もpersistする", () => {
       const items = [item];
+      const nextItems = [{ ...item, name: "本業給与" }];
+      mockUpdateBudgetIncomeItem.mockReturnValue(nextItems);
       const persist = jest.fn();
 
-      const result = updateBudgetIncomeItemAmountAndPersist({
+      const result = updateBudgetIncomeItemAndPersist({
         items,
         itemId: "income-1",
+        name: "本業給与",
         amount: 300000,
         persist,
       });
 
-      expect(mockUpdateBudgetIncomeItemAmount).not.toHaveBeenCalled();
+      expect(persist).toHaveBeenCalledWith(nextItems);
+      expect(result).toBe(nextItems);
+    });
+
+    it("金額だけが変わる場合もpersistする", () => {
+      const items = [item];
+      const nextItems = [{ ...item, amount: 320000 }];
+      mockUpdateBudgetIncomeItem.mockReturnValue(nextItems);
+      const persist = jest.fn();
+
+      const result = updateBudgetIncomeItemAndPersist({
+        items,
+        itemId: "income-1",
+        name: "給与",
+        amount: 320000,
+        persist,
+      });
+
+      expect(persist).toHaveBeenCalledWith(nextItems);
+      expect(result).toBe(nextItems);
+    });
+
+    it("名前・金額とも変わらない場合はpersistせずnullを返す", () => {
+      const items = [item];
+      const persist = jest.fn();
+
+      const result = updateBudgetIncomeItemAndPersist({
+        items,
+        itemId: "income-1",
+        name: "  給与  ",
+        amount: 300000,
+        persist,
+      });
+
+      expect(mockUpdateBudgetIncomeItem).not.toHaveBeenCalled();
+      expect(persist).not.toHaveBeenCalled();
+      expect(result).toBeNull();
+    });
+
+    it("名前が空白のみの場合はpersistせずnullを返す", () => {
+      const items = [item];
+      const persist = jest.fn();
+
+      const result = updateBudgetIncomeItemAndPersist({
+        items,
+        itemId: "income-1",
+        name: "   ",
+        amount: 320000,
+        persist,
+      });
+
+      expect(mockUpdateBudgetIncomeItem).not.toHaveBeenCalled();
       expect(persist).not.toHaveBeenCalled();
       expect(result).toBeNull();
     });
@@ -181,14 +175,15 @@ describe("budgetIncomeItemCrudPersistActions", () => {
       const items = [item];
       const persist = jest.fn();
 
-      const result = updateBudgetIncomeItemAmountAndPersist({
+      const result = updateBudgetIncomeItemAndPersist({
         items,
         itemId: "income-404",
+        name: "本業給与",
         amount: 320000,
         persist,
       });
 
-      expect(mockUpdateBudgetIncomeItemAmount).not.toHaveBeenCalled();
+      expect(mockUpdateBudgetIncomeItem).not.toHaveBeenCalled();
       expect(persist).not.toHaveBeenCalled();
       expect(result).toBeNull();
     });

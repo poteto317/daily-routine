@@ -42,8 +42,7 @@ const item = {
 };
 
 describe("useBudgetIncomeItemManagementPageState composition", () => {
-  const handleRename = jest.fn();
-  const handleUpdateAmount = jest.fn();
+  const handleUpdateItem = jest.fn();
   const cancelEditItem = jest.fn();
 
   beforeEach(() => {
@@ -62,8 +61,7 @@ describe("useBudgetIncomeItemManagementPageState composition", () => {
     mockUseDataState.mockReturnValue({
       items: [item],
       handleCreate: jest.fn(),
-      handleRename,
-      handleUpdateAmount,
+      handleUpdateItem,
       handleDelete: jest.fn(),
     });
     mockUseEditState.mockReturnValue({
@@ -99,7 +97,7 @@ describe("useBudgetIncomeItemManagementPageState composition", () => {
     expect(result.current.editingItemId).toBe("income-1");
   });
 
-  it("commitEditItemは名前変更と金額変更(有効な値)の両方を実行し編集を終了する", () => {
+  it("commitEditItemは名前と金額(有効な値)をまとめて1回のhandleUpdateItemで反映し編集を終了する", () => {
     const { result } = renderHook(() =>
       useBudgetIncomeItemManagementPageState(),
     );
@@ -108,8 +106,12 @@ describe("useBudgetIncomeItemManagementPageState composition", () => {
       result.current.commitEditItem();
     });
 
-    expect(handleRename).toHaveBeenCalledWith("income-1", "本業給与");
-    expect(handleUpdateAmount).toHaveBeenCalledWith("income-1", 320000);
+    expect(handleUpdateItem).toHaveBeenCalledTimes(1);
+    expect(handleUpdateItem).toHaveBeenCalledWith(
+      "income-1",
+      "本業給与",
+      320000,
+    );
     expect(cancelEditItem).toHaveBeenCalled();
   });
 
@@ -132,8 +134,7 @@ describe("useBudgetIncomeItemManagementPageState composition", () => {
       result.current.commitEditItem();
     });
 
-    expect(handleRename).not.toHaveBeenCalled();
-    expect(handleUpdateAmount).not.toHaveBeenCalled();
+    expect(handleUpdateItem).not.toHaveBeenCalled();
     expect(cancelEditItem).not.toHaveBeenCalled();
   });
 
@@ -156,8 +157,7 @@ describe("useBudgetIncomeItemManagementPageState composition", () => {
       result.current.commitEditItem();
     });
 
-    expect(handleRename).not.toHaveBeenCalled();
-    expect(handleUpdateAmount).not.toHaveBeenCalled();
+    expect(handleUpdateItem).not.toHaveBeenCalled();
     expect(cancelEditItem).not.toHaveBeenCalled();
   });
 });

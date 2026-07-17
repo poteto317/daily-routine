@@ -27,7 +27,7 @@ export interface BudgetIncomeItem {
 
 export type BudgetExpenseItemKind = "fixed" | "variable";
 
-/** 固定費・支出項目。kindで固定費("fixed")・変動費("variable")を区別する。 */
+/** 支出項目。kindで固定費("fixed")・変動費("variable")を区別する。 */
 export interface BudgetExpenseItem {
   id: string;
   name: string;

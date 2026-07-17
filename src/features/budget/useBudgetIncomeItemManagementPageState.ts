@@ -16,7 +16,7 @@ export const useBudgetIncomeItemManagementPageState = () => {
     closeForm,
   } = useBudgetIncomeItemManagementFormState();
 
-  const { items, handleCreate, handleRename, handleUpdateAmount, handleDelete } =
+  const { items, handleCreate, handleUpdateItem, handleDelete } =
     useBudgetIncomeItemManagementDataState({ nameInput, amountInput, closeForm });
 
   const {
@@ -38,8 +38,7 @@ export const useBudgetIncomeItemManagementPageState = () => {
     const amount = parsePositiveAmount(editingItemAmount);
     if (amount === null) return;
 
-    handleRename(editingItemId, editingItemName);
-    handleUpdateAmount(editingItemId, amount);
+    handleUpdateItem(editingItemId, editingItemName, amount);
     cancelEditItem();
   };
 

@@ -1,6 +1,7 @@
-import { renderHook } from "@testing-library/react";
+import { act, renderHook } from "@testing-library/react";
 import { useBudgetAllowanceState } from "../useBudgetAllowanceState";
 import { getBudgetIncomeItems, getBudgetExpenseItems } from "../storage";
+import { LOCAL_DATA_UPDATED_AT_EVENT } from "@/lib/storage/core";
 
 jest.mock("../storage", () => ({
   getBudgetIncomeItems: jest.fn(),
@@ -76,5 +77,63 @@ describe("useBudgetAllowanceState", () => {
 
     expect(mockGetBudgetIncomeItems).toHaveBeenCalledTimes(1);
     expect(mockGetBudgetExpenseItems).toHaveBeenCalledTimes(1);
+  });
+
+  it("LOCAL_DATA_UPDATED_AT_EVENTを受け取るとstorageを再読み込みし最新値を反映する（クラウド同期・他タブでの更新対応）", () => {
+    mockGetBudgetIncomeItems.mockReturnValue([
+      { id: "income-1", name: "給与", amount: 300000, createdAt: "2026-05-01T00:00:00.000Z" },
+    ]);
+    mockGetBudgetExpenseItems.mockReturnValue([
+      {
+        id: "expense-1",
+        name: "家賃",
+        amount: 80000,
+        kind: "fixed",
+        createdAt: "2026-05-01T00:00:00.000Z",
+      },
+    ]);
+
+    const { result } = renderHook(() => useBudgetAllowanceState());
+
+    expect(result.current.monthlyAllowance.allowance).toBe(220000);
+
+    mockGetBudgetIncomeItems.mockReturnValue([
+      { id: "income-1", name: "給与", amount: 350000, createdAt: "2026-05-01T00:00:00.000Z" },
+    ]);
+    mockGetBudgetExpenseItems.mockReturnValue([
+      {
+        id: "expense-1",
+        name: "家賃",
+        amount: 100000,
+        kind: "fixed",
+        createdAt: "2026-05-01T00:00:00.000Z",
+      },
+    ]);
+
+    act(() => {
+      window.dispatchEvent(new CustomEvent(LOCAL_DATA_UPDATED_AT_EVENT));
+    });
+
+    expect(mockGetBudgetIncomeItems).toHaveBeenCalledTimes(2);
+    expect(mockGetBudgetExpenseItems).toHaveBeenCalledTimes(2);
+    expect(result.current.monthlyAllowance.allowance).toBe(250000);
+  });
+
+  it("アンマウント後はLOCAL_DATA_UPDATED_AT_EVENTのリスナーを解除する", () => {
+    mockGetBudgetIncomeItems.mockReturnValue([]);
+    mockGetBudgetExpenseItems.mockReturnValue([]);
+
+    const { unmount } = renderHook(() => useBudgetAllowanceState());
+    unmount();
+
+    mockGetBudgetIncomeItems.mockClear();
+    mockGetBudgetExpenseItems.mockClear();
+
+    act(() => {
+      window.dispatchEvent(new CustomEvent(LOCAL_DATA_UPDATED_AT_EVENT));
+    });
+
+    expect(mockGetBudgetIncomeItems).not.toHaveBeenCalled();
+    expect(mockGetBudgetExpenseItems).not.toHaveBeenCalled();
   });
 });

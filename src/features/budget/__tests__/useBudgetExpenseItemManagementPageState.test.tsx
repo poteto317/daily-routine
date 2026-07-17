@@ -50,8 +50,7 @@ const variableItem = {
 };
 
 describe("useBudgetExpenseItemManagementPageState composition", () => {
-  const handleRename = jest.fn();
-  const handleUpdateAmount = jest.fn();
+  const handleUpdateItem = jest.fn();
   const toggleItemKind = jest.fn();
   const cancelEditItem = jest.fn();
 
@@ -73,8 +72,7 @@ describe("useBudgetExpenseItemManagementPageState composition", () => {
     mockUseDataState.mockReturnValue({
       items: [fixedItem, variableItem],
       handleCreate: jest.fn(),
-      handleRename,
-      handleUpdateAmount,
+      handleUpdateItem,
       handleUpdateKind: jest.fn(),
       toggleItemKind,
       handleDelete: jest.fn(),
@@ -101,7 +99,7 @@ describe("useBudgetExpenseItemManagementPageState composition", () => {
     expect(result.current.variableItems).toEqual([variableItem]);
   });
 
-  it("commitEditItemは名前変更と金額変更の両方を実行し編集を終了する", () => {
+  it("commitEditItemは名前と金額をまとめて1回のhandleUpdateItemで反映し編集を終了する", () => {
     const { result } = renderHook(() =>
       useBudgetExpenseItemManagementPageState(),
     );
@@ -110,8 +108,12 @@ describe("useBudgetExpenseItemManagementPageState composition", () => {
       result.current.commitEditItem();
     });
 
-    expect(handleRename).toHaveBeenCalledWith("expense-1", "マンション家賃");
-    expect(handleUpdateAmount).toHaveBeenCalledWith("expense-1", 85000);
+    expect(handleUpdateItem).toHaveBeenCalledTimes(1);
+    expect(handleUpdateItem).toHaveBeenCalledWith(
+      "expense-1",
+      "マンション家賃",
+      85000,
+    );
     expect(cancelEditItem).toHaveBeenCalled();
   });
 
@@ -134,8 +136,7 @@ describe("useBudgetExpenseItemManagementPageState composition", () => {
       result.current.commitEditItem();
     });
 
-    expect(handleRename).not.toHaveBeenCalled();
-    expect(handleUpdateAmount).not.toHaveBeenCalled();
+    expect(handleUpdateItem).not.toHaveBeenCalled();
     expect(cancelEditItem).not.toHaveBeenCalled();
   });
 

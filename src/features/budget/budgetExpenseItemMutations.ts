@@ -18,24 +18,17 @@ export const addBudgetExpenseItem = (
 };
 
 /**
- * 支出項目の名前を変更する。
+ * 支出項目の名前と金額を同時に変更する。
  */
-export const renameBudgetExpenseItem = (
+export const updateBudgetExpenseItem = (
   items: BudgetExpenseItem[],
   itemId: string,
   name: string,
-): BudgetExpenseItem[] =>
-  items.map((item) => (item.id === itemId ? { ...item, name } : item));
-
-/**
- * 支出項目の金額を変更する。
- */
-export const updateBudgetExpenseItemAmount = (
-  items: BudgetExpenseItem[],
-  itemId: string,
   amount: number,
 ): BudgetExpenseItem[] =>
-  items.map((item) => (item.id === itemId ? { ...item, amount } : item));
+  items.map((item) =>
+    item.id === itemId ? { ...item, name, amount } : item,
+  );
 
 /**
  * 支出項目の分類（固定費/変動費）を変更する。

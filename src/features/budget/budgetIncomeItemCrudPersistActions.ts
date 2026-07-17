@@ -2,8 +2,7 @@ import type { BudgetIncomeItem } from "@/types/routine";
 import {
   addBudgetIncomeItem,
   removeBudgetIncomeItem,
-  renameBudgetIncomeItem,
-  updateBudgetIncomeItemAmount,
+  updateBudgetIncomeItem,
 } from "./budgetIncomeItemMutations";
 import { normalizeCategoryName } from "./budgetCategoryNameNormalization";
 
@@ -27,39 +26,29 @@ export const createBudgetIncomeItemAndPersist = (params: {
   return nextItems;
 };
 
-export const renameBudgetIncomeItemAndPersist = (params: {
+/**
+ * 収入項目の名前と金額を同時に変更してpersistする。
+ * 2つのフィールドを別々のAndPersist呼び出しに分けると、どちらも変更前のitemsを
+ * 参照するため後勝ちで一方の変更が失われる。1回の呼び出しで両方を反映する。
+ */
+export const updateBudgetIncomeItemAndPersist = (params: {
   items: BudgetIncomeItem[];
   itemId: string;
   name: string;
+  amount: number;
   persist: PersistBudgetIncomeItems;
 }): BudgetIncomeItem[] | null => {
-  const { items, itemId, name, persist } = params;
+  const { items, itemId, name, amount, persist } = params;
   const normalized = normalizeCategoryName(name);
   if (!normalized) return null;
 
   const currentItem = items.find((item) => item.id === itemId);
-  if (!currentItem || currentItem.name === normalized) {
+  if (!currentItem) return null;
+  if (currentItem.name === normalized && currentItem.amount === amount) {
     return null;
   }
 
-  const nextItems = renameBudgetIncomeItem(items, itemId, normalized);
-  persist(nextItems);
-  return nextItems;
-};
-
-export const updateBudgetIncomeItemAmountAndPersist = (params: {
-  items: BudgetIncomeItem[];
-  itemId: string;
-  amount: number;
-  persist: PersistBudgetIncomeItems;
-}): BudgetIncomeItem[] | null => {
-  const { items, itemId, amount, persist } = params;
-  const currentItem = items.find((item) => item.id === itemId);
-  if (!currentItem || currentItem.amount === amount) {
-    return null;
-  }
-
-  const nextItems = updateBudgetIncomeItemAmount(items, itemId, amount);
+  const nextItems = updateBudgetIncomeItem(items, itemId, normalized, amount);
   persist(nextItems);
   return nextItems;
 };

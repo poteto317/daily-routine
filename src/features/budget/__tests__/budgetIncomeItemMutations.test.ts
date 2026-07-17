@@ -1,8 +1,7 @@
 import {
   addBudgetIncomeItem,
   removeBudgetIncomeItem,
-  renameBudgetIncomeItem,
-  updateBudgetIncomeItemAmount,
+  updateBudgetIncomeItem,
 } from "../budgetIncomeItemMutations";
 import { createBudgetIncomeItem } from "../budgetIncomeItemFactory";
 
@@ -50,43 +49,37 @@ describe("budgetIncomeItemMutations", () => {
     });
   });
 
-  describe("renameBudgetIncomeItem", () => {
-    it("指定したidの項目名だけを変更する", () => {
+  describe("updateBudgetIncomeItem", () => {
+    it("指定したidの名前と金額を同時に変更する", () => {
       const items = [
-        item({ id: "income-1", name: "給与" }),
-        item({ id: "income-2", name: "副業" }),
+        item({ id: "income-1", name: "給与", amount: 300000 }),
+        item({ id: "income-2", name: "副業", amount: 50000 }),
       ];
 
-      const result = renameBudgetIncomeItem(items, "income-1", "本業給与");
+      const result = updateBudgetIncomeItem(
+        items,
+        "income-1",
+        "本業給与",
+        320000,
+      );
 
       expect(result).toEqual([
-        item({ id: "income-1", name: "本業給与" }),
-        item({ id: "income-2", name: "副業" }),
+        item({ id: "income-1", name: "本業給与", amount: 320000 }),
+        item({ id: "income-2", name: "副業", amount: 50000 }),
       ]);
     });
 
     it("該当するidがなければ変更されない", () => {
-      const items = [item({ id: "income-1", name: "給与" })];
+      const items = [item({ id: "income-1", name: "給与", amount: 300000 })];
 
-      const result = renameBudgetIncomeItem(items, "income-404", "本業給与");
+      const result = updateBudgetIncomeItem(
+        items,
+        "income-404",
+        "本業給与",
+        320000,
+      );
 
       expect(result).toEqual(items);
-    });
-  });
-
-  describe("updateBudgetIncomeItemAmount", () => {
-    it("指定したidの金額だけを変更する", () => {
-      const items = [
-        item({ id: "income-1", amount: 300000 }),
-        item({ id: "income-2", amount: 50000 }),
-      ];
-
-      const result = updateBudgetIncomeItemAmount(items, "income-1", 320000);
-
-      expect(result).toEqual([
-        item({ id: "income-1", amount: 320000 }),
-        item({ id: "income-2", amount: 50000 }),
-      ]);
     });
   });
 
