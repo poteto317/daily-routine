@@ -3,6 +3,7 @@ import { useBudgetIncomeItemManagementFormFocus } from "./useBudgetIncomeItemMan
 import { useBudgetIncomeItemManagementDataState } from "./useBudgetIncomeItemManagementDataState";
 import { useBudgetIncomeItemEditState } from "./useBudgetIncomeItemEditState";
 import { parsePositiveAmount } from "./budgetPageStateHelpers";
+import { normalizeCategoryName } from "./budgetCategoryNameNormalization";
 
 export const useBudgetIncomeItemManagementPageState = () => {
   const {
@@ -32,13 +33,14 @@ export const useBudgetIncomeItemManagementPageState = () => {
   const commitEditItem = () => {
     if (!editingItemId) return;
 
-    // 金額が無効な場合は名前だけ保存して編集行を閉じることはせず、
+    // 名前・金額のいずれかが無効な場合は保存せず編集行を閉じることはせず、
     // 新規作成フォーム（handleCreate）と同様に編集を継続させ、
-    // ユーザーが金額を修正できるようにする。
+    // ユーザーが入力を修正できるようにする。
+    const normalizedName = normalizeCategoryName(editingItemName);
     const amount = parsePositiveAmount(editingItemAmount);
-    if (amount === null) return;
+    if (normalizedName === null || amount === null) return;
 
-    handleUpdateItem(editingItemId, editingItemName, amount);
+    handleUpdateItem(editingItemId, normalizedName, amount);
     cancelEditItem();
   };
 

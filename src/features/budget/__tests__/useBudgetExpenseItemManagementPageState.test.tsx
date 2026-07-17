@@ -140,6 +140,56 @@ describe("useBudgetExpenseItemManagementPageState composition", () => {
     expect(cancelEditItem).not.toHaveBeenCalled();
   });
 
+  it("commitEditItemは名前が空白のみの場合、金額が有効でも保存せず編集行を閉じない（新規作成フォームと同様に編集を継続する）", () => {
+    mockUseEditState.mockReturnValue({
+      editingItemId: "expense-1",
+      editingItemName: "   ",
+      editingItemAmount: "85000",
+      setEditingItemName: jest.fn(),
+      setEditingItemAmount: jest.fn(),
+      startEditItem: jest.fn(),
+      cancelEditItem,
+    });
+
+    const { result } = renderHook(() =>
+      useBudgetExpenseItemManagementPageState(),
+    );
+
+    act(() => {
+      result.current.commitEditItem();
+    });
+
+    expect(handleUpdateItem).not.toHaveBeenCalled();
+    expect(cancelEditItem).not.toHaveBeenCalled();
+  });
+
+  it("commitEditItemは名前の前後の空白を除去してhandleUpdateItemへ渡す", () => {
+    mockUseEditState.mockReturnValue({
+      editingItemId: "expense-1",
+      editingItemName: "  マンション家賃  ",
+      editingItemAmount: "85000",
+      setEditingItemName: jest.fn(),
+      setEditingItemAmount: jest.fn(),
+      startEditItem: jest.fn(),
+      cancelEditItem,
+    });
+
+    const { result } = renderHook(() =>
+      useBudgetExpenseItemManagementPageState(),
+    );
+
+    act(() => {
+      result.current.commitEditItem();
+    });
+
+    expect(handleUpdateItem).toHaveBeenCalledWith(
+      "expense-1",
+      "マンション家賃",
+      85000,
+    );
+    expect(cancelEditItem).toHaveBeenCalled();
+  });
+
   it("toggleItemKindはuseBudgetExpenseItemManagementDataStateのものをそのまま公開する", () => {
     const { result } = renderHook(() =>
       useBudgetExpenseItemManagementPageState(),

@@ -138,6 +138,56 @@ describe("useBudgetIncomeItemManagementPageState composition", () => {
     expect(cancelEditItem).not.toHaveBeenCalled();
   });
 
+  it("commitEditItemは名前が空白のみの場合、金額が有効でも保存せず編集行を閉じない（新規作成フォームと同様に編集を継続する）", () => {
+    mockUseEditState.mockReturnValue({
+      editingItemId: "income-1",
+      editingItemName: "   ",
+      editingItemAmount: "320000",
+      setEditingItemName: jest.fn(),
+      setEditingItemAmount: jest.fn(),
+      startEditItem: jest.fn(),
+      cancelEditItem,
+    });
+
+    const { result } = renderHook(() =>
+      useBudgetIncomeItemManagementPageState(),
+    );
+
+    act(() => {
+      result.current.commitEditItem();
+    });
+
+    expect(handleUpdateItem).not.toHaveBeenCalled();
+    expect(cancelEditItem).not.toHaveBeenCalled();
+  });
+
+  it("commitEditItemは名前の前後の空白を除去してhandleUpdateItemへ渡す", () => {
+    mockUseEditState.mockReturnValue({
+      editingItemId: "income-1",
+      editingItemName: "  本業給与  ",
+      editingItemAmount: "320000",
+      setEditingItemName: jest.fn(),
+      setEditingItemAmount: jest.fn(),
+      startEditItem: jest.fn(),
+      cancelEditItem,
+    });
+
+    const { result } = renderHook(() =>
+      useBudgetIncomeItemManagementPageState(),
+    );
+
+    act(() => {
+      result.current.commitEditItem();
+    });
+
+    expect(handleUpdateItem).toHaveBeenCalledWith(
+      "income-1",
+      "本業給与",
+      320000,
+    );
+    expect(cancelEditItem).toHaveBeenCalled();
+  });
+
   it("commitEditItemは編集対象が無い場合何もしない", () => {
     mockUseEditState.mockReturnValue({
       editingItemId: null,
