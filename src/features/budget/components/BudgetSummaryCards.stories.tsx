@@ -2,6 +2,14 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { expect, fn, userEvent, within } from "storybook/test";
 import { BudgetSummaryCards } from "./BudgetSummaryCards";
 
+const defaultAllowance = {
+  totalIncome: 350000,
+  totalFixed: 81000,
+  totalVariable: 30000,
+  totalExpenseItems: 111000,
+  allowance: 239000,
+};
+
 const meta = {
   title: "Features/Budget/BudgetSummaryCards",
   component: BudgetSummaryCards,
@@ -9,7 +17,8 @@ const meta = {
     layout: "padded",
   },
   args: {
-    onOpenBudgetInput: fn(),
+    onNavigateToAllowanceSettings: fn(),
+    monthlyAllowance: defaultAllowance,
   },
 } satisfies Meta<typeof BudgetSummaryCards>;
 
@@ -58,9 +67,16 @@ export const OverBudget: Story = {
   },
 };
 
-export const NoBudgetSet: Story = {
+export const NoAllowanceSet: Story = {
   args: {
     monthBudget: 0,
+    monthlyAllowance: {
+      totalIncome: 0,
+      totalFixed: 0,
+      totalVariable: 0,
+      totalExpenseItems: 0,
+      allowance: 0,
+    },
     totalExpense: 32000,
     todayExpense: 0,
     remaining: -32000,
@@ -86,8 +102,8 @@ export const PastMonth: Story = {
   },
 };
 
-/** 「変更」ボタンをクリック → onOpenBudgetInput が呼ばれる */
-export const ClickChangeBudget: Story = {
+/** 「収入・固定費・変動費を編集」リンクをクリック → onNavigateToAllowanceSettings が呼ばれる */
+export const ClickEditAllowanceSettings: Story = {
   args: {
     monthBudget: 100000,
     totalExpense: 42000,
@@ -101,8 +117,10 @@ export const ClickChangeBudget: Story = {
   },
   play: async ({ canvasElement, args }) => {
     const canvas = within(canvasElement);
-    const changeBudgetButton = canvas.getByRole("button", { name: "変更" });
-    await userEvent.click(changeBudgetButton);
-    expect(args.onOpenBudgetInput).toHaveBeenCalledOnce();
+    const editButton = canvas.getByRole("button", {
+      name: "収入・固定費・変動費を編集",
+    });
+    await userEvent.click(editButton);
+    expect(args.onNavigateToAllowanceSettings).toHaveBeenCalledOnce();
   },
 };

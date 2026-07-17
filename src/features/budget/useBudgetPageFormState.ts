@@ -6,40 +6,24 @@ import { useBudgetPageInputState } from "./useBudgetPageInputState";
 
 type BudgetFormInitialState = Pick<
   BudgetViewState,
-  | "showBudgetInput"
-  | "budgetInputValue"
-  | "showExpenseForm"
-  | "expenseAmount"
-  | "expenseCategoryId"
+  "showExpenseForm" | "expenseAmount" | "expenseCategoryId"
 >;
 
 type UseBudgetPageFormStateParams = {
   initialState: BudgetFormInitialState;
-  monthBudget: number;
 };
 
 export const useBudgetPageFormState = ({
   initialState,
-  monthBudget,
 }: UseBudgetPageFormStateParams) => {
   const visibilityState = useBudgetPageFormVisibilityState({
-    initialShowBudgetInput: initialState.showBudgetInput,
     initialShowExpenseForm: initialState.showExpenseForm,
   });
   const inputState = useBudgetPageInputState({
-    initialBudgetInputValue: initialState.budgetInputValue,
     initialExpenseAmount: initialState.expenseAmount,
     initialExpenseCategoryId: initialState.expenseCategoryId,
   });
-  const {
-    closeBudgetInput,
-    closeExpenseForm,
-    openBudgetInput,
-    openExpenseForm,
-  } = useBudgetPageFormActions({
-    monthBudget,
-    setShowBudgetInput: visibilityState.setShowBudgetInput,
-    setBudgetInputValue: inputState.setBudgetInputValue,
+  const { closeExpenseForm, openExpenseForm } = useBudgetPageFormActions({
     setShowExpenseForm: visibilityState.setShowExpenseForm,
     setExpenseAmount: inputState.setExpenseAmount,
     setExpenseCategoryId: inputState.setExpenseCategoryId,
@@ -48,9 +32,7 @@ export const useBudgetPageFormState = ({
   return createBudgetPageFormStateResult({
     visibilityState,
     inputState,
-    closeBudgetInput,
     closeExpenseForm,
-    openBudgetInput,
     openExpenseForm,
   });
 };

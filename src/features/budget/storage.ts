@@ -1,5 +1,4 @@
 export { getBudgetData, saveBudgetData } from "./storageData";
-export { getMonthlyBudget, setMonthlyBudget } from "./storageBudgets";
 export {
   getMonthlyExpenses,
   addExpense,
@@ -8,3 +7,5 @@ export {
   getMonthlyTotalExpense,
 } from "./storageExpenses";
 export { getBudgetCategories, saveBudgetCategories } from "./storageCategories";
+export { getBudgetIncomeItems, saveBudgetIncomeItems } from "./storageIncomeItems";
+export { getBudgetExpenseItems, saveBudgetExpenseItems } from "./storageExpenseItems";

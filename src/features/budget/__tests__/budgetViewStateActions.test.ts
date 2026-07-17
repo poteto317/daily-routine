@@ -9,7 +9,6 @@ describe("budgetViewStateActions", () => {
     const initialDate = new Date("2026-03-07T12:00:00+09:00");
     const initialSnapshot = {
       monthKey: "2026-03",
-      monthBudget: 30000,
       expenses: [
         {
           id: "e-mar",
@@ -23,10 +22,7 @@ describe("budgetViewStateActions", () => {
 
     expect(createInitialBudgetViewState(initialDate, initialSnapshot)).toEqual({
       currentDate: initialDate,
-      monthBudget: 30000,
       expenses: initialSnapshot.expenses,
-      showBudgetInput: false,
-      budgetInputValue: "",
       showExpenseForm: false,
       expenseAmount: "",
       expenseCategoryId: "",

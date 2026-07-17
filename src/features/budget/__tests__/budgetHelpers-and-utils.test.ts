@@ -2,7 +2,6 @@ import {
   buildBudgetCategoryLookup,
   resolveExpenseCategory,
   formatBudgetMonthLabel,
-  getBudgetActionLabel,
   getBudgetExpenseDateBounds,
   getRemainingCardClassName,
   getRemainingTone,
@@ -27,15 +26,11 @@ import {
 } from "../budgetPageStateHelpers";
 
 jest.mock("../storage", () => ({
-  getMonthlyBudget: jest.fn(),
   getMonthlyExpenses: jest.fn(),
 }));
 
-import { getMonthlyBudget, getMonthlyExpenses } from "../storage";
+import { getMonthlyExpenses } from "../storage";
 
-const mockGetMonthlyBudget = getMonthlyBudget as jest.MockedFunction<
-  typeof getMonthlyBudget
->;
 const mockGetMonthlyExpenses = getMonthlyExpenses as jest.MockedFunction<
   typeof getMonthlyExpenses
 >;
@@ -61,8 +56,6 @@ describe("budget helpers and utils", () => {
   });
 
   it("残額表示用のトーンとクラスを返す", () => {
-    expect(getBudgetActionLabel(1000)).toBe("変更");
-    expect(getBudgetActionLabel(0)).toBe("設定");
     expect(getRemainingTone(100)).toBe("positive");
     expect(getRemainingTone(-1)).toBe("over");
     expect(getRemainingCardClassName("positive")).toContain("bg-green-50");
@@ -267,7 +260,6 @@ describe("budget helpers and utils", () => {
   });
 
   it("月スナップショットと金額解析を取得できる", () => {
-    mockGetMonthlyBudget.mockReturnValue({ totalAmount: 42000 } as never);
     mockGetMonthlyExpenses.mockReturnValue([
       {
         id: "e1",
@@ -281,7 +273,6 @@ describe("budget helpers and utils", () => {
       getMonthStateSnapshot(new Date("2026-03-03T00:00:00+09:00")),
     ).toEqual({
       monthKey: "2026-03",
-      monthBudget: 42000,
       expenses: [expect.objectContaining({ id: "e1", amount: 800 })],
       defaultExpenseDate: "2026-03-07",
     });

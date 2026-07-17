@@ -39,6 +39,8 @@ const createSyncPayload = (data: SyncData): SyncPayload => {
     journalHistory: data.journalHistory,
     budgetData: data.budgetData,
     budgetCategories: data.budgetCategories,
+    budgetIncomeItems: data.budgetIncomeItems,
+    budgetExpenseItems: data.budgetExpenseItems,
     mealHistory: data.mealHistory,
     presets: data.presets,
     todoLists: data.todoLists,

@@ -1,44 +1,14 @@
 import type { Expense } from "@/types/routine";
 import { getMonthStateSnapshot } from "./budgetPageStateHelpers";
-import {
-  buildBudgetSavePayload,
-  buildExpensePayload,
-} from "./budgetPageStateLogic";
+import { buildExpensePayload } from "./budgetPageStateLogic";
 import {
   addExpenseFromInput,
   deleteExpenseAndRefresh,
-  saveBudgetFromInput,
   updateExpenseFromInput,
 } from "./stateActions";
-import {
-  addExpense,
-  deleteExpense,
-  setMonthlyBudget,
-  updateExpense,
-} from "./storage";
+import { addExpense, deleteExpense, updateExpense } from "./storage";
 
 type SetValue<T> = (value: T) => void;
-
-export const createBudgetSaveHandler = (params: {
-  currentMonth: string;
-  budgetInputValue: string;
-  setMonthBudget: SetValue<number>;
-  closeBudgetInput: () => void;
-}) => {
-  const { currentMonth, budgetInputValue, setMonthBudget, closeBudgetInput } =
-    params;
-
-  return () => {
-    saveBudgetFromInput({
-      currentMonth,
-      budgetInputValue,
-      buildPayload: buildBudgetSavePayload,
-      saveBudget: setMonthlyBudget,
-      setMonthBudget,
-      closeBudgetInput,
-    });
-  };
-};
 
 export const createExpenseAddHandler = (params: {
   expenseAmount: string;

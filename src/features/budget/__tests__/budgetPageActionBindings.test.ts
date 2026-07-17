@@ -4,15 +4,11 @@ describe("budgetPageActionBindings", () => {
   it("budget action handlers 用の依存を束ねる", () => {
     const currentDate = new Date("2026-03-07T00:00:00.000Z");
     const setExpenses = jest.fn();
-    const setMonthBudget = jest.fn();
-    const closeBudgetInput = jest.fn();
     const closeExpenseForm = jest.fn();
     const closeExpenseEdit = jest.fn();
 
     expect(
       createBudgetPageActionBindings({
-        budgetInputValue: "45000",
-        closeBudgetInput,
         closeExpenseForm,
         closeExpenseEdit,
         currentDate,
@@ -25,11 +21,8 @@ describe("budgetPageActionBindings", () => {
         editingExpenseDate: "2026-03-10",
         editingExpenseCategoryId: "category-food",
         setExpenses,
-        setMonthBudget,
       }),
     ).toEqual({
-      budgetInputValue: "45000",
-      closeBudgetInput,
       closeExpenseForm,
       closeExpenseEdit,
       currentDate,
@@ -42,7 +35,6 @@ describe("budgetPageActionBindings", () => {
       editingExpenseDate: "2026-03-10",
       editingExpenseCategoryId: "category-food",
       setExpenses,
-      setMonthBudget,
     });
   });
 });

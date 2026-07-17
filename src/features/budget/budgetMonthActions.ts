@@ -6,17 +6,15 @@ import { navigateBudgetMonth, syncBudgetMonthData } from "./stateActions";
 type SetValue<T> = (value: T) => void;
 
 export const createBudgetMonthSyncAction = (params: {
-  setMonthBudget: SetValue<number>;
   setExpenses: SetValue<Expense[]>;
   setExpenseDate: SetValue<string>;
 }) => {
-  const { setMonthBudget, setExpenses, setExpenseDate } = params;
+  const { setExpenses, setExpenseDate } = params;
 
   return (date: Date) => {
     syncBudgetMonthData({
       date,
       getSnapshot: getMonthStateSnapshot,
-      setMonthBudget,
       setExpenses,
       setExpenseDate,
     });

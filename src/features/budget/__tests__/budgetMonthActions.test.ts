@@ -26,13 +26,11 @@ describe("budgetMonthActions", () => {
   });
 
   it("月同期 action が snapshot 同期を委譲する", () => {
-    const setMonthBudget = jest.fn();
     const setExpenses = jest.fn();
     const setExpenseDate = jest.fn();
     const date = new Date("2026-03-07T00:00:00.000Z");
 
     createBudgetMonthSyncAction({
-      setMonthBudget,
       setExpenses,
       setExpenseDate,
     })(date);
@@ -40,7 +38,6 @@ describe("budgetMonthActions", () => {
     expect(syncBudgetMonthData).toHaveBeenCalledWith({
       date,
       getSnapshot: getMonthStateSnapshot,
-      setMonthBudget,
       setExpenses,
       setExpenseDate,
     });

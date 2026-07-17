@@ -1,6 +1,6 @@
 import { formatCurrency } from "../utils/format";
+import type { MonthlyAllowance } from "../utils/monthlyAllowance";
 import {
-  getBudgetActionLabel,
   getRemainingCardClassName,
   getRemainingTone,
   getRemainingValueClassName,
@@ -15,7 +15,8 @@ type BudgetSummaryCardsProps = {
   expenseCount: number;
   isCurrentMonth: boolean;
   monthBudget: number;
-  onOpenBudgetInput: () => void;
+  monthlyAllowance: MonthlyAllowance;
+  onNavigateToAllowanceSettings: () => void;
   remaining: number;
   todayExpense: number;
   totalExpense: number;
@@ -28,7 +29,8 @@ export const BudgetSummaryCards = ({
   expenseCount,
   isCurrentMonth,
   monthBudget,
-  onOpenBudgetInput,
+  monthlyAllowance,
+  onNavigateToAllowanceSettings,
   remaining,
   todayExpense,
   totalExpense,
@@ -43,10 +45,10 @@ export const BudgetSummaryCards = ({
             {budgetTexts.summary.monthlyLabel}
           </p>
           <button
-            onClick={onOpenBudgetInput}
+            onClick={onNavigateToAllowanceSettings}
             className="text-xs text-blue-600 dark:text-blue-800 hover:underline"
           >
-            {getBudgetActionLabel(monthBudget)}
+            {budgetTexts.summary.editAllowanceSettingsLabel}
           </button>
         </div>
         <p className="text-2xl font-bold text-blue-600 dark:text-blue-800">
@@ -54,6 +56,14 @@ export const BudgetSummaryCards = ({
         </p>
         <p className="text-xs text-gray-600 dark:text-gray-800 mt-1">
           {budgetTexts.summary.dailyLabel}: {formatCurrency(dailyBudget)}
+        </p>
+        <p className="text-xs text-gray-500 dark:text-gray-700 mt-2">
+          {budgetTexts.summary.totalIncomeLabel}:{" "}
+          {formatCurrency(monthlyAllowance.totalIncome)} /{" "}
+          {budgetTexts.summary.totalFixedLabel}:{" "}
+          {formatCurrency(monthlyAllowance.totalFixed)} /{" "}
+          {budgetTexts.summary.totalVariableLabel}:{" "}
+          {formatCurrency(monthlyAllowance.totalVariable)}
         </p>
       </div>
 

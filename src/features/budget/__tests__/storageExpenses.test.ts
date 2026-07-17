@@ -37,12 +37,11 @@ describe("budget storageExpenses", () => {
   });
 
   it("addExpenseはcategoryIdを保持しdescriptionを持たない支出を追加する", () => {
-    mockGetBudgetData.mockReturnValue({ budgets: {}, expenses: {} });
+    mockGetBudgetData.mockReturnValue({ expenses: {} });
 
     addExpense("2026-05-10", 1500, "cat-1");
 
     expect(mockSaveBudgetData).toHaveBeenCalledWith({
-      budgets: {},
       expenses: {
         "2026-05": [
           {
@@ -58,12 +57,11 @@ describe("budget storageExpenses", () => {
   });
 
   it("categoryIdを省略した場合はundefinedとして保存される", () => {
-    mockGetBudgetData.mockReturnValue({ budgets: {}, expenses: {} });
+    mockGetBudgetData.mockReturnValue({ expenses: {} });
 
     addExpense("2026-05-10", 1500);
 
     expect(mockSaveBudgetData).toHaveBeenCalledWith({
-      budgets: {},
       expenses: {
         "2026-05": [
           expect.objectContaining({ categoryId: undefined }),
@@ -74,7 +72,6 @@ describe("budget storageExpenses", () => {
 
   it("deleteExpenseは指定したidの支出だけを取り除く", () => {
     mockGetBudgetData.mockReturnValue({
-      budgets: {},
       expenses: {
         "2026-05": [
           {
@@ -97,7 +94,6 @@ describe("budget storageExpenses", () => {
     deleteExpense("2026-05", "e1");
 
     expect(mockSaveBudgetData).toHaveBeenCalledWith({
-      budgets: {},
       expenses: {
         "2026-05": [
           {
@@ -112,14 +108,13 @@ describe("budget storageExpenses", () => {
   });
 
   it("getMonthlyExpensesは未登録月は空配列を返す", () => {
-    mockGetBudgetData.mockReturnValue({ budgets: {}, expenses: {} });
+    mockGetBudgetData.mockReturnValue({ expenses: {} });
 
     expect(getMonthlyExpenses("2026-05")).toEqual([]);
   });
 
   it("updateExpenseは同月内の更新でid/createdAtを保持しdate/amount/categoryIdを更新する", () => {
     mockGetBudgetData.mockReturnValue({
-      budgets: {},
       expenses: {
         "2026-05": [
           {
@@ -146,7 +141,6 @@ describe("budget storageExpenses", () => {
     });
 
     expect(mockSaveBudgetData).toHaveBeenCalledWith({
-      budgets: {},
       expenses: {
         "2026-05": [
           {
@@ -169,7 +163,6 @@ describe("budget storageExpenses", () => {
 
   it("updateExpenseは同月内の更新で配列の並び順を保つ", () => {
     mockGetBudgetData.mockReturnValue({
-      budgets: {},
       expenses: {
         "2026-05": [
           {
@@ -208,7 +201,6 @@ describe("budget storageExpenses", () => {
 
   it("updateExpenseは月をまたぐ日付変更で旧月バケットから除去し新月バケットへ移動する", () => {
     mockGetBudgetData.mockReturnValue({
-      budgets: {},
       expenses: {
         "2026-05": [
           {
@@ -237,7 +229,6 @@ describe("budget storageExpenses", () => {
     });
 
     expect(mockSaveBudgetData).toHaveBeenCalledWith({
-      budgets: {},
       expenses: {
         "2026-05": [],
         "2026-04": [
@@ -261,7 +252,6 @@ describe("budget storageExpenses", () => {
 
   it("updateExpenseは移動先の月バケットが未作成の場合に新規作成する", () => {
     mockGetBudgetData.mockReturnValue({
-      budgets: {},
       expenses: {
         "2026-05": [
           {
@@ -277,7 +267,6 @@ describe("budget storageExpenses", () => {
     updateExpense("2026-05", "e1", { date: "2026-06-02", amount: 1500 });
 
     expect(mockSaveBudgetData).toHaveBeenCalledWith({
-      budgets: {},
       expenses: {
         "2026-05": [],
         "2026-06": [
@@ -295,7 +284,6 @@ describe("budget storageExpenses", () => {
 
   it("updateExpenseは存在しないidを指定した場合は何も保存しない", () => {
     mockGetBudgetData.mockReturnValue({
-      budgets: {},
       expenses: {
         "2026-05": [
           {
@@ -314,7 +302,7 @@ describe("budget storageExpenses", () => {
   });
 
   it("updateExpenseは月バケット自体が存在しない場合は何も保存しない", () => {
-    mockGetBudgetData.mockReturnValue({ budgets: {}, expenses: {} });
+    mockGetBudgetData.mockReturnValue({ expenses: {} });
 
     updateExpense("2026-05", "e1", { date: "2026-05-20", amount: 2000 });
 
@@ -323,7 +311,6 @@ describe("budget storageExpenses", () => {
 
   it("updateExpenseはupdatesでcategoryIdを省略した場合は既存のcategoryIdを保持する", () => {
     mockGetBudgetData.mockReturnValue({
-      budgets: {},
       expenses: {
         "2026-05": [
           {
@@ -340,7 +327,6 @@ describe("budget storageExpenses", () => {
     updateExpense("2026-05", "e1", { date: "2026-05-20", amount: 2000 });
 
     expect(mockSaveBudgetData).toHaveBeenCalledWith({
-      budgets: {},
       expenses: {
         "2026-05": [
           {
@@ -357,7 +343,6 @@ describe("budget storageExpenses", () => {
 
   it("updateExpenseはupdatesでcategoryIdをundefinedとして明示した場合はカテゴリをクリアする", () => {
     mockGetBudgetData.mockReturnValue({
-      budgets: {},
       expenses: {
         "2026-05": [
           {
@@ -378,7 +363,6 @@ describe("budget storageExpenses", () => {
     });
 
     expect(mockSaveBudgetData).toHaveBeenCalledWith({
-      budgets: {},
       expenses: {
         "2026-05": [
           {

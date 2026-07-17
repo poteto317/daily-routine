@@ -2,19 +2,15 @@ import type { MonthStateSnapshot } from "../budgetPageStateHelpers";
 import {
   addExpenseFromInput,
   applyMonthSnapshot,
-  closeBudgetInputForm,
   closeExpenseInputForm,
   deleteExpenseAndRefresh,
   navigateBudgetMonth,
-  openBudgetInputForm,
-  saveBudgetFromInput,
   syncBudgetMonthData,
   updateExpenseFromInput,
 } from "../stateActions";
 
 const snapshot: MonthStateSnapshot = {
   monthKey: "2026-03",
-  monthBudget: 30000,
   expenses: [
     {
       id: "e1",
@@ -28,25 +24,21 @@ const snapshot: MonthStateSnapshot = {
 
 describe("budget stateActions", () => {
   it("月スナップショットを state setter へ反映する", () => {
-    const setMonthBudget = jest.fn();
     const setExpenses = jest.fn();
     const setExpenseDate = jest.fn();
 
     applyMonthSnapshot({
       snapshot,
-      setMonthBudget,
       setExpenses,
       setExpenseDate,
     });
 
-    expect(setMonthBudget).toHaveBeenCalledWith(30000);
     expect(setExpenses).toHaveBeenCalledWith(snapshot.expenses);
     expect(setExpenseDate).toHaveBeenCalledWith("2026-03-07");
   });
 
   it("日付から月スナップショットを再同期する", () => {
     const getSnapshot = jest.fn(() => snapshot);
-    const setMonthBudget = jest.fn();
     const setExpenses = jest.fn();
     const setExpenseDate = jest.fn();
     const date = new Date("2026-03-07T00:00:00.000Z");
@@ -55,34 +47,13 @@ describe("budget stateActions", () => {
       syncBudgetMonthData({
         date,
         getSnapshot,
-        setMonthBudget,
         setExpenses,
         setExpenseDate,
       }),
     ).toBe(snapshot);
 
     expect(getSnapshot).toHaveBeenCalledWith(date);
-    expect(setMonthBudget).toHaveBeenCalledWith(30000);
-  });
-
-  it("予算入力フォームを開閉する", () => {
-    const setBudgetInputValue = jest.fn();
-    const setShowBudgetInput = jest.fn();
-
-    openBudgetInputForm({
-      monthBudget: 30000,
-      getInitialValue: (value) => String(value),
-      setBudgetInputValue,
-      setShowBudgetInput,
-    });
-
-    expect(setBudgetInputValue).toHaveBeenCalledWith("30000");
-    expect(setShowBudgetInput).toHaveBeenCalledWith(true);
-
-    closeBudgetInputForm({ setShowBudgetInput, setBudgetInputValue });
-
-    expect(setShowBudgetInput).toHaveBeenLastCalledWith(false);
-    expect(setBudgetInputValue).toHaveBeenLastCalledWith("");
+    expect(setExpenses).toHaveBeenCalledWith(snapshot.expenses);
   });
 
   it("支出フォームを閉じると入力をリセットする", () => {
@@ -110,41 +81,6 @@ describe("budget stateActions", () => {
 
     expect(setCurrentDate).toHaveBeenCalledWith(nextDate);
     expect(syncMonthData).toHaveBeenCalledWith(nextDate);
-  });
-
-  it("有効な予算入力だけ保存する", () => {
-    const saveBudget = jest.fn();
-    const setMonthBudget = jest.fn();
-    const closeBudgetInput = jest.fn();
-
-    expect(
-      saveBudgetFromInput({
-        currentMonth: "2026-03",
-        budgetInputValue: "45000",
-        buildPayload: (monthKey, value) => ({
-          monthKey,
-          amount: Number(value),
-        }),
-        saveBudget,
-        setMonthBudget,
-        closeBudgetInput,
-      }),
-    ).toBe(true);
-
-    expect(saveBudget).toHaveBeenCalledWith("2026-03", 45000);
-    expect(setMonthBudget).toHaveBeenCalledWith(45000);
-    expect(closeBudgetInput).toHaveBeenCalled();
-
-    expect(
-      saveBudgetFromInput({
-        currentMonth: "2026-03",
-        budgetInputValue: "0",
-        buildPayload: () => null,
-        saveBudget,
-        setMonthBudget,
-        closeBudgetInput,
-      }),
-    ).toBe(false);
   });
 
   it("有効な支出入力だけ保存して一覧を更新する", () => {

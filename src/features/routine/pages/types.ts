@@ -14,6 +14,7 @@ export type PageType =
   | "meal"
   | "budget"
   | "budget-category-management"
+  | "budget-allowance-settings"
   | "preset"
   | "todo-lists"
   | "todo-list-management"
@@ -36,6 +37,7 @@ export const VALID_PAGES: PageType[] = [
   "meal",
   "budget",
   "budget-category-management",
+  "budget-allowance-settings",
   "preset",
   "todo-lists",
   "todo-list-management",

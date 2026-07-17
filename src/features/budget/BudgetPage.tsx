@@ -1,7 +1,6 @@
 "use client";
 
 import { CardPanel } from "@/components";
-import { BudgetBudgetInputForm } from "@/features/budget/components/BudgetBudgetInputForm";
 import { BudgetExpenseForm } from "@/features/budget/components/BudgetExpenseForm";
 import { BudgetExpenseList } from "@/features/budget/components/BudgetExpenseList";
 import { BudgetMonthNavigation } from "@/features/budget/components/BudgetMonthNavigation";
@@ -49,19 +48,12 @@ export const BudgetPage = () => {
             expenseCount={state.expenses.length}
             isCurrentMonth={state.isCurrentMonth}
             monthBudget={state.monthBudget}
-            onOpenBudgetInput={state.openBudgetInput}
+            monthlyAllowance={state.monthlyAllowance}
+            onNavigateToAllowanceSettings={state.navigateToAllowanceSettings}
             remaining={state.remaining}
             todayExpense={state.todayExpense}
             totalExpense={state.totalExpense}
           />
-          {state.showBudgetInput && (
-            <BudgetBudgetInputForm
-              value={state.budgetInputValue}
-              onChange={state.handleBudgetInputChange}
-              onCancel={state.closeBudgetInput}
-              onSave={state.handleSaveBudget}
-            />
-          )}
           {!state.showExpenseForm && (
             <button
               onClick={state.openExpenseForm}

@@ -5,8 +5,19 @@ jest.mock("../storage", () => ({
   addExpense: jest.fn(),
   updateExpense: jest.fn(),
   deleteExpense: jest.fn(),
-  setMonthlyBudget: jest.fn(),
   getBudgetCategories: jest.fn(() => []),
+  getBudgetIncomeItems: jest.fn(() => [
+    { id: "income-1", name: "給与", amount: 300000, createdAt: "2026-01-01T00:00:00.000Z" },
+  ]),
+  getBudgetExpenseItems: jest.fn(() => [
+    {
+      id: "expense-1",
+      name: "家賃",
+      amount: 80000,
+      kind: "fixed" as const,
+      createdAt: "2026-01-01T00:00:00.000Z",
+    },
+  ]),
 }));
 
 jest.mock("../budgetPageStateHelpers", () => {
@@ -18,12 +29,7 @@ jest.mock("../budgetPageStateHelpers", () => {
   };
 });
 
-import {
-  addExpense,
-  deleteExpense,
-  setMonthlyBudget,
-  updateExpense,
-} from "../storage";
+import { addExpense, deleteExpense, updateExpense } from "../storage";
 import { getMonthStateSnapshot } from "../budgetPageStateHelpers";
 
 const mockAddExpense = addExpense as jest.MockedFunction<typeof addExpense>;
@@ -33,12 +39,14 @@ const mockUpdateExpense = updateExpense as jest.MockedFunction<
 const mockDeleteExpense = deleteExpense as jest.MockedFunction<
   typeof deleteExpense
 >;
-const mockSetMonthlyBudget = setMonthlyBudget as jest.MockedFunction<
-  typeof setMonthlyBudget
->;
 const mockGetMonthStateSnapshot = getMonthStateSnapshot as jest.MockedFunction<
   typeof getMonthStateSnapshot
 >;
+
+// 収入(給与 300000) - 固定費(家賃 80000) = 220000。
+// 収入・支出項目は月に紐付かないため、月移動をしてもこの値は変わらない
+// （useBudgetAllowanceStateがマウント時に一度だけ計算する単一の情報源）。
+const EXPECTED_MONTH_BUDGET = 220000;
 
 describe("useBudgetPageState", () => {
   let mockNavigate: jest.Mock;
@@ -54,7 +62,6 @@ describe("useBudgetPageState", () => {
       if (monthKey === "2026-04") {
         return {
           monthKey,
-          monthBudget: 50000,
           expenses: [
             {
               id: "e-apr",
@@ -69,7 +76,6 @@ describe("useBudgetPageState", () => {
 
       return {
         monthKey,
-        monthBudget: 30000,
         expenses: [
           {
             id: "e-mar",
@@ -90,57 +96,20 @@ describe("useBudgetPageState", () => {
   it("初期状態とフォーム開閉を扱える", () => {
     const { result } = renderHook(() => useBudgetPageState({ navigate: mockNavigate }));
 
-    expect(result.current.monthBudget).toBe(30000);
+    expect(result.current.monthBudget).toBe(EXPECTED_MONTH_BUDGET);
     expect(result.current.expenses).toHaveLength(1);
     expect(result.current.expenseDate).toBe("2026-03-07");
 
     act(() => {
-      result.current.openBudgetInput();
-    });
-    expect(result.current.showBudgetInput).toBe(true);
-    expect(result.current.budgetInputValue).toBe("30000");
-
-    act(() => {
-      result.current.closeBudgetInput();
       result.current.openExpenseForm();
       result.current.handleExpenseAmountChange("1200");
       result.current.handleExpenseCategoryIdChange("category-lunch");
       result.current.closeExpenseForm();
     });
 
-    expect(result.current.showBudgetInput).toBe(false);
     expect(result.current.showExpenseForm).toBe(false);
     expect(result.current.expenseAmount).toBe("");
     expect(result.current.expenseCategoryId).toBe("");
-  });
-
-  it("有効な予算入力を保存する", () => {
-    const { result } = renderHook(() => useBudgetPageState({ navigate: mockNavigate }));
-
-    act(() => {
-      result.current.openBudgetInput();
-      result.current.handleBudgetInputChange("45000");
-    });
-
-    act(() => {
-      result.current.handleSaveBudget();
-    });
-
-    expect(mockSetMonthlyBudget).toHaveBeenCalledWith("2026-03", 45000);
-    expect(result.current.monthBudget).toBe(45000);
-    expect(result.current.budgetInputValue).toBe("");
-    expect(result.current.showBudgetInput).toBe(false);
-  });
-
-  it("無効な予算入力では保存しない", () => {
-    const { result } = renderHook(() => useBudgetPageState({ navigate: mockNavigate }));
-
-    act(() => {
-      result.current.handleBudgetInputChange("0");
-      result.current.handleSaveBudget();
-    });
-
-    expect(mockSetMonthlyBudget).not.toHaveBeenCalled();
   });
 
   it("有効な支出を追加してフォームをリセットする", () => {
@@ -194,7 +163,7 @@ describe("useBudgetPageState", () => {
     ]);
   });
 
-  it("月移動でスナップショットを同期する", () => {
+  it("月移動でスナップショット(支出・デフォルト日付)を同期するが、monthBudgetは月に紐付かないため変わらない", () => {
     const { result } = renderHook(() => useBudgetPageState({ navigate: mockNavigate }));
 
     act(() => {
@@ -202,7 +171,7 @@ describe("useBudgetPageState", () => {
     });
 
     expect(result.current.currentDate.getMonth()).toBe(3);
-    expect(result.current.monthBudget).toBe(50000);
+    expect(result.current.monthBudget).toBe(EXPECTED_MONTH_BUDGET);
     expect(result.current.expenseDate).toBe("2026-04-01");
     expect(result.current.expenses).toEqual([
       expect.objectContaining({ id: "e-apr", amount: 3000 }),
@@ -213,7 +182,7 @@ describe("useBudgetPageState", () => {
     });
 
     expect(result.current.currentDate.getMonth()).toBe(2);
-    expect(result.current.monthBudget).toBe(30000);
+    expect(result.current.monthBudget).toBe(EXPECTED_MONTH_BUDGET);
 
     act(() => {
       result.current.goToCurrentMonth();
@@ -364,5 +333,31 @@ describe("useBudgetPageState", () => {
     });
 
     expect(mockNavigate).toHaveBeenCalledWith("budget-category-management");
+  });
+
+  it("収入・固定費・変動費の設定へ遷移できる", () => {
+    const { result } = renderHook(() =>
+      useBudgetPageState({ navigate: mockNavigate }),
+    );
+
+    act(() => {
+      result.current.navigateToAllowanceSettings();
+    });
+
+    expect(mockNavigate).toHaveBeenCalledWith("budget-allowance-settings");
+  });
+
+  it("monthlyAllowanceの内訳を公開する", () => {
+    const { result } = renderHook(() =>
+      useBudgetPageState({ navigate: mockNavigate }),
+    );
+
+    expect(result.current.monthlyAllowance).toEqual({
+      totalIncome: 300000,
+      totalFixed: 80000,
+      totalVariable: 0,
+      totalExpenseItems: 80000,
+      allowance: EXPECTED_MONTH_BUDGET,
+    });
   });
 });

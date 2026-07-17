@@ -37,10 +37,14 @@ jest.mock("@/features/journal/storage", () => ({
   saveJournalHistory: jest.fn(),
 }));
 jest.mock("@/features/budget/storage", () => ({
-  getBudgetData: jest.fn(() => ({ budgets: {}, expenses: {} })),
+  getBudgetData: jest.fn(() => ({ expenses: {} })),
   saveBudgetData: jest.fn(),
   getBudgetCategories: jest.fn(() => []),
   saveBudgetCategories: jest.fn(),
+  getBudgetIncomeItems: jest.fn(() => []),
+  saveBudgetIncomeItems: jest.fn(),
+  getBudgetExpenseItems: jest.fn(() => []),
+  saveBudgetExpenseItems: jest.fn(),
 }));
 jest.mock("@/features/meal/storage", () => ({
   getMealHistory: jest.fn(() => ({})),
@@ -97,10 +101,11 @@ describe("localData", () => {
     (weightTrackerStorage.getWeightHistory as jest.Mock).mockReturnValue({});
     (journalStorage.getJournalHistory as jest.Mock).mockReturnValue({});
     (budgetStorage.getBudgetData as jest.Mock).mockReturnValue({
-      budgets: {},
       expenses: {},
     });
     (budgetStorage.getBudgetCategories as jest.Mock).mockReturnValue([]);
+    (budgetStorage.getBudgetIncomeItems as jest.Mock).mockReturnValue([]);
+    (budgetStorage.getBudgetExpenseItems as jest.Mock).mockReturnValue([]);
     (mealStorage.getMealHistory as jest.Mock).mockReturnValue({});
     (presetStorage.getPresets as jest.Mock).mockReturnValue([]);
     (todoListsStorage.getTodoLists as jest.Mock).mockReturnValue([]);
@@ -119,6 +124,18 @@ describe("localData", () => {
       (budgetStorage.getBudgetCategories as jest.Mock).mockReturnValue([
         { id: "cat-1", name: "食料品", createdAt: "2026-05-01T00:00:00.000Z" },
       ]);
+      (budgetStorage.getBudgetIncomeItems as jest.Mock).mockReturnValue([
+        { id: "income-1", name: "給与", amount: 300000, createdAt: "2026-05-01T00:00:00.000Z" },
+      ]);
+      (budgetStorage.getBudgetExpenseItems as jest.Mock).mockReturnValue([
+        {
+          id: "expense-1",
+          name: "家賃",
+          amount: 80000,
+          kind: "fixed",
+          createdAt: "2026-05-01T00:00:00.000Z",
+        },
+      ]);
 
       const result = collectLocalSyncData();
 
@@ -127,6 +144,18 @@ describe("localData", () => {
       expect(result.presets).toEqual([{ id: "p1" }]);
       expect(result.budgetCategories).toEqual([
         { id: "cat-1", name: "食料品", createdAt: "2026-05-01T00:00:00.000Z" },
+      ]);
+      expect(result.budgetIncomeItems).toEqual([
+        { id: "income-1", name: "給与", amount: 300000, createdAt: "2026-05-01T00:00:00.000Z" },
+      ]);
+      expect(result.budgetExpenseItems).toEqual([
+        {
+          id: "expense-1",
+          name: "家賃",
+          amount: 80000,
+          kind: "fixed",
+          createdAt: "2026-05-01T00:00:00.000Z",
+        },
       ]);
     });
 
@@ -144,6 +173,8 @@ describe("localData", () => {
       expect(journalStorage.getJournalHistory).toHaveBeenCalled();
       expect(budgetStorage.getBudgetData).toHaveBeenCalled();
       expect(budgetStorage.getBudgetCategories).toHaveBeenCalled();
+      expect(budgetStorage.getBudgetIncomeItems).toHaveBeenCalled();
+      expect(budgetStorage.getBudgetExpenseItems).toHaveBeenCalled();
       expect(mealStorage.getMealHistory).toHaveBeenCalled();
       expect(presetStorage.getPresets).toHaveBeenCalled();
       expect(todoListsStorage.getTodoLists).toHaveBeenCalled();
@@ -211,6 +242,48 @@ describe("localData", () => {
       saveSyncDataToLocal({});
 
       expect(budgetStorage.saveBudgetCategories).toHaveBeenCalledWith([]);
+    });
+
+    it("budgetIncomeItems を保存する", () => {
+      const budgetIncomeItems = [
+        { id: "income-1", name: "給与", amount: 300000, createdAt: "2026-05-01T00:00:00.000Z" },
+      ];
+
+      saveSyncDataToLocal({ budgetIncomeItems });
+
+      expect(budgetStorage.saveBudgetIncomeItems).toHaveBeenCalledWith(
+        budgetIncomeItems,
+      );
+    });
+
+    it("budgetIncomeItems が未指定の場合は空配列で保存する", () => {
+      saveSyncDataToLocal({});
+
+      expect(budgetStorage.saveBudgetIncomeItems).toHaveBeenCalledWith([]);
+    });
+
+    it("budgetExpenseItems を保存する", () => {
+      const budgetExpenseItems = [
+        {
+          id: "expense-1",
+          name: "家賃",
+          amount: 80000,
+          kind: "fixed" as const,
+          createdAt: "2026-05-01T00:00:00.000Z",
+        },
+      ];
+
+      saveSyncDataToLocal({ budgetExpenseItems });
+
+      expect(budgetStorage.saveBudgetExpenseItems).toHaveBeenCalledWith(
+        budgetExpenseItems,
+      );
+    });
+
+    it("budgetExpenseItems が未指定の場合は空配列で保存する", () => {
+      saveSyncDataToLocal({});
+
+      expect(budgetStorage.saveBudgetExpenseItems).toHaveBeenCalledWith([]);
     });
   });
 
