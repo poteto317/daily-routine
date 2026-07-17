@@ -51,7 +51,7 @@ export const BudgetAllowanceSettingsPage = () => {
               />
             )}
 
-            {income.items.length === 0 ? (
+            {income.items.length === 0 && !income.showForm ? (
               <BudgetAllowanceSectionEmptyState />
             ) : (
               <div className="space-y-2">
@@ -108,7 +108,7 @@ export const BudgetAllowanceSettingsPage = () => {
             <h3 className="text-sm font-bold text-gray-600 dark:text-gray-700 mb-2">
               {texts.allowanceSettings.fixedExpenseSectionTitle}
             </h3>
-            {expense.fixedItems.length === 0 ? (
+            {expense.fixedItems.length === 0 && !expense.showForm ? (
               <BudgetAllowanceSectionEmptyState />
             ) : (
               <div className="space-y-2 mb-4">
@@ -135,7 +135,7 @@ export const BudgetAllowanceSettingsPage = () => {
             <h3 className="text-sm font-bold text-gray-600 dark:text-gray-700 mb-2">
               {texts.allowanceSettings.variableExpenseSectionTitle}
             </h3>
-            {expense.variableItems.length === 0 ? (
+            {expense.variableItems.length === 0 && !expense.showForm ? (
               <BudgetAllowanceSectionEmptyState />
             ) : (
               <div className="space-y-2">

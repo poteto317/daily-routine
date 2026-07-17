@@ -123,6 +123,39 @@ describe("BudgetAllowanceSettingsPage", () => {
     expect(screen.getAllByText("項目はまだありません")).toHaveLength(3);
   });
 
+  it("収入項目が0件でも作成フォーム表示中は空状態を表示しない（「＋ 新しい項目を追加」の文言と矛盾するため）", () => {
+    mockUseIncomeState.mockReturnValue(
+      createIncomeState({ items: [], showForm: true }) as never,
+    );
+    mockUseExpenseState.mockReturnValue(
+      createExpenseState({ items: [], fixedItems: [], variableItems: [] }) as never,
+    );
+
+    render(<BudgetAllowanceSettingsPage />);
+
+    // 収入セクションの空状態は非表示（支出の固定費・変動費の2件分のみ表示される）
+    expect(screen.getAllByText("項目はまだありません")).toHaveLength(2);
+  });
+
+  it("支出項目が0件でも作成フォーム表示中は空状態を表示しない（「＋ 新しい項目を追加」の文言と矛盾するため）", () => {
+    mockUseIncomeState.mockReturnValue(
+      createIncomeState({ items: [] }) as never,
+    );
+    mockUseExpenseState.mockReturnValue(
+      createExpenseState({
+        items: [],
+        fixedItems: [],
+        variableItems: [],
+        showForm: true,
+      }) as never,
+    );
+
+    render(<BudgetAllowanceSettingsPage />);
+
+    // 支出セクション（固定費・変動費）の空状態は非表示（収入の1件分のみ表示される）
+    expect(screen.getAllByText("項目はまだありません")).toHaveLength(1);
+  });
+
   it("収入セクションの追加ボタンでincome.openFormが呼ばれる", () => {
     const incomeState = createIncomeState();
     mockUseIncomeState.mockReturnValue(incomeState as never);
