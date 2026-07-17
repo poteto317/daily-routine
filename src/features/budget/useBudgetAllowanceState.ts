@@ -18,9 +18,18 @@ export const useBudgetAllowanceState = () => {
   );
 
   useEffect(() => {
+    // LOCAL_DATA_UPDATED_AT_EVENTはアプリ内のどのstorage書き込みでも発火するため、
+    // 収入・支出項目とは無関係な更新（支出の追加等）でも呼ばれる。内容が実際に
+    // 変わっていない場合は同一参照を返し、無駄な再レンダー・再計算を避ける。
     const handleLocalDataUpdated = () => {
-      setIncomeItems(getBudgetIncomeItems());
-      setExpenseItems(getBudgetExpenseItems());
+      setIncomeItems((prev) => {
+        const next = getBudgetIncomeItems();
+        return JSON.stringify(next) === JSON.stringify(prev) ? prev : next;
+      });
+      setExpenseItems((prev) => {
+        const next = getBudgetExpenseItems();
+        return JSON.stringify(next) === JSON.stringify(prev) ? prev : next;
+      });
     };
 
     window.addEventListener(

@@ -119,6 +119,47 @@ describe("useBudgetAllowanceState", () => {
     expect(result.current.monthlyAllowance.allowance).toBe(250000);
   });
 
+  it("内容が変わっていないLOCAL_DATA_UPDATED_AT_EVENTでは再レンダーしない（無関係なstorage更新による無駄な再計算を防ぐ）", () => {
+    const incomeItems = [
+      { id: "income-1", name: "給与", amount: 300000, createdAt: "2026-05-01T00:00:00.000Z" },
+    ];
+    const expenseItems = [
+      {
+        id: "expense-1",
+        name: "家賃",
+        amount: 80000,
+        kind: "fixed" as const,
+        createdAt: "2026-05-01T00:00:00.000Z",
+      },
+    ];
+    mockGetBudgetIncomeItems.mockReturnValue(incomeItems);
+    mockGetBudgetExpenseItems.mockReturnValue(expenseItems);
+
+    let renderCount = 0;
+    const { result } = renderHook(() => {
+      renderCount++;
+      return useBudgetAllowanceState();
+    });
+
+    expect(renderCount).toBe(1);
+    const monthlyAllowanceBefore = result.current.monthlyAllowance;
+
+    // LOCAL_DATA_UPDATED_AT_EVENTはアプリ内の無関係なstorage更新でも発火するため、
+    // 収入・支出項目の内容自体は変わらないケースを再現する。getBudgetIncomeItems等は
+    // storageからJSON.parseされるたびに新しい配列参照を返すが、内容は同一とする。
+    mockGetBudgetIncomeItems.mockReturnValue([...incomeItems]);
+    mockGetBudgetExpenseItems.mockReturnValue([...expenseItems]);
+
+    act(() => {
+      window.dispatchEvent(new CustomEvent(LOCAL_DATA_UPDATED_AT_EVENT));
+    });
+
+    expect(mockGetBudgetIncomeItems).toHaveBeenCalledTimes(2);
+    expect(mockGetBudgetExpenseItems).toHaveBeenCalledTimes(2);
+    expect(renderCount).toBe(1);
+    expect(result.current.monthlyAllowance).toBe(monthlyAllowanceBefore);
+  });
+
   it("アンマウント後はLOCAL_DATA_UPDATED_AT_EVENTのリスナーを解除する", () => {
     mockGetBudgetIncomeItems.mockReturnValue([]);
     mockGetBudgetExpenseItems.mockReturnValue([]);
