@@ -71,6 +71,7 @@ export const TodoListToolbar = ({
         hasCompletedItems={hasCompletedItems}
         hideCompleted={hideCompleted}
         moveCompletedToBottom={moveCompletedToBottom}
+        groupByCategory={groupByCategory}
         onToggleHideCompleted={onToggleHideCompleted}
         onToggleMoveCompletedToBottom={onToggleMoveCompletedToBottom}
       />

@@ -131,6 +131,7 @@ describe("TodoListToolbar", () => {
         hasCompletedItems: true,
         hideCompleted: true,
         moveCompletedToBottom: true,
+        groupByCategory: true,
         onToggleHideCompleted: jest.fn(),
         onToggleMoveCompletedToBottom: jest.fn(),
       };
@@ -142,6 +143,7 @@ describe("TodoListToolbar", () => {
           hasCompletedItems: true,
           hideCompleted: true,
           moveCompletedToBottom: true,
+          groupByCategory: true,
           onToggleHideCompleted: props.onToggleHideCompleted,
           onToggleMoveCompletedToBottom: props.onToggleMoveCompletedToBottom,
         }),

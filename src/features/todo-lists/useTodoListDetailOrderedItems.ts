@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { sortCompletedToBottom } from "./todoListCompletedToBottomSort";
-import { groupItemsByCategory } from "./todoListCategoryGroupSort";
+import { groupItemsByCategoryWithCompletedAtEnd } from "./todoListCategoryGroupWithCompletedAtEndSort";
 import { createTodoListDetailOrderedItemsResult } from "./todoListDetailOrderedItemsResult";
 import type { TodoCategory, TodoListItem } from "./types";
 
@@ -19,12 +19,10 @@ export const useTodoListDetailOrderedItems = ({
 }: UseTodoListDetailOrderedItemsParams) => {
   const orderedItems = useMemo(() => {
     if (groupByCategory) {
-      // カテゴリでグルーピングした上で、完了アイテムを下へ移動するソートは
-      // 各グループの内部にのみ適用する（グループを跨いでまとめると
-      // 「カテゴリごとにまとめる」目的自体が壊れるため）。
-      return groupItemsByCategory(filteredItems, categoryLookup, {
-        sortCompletedToBottomWithinGroup: moveCompletedToBottom,
-      });
+      // カテゴリグルーピング中は完了アイテムを各グループ内に留めず、常に
+      // 全体の末尾（カテゴリ別にグルーピングした状態）へ移動する。
+      // moveCompletedToBottomの状態には依存しない。
+      return groupItemsByCategoryWithCompletedAtEnd(filteredItems, categoryLookup);
     }
     return moveCompletedToBottom
       ? sortCompletedToBottom(filteredItems)
