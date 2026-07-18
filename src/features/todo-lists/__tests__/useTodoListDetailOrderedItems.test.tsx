@@ -8,13 +8,13 @@ jest.mock("../todoListCompletedToBottomSort", () => ({
   sortCompletedToBottom: jest.fn((items) => items),
 }));
 
-jest.mock("../todoListCategoryGroupSort", () => ({
-  groupItemsByCategory: jest.fn((items) => items),
+jest.mock("../todoListCategoryGroupWithCompletedAtEndSort", () => ({
+  groupItemsByCategoryWithCompletedAtEnd: jest.fn((items) => items),
 }));
 
 import { createTodoListDetailOrderedItemsResult } from "../todoListDetailOrderedItemsResult";
 import { sortCompletedToBottom } from "../todoListCompletedToBottomSort";
-import { groupItemsByCategory } from "../todoListCategoryGroupSort";
+import { groupItemsByCategoryWithCompletedAtEnd } from "../todoListCategoryGroupWithCompletedAtEndSort";
 import { useTodoListDetailOrderedItems } from "../useTodoListDetailOrderedItems";
 
 describe("useTodoListDetailOrderedItems", () => {
@@ -30,7 +30,9 @@ describe("useTodoListDetailOrderedItems", () => {
       (args) => args,
     );
     (sortCompletedToBottom as jest.Mock).mockImplementation((items) => items);
-    (groupItemsByCategory as jest.Mock).mockImplementation((items) => items);
+    (groupItemsByCategoryWithCompletedAtEnd as jest.Mock).mockImplementation(
+      (items) => items,
+    );
   });
 
   it("moveCompletedToBottom=true かつ groupByCategory=false のとき sortCompletedToBottom を適用して result に委譲する", () => {
@@ -47,7 +49,7 @@ describe("useTodoListDetailOrderedItems", () => {
     );
 
     expect(sortCompletedToBottom).toHaveBeenCalledWith(filteredItems);
-    expect(groupItemsByCategory).not.toHaveBeenCalled();
+    expect(groupItemsByCategoryWithCompletedAtEnd).not.toHaveBeenCalled();
     expect(createTodoListDetailOrderedItemsResult).toHaveBeenCalledWith({
       visibleItems: sorted,
     });
@@ -64,7 +66,7 @@ describe("useTodoListDetailOrderedItems", () => {
     );
 
     expect(sortCompletedToBottom).not.toHaveBeenCalled();
-    expect(groupItemsByCategory).not.toHaveBeenCalled();
+    expect(groupItemsByCategoryWithCompletedAtEnd).not.toHaveBeenCalled();
     expect(createTodoListDetailOrderedItemsResult).toHaveBeenCalledWith({
       visibleItems: filteredItems,
     });
@@ -93,9 +95,11 @@ describe("useTodoListDetailOrderedItems", () => {
   });
 
   describe("groupByCategory=true のとき", () => {
-    it("sortCompletedToBottom を呼ばず groupItemsByCategory へ委譲する", () => {
+    it("sortCompletedToBottom を呼ばず groupItemsByCategoryWithCompletedAtEnd へ委譲する", () => {
       const grouped = [filteredItems[1]];
-      (groupItemsByCategory as jest.Mock).mockReturnValue(grouped);
+      (groupItemsByCategoryWithCompletedAtEnd as jest.Mock).mockReturnValue(
+        grouped,
+      );
 
       renderHook(() =>
         useTodoListDetailOrderedItems({
@@ -107,17 +111,16 @@ describe("useTodoListDetailOrderedItems", () => {
       );
 
       expect(sortCompletedToBottom).not.toHaveBeenCalled();
-      expect(groupItemsByCategory).toHaveBeenCalledWith(
+      expect(groupItemsByCategoryWithCompletedAtEnd).toHaveBeenCalledWith(
         filteredItems,
         categoryLookup,
-        { sortCompletedToBottomWithinGroup: false },
       );
       expect(createTodoListDetailOrderedItemsResult).toHaveBeenCalledWith({
         visibleItems: grouped,
       });
     });
 
-    it("moveCompletedToBottomも同時にtrueの場合、グループ内完了ソートを有効にしてgroupItemsByCategoryへ委譲する（グループを跨がない）", () => {
+    it("moveCompletedToBottomの値に関わらずgroupItemsByCategoryWithCompletedAtEndへ委譲する", () => {
       renderHook(() =>
         useTodoListDetailOrderedItems({
           filteredItems,
@@ -128,10 +131,9 @@ describe("useTodoListDetailOrderedItems", () => {
       );
 
       expect(sortCompletedToBottom).not.toHaveBeenCalled();
-      expect(groupItemsByCategory).toHaveBeenCalledWith(
+      expect(groupItemsByCategoryWithCompletedAtEnd).toHaveBeenCalledWith(
         filteredItems,
         categoryLookup,
-        { sortCompletedToBottomWithinGroup: true },
       );
     });
 
@@ -147,16 +149,15 @@ describe("useTodoListDetailOrderedItems", () => {
         { initialProps: { categoryLookup } },
       );
 
-      expect(groupItemsByCategory).toHaveBeenCalledTimes(1);
+      expect(groupItemsByCategoryWithCompletedAtEnd).toHaveBeenCalledTimes(1);
 
       const nextLookup = new Map([["cat-1", { id: "cat-1" } as never]]);
       rerender({ categoryLookup: nextLookup });
 
-      expect(groupItemsByCategory).toHaveBeenCalledTimes(2);
-      expect(groupItemsByCategory).toHaveBeenLastCalledWith(
+      expect(groupItemsByCategoryWithCompletedAtEnd).toHaveBeenCalledTimes(2);
+      expect(groupItemsByCategoryWithCompletedAtEnd).toHaveBeenLastCalledWith(
         filteredItems,
         nextLookup,
-        { sortCompletedToBottomWithinGroup: false },
       );
     });
   });

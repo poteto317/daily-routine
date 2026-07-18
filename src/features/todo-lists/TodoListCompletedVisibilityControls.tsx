@@ -6,6 +6,7 @@ export type TodoListCompletedVisibilityControlsProps = {
   hasCompletedItems: boolean;
   hideCompleted: boolean;
   moveCompletedToBottom: boolean;
+  groupByCategory: boolean;
   onToggleHideCompleted: () => void;
   onToggleMoveCompletedToBottom: () => void;
 };
@@ -14,6 +15,7 @@ export const TodoListCompletedVisibilityControls = ({
   hasCompletedItems,
   hideCompleted,
   moveCompletedToBottom,
+  groupByCategory,
   onToggleHideCompleted,
   onToggleMoveCompletedToBottom,
 }: TodoListCompletedVisibilityControlsProps) => {
@@ -21,7 +23,7 @@ export const TodoListCompletedVisibilityControls = ({
 
   return (
     <>
-      {!hideCompleted && (
+      {!hideCompleted && !groupByCategory && (
         <button
           type="button"
           aria-pressed={moveCompletedToBottom}

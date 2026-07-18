@@ -1,30 +1,6 @@
 import { getItemIndentLevel } from "./todoListItemIndentLevel";
-import type { TodoList, TodoListItem } from "./types";
-
-/**
- * 親アイテムとその子（インデントが親より深いアイテム）をブロックとして扱い、
- * `startIndex` から連続する子アイテムの末尾インデックス（exclusive）を返す。
- */
-const getReorderBlockEndIndex = (
-  items: TodoListItem[],
-  startIndex: number,
-): number => {
-  if (startIndex < 0 || startIndex >= items.length) {
-    return startIndex;
-  }
-
-  const parentIndent = getItemIndentLevel(items[startIndex]);
-  let endIndex = startIndex + 1;
-
-  while (
-    endIndex < items.length &&
-    getItemIndentLevel(items[endIndex]) > parentIndent
-  ) {
-    endIndex += 1;
-  }
-
-  return endIndex;
-};
+import { getItemBlockEndIndex } from "./todoListItemBlockRange";
+import type { TodoList } from "./types";
 
 /**
  * アイテムをインデント（最大3段階）する。
@@ -94,7 +70,7 @@ export const reorderItemsInList = (
     }
 
     const items = [...list.items];
-    const blockEndIndex = getReorderBlockEndIndex(items, fromIndex);
+    const blockEndIndex = getItemBlockEndIndex(items, fromIndex);
 
     if (toIndex >= fromIndex && toIndex < blockEndIndex) {
       return list;

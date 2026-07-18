@@ -86,61 +86,15 @@ describe("groupItemsByCategory", () => {
     expect(workIds).toEqual(["work-1", "work-2", "work-3"]);
   });
 
-  describe("sortCompletedToBottomWithinGroup オプション", () => {
-    it("trueの場合、各グループ内でのみ完了アイテムが下に移動する（グループを跨がない）", () => {
-      const items = [
-        item("work-done", { categoryId: "cat-work", isCompleted: true }),
-        item("work-open", { categoryId: "cat-work" }),
-        item("private-open", { categoryId: "cat-private" }),
-        item("private-done", {
-          categoryId: "cat-private",
-          isCompleted: true,
-        }),
-      ];
+  it("完了状態に関わらずグループ内の元の順序を保つ（完了アイテムの移動は別関数の責務）", () => {
+    const items = [
+      item("work-done", { categoryId: "cat-work", isCompleted: true }),
+      item("work-open", { categoryId: "cat-work" }),
+    ];
 
-      const result = groupItemsByCategory(items, lookup, {
-        sortCompletedToBottomWithinGroup: true,
-      });
+    const result = groupItemsByCategory(items, lookup);
 
-      // cat-work グループ内: work-open が先、work-done が後
-      // cat-private グループ内: private-open が先、private-done が後
-      // グループを跨いで完了アイテムがまとまることはない
-      expect(result.map((i) => i.id)).toEqual([
-        "work-open",
-        "work-done",
-        "private-open",
-        "private-done",
-      ]);
-    });
-
-    it("未分類グループ内でも完了アイテムが下に移動する", () => {
-      const items = [
-        item("uncategorized-done", { isCompleted: true }),
-        item("uncategorized-open"),
-        item("work-1", { categoryId: "cat-work" }),
-      ];
-
-      const result = groupItemsByCategory(items, lookup, {
-        sortCompletedToBottomWithinGroup: true,
-      });
-
-      expect(result.map((i) => i.id)).toEqual([
-        "work-1",
-        "uncategorized-open",
-        "uncategorized-done",
-      ]);
-    });
-
-    it("falseまたは未指定の場合は完了状態に関わらず元の順序を保つ", () => {
-      const items = [
-        item("work-done", { categoryId: "cat-work", isCompleted: true }),
-        item("work-open", { categoryId: "cat-work" }),
-      ];
-
-      const result = groupItemsByCategory(items, lookup);
-
-      expect(result.map((i) => i.id)).toEqual(["work-done", "work-open"]);
-    });
+    expect(result.map((i) => i.id)).toEqual(["work-done", "work-open"]);
   });
 
   it("元の配列を変更しない（イミュータブル）", () => {

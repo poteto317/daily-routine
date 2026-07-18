@@ -6,6 +6,7 @@ const defaultProps = {
   hasCompletedItems: true,
   hideCompleted: false,
   moveCompletedToBottom: false,
+  groupByCategory: false,
   onToggleHideCompleted: jest.fn(),
   onToggleMoveCompletedToBottom: jest.fn(),
 };
@@ -108,6 +109,30 @@ describe("TodoListCompletedVisibilityControls", () => {
       expect(
         screen.queryByRole("button", { name: /下へ移動|元の順番/ }),
       ).not.toBeInTheDocument();
+    });
+
+    it("groupByCategory=true のとき完了済み並び替えトグルを表示しない（グルーピング中は常に末尾固定でトグルが無効化されるため）", () => {
+      render(
+        <TodoListCompletedVisibilityControls
+          {...defaultProps}
+          groupByCategory
+        />,
+      );
+      expect(
+        screen.queryByRole("button", { name: /下へ移動|元の順番/ }),
+      ).not.toBeInTheDocument();
+    });
+
+    it("groupByCategory=true でも完了済み表示/非表示トグルは表示される", () => {
+      render(
+        <TodoListCompletedVisibilityControls
+          {...defaultProps}
+          groupByCategory
+        />,
+      );
+      expect(
+        screen.getByRole("button", { name: "完了済みを表示" }),
+      ).toBeInTheDocument();
     });
 
     it("「元の順番で表示」クリックで onToggleMoveCompletedToBottom が呼ばれる", () => {
