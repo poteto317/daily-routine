@@ -288,6 +288,22 @@ describe("TodoListSortableItems", () => {
         expect(button).toBeDisabled();
       }
     });
+
+    it("sortModeActive=false のとき、ドラッグハンドル（並び替えボタン）を表示する", () => {
+      render(<TodoListSortableItems {...defaultProps} sortModeActive={false} />);
+
+      expect(
+        screen.getAllByRole("button", { name: "並び替え" }).length,
+      ).toBeGreaterThan(0);
+    });
+
+    it("sortModeActive=true のとき、機能しないドラッグハンドルを表示しない（操作可能との誤認を防止）", () => {
+      render(<TodoListSortableItems {...defaultProps} sortModeActive={true} />);
+
+      expect(
+        screen.queryByRole("button", { name: "並び替え" }),
+      ).not.toBeInTheDocument();
+    });
   });
 
   describe("DragOverlay", () => {

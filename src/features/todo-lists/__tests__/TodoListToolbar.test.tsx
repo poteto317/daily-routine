@@ -6,14 +6,7 @@ jest.mock("../TodoListCompletedVisibilityControls", () => ({
   )),
 }));
 
-jest.mock("../TodoListCategoryGroupingControls", () => ({
-  TodoListCategoryGroupingControls: jest.fn(() => (
-    <div data-testid="category-grouping-controls" />
-  )),
-}));
-
 import { TodoListCompletedVisibilityControls } from "../TodoListCompletedVisibilityControls";
-import { TodoListCategoryGroupingControls } from "../TodoListCategoryGroupingControls";
 import { TodoListToolbar } from "../TodoListToolbar";
 import type { TodoListItem } from "../types";
 
@@ -31,18 +24,13 @@ const defaultProps = {
   items: [createItem(), createItem()],
   addItemPosition: "last" as const,
   hideCompleted: false,
-  moveCompletedToBottom: false,
   showBulkColorPicker: false,
   hasCompletedItems: false,
-  hasCategories: false,
-  groupByCategory: false,
   onToggleBulkColorPicker: jest.fn(),
   onCloseBulkColorPicker: jest.fn(),
   onUpdateAllItemsBgColor: jest.fn(),
   onToggleListAddItemPosition: jest.fn(),
   onToggleHideCompleted: jest.fn(),
-  onToggleMoveCompletedToBottom: jest.fn(),
-  onToggleGroupByCategory: jest.fn(),
 };
 
 beforeEach(() => {
@@ -130,10 +118,7 @@ describe("TodoListToolbar", () => {
         ...defaultProps,
         hasCompletedItems: true,
         hideCompleted: true,
-        moveCompletedToBottom: true,
-        groupByCategory: true,
         onToggleHideCompleted: jest.fn(),
-        onToggleMoveCompletedToBottom: jest.fn(),
       };
 
       render(<TodoListToolbar {...props} />);
@@ -142,39 +127,7 @@ describe("TodoListToolbar", () => {
         expect.objectContaining({
           hasCompletedItems: true,
           hideCompleted: true,
-          moveCompletedToBottom: true,
-          groupByCategory: true,
           onToggleHideCompleted: props.onToggleHideCompleted,
-          onToggleMoveCompletedToBottom: props.onToggleMoveCompletedToBottom,
-        }),
-        undefined,
-      );
-    });
-  });
-
-  describe("TodoListCategoryGroupingControls への委譲", () => {
-    it("TodoListCategoryGroupingControls を描画する", () => {
-      render(<TodoListToolbar {...defaultProps} />);
-      expect(
-        screen.getByTestId("category-grouping-controls"),
-      ).toBeInTheDocument();
-    });
-
-    it("カテゴリグルーピング制御の props を正しく渡す", () => {
-      const props = {
-        ...defaultProps,
-        hasCategories: true,
-        groupByCategory: true,
-        onToggleGroupByCategory: jest.fn(),
-      };
-
-      render(<TodoListToolbar {...props} />);
-
-      expect(TodoListCategoryGroupingControls).toHaveBeenCalledWith(
-        expect.objectContaining({
-          hasCategories: true,
-          groupByCategory: true,
-          onToggleGroupByCategory: props.onToggleGroupByCategory,
         }),
         undefined,
       );

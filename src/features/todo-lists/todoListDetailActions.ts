@@ -1,8 +1,6 @@
 import {
   updateListAddItemPosition,
-  updateListGroupByCategory,
   updateListHideCompleted,
-  updateListMoveCompletedToBottom,
   updateListTitle,
 } from "./todoListMutations";
 import type { TodoList } from "./types";
@@ -27,16 +25,6 @@ export const updateTodoListAddItemPositionInLists = (params: {
   return updateListAddItemPosition(lists, listId, position);
 };
 
-export const updateTodoListMoveCompletedToBottomInLists = (params: {
-  lists: TodoList[];
-  listId: string;
-  moveCompletedToBottom: boolean;
-}): TodoList[] => {
-  const { lists, listId, moveCompletedToBottom } = params;
-
-  return updateListMoveCompletedToBottom(lists, listId, moveCompletedToBottom);
-};
-
 export const updateTodoListHideCompletedInLists = (params: {
   lists: TodoList[];
   listId: string;
@@ -47,12 +35,3 @@ export const updateTodoListHideCompletedInLists = (params: {
   return updateListHideCompleted(lists, listId, hideCompleted);
 };
 
-export const updateTodoListGroupByCategoryInLists = (params: {
-  lists: TodoList[];
-  listId: string;
-  groupByCategory: boolean;
-}): TodoList[] => {
-  const { lists, listId, groupByCategory } = params;
-
-  return updateListGroupByCategory(lists, listId, groupByCategory);
-};

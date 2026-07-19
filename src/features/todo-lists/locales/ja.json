@@ -30,8 +30,6 @@
     "completedCount": "{completed}/{total} 完了",
     "completedHiddenLabel": "完了済みを非表示",
     "completedVisibleLabel": "完了済みを表示",
-    "completedMovedToBottomLabel": "完了済みを下へ移動",
-    "completedOriginalOrderLabel": "元の順番で表示",
     "deleteItemConfirm": "「{title}」を削除しますか？",
     "editItemLabel": "編集",
     "selectedCount": "{count}件選択中",
@@ -46,8 +44,6 @@
     "addItemPositionLast": "末尾に追加",
     "categoryPickerLabel": "カテゴリ",
     "uncategorizedLabel": "未分類",
-    "categoryGroupedLabel": "カテゴリでグループ化中",
-    "categoryUngroupedLabel": "カテゴリでグループ化",
     "manageCategoriesLabel": "🏷️ カテゴリ管理"
   },
   "categoryManagement": {

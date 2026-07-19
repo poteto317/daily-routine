@@ -43,19 +43,11 @@ export type TodoListDetailViewProps = {
   onSetClipboard: (items: TodoListItem[]) => void;
   onClearClipboard: () => void;
   onUpdateListAddItemPosition: (listId: string, position: "last" | "first") => void;
-  onUpdateListMoveCompletedToBottom: (
-    listId: string,
-    moveCompletedToBottom: boolean,
-  ) => void;
   onUpdateListHideCompleted: (listId: string, hideCompleted: boolean) => void;
   onUpdateItemCategory: (
     listId: string,
     itemId: string,
     categoryId: string | undefined,
-  ) => void;
-  onUpdateListGroupByCategory: (
-    listId: string,
-    groupByCategory: boolean,
   ) => void;
   historyControls?: ReactNode;
 };
@@ -80,10 +72,8 @@ export const TodoListDetailView = ({
   onSetClipboard,
   onClearClipboard,
   onUpdateListAddItemPosition,
-  onUpdateListMoveCompletedToBottom,
   onUpdateListHideCompleted,
   onUpdateItemCategory,
-  onUpdateListGroupByCategory,
   historyControls,
 }: TodoListDetailViewProps) => {
   const { selection, hasClipboard, viewState, uiControllers, interactionMode, toolbar } =
@@ -101,9 +91,7 @@ export const TodoListDetailView = ({
       onReorderItems,
       onUpdateAllItemsBgColor,
       onUpdateListAddItemPosition,
-      onUpdateListMoveCompletedToBottom,
       onUpdateListHideCompleted,
-      onUpdateListGroupByCategory,
     });
 
   const {
@@ -117,8 +105,6 @@ export const TodoListDetailView = ({
 
   const {
     hideCompleted,
-    moveCompletedToBottom,
-    groupByCategory,
     categoryLookup,
     collapsedItemIds,
     editingItemId,
@@ -142,8 +128,6 @@ export const TodoListDetailView = ({
     startEditListTitle,
     toggleCollapseItem,
     toggleHideCompleted,
-    toggleMoveCompletedToBottom,
-    toggleGroupByCategory,
   } = viewState;
 
   const {
@@ -206,18 +190,13 @@ export const TodoListDetailView = ({
             items={list.items}
             addItemPosition={list.addItemPosition}
             hideCompleted={hideCompleted}
-            moveCompletedToBottom={moveCompletedToBottom}
             showBulkColorPicker={showBulkColorPicker}
             hasCompletedItems={hasCompletedItems}
-            hasCategories={categories.length > 0}
-            groupByCategory={groupByCategory}
             onToggleBulkColorPicker={toggleBulkColorPicker}
             onCloseBulkColorPicker={closeBulkColorPicker}
             onUpdateAllItemsBgColor={handleUpdateAllItemsBgColor}
             onToggleListAddItemPosition={handleToggleAddItemPosition}
             onToggleHideCompleted={toggleHideCompleted}
-            onToggleMoveCompletedToBottom={toggleMoveCompletedToBottom}
-            onToggleGroupByCategory={toggleGroupByCategory}
             historyControls={historyControls}
           />
 
