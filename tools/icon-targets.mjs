@@ -9,9 +9,17 @@ import iconPipelineBuildersModule from "./iconPipelineBuilders.js";
 const { buildIconPipeline } = iconPipelineBuildersModule;
 
 export const ICON_TARGETS = [
+  { file: "icon-48.png", size: 48 },
+  { file: "icon-72.png", size: 72 },
+  { file: "icon-96.png", size: 96 },
+  { file: "icon-128.png", size: 128 },
+  { file: "icon-144.png", size: 144 },
+  { file: "icon-152.png", size: 152 },
   { file: "icon-192.png", size: 192 },
+  { file: "icon-384.png", size: 384 },
   { file: "icon-512.png", size: 512 },
   { file: "icon-maskable-192.png", size: 192, maskable: true },
+  { file: "icon-maskable-384.png", size: 384, maskable: true },
   { file: "icon-maskable-512.png", size: 512, maskable: true },
   { file: "apple-touch-icon.png", size: 180, flatten: true },
 ];
