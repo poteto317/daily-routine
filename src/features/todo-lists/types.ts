@@ -26,12 +26,8 @@ export interface TodoList {
   defaultItemBgColor?: TodoItemBgColorValue;
   /** 新規アイテムの追加位置（未設定 or 'last' = 末尾、'first' = 先頭） */
   addItemPosition?: "last" | "first";
-  /** 完了済みアイテムを下へ移動するか（未設定 = false） */
-  moveCompletedToBottom?: boolean;
   /** 完了済みアイテムを非表示にするか（未設定 = false） */
   hideCompleted?: boolean;
-  /** アイテムをカテゴリでグルーピング表示するか（未設定 = false） */
-  groupByCategory?: boolean;
 }
 
 /** Todoアイテムのカテゴリ */

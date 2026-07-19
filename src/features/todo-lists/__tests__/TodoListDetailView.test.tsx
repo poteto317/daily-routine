@@ -67,10 +67,8 @@ const defaultProps = {
   onSetClipboard: jest.fn(),
   onClearClipboard: jest.fn(),
   onUpdateListAddItemPosition: jest.fn(),
-  onUpdateListMoveCompletedToBottom: jest.fn(),
   onUpdateListHideCompleted: jest.fn(),
   onUpdateItemCategory: jest.fn(),
-  onUpdateListGroupByCategory: jest.fn(),
 };
 
 const defaultCompositionMock = {
@@ -85,7 +83,6 @@ const defaultCompositionMock = {
   hasClipboard: false,
   viewState: {
     hideCompleted: false,
-    moveCompletedToBottom: false,
     categoryLookup: new Map(),
     collapsedItemIds: new Set<string>(),
     editingItemId: null,
@@ -109,7 +106,6 @@ const defaultCompositionMock = {
     startEditListTitle: jest.fn(),
     toggleCollapseItem: jest.fn(),
     toggleHideCompleted: jest.fn(),
-    toggleMoveCompletedToBottom: jest.fn(),
   },
   uiControllers: {
     colorPicker: {
@@ -180,10 +176,7 @@ describe("TodoListDetailView", () => {
       onReorderItems: defaultProps.onReorderItems,
       onUpdateAllItemsBgColor: defaultProps.onUpdateAllItemsBgColor,
       onUpdateListAddItemPosition: defaultProps.onUpdateListAddItemPosition,
-      onUpdateListMoveCompletedToBottom:
-        defaultProps.onUpdateListMoveCompletedToBottom,
       onUpdateListHideCompleted: defaultProps.onUpdateListHideCompleted,
-      onUpdateListGroupByCategory: defaultProps.onUpdateListGroupByCategory,
     });
   });
 
@@ -218,13 +211,12 @@ describe("TodoListDetailView", () => {
   });
 
   describe("TodoListToolbar への委譲", () => {
-    it("viewState の hideCompleted・moveCompletedToBottom を TodoListToolbar に渡す", () => {
+    it("viewState の hideCompleted を TodoListToolbar に渡す", () => {
       const composition = {
         ...defaultCompositionMock,
         viewState: {
           ...defaultCompositionMock.viewState,
           hideCompleted: true,
-          moveCompletedToBottom: true,
         },
       };
       (useTodoListDetailViewComposition as jest.Mock).mockReturnValue(composition);
@@ -234,51 +226,7 @@ describe("TodoListDetailView", () => {
       expect(TodoListToolbar).toHaveBeenCalledWith(
         expect.objectContaining({
           hideCompleted: true,
-          moveCompletedToBottom: true,
         }),
-        undefined,
-      );
-    });
-
-    it("viewState の groupByCategory を TodoListToolbar に渡す", () => {
-      const composition = {
-        ...defaultCompositionMock,
-        viewState: {
-          ...defaultCompositionMock.viewState,
-          groupByCategory: true,
-        },
-      };
-      (useTodoListDetailViewComposition as jest.Mock).mockReturnValue(composition);
-
-      render(<TodoListDetailView {...defaultProps} />);
-
-      expect(TodoListToolbar).toHaveBeenCalledWith(
-        expect.objectContaining({ groupByCategory: true }),
-        undefined,
-      );
-    });
-
-    it("categories.length > 0 のとき TodoListToolbar に hasCategories=true を渡す", () => {
-      render(
-        <TodoListDetailView
-          {...defaultProps}
-          categories={[
-            { id: "cat-1", name: "仕事", createdAt: "" },
-          ]}
-        />,
-      );
-
-      expect(TodoListToolbar).toHaveBeenCalledWith(
-        expect.objectContaining({ hasCategories: true }),
-        undefined,
-      );
-    });
-
-    it("categoriesが空のとき TodoListToolbar に hasCategories=false を渡す", () => {
-      render(<TodoListDetailView {...defaultProps} categories={[]} />);
-
-      expect(TodoListToolbar).toHaveBeenCalledWith(
-        expect.objectContaining({ hasCategories: false }),
         undefined,
       );
     });

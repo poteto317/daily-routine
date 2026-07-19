@@ -505,7 +505,7 @@ describe("TodoListsPage", () => {
     });
   });
 
-  it("スワイプでもインデントできる", async () => {
+  it("スワイプではインデントできない（表示順が常に固定ソートされ生配列と乖離しうるため常時無効）", () => {
     jest.useFakeTimers();
     mockGetTodoLists.mockReturnValue([baseList]);
     mockGetSelectedTodoListId.mockReturnValue("list-1");
@@ -527,16 +527,54 @@ describe("TodoListsPage", () => {
       jest.advanceTimersByTime(300);
     });
 
-    await waitFor(() => {
-      expect(mockSaveTodoListsToLocal).toHaveBeenCalledWith([
-        expect.objectContaining({
-          id: "list-1",
-          items: expect.arrayContaining([
-            expect.objectContaining({ id: "item-2", indent: 1 }),
-          ]),
-        }),
-      ]);
-    });
+    // インデント保存を含め、スワイプ操作によるいかなる永続化も発生しないことを検証する
+    // （not.toHaveBeenCalledWithだけではスワイプ配線自体が壊れた場合も通ってしまうため、
+    // 呼び出しゼロを直接検証する）
+    expect(mockSaveTodoListsToLocal).not.toHaveBeenCalled();
+  });
+
+  it("表示順は常に未完了→完了済みの固定ソートになる（生配列で完了が先頭でも表示は末尾）", () => {
+    mockGetTodoLists.mockReturnValue([
+      {
+        ...baseList,
+        items: [
+          {
+            id: "item-2",
+            title: "Done Task",
+            isCompleted: true,
+            createdAt: "2026-03-07T00:00:00.000Z",
+          },
+          {
+            id: "item-1",
+            title: "Task 1",
+            isCompleted: false,
+            createdAt: "2026-03-07T00:00:00.000Z",
+          },
+        ],
+      },
+    ]);
+    mockGetSelectedTodoListId.mockReturnValue("list-1");
+
+    render(<TodoListsPage />);
+
+    const renderedItems = screen.getAllByRole("listitem");
+    const titles = renderedItems.map((li) => li.textContent ?? "");
+    const task1Index = titles.findIndex((t) => t.includes("Task 1"));
+    const doneIndex = titles.findIndex((t) => t.includes("Done Task"));
+    expect(task1Index).toBeGreaterThanOrEqual(0);
+    expect(doneIndex).toBeGreaterThanOrEqual(0);
+    expect(task1Index).toBeLessThan(doneIndex);
+  });
+
+  it("ドラッグハンドル（並び替えボタン）は表示されない（DnDが常時無効のため）", () => {
+    mockGetTodoLists.mockReturnValue([baseList]);
+    mockGetSelectedTodoListId.mockReturnValue("list-1");
+
+    render(<TodoListsPage />);
+
+    expect(
+      screen.queryByRole("button", { name: "並び替え" }),
+    ).not.toBeInTheDocument();
   });
 
   it("詳細リストが消えた場合は空状態へフォールバックする", () => {

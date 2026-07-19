@@ -7,8 +7,6 @@ import {
   toggleTodoItemAndPersist,
   updateTodoItemTitleAndPersist,
   updateTodoListHideCompletedAndPersist,
-  updateTodoListMoveCompletedToBottomAndPersist,
-  updateTodoListGroupByCategoryAndPersist,
 } from "../pageStateActions";
 
 const baseList: TodoList = {
@@ -195,20 +193,6 @@ describe("todo-lists pageStateActions", () => {
     expect(nextLists[0].items[1].title).toBe("Task 2");
   });
 
-  it("moveCompletedToBottom 更新後に永続化する", () => {
-    const persist = jest.fn();
-
-    const nextLists = updateTodoListMoveCompletedToBottomAndPersist({
-      lists: [baseList],
-      listId: "list-1",
-      moveCompletedToBottom: true,
-      persist,
-    });
-
-    expect(nextLists[0].moveCompletedToBottom).toBe(true);
-    expect(persist).toHaveBeenCalledWith(nextLists);
-  });
-
   it("hideCompleted 更新後に永続化する", () => {
     const persist = jest.fn();
 
@@ -220,20 +204,6 @@ describe("todo-lists pageStateActions", () => {
     });
 
     expect(nextLists[0].hideCompleted).toBe(true);
-    expect(persist).toHaveBeenCalledWith(nextLists);
-  });
-
-  it("groupByCategory 更新後に永続化する", () => {
-    const persist = jest.fn();
-
-    const nextLists = updateTodoListGroupByCategoryAndPersist({
-      lists: [baseList],
-      listId: "list-1",
-      groupByCategory: true,
-      persist,
-    });
-
-    expect(nextLists[0].groupByCategory).toBe(true);
     expect(persist).toHaveBeenCalledWith(nextLists);
   });
 });

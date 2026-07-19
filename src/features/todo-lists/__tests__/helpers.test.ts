@@ -7,11 +7,8 @@ import {
   toggleItemInList,
   updateListAddItemPosition,
   updateListHideCompleted,
-  updateListMoveCompletedToBottom,
-  updateListGroupByCategory,
 } from "../helpers";
 import { getItemIndentLevel } from "../todoListItemIndentLevel";
-import { sortCompletedToBottom } from "../todoListCompletedToBottomSort";
 import type { TodoList, TodoListItem } from "../types";
 
 jest.mock("../todoListItemIndentLevel", () => ({
@@ -133,30 +130,6 @@ describe("todo list helpers", () => {
     expect(result[1].addItemPosition).toBe("first");
   });
 
-  it("updateListMoveCompletedToBottom でリストの moveCompletedToBottom を更新する", () => {
-    const list = createList();
-
-    const result = updateListMoveCompletedToBottom([list], "list-1", true);
-
-    expect(result[0].moveCompletedToBottom).toBe(true);
-    expect(result[0].updatedAt).toBe("2026-03-07T12:00:00.000Z");
-  });
-
-  it("updateListMoveCompletedToBottom は対象外のリストを変更しない", () => {
-    const list1 = createList({ id: "list-1" });
-    const list2 = createList({ id: "list-2", moveCompletedToBottom: true });
-
-    const result = updateListMoveCompletedToBottom(
-      [list1, list2],
-      "list-1",
-      true,
-    );
-
-    expect(result[0].moveCompletedToBottom).toBe(true);
-    expect(result[1].moveCompletedToBottom).toBe(true);
-    expect(result[1]).toBe(list2);
-  });
-
   it("updateListHideCompleted でリストの hideCompleted を更新する", () => {
     const list = createList();
 
@@ -173,25 +146,6 @@ describe("todo list helpers", () => {
     const result = updateListHideCompleted([list1, list2], "list-1", true);
 
     expect(result[0].hideCompleted).toBe(true);
-    expect(result[1]).toBe(list2);
-  });
-
-  it("updateListGroupByCategory でリストの groupByCategory を更新する", () => {
-    const list = createList();
-
-    const result = updateListGroupByCategory([list], "list-1", true);
-
-    expect(result[0].groupByCategory).toBe(true);
-    expect(result[0].updatedAt).toBe("2026-03-07T12:00:00.000Z");
-  });
-
-  it("updateListGroupByCategory は対象外のリストを変更しない", () => {
-    const list1 = createList({ id: "list-1" });
-    const list2 = createList({ id: "list-2", groupByCategory: true });
-
-    const result = updateListGroupByCategory([list1, list2], "list-1", true);
-
-    expect(result[0].groupByCategory).toBe(true);
     expect(result[1]).toBe(list2);
   });
 
@@ -284,19 +238,16 @@ describe("todo list helpers", () => {
     ]);
   });
 
-  describe("表示順とデータ順が乖離する場合の並び替え（reorderItemsInList / sortCompletedToBottom の組み合わせ挙動）", () => {
+  describe("表示順とデータ順が乖離する場合の並び替え（reorderItemsInList の純粋関数としての挙動）", () => {
     /**
      * dnd-kit の handleDragEnd と同じ方式（表示中のアイテムIDを生配列上で
      * findIndex する）でドラッグ操作をシミュレートするヘルパー。
      *
-     * 注意: このdescribeブロックの moveCompletedToBottom 関連のテストは
-     * reorderItemsInList と sortCompletedToBottom という純粋関数の組み合わせ挙動を
-     * 検証するものであり、UI経由での到達可能性を保証するものではない。
-     * 実際には useTodoListInteractionMode.ts で moveCompletedToBottom=true かつ
-     * hideCompleted=false のときは DnD 自体が無効化されており
-     * （完了状態の異なる親子ブロックの再構造化を防止するため。後述の
-     * 「完了状態の異なる親子ブロックは並び替えで再構造化されうる」テストを参照）、
+     * 注意: 表示順は常に固定ソート（未完了→完了、カテゴリ別）されるため、
+     * useTodoListInteractionMode.ts で DnD は常時無効化されており、
      * これらのシナリオはドラッグ操作としては現状発生しない。
+     * reorderItemsInList 自体は将来の再設計余地のため温存されているので、
+     * その純粋関数としての不変条件（ブロック移動・データ非破損）を検証する。
      */
     const simulateDrag = (
       list: TodoList,
@@ -308,7 +259,7 @@ describe("todo list helpers", () => {
       return reorderItemsInList([list], "list-1", fromIndex, toIndex)[0];
     };
 
-    it("完了状態の異なる親子ブロックは、同一完了状態同士のドラッグでも並び替えで再構造化されうる（既知の制約。このためmoveCompletedToBottom表示中はDnDを無効化している）", () => {
+    it("完了状態の異なる親子ブロックは、同一完了状態同士のドラッグでも並び替えで再構造化されうる（既知の制約。DnDを常時無効化している理由の一つ）", () => {
       const items = [
         createItem({ id: "parent", title: "Parent" }),
         createItem({
@@ -338,22 +289,6 @@ describe("todo list helpers", () => {
       expect(updated.items[2].id).toBe("child");
     });
 
-    it("moveCompletedToBottom 表示中に未完了アイテム同士をドラッグすると表示上も意図通りに入れ替わる", () => {
-      const items = [
-        createItem({ id: "a", title: "A" }),
-        createItem({ id: "b", title: "B", isCompleted: true }),
-        createItem({ id: "c", title: "C" }),
-        createItem({ id: "d", title: "D" }),
-      ];
-      const list = createList({ items });
-      // 表示順（完了を下へ）: [A, C, D, B]
-      // D を C の前にドラッグする操作をシミュレート
-      const updated = simulateDrag(list, "d", "c");
-
-      const displayAfter = sortCompletedToBottom(updated.items);
-      expect(displayAfter.map((i) => i.id)).toEqual(["a", "d", "c", "b"]);
-    });
-
     it("hideCompleted 表示中に非表示アイテムを巻き込まずに並び替えても非表示アイテムは失われない（生配列上の並び位置自体は変わりうる）", () => {
       const items = [
         createItem({ id: "a", title: "A" }),
@@ -381,7 +316,6 @@ describe("todo list helpers", () => {
         createItem({ id: "d", title: "D", isCompleted: true }),
       ];
       const list = createList({ items });
-      // moveCompletedToBottom 表示: [A, C, B, D]
       // A（未完了）を D（完了、末尾）の位置へドラッグ
       const updated = simulateDrag(list, "a", "d");
 
@@ -392,7 +326,7 @@ describe("todo list helpers", () => {
       );
     });
 
-    it("moveCompletedToBottom 表示中でも親子ブロックはまとめて移動する", () => {
+    it("完了アイテムが混在していても親子ブロックはまとめて移動する", () => {
       const items = [
         createItem({ id: "parent", title: "Parent" }),
         createItem({ id: "child", title: "Child", indent: 1 }),

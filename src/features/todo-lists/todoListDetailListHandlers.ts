@@ -4,9 +4,7 @@ import { deleteTodoListAndPersist } from "./todoListDeletePersistActions";
 import { updateTodoListTitleAndPersist } from "./todoListTitleUpdatePersistAction";
 import {
   updateTodoListAddItemPositionAndPersist,
-  updateTodoListGroupByCategoryAndPersist,
   updateTodoListHideCompletedAndPersist,
-  updateTodoListMoveCompletedToBottomAndPersist,
 } from "./pageStateActions";
 
 type TodoListsHandlerArgs = {
@@ -56,20 +54,6 @@ export const createUpdateListAddItemPositionHandler = ({
   };
 };
 
-export const createUpdateListMoveCompletedToBottomHandler = ({
-  lists,
-  persist,
-}: TodoListsHandlerArgs) => {
-  return (listId: string, moveCompletedToBottom: boolean) => {
-    updateTodoListMoveCompletedToBottomAndPersist({
-      lists,
-      listId,
-      moveCompletedToBottom,
-      persist,
-    });
-  };
-};
-
 export const createUpdateListHideCompletedHandler = ({
   lists,
   persist,
@@ -84,16 +68,3 @@ export const createUpdateListHideCompletedHandler = ({
   };
 };
 
-export const createUpdateListGroupByCategoryHandler = ({
-  lists,
-  persist,
-}: TodoListsHandlerArgs) => {
-  return (listId: string, groupByCategory: boolean) => {
-    updateTodoListGroupByCategoryAndPersist({
-      lists,
-      listId,
-      groupByCategory,
-      persist,
-    });
-  };
-};

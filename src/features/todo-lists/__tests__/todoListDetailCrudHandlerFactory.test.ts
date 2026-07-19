@@ -25,9 +25,7 @@ jest.mock("../todoListDetailListHandlers", () => ({
   createDeleteTodoListHandler: jest.fn(),
   createUpdateListTitleHandler: jest.fn(),
   createUpdateListAddItemPositionHandler: jest.fn(),
-  createUpdateListMoveCompletedToBottomHandler: jest.fn(),
   createUpdateListHideCompletedHandler: jest.fn(),
-  createUpdateListGroupByCategoryHandler: jest.fn(),
 }));
 
 import {
@@ -49,9 +47,7 @@ import { createUpdateTodoItemCategoryHandler } from "../todoListDetailCategoryHa
 import {
   createDeleteTodoListHandler,
   createUpdateListAddItemPositionHandler,
-  createUpdateListGroupByCategoryHandler,
   createUpdateListHideCompletedHandler,
-  createUpdateListMoveCompletedToBottomHandler,
   createUpdateListTitleHandler,
 } from "../todoListDetailListHandlers";
 import type { TodoList } from "../types";
@@ -81,9 +77,7 @@ describe("todoListDetailCrudHandlerFactory", () => {
     const onUpdateItemTitle = jest.fn();
     const onUpdateListTitle = jest.fn();
     const onUpdateListAddItemPosition = jest.fn();
-    const onUpdateListMoveCompletedToBottom = jest.fn();
     const onUpdateListHideCompleted = jest.fn();
-    const onUpdateListGroupByCategory = jest.fn();
     const onUpdateItemBgColor = jest.fn();
     const onUpdateAllItemsBgColor = jest.fn();
     const onUpdateItemCategory = jest.fn();
@@ -117,14 +111,8 @@ describe("todoListDetailCrudHandlerFactory", () => {
     (createUpdateListAddItemPositionHandler as jest.Mock).mockReturnValue(
       onUpdateListAddItemPosition,
     );
-    (createUpdateListMoveCompletedToBottomHandler as jest.Mock).mockReturnValue(
-      onUpdateListMoveCompletedToBottom,
-    );
     (createUpdateListHideCompletedHandler as jest.Mock).mockReturnValue(
       onUpdateListHideCompleted,
-    );
-    (createUpdateListGroupByCategoryHandler as jest.Mock).mockReturnValue(
-      onUpdateListGroupByCategory,
     );
     (createCutTodoItemsHandler as jest.Mock).mockReturnValue(onCutItems);
     (createPasteTodoItemsHandler as jest.Mock).mockReturnValue(onPasteItems);
@@ -152,9 +140,7 @@ describe("todoListDetailCrudHandlerFactory", () => {
       onUpdateItemTitle,
       onUpdateListTitle,
       onUpdateListAddItemPosition,
-      onUpdateListMoveCompletedToBottom,
       onUpdateListHideCompleted,
-      onUpdateListGroupByCategory,
       onUpdateItemBgColor,
       onUpdateAllItemsBgColor,
       onUpdateItemCategory,
@@ -219,15 +205,7 @@ describe("todoListDetailCrudHandlerFactory", () => {
       lists: [list],
       persist,
     });
-    expect(createUpdateListMoveCompletedToBottomHandler).toHaveBeenCalledWith({
-      lists: [list],
-      persist,
-    });
     expect(createUpdateListHideCompletedHandler).toHaveBeenCalledWith({
-      lists: [list],
-      persist,
-    });
-    expect(createUpdateListGroupByCategoryHandler).toHaveBeenCalledWith({
       lists: [list],
       persist,
     });

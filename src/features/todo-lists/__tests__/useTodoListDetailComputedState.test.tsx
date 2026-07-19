@@ -8,14 +8,6 @@ jest.mock("../useTodoListDetailCollapsedItems", () => ({
   useTodoListDetailCollapsedItems: jest.fn(),
 }));
 
-jest.mock("../useTodoListDetailItemOrder", () => ({
-  useTodoListDetailItemOrder: jest.fn(),
-}));
-
-jest.mock("../useTodoListDetailGroupByCategory", () => ({
-  useTodoListDetailGroupByCategory: jest.fn(),
-}));
-
 jest.mock("../useTodoListDetailProgress", () => ({
   useTodoListDetailProgress: jest.fn(),
 }));
@@ -35,8 +27,6 @@ jest.mock("../todoListDetailComputedStateResult", () => ({
 import { createTodoListDetailComputedStateResult } from "../todoListDetailComputedStateResult";
 import { useTodoListDetailCollapsedItems } from "../useTodoListDetailCollapsedItems";
 import { useTodoListDetailHideCompleted } from "../useTodoListDetailHideCompleted";
-import { useTodoListDetailItemOrder } from "../useTodoListDetailItemOrder";
-import { useTodoListDetailGroupByCategory } from "../useTodoListDetailGroupByCategory";
 import { useTodoListDetailProgress } from "../useTodoListDetailProgress";
 import { useTodoListDetailVisibleItems } from "../useTodoListDetailVisibleItems";
 import { useTodoListDetailOrderedItems } from "../useTodoListDetailOrderedItems";
@@ -78,14 +68,6 @@ describe("useTodoListDetailComputedState", () => {
       collapsedItemIds: new Set<string>(),
       toggleCollapseItem: jest.fn(),
     });
-    (useTodoListDetailItemOrder as jest.Mock).mockReturnValue({
-      moveCompletedToBottom: false,
-      toggleMoveCompletedToBottom: jest.fn(),
-    });
-    (useTodoListDetailGroupByCategory as jest.Mock).mockReturnValue({
-      groupByCategory: false,
-      toggleGroupByCategory: jest.fn(),
-    });
     (useTodoListDetailProgress as jest.Mock).mockReturnValue({
       progress: { completed: 1, total: 2, percentage: 50 },
     });
@@ -101,16 +83,12 @@ describe("useTodoListDetailComputedState", () => {
   });
 
   it("独立した各フックを正しい引数で呼ぶ", () => {
-    const onUpdateListMoveCompletedToBottom = jest.fn();
     const onUpdateListHideCompleted = jest.fn();
-    const onUpdateListGroupByCategory = jest.fn();
     renderHook(() =>
       useTodoListDetailComputedState({
         list,
         categories,
-        onUpdateListMoveCompletedToBottom,
         onUpdateListHideCompleted,
-        onUpdateListGroupByCategory,
       }),
     );
 
@@ -119,14 +97,6 @@ describe("useTodoListDetailComputedState", () => {
       onUpdateListHideCompleted,
     });
     expect(useTodoListDetailCollapsedItems).toHaveBeenCalledWith();
-    expect(useTodoListDetailItemOrder).toHaveBeenCalledWith({
-      list,
-      onUpdateListMoveCompletedToBottom,
-    });
-    expect(useTodoListDetailGroupByCategory).toHaveBeenCalledWith({
-      list,
-      onUpdateListGroupByCategory,
-    });
     expect(useTodoListDetailProgress).toHaveBeenCalledWith({ list });
   });
 
@@ -135,9 +105,7 @@ describe("useTodoListDetailComputedState", () => {
       useTodoListDetailComputedState({
         list,
         categories,
-        onUpdateListMoveCompletedToBottom: jest.fn(),
         onUpdateListHideCompleted: jest.fn(),
-        onUpdateListGroupByCategory: jest.fn(),
       }),
     );
 
@@ -148,21 +116,17 @@ describe("useTodoListDetailComputedState", () => {
     });
   });
 
-  it("useTodoListDetailOrderedItems に moveCompletedToBottom・groupByCategory・categoryLookup を渡す", () => {
+  it("useTodoListDetailOrderedItems に filteredItems と categoryLookup を渡す（トグルフラグは存在しない）", () => {
     renderHook(() =>
       useTodoListDetailComputedState({
         list,
         categories,
-        onUpdateListMoveCompletedToBottom: jest.fn(),
         onUpdateListHideCompleted: jest.fn(),
-        onUpdateListGroupByCategory: jest.fn(),
       }),
     );
 
     expect(useTodoListDetailOrderedItems).toHaveBeenCalledWith({
       filteredItems: list.items,
-      moveCompletedToBottom: false,
-      groupByCategory: false,
       categoryLookup: expect.any(Map),
     });
   });
@@ -172,9 +136,7 @@ describe("useTodoListDetailComputedState", () => {
       useTodoListDetailComputedState({
         list,
         categories,
-        onUpdateListMoveCompletedToBottom: jest.fn(),
         onUpdateListHideCompleted: jest.fn(),
-        onUpdateListGroupByCategory: jest.fn(),
       }),
     );
 
@@ -182,17 +144,13 @@ describe("useTodoListDetailComputedState", () => {
     expect(call.categoryLookup.get("cat-1")).toEqual(categories[0]);
   });
 
-  it("6つの独立フックを合成して result に委譲する", () => {
-    const onUpdateListMoveCompletedToBottom = jest.fn();
+  it("独立フックを合成して result に委譲する", () => {
     const onUpdateListHideCompleted = jest.fn();
-    const onUpdateListGroupByCategory = jest.fn();
     const { result } = renderHook(() =>
       useTodoListDetailComputedState({
         list,
         categories,
-        onUpdateListMoveCompletedToBottom,
         onUpdateListHideCompleted,
-        onUpdateListGroupByCategory,
       }),
     );
 
@@ -206,16 +164,6 @@ describe("useTodoListDetailComputedState", () => {
         collapsedItemIds: expect.any(Set),
         toggleCollapseItem: (useTodoListDetailCollapsedItems as jest.Mock).mock
           .results[0].value.toggleCollapseItem,
-      },
-      detailItemOrder: {
-        moveCompletedToBottom: false,
-        toggleMoveCompletedToBottom: (useTodoListDetailItemOrder as jest.Mock)
-          .mock.results[0].value.toggleMoveCompletedToBottom,
-      },
-      detailGroupByCategory: {
-        groupByCategory: false,
-        toggleGroupByCategory: (useTodoListDetailGroupByCategory as jest.Mock)
-          .mock.results[0].value.toggleGroupByCategory,
       },
       detailProgress: {
         progress: { completed: 1, total: 2, percentage: 50 },

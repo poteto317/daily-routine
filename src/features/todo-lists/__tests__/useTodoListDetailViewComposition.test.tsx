@@ -56,15 +56,11 @@ const defaultParams = {
   onReorderItems: jest.fn(),
   onUpdateAllItemsBgColor: jest.fn(),
   onUpdateListAddItemPosition: jest.fn(),
-  onUpdateListMoveCompletedToBottom: jest.fn(),
   onUpdateListHideCompleted: jest.fn(),
-  onUpdateListGroupByCategory: jest.fn(),
 };
 
 const defaultViewStateMock = {
   hideCompleted: false,
-  moveCompletedToBottom: false,
-  groupByCategory: false,
   collapsedItemIds: new Set<string>(),
   editingItemId: null,
   editingItemTitle: "",
@@ -87,7 +83,6 @@ const defaultViewStateMock = {
   startEditListTitle: jest.fn(),
   toggleCollapseItem: jest.fn(),
   toggleHideCompleted: jest.fn(),
-  toggleMoveCompletedToBottom: jest.fn(),
 };
 
 const defaultColorPickerMock = {
@@ -182,10 +177,18 @@ describe("useTodoListDetailViewComposition", () => {
       onAddItem: defaultParams.onAddItem,
       onUpdateItemTitle: defaultParams.onUpdateItemTitle,
       onUpdateListTitle: defaultParams.onUpdateListTitle,
-      onUpdateListMoveCompletedToBottom:
-        defaultParams.onUpdateListMoveCompletedToBottom,
       onUpdateListHideCompleted: defaultParams.onUpdateListHideCompleted,
-      onUpdateListGroupByCategory: defaultParams.onUpdateListGroupByCategory,
+    });
+  });
+
+  it("useTodoListInteractionMode を listId/items/ハンドラのみで呼ぶ（トグルフラグは渡さない）", () => {
+    renderHook(() => useTodoListDetailViewComposition(defaultParams));
+
+    expect(useTodoListInteractionMode).toHaveBeenCalledWith({
+      listId: "list-1",
+      items: list.items,
+      onAddItem: defaultParams.onAddItem,
+      onReorderItems: defaultParams.onReorderItems,
     });
   });
 
@@ -195,58 +198,6 @@ describe("useTodoListDetailViewComposition", () => {
     expect(useTodoListDetailUIControllers).toHaveBeenCalled();
   });
 
-  it("useTodoListInteractionMode を viewState の moveCompletedToBottom/hideCompleted/groupByCategory とともに呼ぶ", () => {
-    renderHook(() => useTodoListDetailViewComposition(defaultParams));
-
-    expect(useTodoListInteractionMode).toHaveBeenCalledWith({
-      listId: "list-1",
-      items: list.items,
-      onAddItem: defaultParams.onAddItem,
-      onReorderItems: defaultParams.onReorderItems,
-      moveCompletedToBottom: false,
-      hideCompleted: false,
-      groupByCategory: false,
-    });
-  });
-
-  it("viewState が moveCompletedToBottom=true のとき useTodoListInteractionMode に伝播する", () => {
-    (useTodoListDetailViewState as jest.Mock).mockReturnValue({
-      ...defaultViewStateMock,
-      moveCompletedToBottom: true,
-    });
-
-    renderHook(() => useTodoListDetailViewComposition(defaultParams));
-
-    expect(useTodoListInteractionMode).toHaveBeenCalledWith(
-      expect.objectContaining({ moveCompletedToBottom: true }),
-    );
-  });
-
-  it("viewState が hideCompleted=true のとき useTodoListInteractionMode に伝播する", () => {
-    (useTodoListDetailViewState as jest.Mock).mockReturnValue({
-      ...defaultViewStateMock,
-      hideCompleted: true,
-    });
-
-    renderHook(() => useTodoListDetailViewComposition(defaultParams));
-
-    expect(useTodoListInteractionMode).toHaveBeenCalledWith(
-      expect.objectContaining({ hideCompleted: true }),
-    );
-  });
-
-  it("viewState が groupByCategory=true のとき useTodoListInteractionMode に伝播する", () => {
-    (useTodoListDetailViewState as jest.Mock).mockReturnValue({
-      ...defaultViewStateMock,
-      groupByCategory: true,
-    });
-
-    renderHook(() => useTodoListDetailViewComposition(defaultParams));
-
-    expect(useTodoListInteractionMode).toHaveBeenCalledWith(
-      expect.objectContaining({ groupByCategory: true }),
-    );
-  });
 
   describe("hasClipboard の導出", () => {
     it("clipboardItems が空のとき hasClipboard=false をトップレベルで返す", () => {

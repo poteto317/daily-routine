@@ -38,10 +38,8 @@ describe("useTodoListDetailViewState", () => {
         onAddItem: jest.fn(),
         onUpdateItemTitle: jest.fn(),
         onUpdateListTitle: jest.fn(),
-        onUpdateListMoveCompletedToBottom: jest.fn(),
         onUpdateListHideCompleted: jest.fn(),
         categories: [],
-        onUpdateListGroupByCategory: jest.fn(),
       }),
     );
 
@@ -59,10 +57,8 @@ describe("useTodoListDetailViewState", () => {
         onAddItem: jest.fn(),
         onUpdateItemTitle: jest.fn(),
         onUpdateListTitle: jest.fn(),
-        onUpdateListMoveCompletedToBottom: jest.fn(),
         onUpdateListHideCompleted,
         categories: [],
-        onUpdateListGroupByCategory: jest.fn(),
       }),
     );
 
@@ -83,10 +79,8 @@ describe("useTodoListDetailViewState", () => {
         onAddItem: jest.fn(),
         onUpdateItemTitle,
         onUpdateListTitle: jest.fn(),
-        onUpdateListMoveCompletedToBottom: jest.fn(),
         onUpdateListHideCompleted: jest.fn(),
         categories: [],
-        onUpdateListGroupByCategory: jest.fn(),
       }),
     );
 
@@ -121,10 +115,8 @@ describe("useTodoListDetailViewState", () => {
         onAddItem: jest.fn(),
         onUpdateItemTitle: jest.fn(),
         onUpdateListTitle,
-        onUpdateListMoveCompletedToBottom: jest.fn(),
         onUpdateListHideCompleted: jest.fn(),
         categories: [],
-        onUpdateListGroupByCategory: jest.fn(),
       }),
     );
 
@@ -156,10 +148,8 @@ describe("useTodoListDetailViewState", () => {
         onAddItem,
         onUpdateItemTitle: jest.fn(),
         onUpdateListTitle: jest.fn(),
-        onUpdateListMoveCompletedToBottom: jest.fn(),
         onUpdateListHideCompleted: jest.fn(),
         categories: [],
-        onUpdateListGroupByCategory: jest.fn(),
       }),
     );
 
@@ -185,10 +175,8 @@ describe("useTodoListDetailViewState", () => {
         onAddItem,
         onUpdateItemTitle: jest.fn(),
         onUpdateListTitle: jest.fn(),
-        onUpdateListMoveCompletedToBottom: jest.fn(),
         onUpdateListHideCompleted: jest.fn(),
         categories: [],
-        onUpdateListGroupByCategory: jest.fn(),
       }),
     );
 

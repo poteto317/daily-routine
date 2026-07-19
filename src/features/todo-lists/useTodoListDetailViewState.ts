@@ -10,15 +10,7 @@ type UseTodoListDetailViewStateParams = {
   onAddItem: (listId: string, title: string) => void;
   onUpdateItemTitle: (listId: string, itemId: string, title: string) => void;
   onUpdateListTitle: (listId: string, title: string) => void;
-  onUpdateListMoveCompletedToBottom: (
-    listId: string,
-    moveCompletedToBottom: boolean,
-  ) => void;
   onUpdateListHideCompleted: (listId: string, hideCompleted: boolean) => void;
-  onUpdateListGroupByCategory: (
-    listId: string,
-    groupByCategory: boolean,
-  ) => void;
 };
 
 export const useTodoListDetailViewState = ({
@@ -27,9 +19,7 @@ export const useTodoListDetailViewState = ({
   onAddItem,
   onUpdateItemTitle,
   onUpdateListTitle,
-  onUpdateListMoveCompletedToBottom,
   onUpdateListHideCompleted,
-  onUpdateListGroupByCategory,
 }: UseTodoListDetailViewStateParams) => {
   const detailForm = useTodoListDetailFormState({
     listId: list.id,
@@ -38,9 +28,7 @@ export const useTodoListDetailViewState = ({
   const detailComputed = useTodoListDetailComputedState({
     list,
     categories,
-    onUpdateListMoveCompletedToBottom,
     onUpdateListHideCompleted,
-    onUpdateListGroupByCategory,
   });
   const detailEditing = useTodoListDetailEditingState({
     listId: list.id,

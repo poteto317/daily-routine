@@ -29,24 +29,6 @@ export const updateListAddItemPosition = (
   );
 
 /**
- * リストの完了済みアイテムを下へ移動する設定を更新する。
- */
-export const updateListMoveCompletedToBottom = (
-  lists: TodoList[],
-  listId: string,
-  moveCompletedToBottom: boolean,
-): TodoList[] =>
-  lists.map((list) =>
-    list.id === listId
-      ? {
-          ...list,
-          moveCompletedToBottom,
-          updatedAt: new Date().toISOString(),
-        }
-      : list,
-  );
-
-/**
  * リストの完了済みアイテムを非表示にする設定を更新する。
  */
 export const updateListHideCompleted = (
@@ -57,19 +39,5 @@ export const updateListHideCompleted = (
   lists.map((list) =>
     list.id === listId
       ? { ...list, hideCompleted, updatedAt: new Date().toISOString() }
-      : list,
-  );
-
-/**
- * リストのアイテムをカテゴリでグルーピング表示する設定を更新する。
- */
-export const updateListGroupByCategory = (
-  lists: TodoList[],
-  listId: string,
-  groupByCategory: boolean,
-): TodoList[] =>
-  lists.map((list) =>
-    list.id === listId
-      ? { ...list, groupByCategory, updatedAt: new Date().toISOString() }
       : list,
   );

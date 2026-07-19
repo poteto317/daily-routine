@@ -163,7 +163,13 @@ export const SortableTodoListItem = ({
             onToggleSelect={toggleSelectItem}
           />
 
-          <TodoItemDragHandle attributes={attributes} listeners={listeners} />
+          {/* sortModeActive中はDnDのセンサーが空になりドラッグは決して開始しない
+              （useTodoListDragAndDrop.ts参照）。機能しない掴みハンドル
+              （cursor-grab・aria「並び替え」）を見せると操作可能と誤認させるため、
+              描画自体を抑止する。 */}
+          {!sortModeActive && (
+            <TodoItemDragHandle attributes={attributes} listeners={listeners} />
+          )}
 
           <TodoItemIndentButtons
             listId={list.id}
