@@ -13,6 +13,18 @@ import {
 } from "../sync";
 import * as routineStorage from "@/features/routine/storage";
 import * as todoListsStorage from "@/features/todo-lists/storage";
+import {
+  createSyncSnapshotFixture,
+  createSyncPayloadFixture,
+  routineFixture,
+  todoCategoryFixture,
+  todoListFixture,
+} from "./sync.test.fixtures";
+import {
+  createExistingSyncSnapshotDocFixture,
+  createSyncSnapshotDocsResultFixture,
+  createTodoSyncSnapshotFixture,
+} from "./syncSnapshot.test.fixtures";
 
 describe("sync snapshots", () => {
   beforeEach(() => {
@@ -21,33 +33,20 @@ describe("sync snapshots", () => {
     (routineStorage.getDailyProgress as jest.Mock).mockReturnValue(null);
     (routineStorage.getMonthlyHistory as jest.Mock).mockReturnValue({});
     (todoListsStorage.getTodoLists as jest.Mock).mockReturnValue([]);
+    (todoListsStorage.getTodoCategories as jest.Mock).mockReturnValue([]);
   });
 
   it("upload 時に snapshot を積み、最大数を超えた古い履歴を削除する", async () => {
-    mockGetDocs.mockResolvedValue({
-      docs: Array.from({ length: 5 }, (_, index) => ({
-        id: `snapshot-${index + 1}`,
-        data: () => ({
-          uploadedAt: 10 - index,
-          deviceId: "device-1",
-          data: {
-            routines: [],
-            dailyProgress: null,
-            dailyHistory: {},
-            settings: {},
-            pomodoroHistory: {},
-            workSessionHistory: {},
-            workTemplates: [],
-            weightHistory: {},
-            journalHistory: {},
-            budgetData: { budgets: {}, expenses: {} },
-            mealHistory: {},
-            presets: [],
-            todoLists: [],
-          },
-        }),
-      })),
-    } as never);
+    mockGetDocs.mockResolvedValue(
+      createSyncSnapshotDocsResultFixture(
+        Array.from({ length: 5 }, (_, index) =>
+          createSyncSnapshotFixture({
+            id: `snapshot-${index + 1}`,
+            uploadedAt: 10 - index,
+          }),
+        ),
+      ) as never,
+    );
 
     await uploadToFirestore();
 
@@ -62,175 +61,106 @@ describe("sync snapshots", () => {
       }),
       expect.objectContaining({
         id: "generated-snapshot-id",
-        data: expect.objectContaining({ todoLists: [] }),
+        data: expect.objectContaining({ todoLists: [], todoCategories: [] }),
       }),
     );
   });
 
   it("snapshot 一覧を新しい順で取得する", async () => {
-    mockGetDocs.mockResolvedValue({
-      docs: [
-        {
+    mockGetDocs.mockResolvedValue(
+      createSyncSnapshotDocsResultFixture([
+        createSyncSnapshotFixture({
           id: "snapshot-2",
-          data: () => ({
-            uploadedAt: 2,
-            deviceId: "device-2",
-            data: {
-              routines: [],
-              dailyProgress: null,
-              dailyHistory: {},
-              settings: {},
-              pomodoroHistory: {},
-              workSessionHistory: {},
-              workTemplates: [],
-              weightHistory: {},
-              journalHistory: {},
-              budgetData: { budgets: {}, expenses: {} },
-              mealHistory: {},
-              presets: [],
-              todoLists: [],
-            },
+          uploadedAt: 2,
+          deviceId: "device-2",
+          data: createSyncPayloadFixture({
+            todoCategories: [todoCategoryFixture],
           }),
-        },
-        {
+        }),
+        createSyncSnapshotFixture({
           id: "snapshot-1",
-          data: () => ({
-            uploadedAt: 1,
-            deviceId: "device-1",
-            data: {
-              routines: [],
-              dailyProgress: null,
-              dailyHistory: {},
-              settings: {},
-              pomodoroHistory: {},
-              workSessionHistory: {},
-              workTemplates: [],
-              weightHistory: {},
-              journalHistory: {},
-              budgetData: { budgets: {}, expenses: {} },
-              mealHistory: {},
-              presets: [],
-              todoLists: [],
-            },
-          }),
-        },
-      ],
-    } as never);
+          uploadedAt: 1,
+        }),
+      ]) as never,
+    );
 
     await expect(getSyncSnapshots()).resolves.toEqual([
-      expect.objectContaining({ id: "snapshot-2", uploadedAt: 2 }),
+      expect.objectContaining({
+        id: "snapshot-2",
+        uploadedAt: 2,
+        data: expect.objectContaining({
+          todoCategories: [todoCategoryFixture],
+        }),
+      }),
       expect.objectContaining({ id: "snapshot-1", uploadedAt: 1 }),
     ]);
   });
 
   it("snapshot を適用するとローカルへ保存する", async () => {
-    mockGetDoc.mockResolvedValue({
-      exists: () => true,
-      id: "snapshot-1",
-      data: () => ({
+    mockGetDoc.mockResolvedValue(
+      createExistingSyncSnapshotDocFixture({
+        id: "snapshot-1",
         uploadedAt: 1,
-        deviceId: "device-1",
-        data: {
-          routines: [{ id: "r1", title: "朝活" }],
-          dailyProgress: null,
-          dailyHistory: {},
-          settings: {},
-          pomodoroHistory: {},
-          workSessionHistory: {},
-          workTemplates: [],
-          weightHistory: {},
-          journalHistory: {},
-          budgetData: { budgets: {}, expenses: {} },
-          mealHistory: {},
-          presets: [],
-          todoLists: [
-            {
-              id: "list-1",
-              title: "買い物",
-              items: [],
-              createdAt: "2026-03-10T00:00:00.000Z",
-              updatedAt: "2026-03-10T00:00:00.000Z",
-            },
-          ],
-        },
-      }),
-    } as never);
+        data: createSyncPayloadFixture({
+          routines: [routineFixture],
+          todoLists: [todoListFixture],
+          todoCategories: [todoCategoryFixture],
+        }),
+      }) as never,
+    );
 
     await applySyncSnapshot("snapshot-1");
 
     expect(routineStorage.saveRoutines).toHaveBeenCalledWith([
-      { id: "r1", title: "朝活" },
+      routineFixture,
     ]);
     expect(todoListsStorage.saveTodoLists).toHaveBeenCalledWith([
-      expect.objectContaining({ id: "list-1", title: "買い物" }),
+      todoListFixture,
+    ]);
+    expect(todoListsStorage.saveTodoCategories).toHaveBeenCalledWith([
+      todoCategoryFixture,
     ]);
   });
 
   it("最新 snapshot を削除した場合は次の履歴を最新として更新する", async () => {
-    mockGetDocs.mockResolvedValue({
-      docs: [
-        {
-          id: "snapshot-latest",
-          data: () => ({
+    mockGetDocs.mockResolvedValue(
+      createSyncSnapshotDocsResultFixture([
+        createTodoSyncSnapshotFixture(
+          {
+            id: "snapshot-latest",
             uploadedAt: 20,
             deviceId: "device-2",
-            data: {
-              routines: [],
-              dailyProgress: null,
-              dailyHistory: {},
-              settings: {},
-              pomodoroHistory: {},
-              workSessionHistory: {},
-              workTemplates: [],
-              weightHistory: {},
-              journalHistory: {},
-              budgetData: { budgets: {}, expenses: {} },
-              mealHistory: {},
-              presets: [],
-              todoLists: [
-                {
-                  id: "latest",
-                  title: "latest",
-                  items: [],
-                  createdAt: "2026-03-10T00:00:00.000Z",
-                  updatedAt: "2026-03-10T00:00:00.000Z",
-                },
-              ],
-            },
-          }),
-        },
-        {
-          id: "snapshot-next",
-          data: () => ({
+          },
+          {
+            todoLists: [{ ...todoListFixture, id: "latest", title: "latest" }],
+            todoCategories: [
+              {
+                ...todoCategoryFixture,
+                id: "todo-cat-latest",
+                name: "latest-category",
+              },
+            ],
+          },
+        ),
+        createTodoSyncSnapshotFixture(
+          {
+            id: "snapshot-next",
             uploadedAt: 10,
             deviceId: "device-1",
-            data: {
-              routines: [],
-              dailyProgress: null,
-              dailyHistory: {},
-              settings: {},
-              pomodoroHistory: {},
-              workSessionHistory: {},
-              workTemplates: [],
-              weightHistory: {},
-              journalHistory: {},
-              budgetData: { budgets: {}, expenses: {} },
-              mealHistory: {},
-              presets: [],
-              todoLists: [
-                {
-                  id: "next",
-                  title: "next",
-                  items: [],
-                  createdAt: "2026-03-10T00:00:00.000Z",
-                  updatedAt: "2026-03-10T00:00:00.000Z",
-                },
-              ],
-            },
-          }),
-        },
-      ],
-    } as never);
+          },
+          {
+            todoLists: [{ ...todoListFixture, id: "next", title: "next" }],
+            todoCategories: [
+              {
+                ...todoCategoryFixture,
+                id: "todo-cat-next",
+                name: "next-category",
+              },
+            ],
+          },
+        ),
+      ]) as never,
+    );
 
     await deleteSyncSnapshot("snapshot-latest");
 
@@ -244,6 +174,7 @@ describe("sync snapshots", () => {
         lastModified: 10,
         deviceId: "device-1",
         todoLists: [expect.objectContaining({ id: "next" })],
+        todoCategories: [expect.objectContaining({ id: "todo-cat-next" })],
       }),
     );
   });

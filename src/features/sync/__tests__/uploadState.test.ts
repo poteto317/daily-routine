@@ -2,84 +2,44 @@ import {
   buildSyncUploadData,
   buildUploadSuccessStatus,
 } from "../sync/uploadState";
-
-const baseSettings = {
-  defaultNotificationMinutes: 0,
-  defaultDurationMinutes: 30,
-  theme: "auto" as const,
-  swipeAction: "delete" as const,
-  pomodoroFocusMinutes: 25,
-  pomodoroBreakMinutes: 5,
-};
+import {
+  createSyncPayloadFixture,
+  routineFixture,
+  todoCategoryFixture,
+} from "./sync.test.fixtures";
 
 describe("uploadState", () => {
   it("buildSyncUploadDataはローカルデータに同期メタデータを追加する", () => {
+    const localData = createSyncPayloadFixture({
+      routines: [routineFixture],
+    });
+
     expect(
       buildSyncUploadData({
-        localData: {
-          routines: [
-            {
-              id: "r1",
-              title: "朝活",
-              startTime: "07:00",
-              duration: 30,
-              category: "health",
-              daysOfWeek: [1],
-              isCompleted: false,
-              sortOrder: 0,
-              createdAt: "2026-03-12T00:00:00.000Z",
-              updatedAt: "2026-03-12T00:00:00.000Z",
-            },
-          ],
-          dailyProgress: null,
-          dailyHistory: {},
-          settings: baseSettings,
-          pomodoroHistory: {},
-          workSessionHistory: {},
-          workTemplates: [],
-          weightHistory: {},
-          journalHistory: {},
-          budgetData: { expenses: {} },
-          budgetCategories: [],
-          budgetIncomeItems: [],
-          budgetExpenseItems: [],
-          mealHistory: {},
-          presets: [],
-          todoLists: [],
-        },
+        localData,
         lastModified: 123,
         deviceId: "device-1",
       }),
     ).toEqual({
-      routines: [
-        {
-          id: "r1",
-          title: "朝活",
-          startTime: "07:00",
-          duration: 30,
-          category: "health",
-          daysOfWeek: [1],
-          isCompleted: false,
-          sortOrder: 0,
-          createdAt: "2026-03-12T00:00:00.000Z",
-          updatedAt: "2026-03-12T00:00:00.000Z",
-        },
-      ],
-      dailyProgress: null,
-      dailyHistory: {},
-      settings: baseSettings,
-      pomodoroHistory: {},
-      workSessionHistory: {},
-      workTemplates: [],
-      weightHistory: {},
-      journalHistory: {},
-      budgetData: { expenses: {} },
-      budgetCategories: [],
-      budgetIncomeItems: [],
-      budgetExpenseItems: [],
-      mealHistory: {},
-      presets: [],
-      todoLists: [],
+      ...localData,
+      lastModified: 123,
+      deviceId: "device-1",
+    });
+  });
+
+  it("buildSyncUploadDataはTodoカテゴリを保持したまま同期メタデータを追加する", () => {
+    const localData = createSyncPayloadFixture({
+      todoCategories: [todoCategoryFixture],
+    });
+
+    expect(
+      buildSyncUploadData({
+        localData,
+        lastModified: 123,
+        deviceId: "device-1",
+      }),
+    ).toMatchObject({
+      todoCategories: [todoCategoryFixture],
       lastModified: 123,
       deviceId: "device-1",
     });

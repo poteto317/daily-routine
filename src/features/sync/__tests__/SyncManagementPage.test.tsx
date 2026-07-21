@@ -23,34 +23,18 @@ import {
   getSyncSnapshots,
 } from "../sync";
 import { reloadAfterDownload } from "@/hooks/headerSyncReload";
+import {
+  mockSyncSnapshotsResponse,
+  nextSyncSnapshotFixture,
+  renderLoadedSyncManagementPage,
+} from "./syncSnapshotUi.test.utils";
 
 describe("SyncManagementPage", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     jest.spyOn(window, "alert").mockImplementation(() => undefined);
     jest.spyOn(window, "confirm").mockReturnValue(true);
-    (getSyncSnapshots as jest.Mock).mockResolvedValue([
-      {
-        id: "snapshot-1",
-        uploadedAt: Date.parse("2026-03-10T10:00:00.000Z"),
-        deviceId: "device-1",
-        data: {
-          routines: [],
-          dailyProgress: null,
-          dailyHistory: {},
-          settings: {},
-          pomodoroHistory: {},
-          workSessionHistory: {},
-          workTemplates: [],
-          weightHistory: {},
-          journalHistory: {},
-          budgetData: { budgets: {}, expenses: {} },
-          mealHistory: {},
-          presets: [],
-          todoLists: [],
-        },
-      },
-    ]);
+    mockSyncSnapshotsResponse();
   });
 
   afterEach(() => {
@@ -70,11 +54,7 @@ describe("SyncManagementPage", () => {
   });
 
   it("任意の同期履歴を適用できる", async () => {
-    render(<SyncManagementPage />);
-
-    await waitFor(() => {
-      expect(screen.getByText("適用")).toBeInTheDocument();
-    });
+    await renderLoadedSyncManagementPage();
 
     fireEvent.click(screen.getByText("適用"));
 
@@ -85,17 +65,27 @@ describe("SyncManagementPage", () => {
   });
 
   it("任意の同期履歴を削除できる", async () => {
-    render(<SyncManagementPage />);
-
-    await waitFor(() => {
-      expect(screen.getByText("削除")).toBeInTheDocument();
-    });
+    await renderLoadedSyncManagementPage();
 
     fireEvent.click(screen.getByText("削除"));
 
     await waitFor(() => {
       expect(deleteSyncSnapshot).toHaveBeenCalledWith("snapshot-1");
       expect(screen.queryByText("履歴 1")).toBeNull();
+    });
+  });
+
+  it("再読み込みボタンで同期履歴一覧を更新する", async () => {
+    await renderLoadedSyncManagementPage();
+    (getSyncSnapshots as jest.Mock).mockResolvedValueOnce([
+      nextSyncSnapshotFixture,
+    ]);
+
+    fireEvent.click(screen.getByText("再読み込み"));
+
+    await waitFor(() => {
+      expect(getSyncSnapshots).toHaveBeenCalledTimes(2);
+      expect(screen.getByText(/device-2/)).toBeInTheDocument();
     });
   });
 });

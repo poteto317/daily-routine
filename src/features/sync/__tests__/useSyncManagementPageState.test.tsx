@@ -1,4 +1,4 @@
-import { act, renderHook, waitFor } from "@testing-library/react";
+import { act, renderHook } from "@testing-library/react";
 
 jest.mock("../sync", () => ({
   applySyncSnapshot: jest.fn(),
@@ -18,26 +18,18 @@ import {
 } from "../sync";
 import texts from "../locales/ja.json";
 import { useSyncManagementPageState } from "../useSyncManagementPageState";
+import {
+  defaultSyncSnapshotFixture,
+  mockSyncSnapshotsResponse,
+  waitForLoadedSyncState,
+} from "./syncSnapshotUi.test.utils";
 
-const mockSnapshot = {
-  id: "snapshot-1",
-  uploadedAt: Date.parse("2026-03-10T10:00:00.000Z"),
-  deviceId: "device-1",
-  data: {
-    routines: [],
-    dailyProgress: null,
-    dailyHistory: {},
-    settings: {},
-    pomodoroHistory: {},
-    workSessionHistory: {},
-    workTemplates: [],
-    weightHistory: {},
-    journalHistory: {},
-    budgetData: { budgets: {}, expenses: {} },
-    mealHistory: {},
-    presets: [],
-    todoLists: [],
-  },
+const renderLoadedSyncManagementPageState = async () => {
+  const rendered = renderHook(() => useSyncManagementPageState());
+
+  await waitForLoadedSyncState(rendered.result);
+
+  return rendered;
 };
 
 describe("useSyncManagementPageState", () => {
@@ -45,7 +37,7 @@ describe("useSyncManagementPageState", () => {
     jest.clearAllMocks();
     jest.spyOn(window, "alert").mockImplementation(() => undefined);
     jest.spyOn(window, "confirm").mockReturnValue(true);
-    (getSyncSnapshots as jest.Mock).mockResolvedValue([mockSnapshot]);
+    mockSyncSnapshotsResponse();
   });
 
   afterEach(() => {
@@ -58,11 +50,9 @@ describe("useSyncManagementPageState", () => {
 
     expect(result.current.isLoading).toBe(true);
 
-    await waitFor(() => {
-      expect(result.current.isLoading).toBe(false);
-    });
+    await waitForLoadedSyncState(result);
 
-    expect(result.current.snapshots).toEqual([mockSnapshot]);
+    expect(result.current.snapshots).toEqual([defaultSyncSnapshotFixture]);
     expect(result.current.error).toBeNull();
   });
 
@@ -71,20 +61,14 @@ describe("useSyncManagementPageState", () => {
 
     const { result } = renderHook(() => useSyncManagementPageState());
 
-    await waitFor(() => {
-      expect(result.current.isLoading).toBe(false);
-    });
+    await waitForLoadedSyncState(result);
 
     expect(result.current.error).toBe(texts.snapshotManager.loadFailed);
     expect(result.current.snapshots).toEqual([]);
   });
 
   it("履歴適用成功時に通知とリロードを実行する", async () => {
-    const { result } = renderHook(() => useSyncManagementPageState());
-
-    await waitFor(() => {
-      expect(result.current.isLoading).toBe(false);
-    });
+    const { result } = await renderLoadedSyncManagementPageState();
 
     await act(async () => {
       await result.current.handleApply("snapshot-1");
@@ -100,26 +84,18 @@ describe("useSyncManagementPageState", () => {
 
   it("履歴削除をキャンセルした場合は削除しない", async () => {
     (window.confirm as jest.Mock).mockReturnValueOnce(false);
-    const { result } = renderHook(() => useSyncManagementPageState());
-
-    await waitFor(() => {
-      expect(result.current.isLoading).toBe(false);
-    });
+    const { result } = await renderLoadedSyncManagementPageState();
 
     await act(async () => {
       await result.current.handleDelete("snapshot-1");
     });
 
     expect(deleteSyncSnapshot).not.toHaveBeenCalled();
-    expect(result.current.snapshots).toEqual([mockSnapshot]);
+    expect(result.current.snapshots).toEqual([defaultSyncSnapshotFixture]);
   });
 
   it("履歴削除成功時に一覧から除外する", async () => {
-    const { result } = renderHook(() => useSyncManagementPageState());
-
-    await waitFor(() => {
-      expect(result.current.isLoading).toBe(false);
-    });
+    const { result } = await renderLoadedSyncManagementPageState();
 
     await act(async () => {
       await result.current.handleDelete("snapshot-1");
