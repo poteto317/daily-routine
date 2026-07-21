@@ -235,6 +235,28 @@ describe("localData", () => {
         todoCategoryFixture,
       ]);
     });
+
+    it("todoCategoriesフィールド自体が無い（本フィールド追加前のクラウドデータ）場合、既存のローカルカテゴリを削除せず保持する", () => {
+      (todoListsStorage.getTodoCategories as jest.Mock).mockReturnValue([
+        todoCategoryFixture,
+      ]);
+
+      saveSyncDataToLocal({ todoLists: [todoListFixture] });
+
+      expect(todoListsStorage.saveTodoCategories).toHaveBeenCalledWith([
+        todoCategoryFixture,
+      ]);
+    });
+
+    it("todoCategoriesが明示的に空配列の場合はローカルカテゴリを空にする（ユーザーによる削除を正しく反映する）", () => {
+      (todoListsStorage.getTodoCategories as jest.Mock).mockReturnValue([
+        todoCategoryFixture,
+      ]);
+
+      saveSyncDataToLocal({ todoLists: [todoListFixture], todoCategories: [] });
+
+      expect(todoListsStorage.saveTodoCategories).toHaveBeenCalledWith([]);
+    });
   });
 
   describe("hasLocalData", () => {

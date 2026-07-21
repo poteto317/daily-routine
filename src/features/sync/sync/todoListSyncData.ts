@@ -25,7 +25,12 @@ export const normalizeTodoListSyncData = (
   data: Partial<TodoListSyncData>,
 ): TodoListSyncData => ({
   todoLists: data.todoLists ?? [],
-  todoCategories: data.todoCategories ?? [],
+  // todoCategoriesは本フィールド追加前のクラウドデータには存在しない
+  // （undefined）ため、[]で正規化すると同期対象なし＝ローカルのカテゴリを
+  // 削除、と誤って上書きしてしまう。欠損時は既存のローカルカテゴリを
+  // 保持する（明示的な空配列[]はユーザーが全カテゴリを削除した結果として
+  // そのまま尊重する）。
+  todoCategories: data.todoCategories ?? getTodoCategories(),
 });
 
 export const saveTodoListSyncData = (
