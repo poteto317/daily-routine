@@ -1,4 +1,4 @@
-import { renderHook, waitFor } from "@testing-library/react";
+import { act, renderHook } from "@testing-library/react";
 
 jest.mock("../sync", () => ({
   getSyncSnapshots: jest.fn(),
@@ -7,32 +7,25 @@ jest.mock("../sync", () => ({
 import { getSyncSnapshots } from "../sync";
 import texts from "../locales/ja.json";
 import { useSyncSnapshotDataState } from "../useSyncSnapshotDataState";
+import {
+  defaultSyncSnapshotFixture,
+  mockSyncSnapshotsResponse,
+  nextSyncSnapshotFixture,
+  waitForLoadedSyncState,
+} from "./syncSnapshotUi.test.utils";
 
-const mockSnapshot = {
-  id: "snapshot-1",
-  uploadedAt: Date.parse("2026-03-10T10:00:00.000Z"),
-  deviceId: "device-1",
-  data: {
-    routines: [],
-    dailyProgress: null,
-    dailyHistory: {},
-    settings: {},
-    pomodoroHistory: {},
-    workSessionHistory: {},
-    workTemplates: [],
-    weightHistory: {},
-    journalHistory: {},
-    budgetData: { budgets: {}, expenses: {} },
-    mealHistory: {},
-    presets: [],
-    todoLists: [],
-  },
+const renderLoadedSyncSnapshotDataState = async () => {
+  const rendered = renderHook(() => useSyncSnapshotDataState());
+
+  await waitForLoadedSyncState(rendered.result);
+
+  return rendered;
 };
 
 describe("useSyncSnapshotDataState", () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    (getSyncSnapshots as jest.Mock).mockResolvedValue([mockSnapshot]);
+    mockSyncSnapshotsResponse();
   });
 
   it("初回ロードで同期履歴一覧を取得する", async () => {
@@ -40,11 +33,9 @@ describe("useSyncSnapshotDataState", () => {
 
     expect(result.current.isLoading).toBe(true);
 
-    await waitFor(() => {
-      expect(result.current.isLoading).toBe(false);
-    });
+    await waitForLoadedSyncState(result);
 
-    expect(result.current.snapshots).toEqual([mockSnapshot]);
+    expect(result.current.snapshots).toEqual([defaultSyncSnapshotFixture]);
     expect(result.current.error).toBeNull();
   });
 
@@ -53,11 +44,23 @@ describe("useSyncSnapshotDataState", () => {
 
     const { result } = renderHook(() => useSyncSnapshotDataState());
 
-    await waitFor(() => {
-      expect(result.current.isLoading).toBe(false);
-    });
+    await waitForLoadedSyncState(result);
 
     expect(result.current.error).toBe(texts.snapshotManager.loadFailed);
     expect(result.current.snapshots).toEqual([]);
+  });
+
+  it("loadSnapshotsを再実行すると同期履歴一覧を更新する", async () => {
+    const { result } = await renderLoadedSyncSnapshotDataState();
+    (getSyncSnapshots as jest.Mock).mockResolvedValueOnce([
+      nextSyncSnapshotFixture,
+    ]);
+
+    await act(async () => {
+      await result.current.loadSnapshots();
+    });
+
+    expect(result.current.snapshots).toEqual([nextSyncSnapshotFixture]);
+    expect(result.current.error).toBeNull();
   });
 });

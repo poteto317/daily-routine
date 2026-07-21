@@ -15,7 +15,7 @@ import type {
   WorkSessionHistory,
   WorkTemplate,
 } from "@/types/routine";
-import type { TodoList } from "@/features/todo-lists/types";
+import type { TodoCategory, TodoList } from "@/features/todo-lists/types";
 
 export interface SyncPayload {
   routines: Routine[];
@@ -34,28 +34,13 @@ export interface SyncPayload {
   mealHistory: MealHistory;
   presets: RoutinePreset[];
   todoLists: TodoList[];
+  todoCategories: TodoCategory[];
 }
 
-export interface SyncData {
-  routines: SyncPayload["routines"];
-  dailyProgress: SyncPayload["dailyProgress"];
-  dailyHistory: SyncPayload["dailyHistory"];
-  settings: SyncPayload["settings"];
-  pomodoroHistory: SyncPayload["pomodoroHistory"];
-  workSessionHistory: SyncPayload["workSessionHistory"];
-  workTemplates: SyncPayload["workTemplates"];
-  weightHistory: SyncPayload["weightHistory"];
-  journalHistory: SyncPayload["journalHistory"];
-  budgetData: SyncPayload["budgetData"];
-  budgetCategories: SyncPayload["budgetCategories"];
-  budgetIncomeItems: SyncPayload["budgetIncomeItems"];
-  budgetExpenseItems: SyncPayload["budgetExpenseItems"];
-  mealHistory: SyncPayload["mealHistory"];
-  presets: SyncPayload["presets"];
-  todoLists: SyncPayload["todoLists"];
+export type SyncData = SyncPayload & {
   lastModified: number;
   deviceId: string;
-}
+};
 
 export interface SyncSnapshot {
   id: string;

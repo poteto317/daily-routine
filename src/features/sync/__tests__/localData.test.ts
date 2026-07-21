@@ -57,6 +57,8 @@ jest.mock("@/features/preset/storage", () => ({
 jest.mock("@/features/todo-lists/storage", () => ({
   getTodoLists: jest.fn(() => []),
   saveTodoLists: jest.fn(),
+  getTodoCategories: jest.fn(() => []),
+  saveTodoCategories: jest.fn(),
 }));
 jest.mock("@/lib/storage/core", () => ({
   getLocalDataUpdatedAt: jest.fn(() => 0),
@@ -73,111 +75,72 @@ jest.mock("../sync/timestamp", () => ({
 
 import * as routineStorage from "@/features/routine/storage";
 import * as settingsStorage from "@/features/settings/storage";
-import * as pomodoroStorage from "@/features/pomodoro/storage";
-import * as workTrackerStorage from "@/features/work-tracker/storage";
-import * as weightTrackerStorage from "@/features/weight-tracker/storage";
-import * as journalStorage from "@/features/journal/storage";
 import * as budgetStorage from "@/features/budget/storage";
-import * as mealStorage from "@/features/meal/storage";
-import * as presetStorage from "@/features/preset/storage";
 import * as todoListsStorage from "@/features/todo-lists/storage";
 import * as storageCore from "@/lib/storage/core";
 import * as localDataHelpers from "../sync/localDataHelpers";
 import * as timestamp from "../sync/timestamp";
+import {
+  budgetCategoryFixture,
+  budgetExpenseItemFixture,
+  budgetIncomeItemFixture,
+  createSyncPayloadFixture,
+  routineFixture,
+  todoCategoryFixture,
+  todoListFixture,
+} from "./sync.test.fixtures";
+import {
+  expectSyncStorageReadMocksCalled,
+  seedSyncStorageReadMocks,
+} from "./syncStorage.test.utils";
+
+const resetLocalDataStorageMocks = (): void => {
+  seedSyncStorageReadMocks(createSyncPayloadFixture());
+  (storageCore.getLocalDataUpdatedAt as jest.Mock).mockReturnValue(0);
+  (localDataHelpers.hasAnyLocalSyncData as jest.Mock).mockReturnValue(false);
+  (timestamp.collectLatestTimestamp as jest.Mock).mockReturnValue(9999);
+};
+
+const collectLocalSyncDataStorageFixture = createSyncPayloadFixture({
+  routines: [routineFixture],
+  settings: {
+    ...createSyncPayloadFixture().settings,
+    theme: "dark",
+  },
+  presets: [{ id: "p1" } as never],
+  budgetCategories: [budgetCategoryFixture],
+  budgetIncomeItems: [budgetIncomeItemFixture],
+  budgetExpenseItems: [budgetExpenseItemFixture],
+  todoLists: [todoListFixture],
+  todoCategories: [todoCategoryFixture],
+});
 
 describe("localData", () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    // デフォルトに戻す
-    (routineStorage.getRoutines as jest.Mock).mockReturnValue([]);
-    (routineStorage.getDailyProgress as jest.Mock).mockReturnValue(null);
-    (routineStorage.getMonthlyHistory as jest.Mock).mockReturnValue({});
-    (settingsStorage.getSettings as jest.Mock).mockReturnValue({
-      theme: "auto",
-    });
-    (pomodoroStorage.getPomodoroHistory as jest.Mock).mockReturnValue({});
-    (workTrackerStorage.getWorkSessionHistory as jest.Mock).mockReturnValue({});
-    (workTrackerStorage.getWorkTemplates as jest.Mock).mockReturnValue([]);
-    (weightTrackerStorage.getWeightHistory as jest.Mock).mockReturnValue({});
-    (journalStorage.getJournalHistory as jest.Mock).mockReturnValue({});
-    (budgetStorage.getBudgetData as jest.Mock).mockReturnValue({
-      expenses: {},
-    });
-    (budgetStorage.getBudgetCategories as jest.Mock).mockReturnValue([]);
-    (budgetStorage.getBudgetIncomeItems as jest.Mock).mockReturnValue([]);
-    (budgetStorage.getBudgetExpenseItems as jest.Mock).mockReturnValue([]);
-    (mealStorage.getMealHistory as jest.Mock).mockReturnValue({});
-    (presetStorage.getPresets as jest.Mock).mockReturnValue([]);
-    (todoListsStorage.getTodoLists as jest.Mock).mockReturnValue([]);
-    (storageCore.getLocalDataUpdatedAt as jest.Mock).mockReturnValue(0);
-    (localDataHelpers.hasAnyLocalSyncData as jest.Mock).mockReturnValue(false);
-    (timestamp.collectLatestTimestamp as jest.Mock).mockReturnValue(9999);
+    resetLocalDataStorageMocks();
   });
 
   describe("collectLocalSyncData", () => {
     it("各ストレージから値を収集してオブジェクトを返す", () => {
-      (routineStorage.getRoutines as jest.Mock).mockReturnValue([{ id: "r1" }]);
-      (settingsStorage.getSettings as jest.Mock).mockReturnValue({
-        theme: "dark",
-      });
-      (presetStorage.getPresets as jest.Mock).mockReturnValue([{ id: "p1" }]);
-      (budgetStorage.getBudgetCategories as jest.Mock).mockReturnValue([
-        { id: "cat-1", name: "食料品", createdAt: "2026-05-01T00:00:00.000Z" },
-      ]);
-      (budgetStorage.getBudgetIncomeItems as jest.Mock).mockReturnValue([
-        { id: "income-1", name: "給与", amount: 300000, createdAt: "2026-05-01T00:00:00.000Z" },
-      ]);
-      (budgetStorage.getBudgetExpenseItems as jest.Mock).mockReturnValue([
-        {
-          id: "expense-1",
-          name: "家賃",
-          amount: 80000,
-          kind: "fixed",
-          createdAt: "2026-05-01T00:00:00.000Z",
-        },
-      ]);
+      seedSyncStorageReadMocks(collectLocalSyncDataStorageFixture);
 
       const result = collectLocalSyncData();
 
-      expect(result.routines).toEqual([{ id: "r1" }]);
-      expect(result.settings).toEqual({ theme: "dark" });
+      expect(result.routines).toEqual([routineFixture]);
+      expect(result.settings).toEqual(collectLocalSyncDataStorageFixture.settings);
       expect(result.presets).toEqual([{ id: "p1" }]);
-      expect(result.budgetCategories).toEqual([
-        { id: "cat-1", name: "食料品", createdAt: "2026-05-01T00:00:00.000Z" },
-      ]);
-      expect(result.budgetIncomeItems).toEqual([
-        { id: "income-1", name: "給与", amount: 300000, createdAt: "2026-05-01T00:00:00.000Z" },
-      ]);
-      expect(result.budgetExpenseItems).toEqual([
-        {
-          id: "expense-1",
-          name: "家賃",
-          amount: 80000,
-          kind: "fixed",
-          createdAt: "2026-05-01T00:00:00.000Z",
-        },
-      ]);
+      expect(result.budgetCategories).toEqual([budgetCategoryFixture]);
+      expect(result.budgetIncomeItems).toEqual([budgetIncomeItemFixture]);
+      expect(result.budgetExpenseItems).toEqual([budgetExpenseItemFixture]);
+      expect(result.todoLists).toEqual([todoListFixture]);
+      expect(result.todoCategories).toEqual([todoCategoryFixture]);
     });
 
     it("全ストレージ getter を呼び出す", () => {
       collectLocalSyncData();
 
-      expect(routineStorage.getRoutines).toHaveBeenCalled();
-      expect(routineStorage.getDailyProgress).toHaveBeenCalled();
-      expect(routineStorage.getMonthlyHistory).toHaveBeenCalled();
-      expect(settingsStorage.getSettings).toHaveBeenCalled();
-      expect(pomodoroStorage.getPomodoroHistory).toHaveBeenCalled();
-      expect(workTrackerStorage.getWorkSessionHistory).toHaveBeenCalled();
-      expect(workTrackerStorage.getWorkTemplates).toHaveBeenCalled();
-      expect(weightTrackerStorage.getWeightHistory).toHaveBeenCalled();
-      expect(journalStorage.getJournalHistory).toHaveBeenCalled();
-      expect(budgetStorage.getBudgetData).toHaveBeenCalled();
-      expect(budgetStorage.getBudgetCategories).toHaveBeenCalled();
-      expect(budgetStorage.getBudgetIncomeItems).toHaveBeenCalled();
-      expect(budgetStorage.getBudgetExpenseItems).toHaveBeenCalled();
-      expect(mealStorage.getMealHistory).toHaveBeenCalled();
-      expect(presetStorage.getPresets).toHaveBeenCalled();
-      expect(todoListsStorage.getTodoLists).toHaveBeenCalled();
+      expectSyncStorageReadMocksCalled();
     });
   });
 
@@ -227,63 +190,72 @@ describe("localData", () => {
     });
 
     it("budgetCategories を保存する", () => {
-      const budgetCategories = [
-        { id: "cat-1", name: "食料品", createdAt: "2026-05-01T00:00:00.000Z" },
-      ];
+      const budgetData = { expenses: { "2026-02": [] } };
 
-      saveSyncDataToLocal({ budgetCategories });
+      saveSyncDataToLocal({
+        budgetData,
+        budgetCategories: [budgetCategoryFixture],
+        budgetIncomeItems: [budgetIncomeItemFixture],
+        budgetExpenseItems: [budgetExpenseItemFixture],
+      });
 
+      expect(budgetStorage.saveBudgetData).toHaveBeenCalledWith(budgetData);
       expect(budgetStorage.saveBudgetCategories).toHaveBeenCalledWith(
-        budgetCategories,
+        [budgetCategoryFixture],
       );
-    });
-
-    it("budgetCategories が未指定の場合は空配列で保存する", () => {
-      saveSyncDataToLocal({});
-
-      expect(budgetStorage.saveBudgetCategories).toHaveBeenCalledWith([]);
-    });
-
-    it("budgetIncomeItems を保存する", () => {
-      const budgetIncomeItems = [
-        { id: "income-1", name: "給与", amount: 300000, createdAt: "2026-05-01T00:00:00.000Z" },
-      ];
-
-      saveSyncDataToLocal({ budgetIncomeItems });
-
       expect(budgetStorage.saveBudgetIncomeItems).toHaveBeenCalledWith(
-        budgetIncomeItems,
+        [budgetIncomeItemFixture],
       );
-    });
-
-    it("budgetIncomeItems が未指定の場合は空配列で保存する", () => {
-      saveSyncDataToLocal({});
-
-      expect(budgetStorage.saveBudgetIncomeItems).toHaveBeenCalledWith([]);
-    });
-
-    it("budgetExpenseItems を保存する", () => {
-      const budgetExpenseItems = [
-        {
-          id: "expense-1",
-          name: "家賃",
-          amount: 80000,
-          kind: "fixed" as const,
-          createdAt: "2026-05-01T00:00:00.000Z",
-        },
-      ];
-
-      saveSyncDataToLocal({ budgetExpenseItems });
-
       expect(budgetStorage.saveBudgetExpenseItems).toHaveBeenCalledWith(
-        budgetExpenseItems,
+        [budgetExpenseItemFixture],
       );
     });
 
-    it("budgetExpenseItems が未指定の場合は空配列で保存する", () => {
+    it("予算データが未指定の場合はデフォルト値で保存する", () => {
       saveSyncDataToLocal({});
 
+      expect(budgetStorage.saveBudgetData).toHaveBeenCalledWith({
+        expenses: {},
+      });
+      expect(budgetStorage.saveBudgetCategories).toHaveBeenCalledWith([]);
+      expect(budgetStorage.saveBudgetIncomeItems).toHaveBeenCalledWith([]);
       expect(budgetStorage.saveBudgetExpenseItems).toHaveBeenCalledWith([]);
+    });
+
+    it("Todoリスト同期データを保存する", () => {
+      saveSyncDataToLocal({
+        todoLists: [todoListFixture],
+        todoCategories: [todoCategoryFixture],
+      });
+
+      expect(todoListsStorage.saveTodoLists).toHaveBeenCalledWith([
+        todoListFixture,
+      ]);
+      expect(todoListsStorage.saveTodoCategories).toHaveBeenCalledWith([
+        todoCategoryFixture,
+      ]);
+    });
+
+    it("todoCategoriesフィールド自体が無い（本フィールド追加前のクラウドデータ）場合、既存のローカルカテゴリを削除せず保持する", () => {
+      (todoListsStorage.getTodoCategories as jest.Mock).mockReturnValue([
+        todoCategoryFixture,
+      ]);
+
+      saveSyncDataToLocal({ todoLists: [todoListFixture] });
+
+      expect(todoListsStorage.saveTodoCategories).toHaveBeenCalledWith([
+        todoCategoryFixture,
+      ]);
+    });
+
+    it("todoCategoriesが明示的に空配列の場合はローカルカテゴリを空にする（ユーザーによる削除を正しく反映する）", () => {
+      (todoListsStorage.getTodoCategories as jest.Mock).mockReturnValue([
+        todoCategoryFixture,
+      ]);
+
+      saveSyncDataToLocal({ todoLists: [todoListFixture], todoCategories: [] });
+
+      expect(todoListsStorage.saveTodoCategories).toHaveBeenCalledWith([]);
     });
   });
 

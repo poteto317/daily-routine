@@ -1,4 +1,9 @@
-import { mockGetDoc, mockGetOrCreateUser, setupSyncTestEnvironment } from "./sync.test.utils";
+import {
+  mockExistingSyncDocument,
+  mockGetOrCreateUser,
+  mockMissingSyncDocument,
+  setupSyncTestEnvironment,
+} from "./sync.test.utils";
 import { downloadFromFirestore } from "../sync";
 import { getSyncStatus } from "../sync/statusStore";
 import { SYNC_TIMEOUT_MS } from "../sync/constants";
@@ -15,13 +20,20 @@ import * as routineStorage from "@/features/routine/storage";
 import * as settingsStorage from "@/features/settings/storage";
 import * as weightTrackerStorage from "@/features/weight-tracker/storage";
 import * as workTrackerStorage from "@/features/work-tracker/storage";
+import {
+  createSyncDataFixture,
+  routineFixture,
+  todoCategoryFixture,
+  todoListFixture,
+} from "./sync.test.fixtures";
+import { expectSyncPayloadSavedToLocal } from "./syncStorage.test.utils";
 
 describe("sync download", () => {
   beforeEach(setupSyncTestEnvironment);
 
   it("downloadFromFirestoreが指定された同期対象をすべてローカルへ復元する", async () => {
-    const remoteData = {
-      routines: [{ id: "r1", title: "朝活" }],
+    const remoteData = createSyncDataFixture({
+      routines: [routineFixture],
       dailyProgress: {
         date: "2026-02-12",
         completedRoutineIds: ["r1"],
@@ -34,124 +46,50 @@ describe("sync download", () => {
           routineSnapshots: [],
         },
       },
-      settings: { theme: "auto" },
       pomodoroHistory: {
         "2026-02-12": { date: "2026-02-12", completedPomodoros: 3 },
       },
-      workSessionHistory: { "2026-02-12": [{ id: "w1" }] },
-      workTemplates: [{ id: "t1", name: "開発" }],
-      weightHistory: {
-        "2026-02-12": { id: "we1", date: "2026-02-12", weight: 65 },
-      },
-      journalHistory: {
-        "2026-02-12": {
-          id: "j1",
-          date: "2026-02-12",
-          title: "title",
-          content: "content",
-        },
-      },
       budgetData: {
-        budgets: {
-          "2026-02": { id: "b1", month: "2026-02", totalAmount: 50000 },
-        },
         expenses: {
-          "2026-02": [{ id: "e1", date: "2026-02-12", amount: 1200 }],
+          "2026-02": [
+            {
+              id: "e1",
+              date: "2026-02-12",
+              amount: 1200,
+              createdAt: "2026-02-12T00:00:00.000Z",
+            },
+          ],
         },
       },
       budgetCategories: [
         { id: "cat-1", name: "食料品", createdAt: "2026-02-01T00:00:00.000Z" },
       ],
-      mealHistory: {
-        "2026-02-12": [
-          {
-            id: "m1",
-            date: "2026-02-12",
-            mealType: "lunch",
-            time: "12:00",
-            description: "定食",
-          },
-        ],
-      },
-      presets: [{ id: "p1", name: "平日セット", routineTemplates: [] }],
-      todoLists: [
-        {
-          id: "list-1",
-          title: "ショッピング",
-          items: [],
-          createdAt: "2026-02-12T00:00:00.000Z",
-          updatedAt: "2026-02-12T00:00:00.000Z",
-        },
-      ],
+      todoLists: [todoListFixture],
+      todoCategories: [todoCategoryFixture],
       deviceId: "device-1",
       lastModified: Date.now(),
-    };
+    });
 
-    mockGetDoc.mockResolvedValue({
-      exists: () => true,
-      data: () => remoteData,
-    } as never);
+    mockExistingSyncDocument(remoteData);
     await downloadFromFirestore({ reload: false });
 
-    expect(routineStorage.saveRoutines).toHaveBeenCalledWith(
-      remoteData.routines,
-    );
-    expect(routineStorage.saveDailyProgressForSync).toHaveBeenCalledWith(
-      remoteData.dailyProgress,
-    );
-    expect(routineStorage.saveMonthlyHistory).toHaveBeenCalledWith(
-      remoteData.dailyHistory,
-    );
-    expect(settingsStorage.saveSettings).toHaveBeenCalledWith(
-      remoteData.settings,
-    );
-    expect(pomodoroStorage.savePomodoroHistory).toHaveBeenCalledWith(
-      remoteData.pomodoroHistory,
-    );
-    expect(workTrackerStorage.saveWorkSessionHistory).toHaveBeenCalledWith(
-      remoteData.workSessionHistory,
-    );
-    expect(workTrackerStorage.saveWorkTemplates).toHaveBeenCalledWith(
-      remoteData.workTemplates,
-    );
-    expect(weightTrackerStorage.saveWeightHistory).toHaveBeenCalledWith(
-      remoteData.weightHistory,
-    );
-    expect(journalStorage.saveJournalHistory).toHaveBeenCalledWith(
-      remoteData.journalHistory,
-    );
-    expect(budgetStorage.saveBudgetData).toHaveBeenCalledWith(
-      remoteData.budgetData,
-    );
-    expect(budgetStorage.saveBudgetCategories).toHaveBeenCalledWith(
-      remoteData.budgetCategories,
-    );
-    expect(mealStorage.saveMealHistory).toHaveBeenCalledWith(
-      remoteData.mealHistory,
-    );
-    expect(presetStorage.savePresets).toHaveBeenCalledWith(remoteData.presets);
-    expect(todoListsStorage.saveTodoLists).toHaveBeenCalledWith(
-      remoteData.todoLists,
-    );
+    expectSyncPayloadSavedToLocal(remoteData);
   });
 
   it("downloadFromFirestoreは欠損項目にデフォルト値を適用して復元する", async () => {
-    mockGetDoc.mockResolvedValue({
-      exists: () => true,
-      data: () => ({
-        routines: [{ id: "r1", title: "朝活" }],
-        dailyHistory: {
-          "2026-02-12": {
-            date: "2026-02-12",
-            completedRoutineIds: ["r1"],
-            routineSnapshots: [],
-          },
+    mockExistingSyncDocument({
+      routines: [{ id: "r1", title: "朝活" }],
+      dailyHistory: {
+        "2026-02-12": {
+          date: "2026-02-12",
+          completedRoutineIds: ["r1"],
+          routineSnapshots: [],
         },
-        settings: { theme: "auto" },
-        deviceId: "device-1",
-        lastModified: Date.now(),
-      }),
-    } as never);
+      },
+      settings: { theme: "auto" },
+      deviceId: "device-1",
+      lastModified: Date.now(),
+    });
 
     await downloadFromFirestore({ reload: false });
 
@@ -170,10 +108,11 @@ describe("sync download", () => {
     expect(mealStorage.saveMealHistory).toHaveBeenCalledWith({});
     expect(presetStorage.savePresets).toHaveBeenCalledWith([]);
     expect(todoListsStorage.saveTodoLists).toHaveBeenCalledWith([]);
+    expect(todoListsStorage.saveTodoCategories).toHaveBeenCalledWith([]);
   });
 
   it("downloadFromFirestoreはリモートデータが存在しない場合に失敗する", async () => {
-    mockGetDoc.mockResolvedValue({ exists: () => false } as never);
+    mockMissingSyncDocument();
 
     await expect(
       downloadFromFirestore({ reload: false }),
@@ -192,10 +131,7 @@ describe("sync download", () => {
       deviceId: "device-1",
       lastModified: Date.now(),
     };
-    mockGetDoc.mockResolvedValue({
-      exists: () => true,
-      data: () => remoteData,
-    } as never);
+    mockExistingSyncDocument(remoteData);
 
     await downloadFromFirestore({ reload: false });
 
@@ -213,10 +149,7 @@ describe("sync download", () => {
       deviceId: "device-1",
       lastModified: Date.now(),
     };
-    mockGetDoc.mockResolvedValue({
-      exists: () => true,
-      data: () => remoteData,
-    } as never);
+    mockExistingSyncDocument(remoteData);
 
     await downloadFromFirestore({ reload: false });
     // performDownloadOperation 内で setCurrentUserId("user-1") が呼ばれているため取得可能
@@ -236,10 +169,11 @@ describe("sync download", () => {
         callOrder.push("timestamp");
       });
 
-    mockGetDoc.mockResolvedValue({
-      exists: () => true,
-      data: () => ({ routines: [], deviceId: "device-1", lastModified: Date.now() }),
-    } as never);
+    mockExistingSyncDocument({
+      routines: [],
+      deviceId: "device-1",
+      lastModified: Date.now(),
+    });
 
     try {
       await downloadFromFirestore({ reload: false });
@@ -254,10 +188,11 @@ describe("sync download", () => {
   });
 
   it("ダウンロード前に migrateToUserStorage が呼ばれる", async () => {
-    mockGetDoc.mockResolvedValue({
-      exists: () => true,
-      data: () => ({ routines: [], deviceId: "device-1", lastModified: Date.now() }),
-    } as never);
+    mockExistingSyncDocument({
+      routines: [],
+      deviceId: "device-1",
+      lastModified: Date.now(),
+    });
 
     await downloadFromFirestore({ reload: false });
 
@@ -269,10 +204,11 @@ describe("sync download", () => {
     const lastModifiedStr = "2026-01-01T00:00:00.000Z";
     const expectedMs = Date.parse(lastModifiedStr);
 
-    mockGetDoc.mockResolvedValue({
-      exists: () => true,
-      data: () => ({ routines: [], deviceId: "device-1", lastModified: lastModifiedStr }),
-    } as never);
+    mockExistingSyncDocument({
+      routines: [],
+      deviceId: "device-1",
+      lastModified: lastModifiedStr,
+    });
 
     await downloadFromFirestore({ reload: false });
 
@@ -289,10 +225,7 @@ describe("sync download", () => {
       deviceId: "device-1",
       lastModified,
     };
-    mockGetDoc.mockResolvedValue({
-      exists: () => true,
-      data: () => remoteData,
-    } as never);
+    mockExistingSyncDocument(remoteData);
 
     await downloadFromFirestore({ reload: false });
 
@@ -308,10 +241,7 @@ describe("sync download", () => {
       deviceId: "device-1",
       lastModified: 0,
     };
-    mockGetDoc.mockResolvedValue({
-      exists: () => true,
-      data: () => remoteData,
-    } as never);
+    mockExistingSyncDocument(remoteData);
 
     await downloadFromFirestore({ reload: false });
 
@@ -327,10 +257,7 @@ describe("sync download", () => {
       deviceId: "device-1",
       lastModified: Date.now(),
     };
-    mockGetDoc.mockResolvedValue({
-      exists: () => true,
-      data: () => remoteData,
-    } as never);
+    mockExistingSyncDocument(remoteData);
 
     const handler = jest.fn();
     window.addEventListener("sync-status-changed", handler);

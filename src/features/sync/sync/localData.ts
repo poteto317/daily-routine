@@ -30,20 +30,19 @@ import {
   getJournalHistory,
   saveJournalHistory,
 } from "@/features/journal/storage";
-import {
-  getBudgetCategories,
-  getBudgetData,
-  getBudgetExpenseItems,
-  getBudgetIncomeItems,
-  saveBudgetCategories,
-  saveBudgetData,
-  saveBudgetExpenseItems,
-  saveBudgetIncomeItems,
-} from "@/features/budget/storage";
 import { getMealHistory, saveMealHistory } from "@/features/meal/storage";
 import { getPresets, savePresets } from "@/features/preset/storage";
-import { getTodoLists, saveTodoLists } from "@/features/todo-lists/storage";
+import {
+  collectBudgetSyncData,
+  normalizeBudgetSyncData,
+  saveBudgetSyncData,
+} from "./budgetSyncData";
 import { hasAnyLocalSyncData } from "./localDataHelpers";
+import {
+  collectTodoListSyncData,
+  normalizeTodoListSyncData,
+  saveTodoListSyncData,
+} from "./todoListSyncData";
 import { collectLatestTimestamp } from "./timestamp";
 import type { SyncData } from "./types";
 
@@ -60,13 +59,10 @@ export const collectLocalSyncData = (): Omit<
   workTemplates: getWorkTemplates(),
   weightHistory: getWeightHistory(),
   journalHistory: getJournalHistory(),
-  budgetData: getBudgetData(),
-  budgetCategories: getBudgetCategories(),
-  budgetIncomeItems: getBudgetIncomeItems(),
-  budgetExpenseItems: getBudgetExpenseItems(),
+  ...collectBudgetSyncData(),
   mealHistory: getMealHistory(),
   presets: getPresets(),
-  todoLists: getTodoLists(),
+  ...collectTodoListSyncData(),
 });
 
 export const saveSyncDataToLocal = (
@@ -85,13 +81,10 @@ export const saveSyncDataToLocal = (
     saveWorkTemplates(data.workTemplates ?? []);
     saveWeightHistory(data.weightHistory ?? {});
     saveJournalHistory(data.journalHistory ?? {});
-    saveBudgetData(data.budgetData ?? { expenses: {} });
-    saveBudgetCategories(data.budgetCategories ?? []);
-    saveBudgetIncomeItems(data.budgetIncomeItems ?? []);
-    saveBudgetExpenseItems(data.budgetExpenseItems ?? []);
+    saveBudgetSyncData(normalizeBudgetSyncData(data));
     saveMealHistory(data.mealHistory ?? {});
     savePresets(data.presets ?? []);
-    saveTodoLists(data.todoLists ?? []);
+    saveTodoListSyncData(normalizeTodoListSyncData(data));
   });
   if (!options?.skipTimestampUpdate) {
     setLocalDataUpdatedAt(data.lastModified ?? Date.now());

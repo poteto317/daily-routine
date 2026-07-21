@@ -16,6 +16,7 @@ import {
 } from "@/lib/firebase";
 import { getSyncErrorMessage } from "./errorMessage";
 import { saveSyncDataToLocal } from "./localData";
+import { createSyncPayload } from "./syncPayload";
 import { setSyncStatus } from "./statusStore";
 import type { SyncData, SyncPayload, SyncSnapshot } from "./types";
 import texts from "../locales/ja.json";
@@ -24,27 +25,6 @@ const MAX_SYNC_SNAPSHOTS = 5;
 
 const getSyncSnapshotsCollectionRef = (userId: string) => {
   return collection(getFirestoreInstance(), "users", userId, "syncSnapshots");
-};
-
-const createSyncPayload = (data: SyncData): SyncPayload => {
-  return {
-    routines: data.routines,
-    dailyProgress: data.dailyProgress,
-    dailyHistory: data.dailyHistory,
-    settings: data.settings,
-    pomodoroHistory: data.pomodoroHistory,
-    workSessionHistory: data.workSessionHistory,
-    workTemplates: data.workTemplates,
-    weightHistory: data.weightHistory,
-    journalHistory: data.journalHistory,
-    budgetData: data.budgetData,
-    budgetCategories: data.budgetCategories,
-    budgetIncomeItems: data.budgetIncomeItems,
-    budgetExpenseItems: data.budgetExpenseItems,
-    mealHistory: data.mealHistory,
-    presets: data.presets,
-    todoLists: data.todoLists,
-  };
 };
 
 const mapSnapshotDoc = (snapshotDoc: {

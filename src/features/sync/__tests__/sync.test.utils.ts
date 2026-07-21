@@ -1,6 +1,7 @@
 import * as firestore from "firebase/firestore";
 import * as firebaseLib from "@/lib/firebase";
 import { setCurrentUserId } from "@/lib/storage/core";
+import * as todoListsStorage from "@/features/todo-lists/storage";
 
 jest.mock("firebase/firestore", () => ({
   collection: jest.fn(),
@@ -82,6 +83,19 @@ export const mockGetOrCreateUser =
     typeof firebaseLib.getOrCreateUser
   >;
 
+export const mockExistingSyncDocument = (data: unknown): void => {
+  mockGetDoc.mockResolvedValue({
+    exists: () => true,
+    data: () => data,
+  } as never);
+};
+
+export const mockMissingSyncDocument = (): void => {
+  mockGetDoc.mockResolvedValue({
+    exists: () => false,
+  } as never);
+};
+
 export const setupSyncTestEnvironment = (): void => {
   setCurrentUserId(null);
   jest.clearAllMocks();
@@ -141,4 +155,6 @@ export const setupSyncTestEnvironment = (): void => {
   mockGetDocs.mockResolvedValue({ docs: [] } as never);
   mockDeleteDoc.mockResolvedValue(undefined as never);
   mockServerTimestamp.mockReturnValue("server-timestamp" as never);
+  (todoListsStorage.getTodoLists as jest.Mock).mockReturnValue([]);
+  (todoListsStorage.getTodoCategories as jest.Mock).mockReturnValue([]);
 };
