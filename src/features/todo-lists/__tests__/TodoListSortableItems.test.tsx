@@ -289,20 +289,39 @@ describe("TodoListSortableItems", () => {
       }
     });
 
-    it("sortModeActive=false のとき、ドラッグハンドル（並び替えボタン）を表示する", () => {
-      render(<TodoListSortableItems {...defaultProps} sortModeActive={false} />);
-
+    it("sortModeActive の値に関わらず、親アイテム全件にドラッグハンドル（並び替えボタン）を表示する（DnDは同一セクション内で常時試行可能なため）", () => {
+      const { rerender } = render(
+        <TodoListSortableItems {...defaultProps} sortModeActive={false} />,
+      );
       expect(
         screen.getAllByRole("button", { name: "並び替え" }).length,
-      ).toBeGreaterThan(0);
+      ).toBe(baseList.items.length);
+
+      rerender(<TodoListSortableItems {...defaultProps} sortModeActive={true} />);
+      expect(
+        screen.getAllByRole("button", { name: "並び替え" }).length,
+      ).toBe(baseList.items.length);
     });
 
-    it("sortModeActive=true のとき、機能しないドラッグハンドルを表示しない（操作可能との誤認を防止）", () => {
-      render(<TodoListSortableItems {...defaultProps} sortModeActive={true} />);
-
+    it("子アイテム（indent>0）はブロックのアンカーではなく並び替えの起点・着地点として常に拒否されるため、ドラッグハンドルを表示しない", () => {
+      const listWithChild: TodoList = {
+        ...baseList,
+        items: [
+          baseList.items[0],
+          { ...baseList.items[1], id: "item-child", indent: 1 },
+        ],
+      };
+      render(
+        <TodoListSortableItems
+          {...defaultProps}
+          list={listWithChild}
+          visibleItems={listWithChild.items}
+        />,
+      );
+      // 親アイテム（item-1）の分の1件のみ表示され、子アイテムの分は表示されない
       expect(
-        screen.queryByRole("button", { name: "並び替え" }),
-      ).not.toBeInTheDocument();
+        screen.getAllByRole("button", { name: "並び替え" }).length,
+      ).toBe(1);
     });
   });
 

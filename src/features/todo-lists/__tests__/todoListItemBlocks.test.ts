@@ -1,4 +1,4 @@
-import { splitIntoItemBlocks } from "../todoListItemBlocks";
+import { getBlockAnchorIndices, splitIntoItemBlocks } from "../todoListItemBlocks";
 import type { TodoListItem } from "../types";
 
 const item = (id: string, indent: number): TodoListItem => ({
@@ -62,5 +62,37 @@ describe("splitIntoItemBlocks", () => {
     splitIntoItemBlocks(items);
 
     expect(items.map((i) => i.id)).toEqual(copy.map((i) => i.id));
+  });
+});
+
+describe("getBlockAnchorIndices", () => {
+  it("空配列は空集合を返す", () => {
+    expect(getBlockAnchorIndices([])).toEqual(new Set());
+  });
+
+  it("インデントのないフラットな配列は全インデックスがアンカーになる", () => {
+    const items = [item("A", 0), item("B", 0), item("C", 0)];
+
+    expect(getBlockAnchorIndices(items)).toEqual(new Set([0, 1, 2]));
+  });
+
+  it("親＋子孫の子孫部分のインデックスはアンカーに含まれない", () => {
+    const items = [
+      item("parent1", 0),
+      item("child1", 1),
+      item("grandchild1", 2),
+      item("parent2", 0),
+      item("child2", 1),
+    ];
+
+    // parent1=0, child1=1, grandchild1=2, parent2=3, child2=4
+    // アンカーは各ブロックの先頭である 0 と 3 のみ
+    expect(getBlockAnchorIndices(items)).toEqual(new Set([0, 3]));
+  });
+
+  it("先頭アイテムがindent>0（孤立した子）でも自身を起点としたアンカーになる", () => {
+    const items = [item("orphan-child", 1), item("sibling", 1)];
+
+    expect(getBlockAnchorIndices(items)).toEqual(new Set([0, 1]));
   });
 });

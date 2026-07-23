@@ -19,6 +19,7 @@ import { getTodoItemBgClass } from "./todoItemBgColor";
 import { resolveTodoItemDisplayBgColor } from "./todoCategoryLookup";
 import { filterIncompleteItems } from "./todoListIncompleteItemsFilter";
 import { hasChildren } from "./todoListItemHasChildren";
+import { getBlockAnchorIndices } from "./todoListItemBlocks";
 import { InlineInsertForm } from "./InlineInsertForm";
 import { SortableTodoListItem } from "./SortableTodoListItem";
 import type { SortableTodoListItemProps } from "./SortableTodoListItem";
@@ -30,6 +31,7 @@ type ItemHandlers = Omit<
   | "item"
   | "list"
   | "origIndex"
+  | "isBlockAnchor"
   | "categoryLookup"
   | "sortModeActive"
   | "isDragActive"
@@ -98,6 +100,7 @@ export const TodoListSortableItems = ({
   const parentDetectionIndexById = new Map(
     itemsForParentDetection.map((item, index) => [item.id, index]),
   );
+  const blockAnchorIndices = getBlockAnchorIndices(list.items);
 
   if (visibleItems.length === 0) {
     return (
@@ -146,6 +149,7 @@ export const TodoListSortableItems = ({
                   item={item}
                   list={list}
                   origIndex={origIndex}
+                  isBlockAnchor={blockAnchorIndices.has(origIndex)}
                   categoryLookup={categoryLookup}
                   sortModeActive={sortModeActive}
                   isDragActive={activeId !== null}

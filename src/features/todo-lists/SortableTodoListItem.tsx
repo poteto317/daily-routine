@@ -29,6 +29,7 @@ export type SortableTodoListItemProps = {
   item: TodoListItem;
   list: TodoList;
   origIndex: number;
+  isBlockAnchor: boolean;
   categories: TodoCategory[];
   categoryLookup: Map<string, TodoCategory>;
   sortModeActive: boolean;
@@ -79,6 +80,7 @@ export const SortableTodoListItem = ({
   item,
   list,
   origIndex,
+  isBlockAnchor,
   categories,
   categoryLookup,
   sortModeActive,
@@ -163,11 +165,14 @@ export const SortableTodoListItem = ({
             onToggleSelect={toggleSelectItem}
           />
 
-          {/* sortModeActive中はDnDのセンサーが空になりドラッグは決して開始しない
-              （useTodoListDragAndDrop.ts参照）。機能しない掴みハンドル
-              （cursor-grab・aria「並び替え」）を見せると操作可能と誤認させるため、
-              描画自体を抑止する。 */}
-          {!sortModeActive && (
+          {/* 並び替え（DnD）はブロックのアンカー同士でのみ許可される
+              （todoListItemReorderAction.ts参照）。アンカーでないアイテム
+              （他アイテムの子孫）は並び替えの起点・着地点として常に拒否
+              されるため、機能しない掴みハンドルを見せると操作可能と
+              誤認させる。isBlockAnchorはtodoListItemReorderAction.tsと同じ
+              getBlockAnchorIndices（todoListItemBlocks.ts）を単一の判定
+              根拠として使っており、判定基準が乖離することはない。 */}
+          {isBlockAnchor && (
             <TodoItemDragHandle attributes={attributes} listeners={listeners} />
           )}
 

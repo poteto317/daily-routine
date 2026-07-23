@@ -64,6 +64,7 @@ export const useTodoListDetailViewComposition = ({
   const interactionMode = useTodoListInteractionMode({
     listId: list.id,
     items: list.items,
+    categoryLookup: viewState.categoryLookup,
     onAddItem,
     onReorderItems,
   });

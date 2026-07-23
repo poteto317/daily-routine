@@ -81,8 +81,16 @@ export const reorderItemsInList = (
       ...items.slice(0, fromIndex),
       ...items.slice(blockEndIndex),
     ];
+
+    // 前方移動の場合、移動先アンカー自身の直後ではなく、移動先アンカーの
+    // ブロック全体（アンカー＋子孫）の直後に挿入する。移動先アンカー自身の
+    // 直後に挿入してしまうと、移動先アンカーの子孫が移動ブロックとの間に
+    // 取り残され、移動してきたブロックへ意図せず吸収されてしまう
+    // （移動先アンカーに子孫がいない場合は従来の計算式と一致する）。
     const insertIndex =
-      toIndex > fromIndex ? toIndex - movedBlock.length + 1 : toIndex;
+      toIndex > fromIndex
+        ? getItemBlockEndIndex(items, toIndex) - movedBlock.length
+        : toIndex;
 
     remainingItems.splice(insertIndex, 0, ...movedBlock);
 

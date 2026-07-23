@@ -238,6 +238,70 @@ describe("todo list helpers", () => {
     ]);
   });
 
+  describe("移動先アンカーに子孫がいる場合の並び替え（データ破損の防止）", () => {
+    it("前方移動: 移動先アンカーの子孫が移動ブロックとの間に取り残されず、移動先ブロック全体の直後に挿入される", () => {
+      const items = [
+        createItem({ id: "A", title: "A" }),
+        createItem({ id: "C", title: "C", indent: 1 }), // Aの子
+        createItem({ id: "B", title: "B" }),
+        createItem({ id: "D", title: "D", indent: 1 }), // Bの子
+      ];
+
+      const result = reorderItemsInList(
+        [createList({ items })],
+        "list-1",
+        0,
+        2,
+      );
+
+      expect(result[0].items.map((i) => i.id)).toEqual(["B", "D", "A", "C"]);
+    });
+
+    it("後方移動: 移動先アンカーに子孫がいても正しく移動先ブロックの直前に挿入される", () => {
+      const items = [
+        createItem({ id: "A", title: "A" }),
+        createItem({ id: "C", title: "C", indent: 1 }), // Aの子
+        createItem({ id: "B", title: "B" }),
+        createItem({ id: "D", title: "D", indent: 1 }), // Bの子
+      ];
+
+      const result = reorderItemsInList(
+        [createList({ items })],
+        "list-1",
+        2,
+        0,
+      );
+
+      expect(result[0].items.map((i) => i.id)).toEqual(["B", "D", "A", "C"]);
+    });
+
+    it("移動先アンカーに複数の子孫（孫を含む）がいても全員まとめて維持される", () => {
+      const items = [
+        createItem({ id: "A", title: "A" }),
+        createItem({ id: "B", title: "B" }),
+        createItem({ id: "B-child", title: "B-child", indent: 1 }),
+        createItem({ id: "B-grandchild", title: "B-grandchild", indent: 2 }),
+        createItem({ id: "E", title: "E" }),
+      ];
+
+      // A（子孫なし）を B（子・孫あり）へ前方移動
+      const result = reorderItemsInList(
+        [createList({ items })],
+        "list-1",
+        0,
+        1,
+      );
+
+      expect(result[0].items.map((i) => i.id)).toEqual([
+        "B",
+        "B-child",
+        "B-grandchild",
+        "A",
+        "E",
+      ]);
+    });
+  });
+
   describe("表示順とデータ順が乖離する場合の並び替え（reorderItemsInList の純粋関数としての挙動）", () => {
     /**
      * dnd-kit の handleDragEnd と同じ方式（表示中のアイテムIDを生配列上で

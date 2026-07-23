@@ -59,7 +59,10 @@ const defaultParams = {
   onUpdateListHideCompleted: jest.fn(),
 };
 
+const categoryLookup = new Map();
+
 const defaultViewStateMock = {
+  categoryLookup,
   hideCompleted: false,
   collapsedItemIds: new Set<string>(),
   editingItemId: null,
@@ -187,6 +190,7 @@ describe("useTodoListDetailViewComposition", () => {
     expect(useTodoListInteractionMode).toHaveBeenCalledWith({
       listId: "list-1",
       items: list.items,
+      categoryLookup,
       onAddItem: defaultParams.onAddItem,
       onReorderItems: defaultParams.onReorderItems,
     });

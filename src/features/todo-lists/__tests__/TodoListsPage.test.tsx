@@ -566,15 +566,15 @@ describe("TodoListsPage", () => {
     expect(task1Index).toBeLessThan(doneIndex);
   });
 
-  it("ドラッグハンドル（並び替えボタン）は表示されない（DnDが常時無効のため）", () => {
+  it("ドラッグハンドル（並び替えボタン）が表示される（同一セクション内のDnDは常時試行可能なため）", () => {
     mockGetTodoLists.mockReturnValue([baseList]);
     mockGetSelectedTodoListId.mockReturnValue("list-1");
 
     render(<TodoListsPage />);
 
     expect(
-      screen.queryByRole("button", { name: "並び替え" }),
-    ).not.toBeInTheDocument();
+      screen.getAllByRole("button", { name: "並び替え" }).length,
+    ).toBeGreaterThan(0);
   });
 
   it("詳細リストが消えた場合は空状態へフォールバックする", () => {
@@ -1210,6 +1210,36 @@ describe("TodoListsPage", () => {
         capturedDragCallbacks.onDragEnd!({
           active: { id: "item-a" },
           over: null,
+        });
+      });
+
+      await waitFor(() => {
+        expect(mockSaveTodoListsToLocal).not.toHaveBeenCalled();
+      });
+    });
+
+    it("onDragEnd で完了状態が異なるアイテム間（セクションを跨ぐ）へのドロップでは永続化されない（意図しない再親子付けの防止）", async () => {
+      mockGetTodoLists.mockReturnValue([
+        {
+          ...dndList,
+          items: [
+            ...dndList.items,
+            {
+              id: "item-done",
+              title: "Delta",
+              isCompleted: true,
+              createdAt: "2026-03-07T00:00:00.000Z",
+            },
+          ],
+        },
+      ]);
+
+      render(<TodoListsPage />);
+
+      act(() => {
+        capturedDragCallbacks.onDragEnd!({
+          active: { id: "item-a" },
+          over: { id: "item-done" },
         });
       });
 

@@ -203,5 +203,18 @@ describe("useTodoListDragAndDrop", () => {
       rerender();
       expect(result.current.sensors).toBe(first);
     });
+
+    it("disabled=false（デフォルト）でも sensors の参照がレンダーをまたいで安定している（センサーoptionsをモジュール定数化したため）", () => {
+      const { result, rerender } = renderHook(() =>
+        useTodoListDragAndDrop({
+          items,
+          listId: "list-1",
+          onReorderItems: jest.fn(),
+        }),
+      );
+      const first = result.current.sensors;
+      rerender();
+      expect(result.current.sensors).toBe(first);
+    });
   });
 });
