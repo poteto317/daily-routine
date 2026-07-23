@@ -8,9 +8,15 @@ jest.mock("../useTodoListDragAndDrop", () => ({
   useTodoListDragAndDrop: jest.fn(),
 }));
 
+jest.mock("../todoListItemReorderAction", () => ({
+  reorderTodoItemsIfSameSection: jest.fn(),
+}));
+
 import { useTodoListInlineInsert } from "../useTodoListInlineInsert";
 import { useTodoListDragAndDrop } from "../useTodoListDragAndDrop";
+import { reorderTodoItemsIfSameSection } from "../todoListItemReorderAction";
 import { useTodoListInteractionMode } from "../useTodoListInteractionMode";
+import type { TodoCategory } from "../types";
 
 const closeInlineInsert = jest.fn();
 
@@ -40,12 +46,18 @@ const items = [
   },
 ];
 
+const categoryLookup = new Map<string, TodoCategory>();
+
 const defaultParams = {
   listId: "list-1",
   items,
+  categoryLookup,
   onAddItem: jest.fn(),
   onReorderItems: jest.fn(),
 };
+
+const getLastPassedOnReorderItems = () =>
+  (useTodoListDragAndDrop as jest.Mock).mock.calls.at(-1)![0].onReorderItems;
 
 describe("useTodoListInteractionMode", () => {
   beforeEach(() => {
@@ -54,11 +66,18 @@ describe("useTodoListInteractionMode", () => {
     (useTodoListDragAndDrop as jest.Mock).mockReturnValue(dndMock);
   });
 
-  describe("表示順が常に固定ソートされるため、DnD・インライン挿入は常時無効", () => {
-    it("DnD は常に disabled=true で呼ばれる", () => {
+  describe("表示順は常に固定ソートされるが、DnDは同一セクション内のみ許可される", () => {
+    it("DnD には disabled が渡されない（常時センサー有効、可否はラップされた onReorderItems 側で判定）", () => {
       renderHook(() => useTodoListInteractionMode(defaultParams));
       expect(useTodoListDragAndDrop).toHaveBeenCalledWith(
-        expect.objectContaining({ disabled: true }),
+        expect.not.objectContaining({ disabled: expect.anything() }),
+      );
+    });
+
+    it("useTodoListDragAndDrop には categoryLookup を渡さない（DnDフックはドメイン非依存のまま）", () => {
+      renderHook(() => useTodoListInteractionMode(defaultParams));
+      expect(useTodoListDragAndDrop).toHaveBeenCalledWith(
+        expect.not.objectContaining({ categoryLookup: expect.anything() }),
       );
     });
 
@@ -100,14 +119,59 @@ describe("useTodoListInteractionMode", () => {
     );
   });
 
-  it("useTodoListDragAndDrop を正しいパラメータで呼ぶ", () => {
+  it("useTodoListDragAndDrop を正しいパラメータで呼ぶ（onReorderItemsは同一セクション判定でラップされた関数）", () => {
     renderHook(() => useTodoListInteractionMode(defaultParams));
     expect(useTodoListDragAndDrop).toHaveBeenCalledWith({
       items,
       listId: "list-1",
-      onReorderItems: defaultParams.onReorderItems,
+      onReorderItems: expect.any(Function),
       onDragStarted: closeInlineInsert,
-      disabled: true,
+    });
+    expect(getLastPassedOnReorderItems()).not.toBe(defaultParams.onReorderItems);
+  });
+
+  describe("同一セクション判定（reorderTodoItemsIfSameSectionへの配線）", () => {
+    // 同一セクション判定ロジック自体の網羅的なテストは
+    // todoListItemReorderAction.test.ts の責務。ここでは
+    // useTodoListDragAndDrop へ渡された onReorderItems を呼び出すと
+    // reorderTodoItemsIfSameSection が正しい引数で呼ばれることのみを検証する。
+    it("渡された onReorderItems を呼び出すと reorderTodoItemsIfSameSection を正しい引数で呼ぶ", () => {
+      const onReorderItems = jest.fn();
+      renderHook(() =>
+        useTodoListInteractionMode({ ...defaultParams, onReorderItems }),
+      );
+
+      act(() => {
+        getLastPassedOnReorderItems()("list-1", 0, 1);
+      });
+
+      expect(reorderTodoItemsIfSameSection).toHaveBeenCalledWith({
+        items,
+        categoryLookup,
+        listId: "list-1",
+        fromIndex: 0,
+        toIndex: 1,
+        onReorderItems,
+      });
+    });
+
+    it("useTodoListDragAndDrop から渡されるコールバック自身の listId 引数は無視し、常に外側の listId を使う", () => {
+      const onReorderItems = jest.fn();
+      renderHook(() =>
+        useTodoListInteractionMode({ ...defaultParams, onReorderItems }),
+      );
+
+      // useTodoListDragAndDrop は常に自身が構築時に受け取った listId
+      // （= defaultParams.listId）をそのままコールバックへ返すため、実際には
+      // 異なる値が渡ることはない。ここではその不変条件が破られた場合でも
+      // 外側の listId が優先されることを検証する。
+      act(() => {
+        getLastPassedOnReorderItems()("some-other-list-id", 0, 1);
+      });
+
+      expect(reorderTodoItemsIfSameSection).toHaveBeenCalledWith(
+        expect.objectContaining({ listId: "list-1" }),
+      );
     });
   });
 

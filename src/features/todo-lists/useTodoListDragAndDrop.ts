@@ -15,6 +15,17 @@ import type { TodoListItem } from "./types";
 
 const EMPTY_SENSORS: SensorDescriptor<SensorOptions>[] = [];
 
+// dnd-kitのuseSensorは渡されたoptionsオブジェクトの参照が変わるたびに
+// 内部メモを再計算する。インラインリテラルのままだと毎レンダー新しい
+// 参照になりメモ化が効かないため、モジュールスコープの定数として固定する。
+const POINTER_SENSOR_OPTIONS = { activationConstraint: { distance: 8 } };
+const TOUCH_SENSOR_OPTIONS = {
+  activationConstraint: { delay: 300, tolerance: 5 },
+};
+const KEYBOARD_SENSOR_OPTIONS = {
+  coordinateGetter: sortableKeyboardCoordinates,
+};
+
 type UseTodoListDragAndDropParams = {
   items: TodoListItem[];
   listId: string;
@@ -41,13 +52,9 @@ export const useTodoListDragAndDrop = ({
   const [activeId, setActiveId] = useState<string | null>(null);
 
   const registeredSensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
-    useSensor(TouchSensor, {
-      activationConstraint: { delay: 300, tolerance: 5 },
-    }),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    }),
+    useSensor(PointerSensor, POINTER_SENSOR_OPTIONS),
+    useSensor(TouchSensor, TOUCH_SENSOR_OPTIONS),
+    useSensor(KeyboardSensor, KEYBOARD_SENSOR_OPTIONS),
   );
 
   const handleDragStart = useCallback(
