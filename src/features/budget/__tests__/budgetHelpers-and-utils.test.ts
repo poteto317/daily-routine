@@ -2,7 +2,6 @@ import {
   buildBudgetCategoryLookup,
   resolveExpenseCategory,
   formatBudgetMonthLabel,
-  getBudgetExpenseDateBounds,
   getRemainingCardClassName,
   getRemainingTone,
   getRemainingValueClassName,
@@ -10,11 +9,17 @@ import {
   sortExpensesByDateDesc,
 } from "../helpers";
 import {
+  buildDateValue,
+  clampDateToMonth,
   daysInMonth,
+  daysInMonthByKey,
   formatExpenseDate,
+  getDayFromDateValue,
   getDefaultExpenseDate,
+  getMonthKeyFromDateValue,
   isCurrentMonthDate,
-  shiftMonth,
+  monthKeyToDate,
+  shiftMonthToFirstDay,
   toDateKey,
   toMonthKey,
 } from "../utils/date";
@@ -45,14 +50,10 @@ describe("budget helpers and utils", () => {
     jest.useRealTimers();
   });
 
-  it("月表示と日付境界を整形できる", () => {
+  it("月表示を整形できる", () => {
     const date = new Date("2026-03-15T00:00:00+09:00");
 
     expect(formatBudgetMonthLabel(date)).toBe("2026年 3月");
-    expect(getBudgetExpenseDateBounds(date)).toEqual({
-      minDate: "2026-03-01",
-      maxDate: "2026-03-31",
-    });
   });
 
   it("残額表示用のトーンとクラスを返す", () => {
@@ -144,7 +145,8 @@ describe("budget helpers and utils", () => {
 
     expect(toMonthKey(date)).toBe("2026-03");
     expect(toDateKey(date)).toBe("2026-03-15");
-    expect(shiftMonth(date, 1).getMonth()).toBe(3);
+    expect(shiftMonthToFirstDay(date, 1).getMonth()).toBe(3);
+    expect(shiftMonthToFirstDay(date, 1).getDate()).toBe(1);
     expect(isCurrentMonthDate(new Date("2026-03-01T00:00:00+09:00"))).toBe(
       true,
     );
@@ -161,11 +163,84 @@ describe("budget helpers and utils", () => {
       ),
     ).toBe(true);
     expect(daysInMonth(date)).toBe(31);
+    expect(daysInMonthByKey("2026-03")).toBe(31);
+    expect(daysInMonthByKey("2026-04")).toBe(30);
+    expect(daysInMonthByKey("2026-02")).toBe(28);
+    expect(daysInMonthByKey("2024-02")).toBe(29);
     expect(getDefaultExpenseDate(date)).toBe("2026-03-07");
     expect(getDefaultExpenseDate(new Date("2026-04-01T00:00:00+09:00"))).toBe(
       "2026-04-01",
     );
     expect(formatExpenseDate("2026-03-08")).toBe("3月8日");
+  });
+
+  describe("shiftMonthToFirstDayの月末日オーバーフロー回帰", () => {
+    it("31日を含む月の月末日を基準にしても、前後の月がさらに1つ先に進まない", () => {
+      // 3/31 の1ヶ月後を素朴に setMonth で計算すると、4月には31日が
+      // 存在しないため5/1へ繰り上がってしまう（4月をスキップする）。
+      // shiftMonthToFirstDay は常に1日を返すことでこれを防ぐ。
+      const endOfMarch = new Date("2026-03-31T00:00:00+09:00");
+
+      expect(toMonthKey(shiftMonthToFirstDay(endOfMarch, 1))).toBe("2026-04");
+      expect(toMonthKey(shiftMonthToFirstDay(endOfMarch, -1))).toBe("2026-02");
+    });
+
+    it("7/31のように前月・翌月がどちらも31日以下の月でも正しく計算する", () => {
+      const endOfJuly = new Date("2026-07-31T00:00:00+09:00");
+
+      expect(toMonthKey(shiftMonthToFirstDay(endOfJuly, -1))).toBe("2026-06");
+      expect(toMonthKey(shiftMonthToFirstDay(endOfJuly, 1))).toBe("2026-08");
+    });
+
+    it("うるう年でない年の1/31を基準に-1ヶ月しても2月をスキップしない", () => {
+      const endOfJan = new Date("2026-01-31T00:00:00+09:00");
+
+      expect(toMonthKey(shiftMonthToFirstDay(endOfJan, 1))).toBe("2026-02");
+    });
+  });
+
+  it("月キーから月初日のDateを作れる", () => {
+    const date = monthKeyToDate("2026-03");
+
+    expect(date.getFullYear()).toBe(2026);
+    expect(date.getMonth()).toBe(2);
+    expect(date.getDate()).toBe(1);
+  });
+
+  it("月キーと日から日付文字列を組み立てられる", () => {
+    expect(buildDateValue("2026-03", 5)).toBe("2026-03-05");
+    expect(buildDateValue("2026-03", 31)).toBe("2026-03-31");
+  });
+
+  describe("日付文字列（YYYY-MM-DD）の分解とクランプ", () => {
+    it("日付文字列から月キーと日を取り出せる", () => {
+      expect(getMonthKeyFromDateValue("2026-03-15")).toBe("2026-03");
+      expect(getDayFromDateValue("2026-03-15")).toBe(15);
+    });
+
+    it("日数が変わらない月へ移動する場合はそのまま同じ日になる", () => {
+      expect(clampDateToMonth("2026-03-15", "2026-04")).toBe("2026-04-15");
+    });
+
+    it("日数が減る月へ移動する場合、選択中の日を新しい月の末日にクランプする", () => {
+      expect(clampDateToMonth("2026-03-31", "2026-04")).toBe("2026-04-30");
+    });
+
+    it("うるう年でない2月へ移動する場合、28日にクランプする", () => {
+      expect(clampDateToMonth("2026-01-30", "2026-02")).toBe("2026-02-28");
+    });
+
+    it("うるう年の2月へ移動する場合、29日にクランプする", () => {
+      expect(clampDateToMonth("2024-01-30", "2024-02")).toBe("2024-02-29");
+    });
+
+    it("年をまたぐ月変更でも正しく計算する", () => {
+      expect(clampDateToMonth("2025-12-15", "2026-01")).toBe("2026-01-15");
+    });
+
+    it("日数が増える月へ移動する場合はクランプせずそのままの日になる", () => {
+      expect(clampDateToMonth("2026-04-30", "2026-05")).toBe("2026-05-30");
+    });
   });
 
   it("金額書式とメトリクスを計算できる", () => {

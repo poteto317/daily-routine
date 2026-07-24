@@ -160,13 +160,13 @@ describe("BudgetPage", () => {
 
     fireEvent.click(screen.getByText("今月に戻る"));
 
-    fireEvent.change(screen.getByDisplayValue("2026-03-07"), {
+    fireEvent.change(screen.getByLabelText("日付（日）"), {
       target: { value: "2026-03-08" },
     });
     fireEvent.change(screen.getByPlaceholderText("例: 1500"), {
       target: { value: "2000" },
     });
-    fireEvent.change(screen.getByRole("combobox"), {
+    fireEvent.change(screen.getByLabelText(/カテゴリ/), {
       target: { value: "cat-transport" },
     });
     fireEvent.click(screen.getByText("追加"));
@@ -258,7 +258,7 @@ describe("BudgetPage", () => {
 
     render(<BudgetPage />);
 
-    fireEvent.change(screen.getByLabelText("日付"), {
+    fireEvent.change(screen.getByLabelText("日付（日）"), {
       target: { value: "2026-03-08" },
     });
     fireEvent.change(screen.getByLabelText(/金額/), {

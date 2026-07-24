@@ -16,6 +16,8 @@
   "expenseForm": {
     "title": "支出を記録",
     "dateLabel": "日付",
+    "dateMonthLabel": "日付（月）",
+    "dateDayLabel": "日付（日）",
     "amountLabel": "金額",
     "categoryLabel": "カテゴリ（任意）",
     "requiredMark": "*",

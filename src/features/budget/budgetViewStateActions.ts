@@ -1,6 +1,6 @@
 import type { Expense } from "@/types/routine";
 import type { MonthStateSnapshot } from "./budgetPageStateHelpers";
-import { shiftMonth } from "./utils/date";
+import { shiftMonthToFirstDay } from "./utils/date";
 
 export type BudgetViewState = {
   currentDate: Date;
@@ -38,9 +38,9 @@ export const createBudgetMonthNavigationDate = (params: {
     case "current":
       return today;
     case "next":
-      return shiftMonth(currentDate, 1);
+      return shiftMonthToFirstDay(currentDate, 1);
     case "previous":
-      return shiftMonth(currentDate, -1);
+      return shiftMonthToFirstDay(currentDate, -1);
   }
 };
 

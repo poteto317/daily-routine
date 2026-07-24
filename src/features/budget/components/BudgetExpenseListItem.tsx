@@ -2,6 +2,7 @@ import type { BudgetCategory, Expense } from "@/types/routine";
 import { formatExpenseDate } from "../utils/date";
 import { formatCurrency } from "../utils/format";
 import budgetTexts from "../locales/ja.json";
+import { BudgetExpenseDateSelect } from "./BudgetExpenseDateSelect";
 
 type BudgetExpenseListItemProps = {
   expense: Expense;
@@ -42,12 +43,9 @@ export const BudgetExpenseListItem = ({
       <div className="bg-white dark:bg-white border border-blue-300 dark:border-blue-400 rounded-lg p-4">
         <div className="space-y-3">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <input
-              type="date"
+            <BudgetExpenseDateSelect
               value={editingExpenseDate}
-              onChange={(e) => onEditDateChange(e.target.value)}
-              aria-label={budgetTexts.expenseForm.dateLabel}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-400 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-white text-gray-900"
+              onChange={onEditDateChange}
             />
             <input
               type="number"

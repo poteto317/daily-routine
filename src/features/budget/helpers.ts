@@ -1,5 +1,4 @@
 import type { BudgetCategory, Expense } from "@/types/routine";
-import { daysInMonth, toMonthKey } from "./utils/date";
 import budgetTexts from "./locales/ja.json";
 
 type BudgetCardTone = "positive" | "over";
@@ -7,18 +6,6 @@ type BudgetCardTone = "positive" | "over";
 // Month Navigation Helpers
 export const formatBudgetMonthLabel = (date: Date): string =>
   `${date.getFullYear()}${budgetTexts.monthNavigation.yearSuffix} ${date.getMonth() + 1}${budgetTexts.monthNavigation.monthSuffix}`;
-
-// Expense Form Helpers
-export const getBudgetExpenseDateBounds = (
-  currentDate: Date,
-): { minDate: string; maxDate: string } => {
-  const month = toMonthKey(currentDate);
-
-  return {
-    minDate: `${month}-01`,
-    maxDate: `${month}-${String(daysInMonth(currentDate)).padStart(2, "0")}`,
-  };
-};
 
 // Summary Cards Helpers
 export const getRemainingTone = (remaining: number): BudgetCardTone => {
