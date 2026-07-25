@@ -65,7 +65,6 @@ export const BudgetPage = () => {
           {state.showExpenseForm && (
             <BudgetExpenseForm
               categories={state.categories}
-              currentDate={state.currentDate}
               expenseAmount={state.expenseAmount}
               expenseCategoryId={state.expenseCategoryId}
               expenseDate={state.expenseDate}

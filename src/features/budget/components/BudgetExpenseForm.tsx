@@ -1,10 +1,9 @@
 import type { BudgetCategory } from "@/types/routine";
-import { getBudgetExpenseDateBounds } from "../helpers";
+import { BudgetExpenseDateSelect } from "./BudgetExpenseDateSelect";
 import budgetTexts from "../locales/ja.json";
 
 type BudgetExpenseFormProps = {
   categories: BudgetCategory[];
-  currentDate: Date;
   expenseAmount: string;
   expenseCategoryId: string;
   expenseDate: string;
@@ -17,7 +16,6 @@ type BudgetExpenseFormProps = {
 
 export const BudgetExpenseForm = ({
   categories,
-  currentDate,
   expenseAmount,
   expenseCategoryId,
   expenseDate,
@@ -27,8 +25,6 @@ export const BudgetExpenseForm = ({
   onCategoryIdChange,
   onDateChange,
 }: BudgetExpenseFormProps) => {
-  const { minDate, maxDate } = getBudgetExpenseDateBounds(currentDate);
-
   return (
     <div className="bg-gray-50 dark:bg-gray-200 rounded-xl p-4 mb-6">
       <h4 className="font-bold text-gray-900 dark:text-black mb-3">
@@ -39,14 +35,7 @@ export const BudgetExpenseForm = ({
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-900 mb-1">
             {budgetTexts.expenseForm.dateLabel}
           </label>
-          <input
-            type="date"
-            value={expenseDate}
-            onChange={(e) => onDateChange(e.target.value)}
-            min={minDate}
-            max={maxDate}
-            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-400 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-white text-gray-900"
-          />
+          <BudgetExpenseDateSelect value={expenseDate} onChange={onDateChange} />
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-900 mb-1">
@@ -70,6 +59,7 @@ export const BudgetExpenseForm = ({
           <select
             value={expenseCategoryId}
             onChange={(e) => onCategoryIdChange(e.target.value)}
+            aria-label={budgetTexts.expenseForm.categoryLabel}
             className="w-full px-4 py-2 border border-gray-300 dark:border-gray-400 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-white text-gray-900"
           >
             <option value="">

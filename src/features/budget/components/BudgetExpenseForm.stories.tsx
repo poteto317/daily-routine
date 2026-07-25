@@ -16,7 +16,6 @@ const meta = {
   },
   args: {
     categories,
-    currentDate: new Date(2026, 4, 22),
     onAdd: fn(),
     onAmountChange: fn(),
     onCancel: fn(),

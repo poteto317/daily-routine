@@ -181,7 +181,8 @@ describe("BudgetExpenseList", () => {
       />,
     );
 
-    expect(screen.getByLabelText("日付")).toHaveValue("2026-05-22");
+    expect(screen.getByLabelText("日付（月）")).toHaveValue("2026-05");
+    expect(screen.getByLabelText("日付（日）")).toHaveValue("2026-05-22");
     expect(screen.getByLabelText(/金額/)).toHaveValue(850);
     expect(screen.getByLabelText(/カテゴリ/)).toHaveValue("cat-lunch");
     expect(screen.getByRole("button", { name: "保存" })).toBeInTheDocument();
@@ -256,7 +257,7 @@ describe("BudgetExpenseList", () => {
       />,
     );
 
-    fireEvent.change(screen.getByLabelText("日付"), {
+    fireEvent.change(screen.getByLabelText("日付（日）"), {
       target: { value: "2026-05-25" },
     });
     fireEvent.change(screen.getByLabelText(/金額/), {
@@ -269,6 +270,35 @@ describe("BudgetExpenseList", () => {
     expect(onEditDateChange).toHaveBeenCalledWith("2026-05-25");
     expect(onEditAmountChange).toHaveBeenCalledWith("1000");
     expect(onEditCategoryIdChange).toHaveBeenCalledWith("cat-lunch");
+  });
+
+  it("編集中の日付の「月」を前後の月に変更すると、その月の同じ日でonEditDateChangeが呼ばれる", () => {
+    const onEditDateChange = jest.fn();
+    render(
+      <BudgetExpenseList
+        {...createProps({
+          editingExpenseId: "e1",
+          editingExpenseDate: "2026-05-22",
+          editingExpenseAmount: "850",
+          editingExpenseCategoryId: "",
+          onEditDateChange,
+          expenses: [
+            {
+              id: "e1",
+              date: "2026-05-22",
+              amount: 850,
+              createdAt: "2026-05-22T00:00:00.000Z",
+            },
+          ],
+        })}
+      />,
+    );
+
+    fireEvent.change(screen.getByLabelText("日付（月）"), {
+      target: { value: "2026-06" },
+    });
+
+    expect(onEditDateChange).toHaveBeenCalledWith("2026-06-22");
   });
 
   it("保存/キャンセルボタンがonSaveEdit/onCancelEditを呼ぶ", () => {
