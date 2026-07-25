@@ -5,6 +5,7 @@ type CreateBudgetPageInputHandlersParams = {
   setEditingExpenseAmount: (value: string) => void;
   setEditingExpenseDate: (value: string) => void;
   setEditingExpenseCategoryId: (value: string) => void;
+  setEditingExpenseUsedTime: (value: string) => void;
 };
 
 export const createBudgetPageInputHandlers = ({
@@ -14,6 +15,7 @@ export const createBudgetPageInputHandlers = ({
   setEditingExpenseAmount,
   setEditingExpenseDate,
   setEditingExpenseCategoryId,
+  setEditingExpenseUsedTime,
 }: CreateBudgetPageInputHandlersParams) => {
   return {
     handleExpenseAmountChange: (value: string) => setExpenseAmount(value),
@@ -26,5 +28,7 @@ export const createBudgetPageInputHandlers = ({
       setEditingExpenseDate(value),
     handleEditExpenseCategoryIdChange: (value: string) =>
       setEditingExpenseCategoryId(value),
+    handleEditExpenseUsedTimeChange: (value: string) =>
+      setEditingExpenseUsedTime(value),
   };
 };

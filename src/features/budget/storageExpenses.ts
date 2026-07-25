@@ -1,6 +1,7 @@
 import { generateId } from "@/lib/storage/core";
 import type { Expense } from "@/types/routine";
 import { getBudgetData, saveBudgetData } from "./storageData";
+import { formatTimeOfDay } from "./utils/date";
 
 export const getMonthlyExpenses = (month: string): Expense[] => {
   const data = getBudgetData();
@@ -19,12 +20,17 @@ export const addExpense = (
     data.expenses[month] = [];
   }
 
+  // createdAt（記録時刻）とusedTime（使用時刻）は、追加時点では
+  // 同じ瞬間を指すため同一のnowから算出する。
+  const now = new Date();
+
   data.expenses[month].push({
     id: generateId("expense"),
     date,
     amount,
     categoryId,
-    createdAt: new Date().toISOString(),
+    createdAt: now.toISOString(),
+    usedTime: formatTimeOfDay(now),
   });
 
   saveBudgetData(data);
@@ -33,7 +39,9 @@ export const addExpense = (
 export const updateExpense = (
   month: string,
   expenseId: string,
-  updates: Partial<Pick<Expense, "date" | "amount" | "categoryId">>,
+  updates: Partial<
+    Pick<Expense, "date" | "amount" | "categoryId" | "usedTime">
+  >,
 ): void => {
   const data = getBudgetData();
   const monthExpenses = data.expenses[month];

@@ -5,6 +5,13 @@ export interface Expense {
   /** BudgetCategory.id への参照（未選択の場合は undefined） */
   categoryId?: string;
   createdAt: string;
+  /**
+   * 使用時刻（"HH:mm"、ローカル時刻）。一覧の並び順で同じ`date`同士を
+   * 決着させるために使う。追加時は記録時刻（createdAt）と同じ値を
+   * デフォルトとして設定し、編集で変更できる。未設定（記録済みの
+   * 既存データ）の場合はcreatedAtの時刻部分にフォールバックする。
+   */
+  usedTime?: string;
 }
 
 export interface BudgetCategory {

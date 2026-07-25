@@ -63,6 +63,13 @@ export const formatExpenseDate = (date: string): string => {
   });
 };
 
+/** ローカル時刻を "HH:mm" 形式で返す。 */
+export const formatTimeOfDay = (date: Date): string => {
+  const hh = String(date.getHours()).padStart(2, "0");
+  const mm = String(date.getMinutes()).padStart(2, "0");
+  return `${hh}:${mm}`;
+};
+
 /** "YYYY-MM-DD" 形式の日付文字列から先頭7文字（"YYYY-MM"）の月キーを取り出す。 */
 export const getMonthKeyFromDateValue = (value: string): string =>
   value.slice(0, 7);

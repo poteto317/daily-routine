@@ -6,9 +6,11 @@ type BudgetExpenseEditStateResultArgs = {
   editingExpenseDate: string;
   editingExpenseAmount: string;
   editingExpenseCategoryId: string;
+  editingExpenseUsedTime: string;
   setEditingExpenseDate: Dispatch<SetStateAction<string>>;
   setEditingExpenseAmount: Dispatch<SetStateAction<string>>;
   setEditingExpenseCategoryId: Dispatch<SetStateAction<string>>;
+  setEditingExpenseUsedTime: Dispatch<SetStateAction<string>>;
   startEditExpense: (expense: Expense) => void;
   cancelEditExpense: () => void;
 };
@@ -18,9 +20,11 @@ export const createBudgetExpenseEditStateResult = ({
   editingExpenseDate,
   editingExpenseAmount,
   editingExpenseCategoryId,
+  editingExpenseUsedTime,
   setEditingExpenseDate,
   setEditingExpenseAmount,
   setEditingExpenseCategoryId,
+  setEditingExpenseUsedTime,
   startEditExpense,
   cancelEditExpense,
 }: BudgetExpenseEditStateResultArgs) => {
@@ -29,9 +33,11 @@ export const createBudgetExpenseEditStateResult = ({
     editingExpenseDate,
     editingExpenseAmount,
     editingExpenseCategoryId,
+    editingExpenseUsedTime,
     setEditingExpenseDate,
     setEditingExpenseAmount,
     setEditingExpenseCategoryId,
+    setEditingExpenseUsedTime,
     startEditExpense,
     cancelEditExpense,
   };

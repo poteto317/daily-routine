@@ -27,12 +27,16 @@ describe("budget storageExpenses", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockGenerateId.mockReturnValue("expense-1");
+    // toISOString だけでなく getHours/getMinutes（usedTime算出に使う）も
+    // 決定的にするため、日付だけでなく実際の時刻をfakeTimersで固定する。
+    // "2026-05-01T00:00:00.000Z" はTZ=Asia/Tokyo環境ではローカル9:00になる。
     jest
-      .spyOn(Date.prototype, "toISOString")
-      .mockReturnValue("2026-05-01T00:00:00.000Z");
+      .useFakeTimers()
+      .setSystemTime(new Date("2026-05-01T00:00:00.000Z"));
   });
 
   afterEach(() => {
+    jest.useRealTimers();
     jest.restoreAllMocks();
   });
 
@@ -50,6 +54,7 @@ describe("budget storageExpenses", () => {
             amount: 1500,
             categoryId: "cat-1",
             createdAt: "2026-05-01T00:00:00.000Z",
+            usedTime: "09:00",
           },
         ],
       },
@@ -68,6 +73,16 @@ describe("budget storageExpenses", () => {
         ],
       },
     });
+  });
+
+  it("addExpenseはcreatedAtとusedTimeを同一のnowから算出する（記録時刻と使用時刻のデフォルトが一致する）", () => {
+    mockGetBudgetData.mockReturnValue({ expenses: {} });
+
+    addExpense("2026-05-10", 1500, "cat-1");
+
+    const saved = mockSaveBudgetData.mock.calls[0][0].expenses["2026-05"][0];
+    expect(saved.createdAt).toBe("2026-05-01T00:00:00.000Z");
+    expect(saved.usedTime).toBe("09:00");
   });
 
   it("deleteExpenseは指定したidの支出だけを取り除く", () => {
@@ -339,6 +354,67 @@ describe("budget storageExpenses", () => {
         ],
       },
     });
+  });
+
+  it("updateExpenseはupdatesにusedTimeを含めて渡すと使用時刻を更新する", () => {
+    mockGetBudgetData.mockReturnValue({
+      expenses: {
+        "2026-05": [
+          {
+            id: "e1",
+            date: "2026-05-10",
+            amount: 1500,
+            categoryId: "cat-1",
+            createdAt: "2026-05-01T00:00:00.000Z",
+            usedTime: "09:00",
+          },
+        ],
+      },
+    });
+
+    updateExpense("2026-05", "e1", {
+      date: "2026-05-10",
+      amount: 1500,
+      categoryId: "cat-1",
+      usedTime: "21:15",
+    });
+
+    expect(mockSaveBudgetData).toHaveBeenCalledWith({
+      expenses: {
+        "2026-05": [
+          {
+            id: "e1",
+            date: "2026-05-10",
+            amount: 1500,
+            categoryId: "cat-1",
+            createdAt: "2026-05-01T00:00:00.000Z",
+            usedTime: "21:15",
+          },
+        ],
+      },
+    });
+  });
+
+  it("updateExpenseはupdatesでusedTimeを省略した場合は既存のusedTimeを保持する", () => {
+    mockGetBudgetData.mockReturnValue({
+      expenses: {
+        "2026-05": [
+          {
+            id: "e1",
+            date: "2026-05-10",
+            amount: 1500,
+            categoryId: "cat-1",
+            createdAt: "2026-05-01T00:00:00.000Z",
+            usedTime: "09:00",
+          },
+        ],
+      },
+    });
+
+    updateExpense("2026-05", "e1", { date: "2026-05-20", amount: 2000 });
+
+    const saved = mockSaveBudgetData.mock.calls[0][0].expenses["2026-05"][0];
+    expect(saved.usedTime).toBe("09:00");
   });
 
   it("updateExpenseはupdatesでcategoryIdをundefinedとして明示した場合はカテゴリをクリアする", () => {

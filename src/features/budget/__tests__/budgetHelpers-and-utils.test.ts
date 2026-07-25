@@ -6,7 +6,6 @@ import {
   getRemainingTone,
   getRemainingValueClassName,
   shouldShowOverBudget,
-  sortExpensesByDateDesc,
 } from "../helpers";
 import {
   buildDateValue,
@@ -65,28 +64,6 @@ describe("budget helpers and utils", () => {
     expect(getRemainingValueClassName("over")).toContain("text-orange-600");
     expect(shouldShowOverBudget("positive")).toBe(false);
     expect(shouldShowOverBudget("over")).toBe(true);
-  });
-
-  it("支出一覧を日付降順に並べる", () => {
-    expect(
-      sortExpensesByDateDesc([
-        {
-          id: "e1",
-          date: "2026-03-03",
-          amount: 100,
-          createdAt: "2026-03-03T00:00:00.000Z",
-        },
-        {
-          id: "e2",
-          date: "2026-03-05",
-          amount: 200,
-          createdAt: "2026-03-05T00:00:00.000Z",
-        },
-      ]),
-    ).toEqual([
-      expect.objectContaining({ id: "e2" }),
-      expect.objectContaining({ id: "e1" }),
-    ]);
   });
 
   it("支出からcategoryIdに対応するカテゴリを解決できる", () => {

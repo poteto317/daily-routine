@@ -12,16 +12,18 @@ type BudgetExpenseListItemProps = {
   editingExpenseDate: string;
   editingExpenseAmount: string;
   editingExpenseCategoryId: string;
+  editingExpenseUsedTime: string;
   onStartEdit: (expense: Expense) => void;
   onCancelEdit: () => void;
   onSaveEdit: () => void;
   onEditDateChange: (value: string) => void;
   onEditAmountChange: (value: string) => void;
   onEditCategoryIdChange: (value: string) => void;
+  onEditUsedTimeChange: (value: string) => void;
   onDelete: (expenseId: string) => void;
 };
 
-/** 支出一覧の1行。通常は表示、編集中は日付・金額・カテゴリの入力に切り替わる。 */
+/** 支出一覧の1行。通常は表示、編集中は日付・金額・カテゴリ・使用時刻の入力に切り替わる。 */
 export const BudgetExpenseListItem = ({
   expense,
   category,
@@ -30,12 +32,14 @@ export const BudgetExpenseListItem = ({
   editingExpenseDate,
   editingExpenseAmount,
   editingExpenseCategoryId,
+  editingExpenseUsedTime,
   onStartEdit,
   onCancelEdit,
   onSaveEdit,
   onEditDateChange,
   onEditAmountChange,
   onEditCategoryIdChange,
+  onEditUsedTimeChange,
   onDelete,
 }: BudgetExpenseListItemProps) => {
   if (isEditing) {
@@ -53,6 +57,18 @@ export const BudgetExpenseListItem = ({
               onChange={(e) => onEditAmountChange(e.target.value)}
               placeholder={budgetTexts.expenseForm.amountPlaceholder}
               aria-label={budgetTexts.expenseForm.amountLabel}
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-400 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-white text-gray-900"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-900 mb-1">
+              {budgetTexts.expenseForm.usedTimeLabel}
+            </label>
+            <input
+              type="time"
+              value={editingExpenseUsedTime}
+              onChange={(e) => onEditUsedTimeChange(e.target.value)}
+              aria-label={budgetTexts.expenseForm.usedTimeLabel}
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-400 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-white text-gray-900"
             />
           </div>
