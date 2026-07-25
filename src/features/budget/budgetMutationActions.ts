@@ -48,6 +48,7 @@ export const createExpenseUpdateHandler = (params: {
   editingExpenseAmount: string;
   editingExpenseDate: string;
   editingExpenseCategoryId: string;
+  editingExpenseUsedTime: string;
   currentDate: Date;
   setExpenses: SetValue<Expense[]>;
   closeExpenseEdit: () => void;
@@ -58,6 +59,7 @@ export const createExpenseUpdateHandler = (params: {
     editingExpenseAmount,
     editingExpenseDate,
     editingExpenseCategoryId,
+    editingExpenseUsedTime,
     currentDate,
     setExpenses,
     closeExpenseEdit,
@@ -74,6 +76,7 @@ export const createExpenseUpdateHandler = (params: {
       expenseAmount: editingExpenseAmount,
       expenseDate: editingExpenseDate,
       expenseCategoryId: editingExpenseCategoryId,
+      expenseUsedTime: editingExpenseUsedTime,
       buildPayload: buildExpensePayload,
       saveExpense: updateExpense,
       currentDate,

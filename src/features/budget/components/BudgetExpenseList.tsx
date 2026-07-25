@@ -1,10 +1,7 @@
 import { useMemo } from "react";
 import type { BudgetCategory, Expense } from "@/types/routine";
-import {
-  buildBudgetCategoryLookup,
-  resolveExpenseCategory,
-  sortExpensesByDateDesc,
-} from "../helpers";
+import { buildBudgetCategoryLookup, resolveExpenseCategory } from "../helpers";
+import { sortExpensesByDateDesc } from "../budgetExpenseListSort";
 import budgetTexts from "../locales/ja.json";
 import { BudgetExpenseListItem } from "./BudgetExpenseListItem";
 
@@ -15,12 +12,14 @@ type BudgetExpenseListProps = {
   editingExpenseDate: string;
   editingExpenseAmount: string;
   editingExpenseCategoryId: string;
+  editingExpenseUsedTime: string;
   onStartEdit: (expense: Expense) => void;
   onCancelEdit: () => void;
   onSaveEdit: () => void;
   onEditDateChange: (value: string) => void;
   onEditAmountChange: (value: string) => void;
   onEditCategoryIdChange: (value: string) => void;
+  onEditUsedTimeChange: (value: string) => void;
   onDelete: (expenseId: string) => void;
 };
 
@@ -31,12 +30,14 @@ export const BudgetExpenseList = ({
   editingExpenseDate,
   editingExpenseAmount,
   editingExpenseCategoryId,
+  editingExpenseUsedTime,
   onStartEdit,
   onCancelEdit,
   onSaveEdit,
   onEditDateChange,
   onEditAmountChange,
   onEditCategoryIdChange,
+  onEditUsedTimeChange,
   onDelete,
 }: BudgetExpenseListProps) => {
   const sortedExpenses = sortExpensesByDateDesc(expenses);
@@ -66,12 +67,14 @@ export const BudgetExpenseList = ({
               editingExpenseDate={editingExpenseDate}
               editingExpenseAmount={editingExpenseAmount}
               editingExpenseCategoryId={editingExpenseCategoryId}
+              editingExpenseUsedTime={editingExpenseUsedTime}
               onStartEdit={onStartEdit}
               onCancelEdit={onCancelEdit}
               onSaveEdit={onSaveEdit}
               onEditDateChange={onEditDateChange}
               onEditAmountChange={onEditAmountChange}
               onEditCategoryIdChange={onEditCategoryIdChange}
+              onEditUsedTimeChange={onEditUsedTimeChange}
               onDelete={onDelete}
             />
           ))}

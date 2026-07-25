@@ -34,6 +34,7 @@ describe("budgetPageStateResult", () => {
     const handleEditExpenseAmountChange = jest.fn();
     const handleEditExpenseDateChange = jest.fn();
     const handleEditExpenseCategoryIdChange = jest.fn();
+    const handleEditExpenseUsedTimeChange = jest.fn();
     const navigateToCategoryManagement = jest.fn();
     const navigateToAllowanceSettings = jest.fn();
     const openExpenseForm = jest.fn();
@@ -52,6 +53,7 @@ describe("budgetPageStateResult", () => {
         editingExpenseAmount: "3000",
         editingExpenseDate: "2026-03-10",
         editingExpenseCategoryId: "category-books",
+        editingExpenseUsedTime: "13:45",
         expenseAmount: "2500",
         expenseDate: "2026-03-05",
         expenseCategoryId: "category-books",
@@ -68,6 +70,7 @@ describe("budgetPageStateResult", () => {
         handleEditExpenseAmountChange,
         handleEditExpenseDateChange,
         handleEditExpenseCategoryIdChange,
+        handleEditExpenseUsedTimeChange,
         isCurrentMonth: true,
         monthBudget: 45000,
         monthlyAllowance,
@@ -92,6 +95,7 @@ describe("budgetPageStateResult", () => {
       editingExpenseAmount: "3000",
       editingExpenseDate: "2026-03-10",
       editingExpenseCategoryId: "category-books",
+      editingExpenseUsedTime: "13:45",
       expenseAmount: "2500",
       expenseDate: "2026-03-05",
       expenseCategoryId: "category-books",
@@ -108,6 +112,7 @@ describe("budgetPageStateResult", () => {
       handleEditExpenseAmountChange,
       handleEditExpenseDateChange,
       handleEditExpenseCategoryIdChange,
+      handleEditExpenseUsedTimeChange,
       isCurrentMonth: true,
       monthBudget: 45000,
       monthlyAllowance,

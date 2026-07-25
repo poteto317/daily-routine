@@ -145,6 +145,7 @@ describe("budget stateActions", () => {
         expenseAmount: "2500",
         expenseDate: "2026-03-05",
         expenseCategoryId: "category-books",
+        expenseUsedTime: "10:30",
         buildPayload: ({ expenseAmount, expenseDate, expenseCategoryId }) => ({
           amount: Number(expenseAmount),
           date: expenseDate,
@@ -162,6 +163,7 @@ describe("budget stateActions", () => {
       date: "2026-03-05",
       amount: 2500,
       categoryId: "category-books",
+      usedTime: "10:30",
     });
     expect(setExpenses).toHaveBeenCalledWith(snapshot.expenses);
     expect(closeExpenseEdit).toHaveBeenCalled();
@@ -181,6 +183,7 @@ describe("budget stateActions", () => {
         expenseAmount: "2500",
         expenseDate: "2026-03-05",
         expenseCategoryId: "",
+        expenseUsedTime: "10:30",
         buildPayload: ({ expenseAmount, expenseDate, expenseCategoryId }) => ({
           amount: Number(expenseAmount),
           date: expenseDate,
@@ -198,6 +201,7 @@ describe("budget stateActions", () => {
       date: "2026-03-05",
       amount: 2500,
       categoryId: undefined,
+      usedTime: "10:30",
     });
   });
 
@@ -214,6 +218,7 @@ describe("budget stateActions", () => {
         expenseAmount: "",
         expenseDate: "2026-03-05",
         expenseCategoryId: "",
+        expenseUsedTime: "10:30",
         buildPayload: () => null,
         saveExpense,
         currentDate: new Date("2026-03-07T00:00:00.000Z"),

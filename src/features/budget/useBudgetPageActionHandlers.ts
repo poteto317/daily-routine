@@ -12,6 +12,7 @@ type UseBudgetPageActionHandlersParams = {
   editingExpenseAmount: string;
   editingExpenseDate: string;
   editingExpenseCategoryId: string;
+  editingExpenseUsedTime: string;
   setExpenses: (value: Expense[]) => void;
   closeExpenseForm: () => void;
   closeExpenseEdit: () => void;
@@ -27,6 +28,7 @@ export const useBudgetPageActionHandlers = ({
   editingExpenseAmount,
   editingExpenseDate,
   editingExpenseCategoryId,
+  editingExpenseUsedTime,
   setExpenses,
   closeExpenseForm,
   closeExpenseEdit,
@@ -42,6 +44,7 @@ export const useBudgetPageActionHandlers = ({
       editingExpenseAmount,
       editingExpenseDate,
       editingExpenseCategoryId,
+      editingExpenseUsedTime,
       setExpenses,
       closeExpenseForm,
       closeExpenseEdit,

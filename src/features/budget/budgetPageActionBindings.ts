@@ -12,6 +12,7 @@ type BudgetPageActionBindingsArgs = {
   editingExpenseAmount: string;
   editingExpenseDate: string;
   editingExpenseCategoryId: string;
+  editingExpenseUsedTime: string;
   setExpenses: (value: Expense[]) => void;
 };
 
@@ -27,6 +28,7 @@ export const createBudgetPageActionBindings = ({
   editingExpenseAmount,
   editingExpenseDate,
   editingExpenseCategoryId,
+  editingExpenseUsedTime,
   setExpenses,
 }: BudgetPageActionBindingsArgs) => {
   return {
@@ -41,6 +43,7 @@ export const createBudgetPageActionBindings = ({
     editingExpenseAmount,
     editingExpenseDate,
     editingExpenseCategoryId,
+    editingExpenseUsedTime,
     setExpenses,
   };
 };

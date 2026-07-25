@@ -8,6 +8,7 @@ describe("budgetPageInputHandlers", () => {
     const setEditingExpenseAmount = jest.fn();
     const setEditingExpenseDate = jest.fn();
     const setEditingExpenseCategoryId = jest.fn();
+    const setEditingExpenseUsedTime = jest.fn();
 
     const handlers = createBudgetPageInputHandlers({
       setExpenseAmount,
@@ -16,6 +17,7 @@ describe("budgetPageInputHandlers", () => {
       setEditingExpenseAmount,
       setEditingExpenseDate,
       setEditingExpenseCategoryId,
+      setEditingExpenseUsedTime,
     });
 
     handlers.handleExpenseAmountChange("1200");
@@ -24,6 +26,7 @@ describe("budgetPageInputHandlers", () => {
     handlers.handleEditExpenseAmountChange("3000");
     handlers.handleEditExpenseDateChange("2026-03-10");
     handlers.handleEditExpenseCategoryIdChange("category-food");
+    handlers.handleEditExpenseUsedTimeChange("18:05");
 
     expect(setExpenseAmount).toHaveBeenCalledWith("1200");
     expect(setExpenseDate).toHaveBeenCalledWith("2026-03-08");
@@ -31,5 +34,6 @@ describe("budgetPageInputHandlers", () => {
     expect(setEditingExpenseAmount).toHaveBeenCalledWith("3000");
     expect(setEditingExpenseDate).toHaveBeenCalledWith("2026-03-10");
     expect(setEditingExpenseCategoryId).toHaveBeenCalledWith("category-food");
+    expect(setEditingExpenseUsedTime).toHaveBeenCalledWith("18:05");
   });
 });

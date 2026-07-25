@@ -29,11 +29,6 @@ export const shouldShowOverBudget = (tone: BudgetCardTone): boolean => {
 };
 
 // Expense List Helpers
-export const sortExpensesByDateDesc = (expenses: Expense[]): Expense[] =>
-  expenses
-    .slice()
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-
 export const buildBudgetCategoryLookup = (
   categories: BudgetCategory[],
 ): Map<string, BudgetCategory> =>

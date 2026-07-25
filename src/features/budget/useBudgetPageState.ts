@@ -50,6 +50,7 @@ export const useBudgetPageState = ({ navigate }: UseBudgetPageStateParams) => {
         editingExpenseAmount: expenseEdit.editingExpenseAmount,
         editingExpenseDate: expenseEdit.editingExpenseDate,
         editingExpenseCategoryId: expenseEdit.editingExpenseCategoryId,
+        editingExpenseUsedTime: expenseEdit.editingExpenseUsedTime,
         setExpenses: monthState.setExpenses,
         closeExpenseForm,
         closeExpenseEdit: expenseEdit.cancelEditExpense,
@@ -62,6 +63,7 @@ export const useBudgetPageState = ({ navigate }: UseBudgetPageStateParams) => {
     setEditingExpenseAmount: expenseEdit.setEditingExpenseAmount,
     setEditingExpenseDate: expenseEdit.setEditingExpenseDate,
     setEditingExpenseCategoryId: expenseEdit.setEditingExpenseCategoryId,
+    setEditingExpenseUsedTime: expenseEdit.setEditingExpenseUsedTime,
   });
 
   // 追加フォームと編集フォームの同時表示による入力状態の混在を避けるため、
@@ -86,6 +88,7 @@ export const useBudgetPageState = ({ navigate }: UseBudgetPageStateParams) => {
     editingExpenseAmount: expenseEdit.editingExpenseAmount,
     editingExpenseDate: expenseEdit.editingExpenseDate,
     editingExpenseCategoryId: expenseEdit.editingExpenseCategoryId,
+    editingExpenseUsedTime: expenseEdit.editingExpenseUsedTime,
     expenseAmount,
     expenseDate: monthState.expenseDate,
     expenseCategoryId,
@@ -113,6 +116,8 @@ export const useBudgetPageState = ({ navigate }: UseBudgetPageStateParams) => {
     handleEditExpenseDateChange: inputHandlers.handleEditExpenseDateChange,
     handleEditExpenseCategoryIdChange:
       inputHandlers.handleEditExpenseCategoryIdChange,
+    handleEditExpenseUsedTimeChange:
+      inputHandlers.handleEditExpenseUsedTimeChange,
     startEditExpense,
     cancelEditExpense: expenseEdit.cancelEditExpense,
     showExpenseForm,

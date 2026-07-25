@@ -15,12 +15,14 @@ const meta = {
     editingExpenseDate: "",
     editingExpenseAmount: "",
     editingExpenseCategoryId: "",
+    editingExpenseUsedTime: "",
     onStartEdit: fn(),
     onCancelEdit: fn(),
     onSaveEdit: fn(),
     onEditDateChange: fn(),
     onEditAmountChange: fn(),
     onEditCategoryIdChange: fn(),
+    onEditUsedTimeChange: fn(),
     onDelete: fn(),
   },
 } satisfies Meta<typeof BudgetExpenseList>;
@@ -85,6 +87,7 @@ export const EditingExpense: Story = {
     editingExpenseDate: "2026-05-22",
     editingExpenseAmount: "850",
     editingExpenseCategoryId: "cat-lunch",
+    editingExpenseUsedTime: "12:30",
   },
 };
 
