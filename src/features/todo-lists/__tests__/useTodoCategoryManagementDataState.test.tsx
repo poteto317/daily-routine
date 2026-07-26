@@ -5,6 +5,7 @@ import {
   createTodoCategoryAndPersist,
   deleteTodoCategoryAndPersist,
   renameTodoCategoryAndPersist,
+  reorderTodoCategoriesAndPersist,
   updateTodoCategoryColorAndPersist,
 } from "../todoCategoryCrudPersistActions";
 
@@ -16,6 +17,7 @@ jest.mock("../storage", () => ({
 jest.mock("../todoCategoryCrudPersistActions", () => ({
   createTodoCategoryAndPersist: jest.fn(),
   renameTodoCategoryAndPersist: jest.fn(),
+  reorderTodoCategoriesAndPersist: jest.fn(),
   updateTodoCategoryColorAndPersist: jest.fn(),
   deleteTodoCategoryAndPersist: jest.fn(),
 }));
@@ -30,6 +32,10 @@ const mockCreateTodoCategoryAndPersist =
 const mockRenameTodoCategoryAndPersist =
   renameTodoCategoryAndPersist as jest.MockedFunction<
     typeof renameTodoCategoryAndPersist
+  >;
+const mockReorderTodoCategoriesAndPersist =
+  reorderTodoCategoriesAndPersist as jest.MockedFunction<
+    typeof reorderTodoCategoriesAndPersist
   >;
 const mockUpdateTodoCategoryColorAndPersist =
   updateTodoCategoryColorAndPersist as jest.MockedFunction<
@@ -151,6 +157,27 @@ describe("useTodoCategoryManagementDataState", () => {
       categories: [category],
       categoryId: "cat-1",
       color: "bg-red-50",
+      persist: expect.any(Function),
+    });
+  });
+
+  it("handleReorderCategoriesはreorderTodoCategoriesAndPersistへ委譲する", () => {
+    const { result } = renderHook(() =>
+      useTodoCategoryManagementDataState({
+        nameInput: "",
+        colorInput: undefined,
+        closeForm: jest.fn(),
+      }),
+    );
+
+    act(() => {
+      result.current.handleReorderCategories(0, 1);
+    });
+
+    expect(mockReorderTodoCategoriesAndPersist).toHaveBeenCalledWith({
+      categories: [category],
+      fromIndex: 0,
+      toIndex: 1,
       persist: expect.any(Function),
     });
   });

@@ -4,6 +4,7 @@ import { useTodoCategoryManagementFormState } from "../useTodoCategoryManagement
 import { useTodoCategoryManagementFormFocus } from "../useTodoCategoryManagementFormFocus";
 import { useTodoCategoryManagementDataState } from "../useTodoCategoryManagementDataState";
 import { useTodoCategoryManagementNameEditing } from "../useTodoCategoryManagementNameEditing";
+import { useTodoCategoryDragAndDrop } from "../useTodoCategoryDragAndDrop";
 import { useColorPickerController } from "../useColorPickerController";
 
 jest.mock("../useTodoCategoryManagementFormState", () => ({
@@ -17,6 +18,9 @@ jest.mock("../useTodoCategoryManagementDataState", () => ({
 }));
 jest.mock("../useTodoCategoryManagementNameEditing", () => ({
   useTodoCategoryManagementNameEditing: jest.fn(),
+}));
+jest.mock("../useTodoCategoryDragAndDrop", () => ({
+  useTodoCategoryDragAndDrop: jest.fn(),
 }));
 jest.mock("../useColorPickerController", () => ({
   useColorPickerController: jest.fn(),
@@ -33,6 +37,9 @@ const mockUseDataState = useTodoCategoryManagementDataState as jest.MockedFuncti
 >;
 const mockUseNameEditing = useTodoCategoryManagementNameEditing as jest.MockedFunction<
   typeof useTodoCategoryManagementNameEditing
+>;
+const mockUseDragAndDrop = useTodoCategoryDragAndDrop as jest.MockedFunction<
+  typeof useTodoCategoryDragAndDrop
 >;
 const mockUseColorPickerController =
   useColorPickerController as jest.MockedFunction<
@@ -61,6 +68,7 @@ describe("useTodoCategoryManagementPageState composition", () => {
       handleRename: jest.fn(),
       handleUpdateColor: jest.fn(),
       handleDelete: jest.fn(),
+      handleReorderCategories: jest.fn(),
     });
     mockUseNameEditing.mockReturnValue({
       editingCategoryId: null,
@@ -69,6 +77,13 @@ describe("useTodoCategoryManagementPageState composition", () => {
       startEditCategoryName: jest.fn(),
       commitEditCategoryName: jest.fn(),
       cancelEditCategoryName: jest.fn(),
+    });
+    mockUseDragAndDrop.mockReturnValue({
+      activeId: null,
+      sensors: [],
+      handleDragStart: jest.fn(),
+      handleDragEnd: jest.fn(),
+      handleDragCancel: jest.fn(),
     });
     mockUseFormFocus.mockReturnValue(undefined);
     mockUseColorPickerController.mockReturnValue({
@@ -97,6 +112,19 @@ describe("useTodoCategoryManagementPageState composition", () => {
     expect(mockUseFormFocus).toHaveBeenCalledWith({
       inputRef: { current: null },
       showForm: true,
+    });
+    expect(mockUseDragAndDrop).toHaveBeenCalledWith({
+      categories: [
+        { id: "cat-1", name: "仕事", createdAt: "2026-05-01T00:00:00.000Z" },
+      ],
+      onReorderCategories: expect.any(Function),
+    });
+    expect(result.current.dnd).toEqual({
+      activeId: null,
+      sensors: [],
+      handleDragStart: expect.any(Function),
+      handleDragEnd: expect.any(Function),
+      handleDragCancel: expect.any(Function),
     });
 
     expect(result.current.categories).toEqual([

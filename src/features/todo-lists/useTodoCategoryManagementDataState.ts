@@ -6,6 +6,7 @@ import {
   createTodoCategoryAndPersist,
   deleteTodoCategoryAndPersist,
   renameTodoCategoryAndPersist,
+  reorderTodoCategoriesAndPersist,
   updateTodoCategoryColorAndPersist,
 } from "./todoCategoryCrudPersistActions";
 import texts from "./locales/ja.json";
@@ -66,11 +67,21 @@ export const useTodoCategoryManagementDataState = ({
     });
   };
 
+  const handleReorderCategories = (fromIndex: number, toIndex: number) => {
+    reorderTodoCategoriesAndPersist({
+      categories,
+      fromIndex,
+      toIndex,
+      persist,
+    });
+  };
+
   return {
     categories,
     handleCreate,
     handleRename,
     handleUpdateColor,
     handleDelete,
+    handleReorderCategories,
   };
 };

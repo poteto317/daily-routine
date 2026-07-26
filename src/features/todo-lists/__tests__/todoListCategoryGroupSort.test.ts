@@ -29,7 +29,7 @@ describe("groupItemsByCategory", () => {
     expect(groupItemsByCategory([], lookup)).toEqual([]);
   });
 
-  it("カテゴリごとにグルーピングし、初出順でグループが並ぶ", () => {
+  it("カテゴリごとにグルーピングし、categoryLookupのキー順（=categories配列の順）でグループが並ぶ", () => {
     const items = [
       item("a", { categoryId: "cat-private" }),
       item("b", { categoryId: "cat-work" }),
@@ -39,8 +39,34 @@ describe("groupItemsByCategory", () => {
 
     const result = groupItemsByCategory(items, lookup);
 
-    // cat-private が先に出現するのでそのグループが先
-    expect(result.map((i) => i.id)).toEqual(["a", "c", "b", "d"]);
+    // アイテム側での出現順（cat-privateが先）ではなく、categories配列で
+    // cat-workがcat-privateより先にあるため、そちらのグループが先になる。
+    expect(result.map((i) => i.id)).toEqual(["b", "d", "a", "c"]);
+  });
+
+  it("アイテムに登場しないカテゴリのバケットは結果に現れない（順序決定に空バケットを混ぜない）", () => {
+    const categoriesWithExtra: TodoCategory[] = [
+      { id: "cat-work", name: "仕事", createdAt: "2026-01-01T00:00:00.000Z" },
+      {
+        id: "cat-unused",
+        name: "使われていないカテゴリ",
+        createdAt: "2026-01-01T00:00:00.000Z",
+      },
+      {
+        id: "cat-private",
+        name: "プライベート",
+        createdAt: "2026-01-01T00:00:00.000Z",
+      },
+    ];
+    const lookupWithExtra = buildTodoCategoryLookup(categoriesWithExtra);
+    const items = [
+      item("a", { categoryId: "cat-private" }),
+      item("b", { categoryId: "cat-work" }),
+    ];
+
+    const result = groupItemsByCategory(items, lookupWithExtra);
+
+    expect(result.map((i) => i.id)).toEqual(["b", "a"]);
   });
 
   it("categoryId未設定のアイテムは未分類グループとして最後に配置される", () => {

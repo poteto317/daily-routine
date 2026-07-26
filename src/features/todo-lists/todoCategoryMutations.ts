@@ -1,3 +1,4 @@
+import { arrayMove } from "@dnd-kit/sortable";
 import type { TodoCategory } from "./types";
 import type { TodoItemBgColorValue } from "./todoItemBgColor";
 import { createTodoCategory } from "./todoCategoryFactory";
@@ -52,3 +53,32 @@ export const removeTodoCategory = (
   categoryId: string,
 ): TodoCategory[] =>
   categories.filter((category) => category.id !== categoryId);
+
+/**
+ * カテゴリをfromIndexからtoIndexへ移動する。
+ * カテゴリには親子関係のようなブロック構造がないため、単純な配列移動でよい
+ * （Todoアイテムの並び替え(todoListItemReorderAction.ts)とは異なりセクション
+ * 判定は不要。カテゴリ同士は常に同じ「カテゴリ一覧」という1つの集合であり、
+ * 自由に並び替えられる）。実際の移動はdnd-kitのarrayMoveに委譲する
+ * （src/features/routine/pages/draggableRoutineListHelpers.tsと同じ方針で、
+ * fromIndex/toIndexのsplice処理を自前で持たない）。
+ * 範囲外のインデックス、またはfromIndexとtoIndexが同じ場合は何もせず、
+ * 同じ配列参照を返す。
+ */
+export const reorderTodoCategories = (
+  categories: TodoCategory[],
+  fromIndex: number,
+  toIndex: number,
+): TodoCategory[] => {
+  if (
+    fromIndex < 0 ||
+    toIndex < 0 ||
+    fromIndex >= categories.length ||
+    toIndex >= categories.length ||
+    fromIndex === toIndex
+  ) {
+    return categories;
+  }
+
+  return arrayMove(categories, fromIndex, toIndex);
+};

@@ -4,7 +4,7 @@ import { CardPanel } from "@/components";
 import { useTodoCategoryManagementPageState } from "./useTodoCategoryManagementPageState";
 import { TodoCategoryManagementHeader } from "./TodoCategoryManagementHeader";
 import { TodoCategoryCreateForm } from "./TodoCategoryCreateForm";
-import { TodoCategoryManagementItem } from "./TodoCategoryManagementItem";
+import { TodoCategorySortableList } from "./TodoCategorySortableList";
 import { TodoCategoryManagementEmptyState } from "./TodoCategoryManagementEmptyState";
 
 export const TodoCategoryManagementPage = () => {
@@ -30,6 +30,7 @@ export const TodoCategoryManagementPage = () => {
     colorEditingCategoryId,
     toggleCategoryColorPicker,
     closeCategoryColorPicker,
+    dnd: { sensors, handleDragStart, handleDragEnd, handleDragCancel },
   } = useTodoCategoryManagementPageState();
 
   return (
@@ -53,25 +54,24 @@ export const TodoCategoryManagementPage = () => {
           {categories.length === 0 && !showForm ? (
             <TodoCategoryManagementEmptyState />
           ) : (
-            <div className="space-y-2">
-              {categories.map((category) => (
-                <TodoCategoryManagementItem
-                  key={category.id}
-                  category={category}
-                  editingCategoryId={editingCategoryId}
-                  editingCategoryNameValue={editingCategoryNameValue}
-                  onChangeNameValue={setEditingCategoryNameValue}
-                  onCommitEdit={commitEditCategoryName}
-                  onCancelEdit={cancelEditCategoryName}
-                  onStartEdit={startEditCategoryName}
-                  colorEditingCategoryId={colorEditingCategoryId}
-                  onToggleColorPicker={toggleCategoryColorPicker}
-                  onCloseColorPicker={closeCategoryColorPicker}
-                  onUpdateColor={handleUpdateColor}
-                  onDelete={handleDelete}
-                />
-              ))}
-            </div>
+            <TodoCategorySortableList
+              categories={categories}
+              sensors={sensors}
+              onDragStart={handleDragStart}
+              onDragEnd={handleDragEnd}
+              onDragCancel={handleDragCancel}
+              editingCategoryId={editingCategoryId}
+              editingCategoryNameValue={editingCategoryNameValue}
+              onChangeNameValue={setEditingCategoryNameValue}
+              onCommitEdit={commitEditCategoryName}
+              onCancelEdit={cancelEditCategoryName}
+              onStartEdit={startEditCategoryName}
+              colorEditingCategoryId={colorEditingCategoryId}
+              onToggleColorPicker={toggleCategoryColorPicker}
+              onCloseColorPicker={closeCategoryColorPicker}
+              onUpdateColor={handleUpdateColor}
+              onDelete={handleDelete}
+            />
           )}
         </CardPanel>
       </main>

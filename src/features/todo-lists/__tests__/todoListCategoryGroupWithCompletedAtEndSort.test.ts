@@ -76,12 +76,13 @@ describe("groupItemsByCategoryWithCompletedAtEnd", () => {
     ]);
   });
 
-  it("未完了セクションと完了セクションでカテゴリの初出順が異なり得る", () => {
+  it("カテゴリのグループ順は全セクションで一貫しており、セクション内の初出順には左右されない", () => {
     const items = [
       // 未完了セクションではcat-workが先に出現する
       item("work-open", { categoryId: "cat-work" }),
       item("private-open", { categoryId: "cat-private" }),
-      // 完了セクションではcat-privateが先に出現する
+      // 完了セクションではcat-privateが先に出現するが、グループ順は
+      // categories配列の順（cat-work→cat-private）に従うため変わらない。
       item("private-done", {
         categoryId: "cat-private",
         isCompleted: true,
@@ -94,8 +95,8 @@ describe("groupItemsByCategoryWithCompletedAtEnd", () => {
     expect(result.map((i) => i.id)).toEqual([
       "work-open",
       "private-open",
-      "private-done",
       "work-done",
+      "private-done",
     ]);
   });
 

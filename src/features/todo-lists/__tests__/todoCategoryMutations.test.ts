@@ -2,6 +2,7 @@ import {
   addTodoCategory,
   removeTodoCategory,
   renameTodoCategory,
+  reorderTodoCategories,
   updateTodoCategoryColor,
 } from "../todoCategoryMutations";
 import { createTodoCategory } from "../todoCategoryFactory";
@@ -135,6 +136,52 @@ describe("todoCategoryMutations", () => {
       const result = removeTodoCategory(categories, "cat-1");
 
       expect(result).toEqual([category({ id: "cat-2", name: "プライベート" })]);
+    });
+  });
+
+  describe("reorderTodoCategories", () => {
+    const categories = [
+      category({ id: "cat-1", name: "仕事" }),
+      category({ id: "cat-2", name: "プライベート" }),
+      category({ id: "cat-3", name: "趣味" }),
+    ];
+
+    it("fromIndexのカテゴリをtoIndexへ移動する（後方へ）", () => {
+      const result = reorderTodoCategories(categories, 0, 2);
+
+      expect(result.map((c) => c.id)).toEqual(["cat-2", "cat-3", "cat-1"]);
+    });
+
+    it("fromIndexのカテゴリをtoIndexへ移動する（前方へ）", () => {
+      const result = reorderTodoCategories(categories, 2, 0);
+
+      expect(result.map((c) => c.id)).toEqual(["cat-3", "cat-1", "cat-2"]);
+    });
+
+    it("fromIndexが負の場合は同じ配列参照を返す", () => {
+      const result = reorderTodoCategories(categories, -1, 0);
+
+      expect(result).toBe(categories);
+    });
+
+    it("toIndexがcategories.length以上の場合は同じ配列参照を返す", () => {
+      const result = reorderTodoCategories(categories, 0, categories.length);
+
+      expect(result).toBe(categories);
+    });
+
+    it("fromIndexとtoIndexが同じ場合は同じ配列参照を返す", () => {
+      const result = reorderTodoCategories(categories, 1, 1);
+
+      expect(result).toBe(categories);
+    });
+
+    it("元の配列を変更しない（イミュータブル）", () => {
+      const copy = [...categories];
+
+      reorderTodoCategories(categories, 0, 2);
+
+      expect(categories).toEqual(copy);
     });
   });
 });

@@ -2,6 +2,7 @@ import { useTodoCategoryManagementFormState } from "./useTodoCategoryManagementF
 import { useTodoCategoryManagementFormFocus } from "./useTodoCategoryManagementFormFocus";
 import { useTodoCategoryManagementDataState } from "./useTodoCategoryManagementDataState";
 import { useTodoCategoryManagementNameEditing } from "./useTodoCategoryManagementNameEditing";
+import { useTodoCategoryDragAndDrop } from "./useTodoCategoryDragAndDrop";
 import { useColorPickerController } from "./useColorPickerController";
 
 export const useTodoCategoryManagementPageState = () => {
@@ -16,8 +17,19 @@ export const useTodoCategoryManagementPageState = () => {
     closeForm,
   } = useTodoCategoryManagementFormState();
 
-  const { categories, handleCreate, handleRename, handleUpdateColor, handleDelete } =
-    useTodoCategoryManagementDataState({ nameInput, colorInput, closeForm });
+  const {
+    categories,
+    handleCreate,
+    handleRename,
+    handleUpdateColor,
+    handleDelete,
+    handleReorderCategories,
+  } = useTodoCategoryManagementDataState({ nameInput, colorInput, closeForm });
+
+  const dnd = useTodoCategoryDragAndDrop({
+    categories,
+    onReorderCategories: handleReorderCategories,
+  });
 
   const {
     editingCategoryId,
@@ -62,5 +74,6 @@ export const useTodoCategoryManagementPageState = () => {
     colorEditingCategoryId,
     toggleCategoryColorPicker,
     closeCategoryColorPicker,
+    dnd,
   };
 };
