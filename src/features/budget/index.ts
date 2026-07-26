@@ -1,6 +1,7 @@
 export { BudgetPage } from "./BudgetPage";
 export { BudgetCategoryManagementPage } from "./components/BudgetCategoryManagementPage";
 export { BudgetAllowanceSettingsPage } from "./components/BudgetAllowanceSettingsPage";
+export { BudgetSummaryPage } from "./components/BudgetSummaryPage";
 export {
   getBudgetData,
   saveBudgetData,

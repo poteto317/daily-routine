@@ -2,26 +2,19 @@ import type { Expense } from "@/types/routine";
 import { createBudgetPageActionBindings } from "./budgetPageActionBindings";
 import { createBudgetPageInputHandlers } from "./budgetPageInputHandlers";
 import { createBudgetPageStateResult } from "./budgetPageStateResult";
-import { useBudgetAllowanceState } from "./useBudgetAllowanceState";
 import { useBudgetCategoriesState } from "./useBudgetCategoriesState";
 import { useBudgetExpenseEditState } from "./useBudgetExpenseEditState";
+import { useBudgetMonthAndMetricsState } from "./useBudgetMonthAndMetricsState";
 import { useBudgetPageActionHandlers } from "./useBudgetPageActionHandlers";
 import { useBudgetPageFormState } from "./useBudgetPageFormState";
-import { useBudgetPageInitialState } from "./useBudgetPageInitialState";
-import { useBudgetPageMetricsState } from "./useBudgetPageMetricsState";
-import { useBudgetMonthState } from "./useBudgetMonthState";
 
 type UseBudgetPageStateParams = {
-  navigate: (
-    page: "budget-category-management" | "budget-allowance-settings",
-  ) => void;
+  navigate: (page: "budget-category-management" | "budget-summary") => void;
 };
 
 export const useBudgetPageState = ({ navigate }: UseBudgetPageStateParams) => {
   const { categories } = useBudgetCategoriesState();
-  const { monthlyAllowance } = useBudgetAllowanceState();
-  const initialState = useBudgetPageInitialState();
-  const monthState = useBudgetMonthState({ initialState });
+  const { initialState, monthState, metrics } = useBudgetMonthAndMetricsState();
   const {
     closeExpenseForm,
     expenseAmount,
@@ -33,11 +26,6 @@ export const useBudgetPageState = ({ navigate }: UseBudgetPageStateParams) => {
   } = useBudgetPageFormState({ initialState });
   const expenseEdit = useBudgetExpenseEditState();
 
-  const metrics = useBudgetPageMetricsState({
-    currentDate: monthState.currentDate,
-    monthBudget: monthlyAllowance.allowance,
-    expenses: monthState.expenses,
-  });
   const { handleAddExpense, handleUpdateExpense, handleDeleteExpense } =
     useBudgetPageActionHandlers(
       createBudgetPageActionBindings({
@@ -81,7 +69,6 @@ export const useBudgetPageState = ({ navigate }: UseBudgetPageStateParams) => {
     categories,
     closeExpenseForm,
     currentDate: monthState.currentDate,
-    dailyBudget: metrics.dailyBudget,
     dailyRemainingBudget: metrics.dailyRemainingBudget,
     daysRemaining: metrics.daysRemaining,
     editingExpenseId: expenseEdit.editingExpenseId,
@@ -100,13 +87,10 @@ export const useBudgetPageState = ({ navigate }: UseBudgetPageStateParams) => {
     handleUpdateExpense,
     handleDeleteExpense,
     isCurrentMonth: metrics.isCurrentMonth,
-    monthBudget: monthlyAllowance.allowance,
-    monthlyAllowance,
     navigateToCategoryManagement: () =>
       navigate("budget-category-management"),
-    navigateToAllowanceSettings: () => navigate("budget-allowance-settings"),
+    navigateToSummary: () => navigate("budget-summary"),
     openExpenseForm: startAddExpense,
-    remaining: metrics.remaining,
     handleExpenseAmountChange: inputHandlers.handleExpenseAmountChange,
     handleExpenseDateChange: inputHandlers.handleExpenseDateChange,
     handleExpenseCategoryIdChange:
@@ -122,6 +106,5 @@ export const useBudgetPageState = ({ navigate }: UseBudgetPageStateParams) => {
     cancelEditExpense: expenseEdit.cancelEditExpense,
     showExpenseForm,
     todayExpense: metrics.todayExpense,
-    totalExpense: metrics.totalExpense,
   });
 };

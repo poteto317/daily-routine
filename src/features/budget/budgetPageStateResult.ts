@@ -1,11 +1,9 @@
 import type { BudgetCategory, Expense } from "@/types/routine";
-import type { MonthlyAllowance } from "./utils/monthlyAllowance";
 
 type BudgetPageStateResultArgs = {
   categories: BudgetCategory[];
   closeExpenseForm: () => void;
   currentDate: Date;
-  dailyBudget: number;
   dailyRemainingBudget: number;
   daysRemaining: number;
   editingExpenseId: string | null;
@@ -31,24 +29,19 @@ type BudgetPageStateResultArgs = {
   handleEditExpenseCategoryIdChange: (value: string) => void;
   handleEditExpenseUsedTimeChange: (value: string) => void;
   isCurrentMonth: boolean;
-  monthBudget: number;
-  monthlyAllowance: MonthlyAllowance;
   navigateToCategoryManagement: () => void;
-  navigateToAllowanceSettings: () => void;
+  navigateToSummary: () => void;
   openExpenseForm: () => void;
-  remaining: number;
   startEditExpense: (expense: Expense) => void;
   cancelEditExpense: () => void;
   showExpenseForm: boolean;
   todayExpense: number;
-  totalExpense: number;
 };
 
 export const createBudgetPageStateResult = ({
   categories,
   closeExpenseForm,
   currentDate,
-  dailyBudget,
   dailyRemainingBudget,
   daysRemaining,
   editingExpenseId,
@@ -74,23 +67,18 @@ export const createBudgetPageStateResult = ({
   handleEditExpenseCategoryIdChange,
   handleEditExpenseUsedTimeChange,
   isCurrentMonth,
-  monthBudget,
-  monthlyAllowance,
   navigateToCategoryManagement,
-  navigateToAllowanceSettings,
+  navigateToSummary,
   openExpenseForm,
-  remaining,
   startEditExpense,
   cancelEditExpense,
   showExpenseForm,
   todayExpense,
-  totalExpense,
 }: BudgetPageStateResultArgs) => {
   return {
     categories,
     closeExpenseForm,
     currentDate,
-    dailyBudget,
     dailyRemainingBudget,
     daysRemaining,
     editingExpenseId,
@@ -116,16 +104,12 @@ export const createBudgetPageStateResult = ({
     handleEditExpenseCategoryIdChange,
     handleEditExpenseUsedTimeChange,
     isCurrentMonth,
-    monthBudget,
-    monthlyAllowance,
     navigateToCategoryManagement,
-    navigateToAllowanceSettings,
+    navigateToSummary,
     openExpenseForm,
-    remaining,
     startEditExpense,
     cancelEditExpense,
     showExpenseForm,
     todayExpense,
-    totalExpense,
   };
 };

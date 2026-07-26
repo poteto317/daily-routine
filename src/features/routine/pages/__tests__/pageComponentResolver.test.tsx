@@ -24,4 +24,8 @@ describe("pageComponentResolver", () => {
   it("家計簿の収入・固定費・変動費設定ページはコンポーネントを解決できる", () => {
     expect(resolvePageComponent("budget-allowance-settings")).toBeDefined();
   });
+
+  it("家計簿の月次サマリーページはコンポーネントを解決できる", () => {
+    expect(resolvePageComponent("budget-summary")).toBeDefined();
+  });
 });

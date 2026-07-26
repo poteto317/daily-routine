@@ -10,6 +10,7 @@ import {
   BudgetPage,
   BudgetCategoryManagementPage,
   BudgetAllowanceSettingsPage,
+  BudgetSummaryPage,
 } from "@/features/budget";
 import { MealPage } from "@/features/meal";
 import { PresetPage } from "@/features/preset/PresetPage";
@@ -35,6 +36,7 @@ export const PAGE_COMPONENTS: Partial<Record<PageType, React.ComponentType>> = {
   budget: BudgetPage,
   "budget-category-management": BudgetCategoryManagementPage,
   "budget-allowance-settings": BudgetAllowanceSettingsPage,
+  "budget-summary": BudgetSummaryPage,
   weather: WeatherPage,
   preset: PresetPage,
   "todo-lists": TodoListsPage,

@@ -4,7 +4,7 @@ import { CardPanel } from "@/components";
 import { BudgetExpenseForm } from "@/features/budget/components/BudgetExpenseForm";
 import { BudgetExpenseList } from "@/features/budget/components/BudgetExpenseList";
 import { BudgetMonthNavigation } from "@/features/budget/components/BudgetMonthNavigation";
-import { BudgetSummaryCards } from "@/features/budget/components/BudgetSummaryCards";
+import { BudgetDailySummaryCards } from "@/features/budget/components/BudgetDailySummaryCards";
 import { useBudgetPageState } from "@/features/budget/useBudgetPageState";
 import { useNavigationContext } from "@/features/routine/pages/NavigationContext";
 import budgetTexts from "@/features/budget/locales/ja.json";
@@ -25,7 +25,14 @@ export const BudgetPage = () => {
               {budgetTexts.page.betaLabel}
             </span>
           </div>
-          <div className="flex justify-end mb-2">
+          <div className="flex justify-end gap-4 mb-2">
+            <button
+              type="button"
+              onClick={state.navigateToSummary}
+              className="text-sm text-blue-600 dark:text-blue-800 hover:underline"
+            >
+              {budgetTexts.page.summaryPageLabel}
+            </button>
             <button
               type="button"
               onClick={state.navigateToCategoryManagement}
@@ -41,18 +48,11 @@ export const BudgetPage = () => {
             onNextMonth={state.goToNextMonth}
             onPreviousMonth={state.goToPreviousMonth}
           />
-          <BudgetSummaryCards
-            dailyBudget={state.dailyBudget}
+          <BudgetDailySummaryCards
             dailyRemainingBudget={state.dailyRemainingBudget}
             daysRemaining={state.daysRemaining}
-            expenseCount={state.expenses.length}
             isCurrentMonth={state.isCurrentMonth}
-            monthBudget={state.monthBudget}
-            monthlyAllowance={state.monthlyAllowance}
-            onNavigateToAllowanceSettings={state.navigateToAllowanceSettings}
-            remaining={state.remaining}
             todayExpense={state.todayExpense}
-            totalExpense={state.totalExpense}
           />
           {!state.showExpenseForm && (
             <button

@@ -4,7 +4,11 @@
     "betaLabel": "BETA",
     "addExpenseLabel": "➕",
     "confirmDeleteExpense": "この支出を削除しますか？",
-    "categoryManagementLabel": "🏷️ カテゴリ管理"
+    "categoryManagementLabel": "🏷️ カテゴリ管理",
+    "summaryPageLabel": "📊 月次サマリー"
+  },
+  "summaryPage": {
+    "title": "📊 月次サマリー"
   },
   "monthNavigation": {
     "previousMonth": "← 前月",

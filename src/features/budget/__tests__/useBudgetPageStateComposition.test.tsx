@@ -20,24 +20,12 @@ jest.mock("../useBudgetPageFormState", () => ({
   useBudgetPageFormState: jest.fn(),
 }));
 
-jest.mock("../useBudgetPageInitialState", () => ({
-  useBudgetPageInitialState: jest.fn(),
-}));
-
-jest.mock("../useBudgetPageMetricsState", () => ({
-  useBudgetPageMetricsState: jest.fn(),
-}));
-
-jest.mock("../useBudgetMonthState", () => ({
-  useBudgetMonthState: jest.fn(),
+jest.mock("../useBudgetMonthAndMetricsState", () => ({
+  useBudgetMonthAndMetricsState: jest.fn(),
 }));
 
 jest.mock("../useBudgetCategoriesState", () => ({
   useBudgetCategoriesState: jest.fn(),
-}));
-
-jest.mock("../useBudgetAllowanceState", () => ({
-  useBudgetAllowanceState: jest.fn(),
 }));
 
 import { createBudgetPageActionBindings } from "../budgetPageActionBindings";
@@ -45,11 +33,8 @@ import { createBudgetPageInputHandlers } from "../budgetPageInputHandlers";
 import { createBudgetPageStateResult } from "../budgetPageStateResult";
 import { useBudgetPageActionHandlers } from "../useBudgetPageActionHandlers";
 import { useBudgetPageFormState } from "../useBudgetPageFormState";
-import { useBudgetPageInitialState } from "../useBudgetPageInitialState";
-import { useBudgetPageMetricsState } from "../useBudgetPageMetricsState";
-import { useBudgetMonthState } from "../useBudgetMonthState";
+import { useBudgetMonthAndMetricsState } from "../useBudgetMonthAndMetricsState";
 import { useBudgetCategoriesState } from "../useBudgetCategoriesState";
-import { useBudgetAllowanceState } from "../useBudgetAllowanceState";
 import { useBudgetPageState } from "../useBudgetPageState";
 
 const monthlyAllowance = {
@@ -64,21 +49,33 @@ describe("useBudgetPageState composition", () => {
   beforeEach(() => {
     jest.clearAllMocks();
 
-    (useBudgetPageInitialState as jest.Mock).mockReturnValue({
-      expenseAmount: "",
-      expenseCategoryId: "",
-      showExpenseForm: false,
-    });
-    (useBudgetMonthState as jest.Mock).mockReturnValue({
-      currentDate: new Date("2026-03-07T00:00:00.000Z"),
-      currentMonth: "2026-03",
-      expenseDate: "2026-03-07",
-      expenses: [],
-      goToCurrentMonth: jest.fn(),
-      goToNextMonth: jest.fn(),
-      goToPreviousMonth: jest.fn(),
-      setExpenseDate: jest.fn(),
-      setExpenses: jest.fn(),
+    (useBudgetMonthAndMetricsState as jest.Mock).mockReturnValue({
+      initialState: {
+        expenseAmount: "",
+        expenseCategoryId: "",
+        showExpenseForm: false,
+      },
+      monthState: {
+        currentDate: new Date("2026-03-07T00:00:00.000Z"),
+        currentMonth: "2026-03",
+        expenseDate: "2026-03-07",
+        expenses: [],
+        goToCurrentMonth: jest.fn(),
+        goToNextMonth: jest.fn(),
+        goToPreviousMonth: jest.fn(),
+        setExpenseDate: jest.fn(),
+        setExpenses: jest.fn(),
+      },
+      monthlyAllowance,
+      metrics: {
+        dailyBudget: 1000,
+        dailyRemainingBudget: 1200,
+        daysRemaining: 24,
+        isCurrentMonth: true,
+        remaining: 28800,
+        todayExpense: 400,
+        totalExpense: 1200,
+      },
     });
     (useBudgetPageFormState as jest.Mock).mockReturnValue({
       closeExpenseForm: jest.fn(),
@@ -88,15 +85,6 @@ describe("useBudgetPageState composition", () => {
       setExpenseAmount: jest.fn(),
       setExpenseCategoryId: jest.fn(),
       showExpenseForm: false,
-    });
-    (useBudgetPageMetricsState as jest.Mock).mockReturnValue({
-      dailyBudget: 1000,
-      dailyRemainingBudget: 1200,
-      daysRemaining: 24,
-      isCurrentMonth: true,
-      remaining: 28800,
-      todayExpense: 400,
-      totalExpense: 1200,
     });
     (createBudgetPageActionBindings as jest.Mock).mockReturnValue({
       bound: true,
@@ -122,31 +110,17 @@ describe("useBudgetPageState composition", () => {
         { id: "cat-1", name: "食料品", createdAt: "2026-05-01T00:00:00.000Z" },
       ],
     });
-    (useBudgetAllowanceState as jest.Mock).mockReturnValue({
-      monthlyAllowance,
-    });
   });
 
-  it("initial/month/form/metrics/actions/result を compose する", () => {
+  it("monthAndMetrics/form/actions/result を compose する", () => {
     const navigate = jest.fn();
     const { result } = renderHook(() => useBudgetPageState({ navigate }));
 
-    expect(useBudgetPageInitialState).toHaveBeenCalledTimes(1);
-    expect(useBudgetAllowanceState).toHaveBeenCalledTimes(1);
-    expect(useBudgetMonthState).toHaveBeenCalledWith({
-      initialState: expect.objectContaining({
-        expenseAmount: "",
-      }),
-    });
+    expect(useBudgetMonthAndMetricsState).toHaveBeenCalledTimes(1);
     expect(useBudgetPageFormState).toHaveBeenCalledWith({
       initialState: expect.objectContaining({
         expenseAmount: "",
       }),
-    });
-    expect(useBudgetPageMetricsState).toHaveBeenCalledWith({
-      currentDate: expect.any(Date),
-      monthBudget: monthlyAllowance.allowance,
-      expenses: [],
     });
     expect(createBudgetPageActionBindings).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -176,14 +150,11 @@ describe("useBudgetPageState composition", () => {
     expect(createBudgetPageStateResult).toHaveBeenCalledWith(
       expect.objectContaining({
         currentDate: expect.any(Date),
-        monthBudget: monthlyAllowance.allowance,
-        monthlyAllowance,
-        dailyBudget: 1000,
         categories: [
           { id: "cat-1", name: "食料品", createdAt: "2026-05-01T00:00:00.000Z" },
         ],
         navigateToCategoryManagement: expect.any(Function),
-        navigateToAllowanceSettings: expect.any(Function),
+        navigateToSummary: expect.any(Function),
         todayExpense: 400,
         handleUpdateExpense: expect.any(Function),
         editingExpenseId: null,
@@ -196,12 +167,12 @@ describe("useBudgetPageState composition", () => {
     );
     expect(result.current).toEqual({ composed: true });
 
-    const { navigateToCategoryManagement, navigateToAllowanceSettings } = (
+    const { navigateToCategoryManagement, navigateToSummary } = (
       createBudgetPageStateResult as jest.Mock
     ).mock.calls[0][0];
     navigateToCategoryManagement();
     expect(navigate).toHaveBeenCalledWith("budget-category-management");
-    navigateToAllowanceSettings();
-    expect(navigate).toHaveBeenCalledWith("budget-allowance-settings");
+    navigateToSummary();
+    expect(navigate).toHaveBeenCalledWith("budget-summary");
   });
 });
