@@ -14,13 +14,6 @@ describe("budgetPageStateResult", () => {
     const categories = [
       { id: "category-books", name: "書籍", createdAt: "2026-03-01T00:00:00.000Z" },
     ];
-    const monthlyAllowance = {
-      totalIncome: 300000,
-      totalFixed: 80000,
-      totalVariable: 30000,
-      totalExpenseItems: 110000,
-      allowance: 190000,
-    };
     const closeExpenseForm = jest.fn();
     const goToCurrentMonth = jest.fn();
     const goToNextMonth = jest.fn();
@@ -36,7 +29,7 @@ describe("budgetPageStateResult", () => {
     const handleEditExpenseCategoryIdChange = jest.fn();
     const handleEditExpenseUsedTimeChange = jest.fn();
     const navigateToCategoryManagement = jest.fn();
-    const navigateToAllowanceSettings = jest.fn();
+    const navigateToSummary = jest.fn();
     const openExpenseForm = jest.fn();
     const startEditExpense = jest.fn();
     const cancelEditExpense = jest.fn();
@@ -46,7 +39,6 @@ describe("budgetPageStateResult", () => {
         categories,
         closeExpenseForm,
         currentDate,
-        dailyBudget: 1000,
         dailyRemainingBudget: 1200,
         daysRemaining: 24,
         editingExpenseId: "e1",
@@ -72,23 +64,18 @@ describe("budgetPageStateResult", () => {
         handleEditExpenseCategoryIdChange,
         handleEditExpenseUsedTimeChange,
         isCurrentMonth: true,
-        monthBudget: 45000,
-        monthlyAllowance,
         navigateToCategoryManagement,
-        navigateToAllowanceSettings,
+        navigateToSummary,
         openExpenseForm,
-        remaining: 43800,
         startEditExpense,
         cancelEditExpense,
         showExpenseForm: false,
         todayExpense: 300,
-        totalExpense: 1200,
       }),
     ).toEqual({
       categories,
       closeExpenseForm,
       currentDate,
-      dailyBudget: 1000,
       dailyRemainingBudget: 1200,
       daysRemaining: 24,
       editingExpenseId: "e1",
@@ -114,17 +101,13 @@ describe("budgetPageStateResult", () => {
       handleEditExpenseCategoryIdChange,
       handleEditExpenseUsedTimeChange,
       isCurrentMonth: true,
-      monthBudget: 45000,
-      monthlyAllowance,
       navigateToCategoryManagement,
-      navigateToAllowanceSettings,
+      navigateToSummary,
       openExpenseForm,
-      remaining: 43800,
       startEditExpense,
       cancelEditExpense,
       showExpenseForm: false,
       todayExpense: 300,
-      totalExpense: 1200,
     });
   });
 });

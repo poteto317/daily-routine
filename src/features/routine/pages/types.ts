@@ -15,6 +15,7 @@ export type PageType =
   | "budget"
   | "budget-category-management"
   | "budget-allowance-settings"
+  | "budget-summary"
   | "preset"
   | "todo-lists"
   | "todo-list-management"
@@ -38,6 +39,7 @@ export const VALID_PAGES: PageType[] = [
   "budget",
   "budget-category-management",
   "budget-allowance-settings",
+  "budget-summary",
   "preset",
   "todo-lists",
   "todo-list-management",

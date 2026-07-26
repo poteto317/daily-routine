@@ -28,19 +28,10 @@ const categories = [
   },
 ];
 
-const defaultMonthlyAllowance = {
-  totalIncome: 300000,
-  totalFixed: 80000,
-  totalVariable: 30000,
-  totalExpenseItems: 110000,
-  allowance: 190000,
-};
-
 const createState = (overrides: Record<string, unknown> = {}) => ({
   categories,
   closeExpenseForm: jest.fn(),
   currentDate: new Date("2026-03-07T00:00:00+09:00"),
-  dailyBudget: 1000,
   dailyRemainingBudget: 1200,
   daysRemaining: 26,
   expenseAmount: "1500",
@@ -74,15 +65,11 @@ const createState = (overrides: Record<string, unknown> = {}) => ({
   startEditExpense: jest.fn(),
   cancelEditExpense: jest.fn(),
   isCurrentMonth: true,
-  monthBudget: 30000,
-  monthlyAllowance: defaultMonthlyAllowance,
   navigateToCategoryManagement: jest.fn(),
-  navigateToAllowanceSettings: jest.fn(),
+  navigateToSummary: jest.fn(),
   openExpenseForm: jest.fn(),
-  remaining: 12000,
   showExpenseForm: false,
   todayExpense: 3000,
-  totalExpense: 18000,
   ...overrides,
 });
 
@@ -102,15 +89,15 @@ describe("BudgetPage", () => {
     expect(state.navigateToCategoryManagement).toHaveBeenCalled();
   });
 
-  it("収入・固定費・変動費を編集ボタンをクリックするとstateのnavigateToAllowanceSettingsが呼ばれる", () => {
+  it("月次サマリーボタンをクリックするとstateのnavigateToSummaryが呼ばれる", () => {
     const state = createState();
     mockUseBudgetPageState.mockReturnValue(state as never);
 
     render(<BudgetPage />);
 
-    fireEvent.click(screen.getByText("収入・固定費・変動費を編集"));
+    fireEvent.click(screen.getByText("📊 月次サマリー"));
 
-    expect(state.navigateToAllowanceSettings).toHaveBeenCalled();
+    expect(state.navigateToSummary).toHaveBeenCalled();
   });
 
   it("useNavigationContextから取得したnavigateをuseBudgetPageStateに渡す", () => {
@@ -134,9 +121,6 @@ describe("BudgetPage", () => {
 
     expect(screen.getByText("💰 家計簿")).toBeInTheDocument();
     expect(screen.getByText("2026年 3月")).toBeInTheDocument();
-    expect(screen.getByText("￥30,000")).toBeInTheDocument();
-    expect(screen.getByText("￥18,000")).toBeInTheDocument();
-    expect(screen.getByText("￥12,000")).toBeInTheDocument();
     expect(screen.getByText("￥1,500")).toBeInTheDocument();
     expect(screen.getByText("🏷️ ランチ")).toBeInTheDocument();
 
@@ -204,13 +188,12 @@ describe("BudgetPage", () => {
 
   it("支出が空なら空状態を表示する", () => {
     mockUseBudgetPageState.mockReturnValue(
-      createState({ expenses: [], monthBudget: 0, remaining: -500 }) as never,
+      createState({ expenses: [] }) as never,
     );
 
     render(<BudgetPage />);
 
     expect(screen.getByText("まだ支出の記録がありません")).toBeInTheDocument();
-    expect(screen.getByText("予算オーバー")).toBeInTheDocument();
   });
 
   it("isCurrentMonth=true のとき今日の支出カードを表示する", () => {

@@ -43,11 +43,6 @@ const mockGetMonthStateSnapshot = getMonthStateSnapshot as jest.MockedFunction<
   typeof getMonthStateSnapshot
 >;
 
-// 収入(給与 300000) - 固定費(家賃 80000) = 220000。
-// 収入・支出項目は月に紐付かないため、月移動をしてもこの値は変わらない
-// （useBudgetAllowanceStateがマウント時に一度だけ計算する単一の情報源）。
-const EXPECTED_MONTH_BUDGET = 220000;
-
 describe("useBudgetPageState", () => {
   let mockNavigate: jest.Mock;
 
@@ -96,7 +91,6 @@ describe("useBudgetPageState", () => {
   it("初期状態とフォーム開閉を扱える", () => {
     const { result } = renderHook(() => useBudgetPageState({ navigate: mockNavigate }));
 
-    expect(result.current.monthBudget).toBe(EXPECTED_MONTH_BUDGET);
     expect(result.current.expenses).toHaveLength(1);
     expect(result.current.expenseDate).toBe("2026-03-07");
 
@@ -163,7 +157,7 @@ describe("useBudgetPageState", () => {
     ]);
   });
 
-  it("月移動でスナップショット(支出・デフォルト日付)を同期するが、monthBudgetは月に紐付かないため変わらない", () => {
+  it("月移動でスナップショット(支出・デフォルト日付)を同期する", () => {
     const { result } = renderHook(() => useBudgetPageState({ navigate: mockNavigate }));
 
     act(() => {
@@ -171,7 +165,6 @@ describe("useBudgetPageState", () => {
     });
 
     expect(result.current.currentDate.getMonth()).toBe(3);
-    expect(result.current.monthBudget).toBe(EXPECTED_MONTH_BUDGET);
     expect(result.current.expenseDate).toBe("2026-04-01");
     expect(result.current.expenses).toEqual([
       expect.objectContaining({ id: "e-apr", amount: 3000 }),
@@ -182,7 +175,6 @@ describe("useBudgetPageState", () => {
     });
 
     expect(result.current.currentDate.getMonth()).toBe(2);
-    expect(result.current.monthBudget).toBe(EXPECTED_MONTH_BUDGET);
 
     act(() => {
       result.current.goToCurrentMonth();
@@ -388,29 +380,15 @@ describe("useBudgetPageState", () => {
     expect(mockNavigate).toHaveBeenCalledWith("budget-category-management");
   });
 
-  it("収入・固定費・変動費の設定へ遷移できる", () => {
+  it("月次サマリーへ遷移できる", () => {
     const { result } = renderHook(() =>
       useBudgetPageState({ navigate: mockNavigate }),
     );
 
     act(() => {
-      result.current.navigateToAllowanceSettings();
+      result.current.navigateToSummary();
     });
 
-    expect(mockNavigate).toHaveBeenCalledWith("budget-allowance-settings");
-  });
-
-  it("monthlyAllowanceの内訳を公開する", () => {
-    const { result } = renderHook(() =>
-      useBudgetPageState({ navigate: mockNavigate }),
-    );
-
-    expect(result.current.monthlyAllowance).toEqual({
-      totalIncome: 300000,
-      totalFixed: 80000,
-      totalVariable: 0,
-      totalExpenseItems: 80000,
-      allowance: EXPECTED_MONTH_BUDGET,
-    });
+    expect(mockNavigate).toHaveBeenCalledWith("budget-summary");
   });
 });
