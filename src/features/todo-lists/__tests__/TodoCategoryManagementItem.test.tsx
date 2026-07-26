@@ -36,6 +36,11 @@ describe("TodoCategoryManagementItem", () => {
     expect(screen.getByText("🏷️ 仕事")).toBeInTheDocument();
   });
 
+  it("並び替え用のドラッグハンドルを表示する", () => {
+    render(<TodoCategoryManagementItem {...defaultProps} />);
+    expect(screen.getByLabelText("並び替え")).toBeInTheDocument();
+  });
+
   it("編集ボタンをクリックすると onStartEdit が呼ばれる", () => {
     const onStartEdit = jest.fn();
     render(

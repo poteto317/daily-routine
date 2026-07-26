@@ -10,7 +10,8 @@ type UseTodoListDetailOrderedItemsParams = {
 
 /**
  * 表示順は常に「未完了→完了済み」を最優先とし、各セクション内を
- * カテゴリ別（初出順、未分類は最後）、カテゴリ内は元の相対順序で固定する。
+ * カテゴリ別（categoryLookupのキー順＝カテゴリ管理画面での並び順、
+ * 未分類は最後）、カテゴリ内は元の相対順序で固定する。
  */
 export const useTodoListDetailOrderedItems = ({
   filteredItems,

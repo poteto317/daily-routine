@@ -4,6 +4,7 @@ import {
   addTodoCategory,
   removeTodoCategory,
   renameTodoCategory,
+  reorderTodoCategories,
   updateTodoCategoryColor,
 } from "./todoCategoryMutations";
 import { normalizeCategoryName } from "./todoCategoryNameNormalization";
@@ -68,6 +69,23 @@ export const updateTodoCategoryColorAndPersist = (params: {
   }
 
   const nextCategories = updateTodoCategoryColor(categories, categoryId, color);
+  persist(nextCategories);
+  return nextCategories;
+};
+
+export const reorderTodoCategoriesAndPersist = (params: {
+  categories: TodoCategory[];
+  fromIndex: number;
+  toIndex: number;
+  persist: PersistTodoCategories;
+}): TodoCategory[] | null => {
+  const { categories, fromIndex, toIndex, persist } = params;
+  const nextCategories = reorderTodoCategories(categories, fromIndex, toIndex);
+
+  if (nextCategories === categories) {
+    return null;
+  }
+
   persist(nextCategories);
   return nextCategories;
 };

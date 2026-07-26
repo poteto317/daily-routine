@@ -1,11 +1,14 @@
 "use client";
 
 import { useRef } from "react";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import { isImeComposingKeyDown } from "@/lib/isImeComposingKeyDown";
 import type { TodoCategory } from "./types";
 import type { TodoItemBgColorValue } from "./todoItemBgColor";
 import { getTodoItemBgClass } from "./todoItemBgColor";
 import { TodoItemColorSwatches } from "./TodoItemColorSwatches";
+import { TodoItemDragHandle } from "./TodoItemDragHandle";
 import texts from "./locales/ja.json";
 
 type Props = {
@@ -44,39 +47,52 @@ export const TodoCategoryManagementItem = ({
   const isEditing = editingCategoryId === category.id;
   const isColorEditing = colorEditingCategoryId === category.id;
   const suppressNextBlurCommitRef = useRef(false);
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
+    useSortable({ id: category.id });
 
   return (
-    <div className="flex items-center justify-between gap-3 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
-      {isEditing ? (
-        <input
-          type="text"
-          autoFocus
-          value={editingCategoryNameValue}
-          onChange={(e) => onChangeNameValue(e.target.value)}
-          onBlur={() => {
-            if (suppressNextBlurCommitRef.current) {
-              suppressNextBlurCommitRef.current = false;
-              return;
-            }
-            onCommitEdit();
-          }}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && !isImeComposingKeyDown(e)) {
-              suppressNextBlurCommitRef.current = true;
+    <div
+      ref={setNodeRef}
+      style={{
+        transform: CSS.Transform.toString(transform),
+        transition,
+        opacity: isDragging ? 0.4 : 1,
+      }}
+      className="flex items-center justify-between gap-3 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg"
+    >
+      <div className="flex items-center gap-2 min-w-0 flex-1">
+        <TodoItemDragHandle attributes={attributes} listeners={listeners} />
+        {isEditing ? (
+          <input
+            type="text"
+            autoFocus
+            value={editingCategoryNameValue}
+            onChange={(e) => onChangeNameValue(e.target.value)}
+            onBlur={() => {
+              if (suppressNextBlurCommitRef.current) {
+                suppressNextBlurCommitRef.current = false;
+                return;
+              }
               onCommitEdit();
-            }
-            if (e.key === "Escape") {
-              suppressNextBlurCommitRef.current = true;
-              onCancelEdit();
-            }
-          }}
-          className="flex-1 min-w-0 text-sm px-2 py-0.5 border-b-2 border-teal-400 bg-transparent text-gray-800 dark:text-gray-100 focus:outline-none"
-        />
-      ) : (
-        <span className="text-sm font-medium min-w-0 break-words text-gray-700 dark:text-gray-300">
-          🏷️ {category.name}
-        </span>
-      )}
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !isImeComposingKeyDown(e)) {
+                suppressNextBlurCommitRef.current = true;
+                onCommitEdit();
+              }
+              if (e.key === "Escape") {
+                suppressNextBlurCommitRef.current = true;
+                onCancelEdit();
+              }
+            }}
+            className="flex-1 min-w-0 text-sm px-2 py-0.5 border-b-2 border-teal-400 bg-transparent text-gray-800 dark:text-gray-100 focus:outline-none"
+          />
+        ) : (
+          <span className="text-sm font-medium min-w-0 break-words text-gray-700 dark:text-gray-300">
+            🏷️ {category.name}
+          </span>
+        )}
+      </div>
       <div className="flex items-center gap-3 shrink-0">
         <div className="relative" data-color-picker>
           <button

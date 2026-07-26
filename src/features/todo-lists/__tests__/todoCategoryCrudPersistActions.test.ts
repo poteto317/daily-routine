@@ -2,12 +2,14 @@ import {
   createTodoCategoryAndPersist,
   deleteTodoCategoryAndPersist,
   renameTodoCategoryAndPersist,
+  reorderTodoCategoriesAndPersist,
   updateTodoCategoryColorAndPersist,
 } from "../todoCategoryCrudPersistActions";
 import {
   addTodoCategory,
   removeTodoCategory,
   renameTodoCategory,
+  reorderTodoCategories,
   updateTodoCategoryColor,
 } from "../todoCategoryMutations";
 
@@ -15,6 +17,7 @@ jest.mock("../todoCategoryMutations", () => ({
   addTodoCategory: jest.fn(),
   removeTodoCategory: jest.fn(),
   renameTodoCategory: jest.fn(),
+  reorderTodoCategories: jest.fn(),
   updateTodoCategoryColor: jest.fn(),
 }));
 
@@ -26,6 +29,9 @@ const mockRemoveTodoCategory = removeTodoCategory as jest.MockedFunction<
 >;
 const mockRenameTodoCategory = renameTodoCategory as jest.MockedFunction<
   typeof renameTodoCategory
+>;
+const mockReorderTodoCategories = reorderTodoCategories as jest.MockedFunction<
+  typeof reorderTodoCategories
 >;
 const mockUpdateTodoCategoryColor =
   updateTodoCategoryColor as jest.MockedFunction<
@@ -206,6 +212,46 @@ describe("todoCategoryCrudPersistActions", () => {
       });
 
       expect(mockUpdateTodoCategoryColor).not.toHaveBeenCalled();
+      expect(persist).not.toHaveBeenCalled();
+      expect(result).toBeNull();
+    });
+  });
+
+  describe("reorderTodoCategoriesAndPersist", () => {
+    it("並び替えが成功した場合はpersistして新しい配列を返す", () => {
+      const categories = [category, { ...category, id: "cat-2" }];
+      const nextCategories = [{ ...category, id: "cat-2" }, category];
+      mockReorderTodoCategories.mockReturnValue(nextCategories);
+      const persist = jest.fn();
+
+      const result = reorderTodoCategoriesAndPersist({
+        categories,
+        fromIndex: 0,
+        toIndex: 1,
+        persist,
+      });
+
+      expect(mockReorderTodoCategories).toHaveBeenCalledWith(
+        categories,
+        0,
+        1,
+      );
+      expect(persist).toHaveBeenCalledWith(nextCategories);
+      expect(result).toBe(nextCategories);
+    });
+
+    it("並び替えられなかった場合（同じ配列参照が返る場合）はpersistせずnullを返す", () => {
+      const categories = [category];
+      mockReorderTodoCategories.mockReturnValue(categories);
+      const persist = jest.fn();
+
+      const result = reorderTodoCategoriesAndPersist({
+        categories,
+        fromIndex: 0,
+        toIndex: 0,
+        persist,
+      });
+
       expect(persist).not.toHaveBeenCalled();
       expect(result).toBeNull();
     });

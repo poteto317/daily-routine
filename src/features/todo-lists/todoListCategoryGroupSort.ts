@@ -3,16 +3,18 @@ import { resolveTodoItemCategory } from "./todoCategoryLookup";
 
 /**
  * カテゴリごとにアイテムをグルーピングする。
- * グループの並び順は「そのグループの最初のアイテムが元の配列で最初に現れた位置」の
- * 昇順（安定ソート）。categoryId が未設定、または参照先カテゴリが削除済みの
- * アイテムは「未分類」グループとして扱い、常に最後に配置する。
+ * グループの並び順は「categoryLookupのキー順（＝カテゴリ管理画面での
+ * カテゴリ配列の並び順）」。categoryLookupはbuildTodoCategoryLookupが
+ * categories配列からJSのMapの挿入順保持特性を使って生成するため、
+ * カテゴリ管理画面でカテゴリを並び替えると、ここでのグループ順にも
+ * そのまま反映される。categoryId が未設定、または参照先カテゴリが
+ * 削除済みのアイテムは「未分類」グループとして扱い、常に最後に配置する。
  */
 export const groupItemsByCategory = (
   items: TodoListItem[],
   categoryLookup: Map<string, TodoCategory>,
 ): TodoListItem[] => {
   const buckets = new Map<string, TodoListItem[]>();
-  const bucketOrder: string[] = [];
   const uncategorized: TodoListItem[] = [];
 
   for (const item of items) {
@@ -23,12 +25,13 @@ export const groupItemsByCategory = (
     }
     if (!buckets.has(category.id)) {
       buckets.set(category.id, []);
-      bucketOrder.push(category.id);
     }
     buckets.get(category.id)?.push(item);
   }
 
-  const orderedBuckets = bucketOrder.map((id) => buckets.get(id) ?? []);
+  const orderedBuckets = Array.from(categoryLookup.keys())
+    .map((id) => buckets.get(id))
+    .filter((bucket): bucket is TodoListItem[] => bucket !== undefined);
 
   return [...orderedBuckets.flat(), ...uncategorized];
 };
