@@ -62,9 +62,14 @@ const getMenuOrderRank = (
  * ハンバーガーメニュー本体（orderHeaderMenuItems）・設定画面の並び替えUI
  * （MenuOrderSection.tsx）・Todoリスト管理ページ（todoListManagementOrder.ts）
  * の3箇所で「id→indexのMapを事前に1回だけ作り、getMenuOrderRankで
- * 並べ替える」という同じ手順が必要なため、ここに集約する
- * （sort()のコンパレータ内で毎回indexOf/findIndexするとO(n^2 log n)に
- * なるアンチパターンを避けるため、Mapの構築をソート前の1回に限定している）。
+ * 並べ替える」という同じ手順が必要なため、ここに集約する。
+ *
+ * getMenuOrderRank自体がmenuOrder.indexOf（線形探索）を行うため、
+ * sort()のコンパレータ内で都度呼び出すと比較回数（O(n log n)）分だけ
+ * 線形探索が繰り返されてしまう。各itemのランクをソート前に1回だけ計算して
+ * 保持しておき（decorate-sort-undecorateパターン）、コンパレータでは
+ * 計算済みの数値同士を比較するだけにすることで、ランク計算をO(n)回に
+ * 抑えている。
  */
 export const sortByMenuOrder = <T>(
   items: T[],
@@ -76,25 +81,22 @@ export const sortByMenuOrder = <T>(
     naturalOrderIds.map((id, index) => [id, index]),
   );
 
-  return [...items].sort((a, b) => {
-    const aId = getId(a);
-    const bId = getId(b);
-
-    return (
-      getMenuOrderRank(
-        aId,
-        naturalIndexById.get(aId) ?? 0,
+  const decorated = items.map((item) => {
+    const id = getId(item);
+    return {
+      item,
+      rank: getMenuOrderRank(
+        id,
+        naturalIndexById.get(id) ?? 0,
         menuOrder,
         naturalOrderIds.length,
-      ) -
-      getMenuOrderRank(
-        bId,
-        naturalIndexById.get(bId) ?? 0,
-        menuOrder,
-        naturalOrderIds.length,
-      )
-    );
+      ),
+    };
   });
+
+  decorated.sort((a, b) => a.rank - b.rank);
+
+  return decorated.map(({ item }) => item);
 };
 
 export type HeaderMenuItem = Omit<MenuItem, "route"> & {

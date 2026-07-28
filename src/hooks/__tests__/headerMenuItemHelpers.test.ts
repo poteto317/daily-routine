@@ -307,4 +307,20 @@ describe("sortByMenuOrder", () => {
 
     expect(items).toEqual(copy);
   });
+
+  it("各itemのランク計算はitems件数分だけ行われ、sort()の比較回数分は呼ばれない（O(n log n)回の線形探索を避ける）", () => {
+    // 各itemのランク（内部でmenuOrder.indexOfという線形探索を伴う）を
+    // sort()のコンパレータ内で都度計算すると、比較回数（O(n log n)）分
+    // 呼ばれてしまう。ソート前に1回だけ計算してから比較するように
+    // なっていれば、getIdの呼び出し回数はちょうどitems.lengthになるはず。
+    const items = Array.from({ length: 50 }, (_, i) => item(`item-${i}`));
+    const naturalOrderIds = items.map((i) => i.id);
+    const menuOrder = [...naturalOrderIds].reverse();
+    const getId = jest.fn((i: Item) => i.id);
+
+    const result = sortByMenuOrder(items, getId, naturalOrderIds, menuOrder);
+
+    expect(getId).toHaveBeenCalledTimes(items.length);
+    expect(result.map((i) => i.id)).toEqual(menuOrder);
+  });
 });
