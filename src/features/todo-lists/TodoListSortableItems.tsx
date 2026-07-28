@@ -130,7 +130,7 @@ export const TodoListSortableItems = ({
         items={visibleItems.map((i) => i.id)}
         strategy={verticalListSortingStrategy}
       >
-        <ul className="space-y-2 mb-6">
+        <ul className="space-y-2 mb-6 [overflow-anchor:none]">
           {visibleItems.map((item) => {
             const origIndex = itemIndexById.get(item.id);
             if (origIndex === undefined) return null;
