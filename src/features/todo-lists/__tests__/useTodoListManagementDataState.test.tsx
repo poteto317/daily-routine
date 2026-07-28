@@ -8,10 +8,15 @@ jest.mock("../useTodoListManagementActionHandlers", () => ({
   useTodoListManagementActionHandlers: jest.fn(),
 }));
 
+jest.mock("../useTodoListManagementOrder", () => ({
+  useTodoListManagementOrder: jest.fn(),
+}));
+
 import { getTodoLists } from "../storage";
 import type { TodoList } from "../types";
 import { useTodoListManagementActionHandlers } from "../useTodoListManagementActionHandlers";
 import { useTodoListManagementDataState } from "../useTodoListManagementDataState";
+import { useTodoListManagementOrder } from "../useTodoListManagementOrder";
 
 describe("useTodoListManagementDataState", () => {
   const baseList: TodoList = {
@@ -25,6 +30,9 @@ describe("useTodoListManagementDataState", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     (getTodoLists as jest.Mock).mockReturnValue([baseList]);
+    (useTodoListManagementOrder as jest.Mock).mockImplementation(
+      ({ lists }) => lists,
+    );
     (useTodoListManagementActionHandlers as jest.Mock).mockReturnValue({
       handleCreate: jest.fn(),
       handleDelete: jest.fn(),
@@ -98,5 +106,49 @@ describe("useTodoListManagementDataState", () => {
       baseList,
       expect.objectContaining({ id: "list-2", title: "Work" }),
     ]);
+  });
+
+  it("useTodoListManagementOrderにlistsを渡し、その戻り値を公開するlistsとして使う", () => {
+    const listA: TodoList = { ...baseList, id: "list-a", title: "A" };
+    const listB: TodoList = { ...baseList, id: "list-b", title: "B" };
+    (getTodoLists as jest.Mock).mockReturnValue([listA, listB]);
+    const sortedByMenuOrder = [listB, listA];
+    (useTodoListManagementOrder as jest.Mock).mockReturnValue(
+      sortedByMenuOrder,
+    );
+
+    const { result } = renderHook(() =>
+      useTodoListManagementDataState({
+        titleInput: "",
+        closeForm: jest.fn(),
+        navigate: jest.fn(),
+      }),
+    );
+
+    expect(useTodoListManagementOrder).toHaveBeenCalledWith({
+      lists: [listA, listB],
+    });
+    expect(result.current.lists).toBe(sortedByMenuOrder);
+  });
+
+  it("並び替えは表示専用であり、action handlerには並び替え前の生のlistsが渡される", () => {
+    const listA: TodoList = { ...baseList, id: "list-a", title: "A" };
+    const listB: TodoList = { ...baseList, id: "list-b", title: "B" };
+    (getTodoLists as jest.Mock).mockReturnValue([listA, listB]);
+    (useTodoListManagementOrder as jest.Mock).mockReturnValue([listB, listA]);
+
+    renderHook(() =>
+      useTodoListManagementDataState({
+        titleInput: "",
+        closeForm: jest.fn(),
+        navigate: jest.fn(),
+      }),
+    );
+
+    expect(useTodoListManagementActionHandlers).toHaveBeenCalledWith(
+      expect.objectContaining({
+        lists: [listA, listB],
+      }),
+    );
   });
 });

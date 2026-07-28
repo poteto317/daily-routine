@@ -2,6 +2,7 @@ import {
   buildDynamicTodoMenuItems,
   filterStaticHeaderMenuItems,
   orderHeaderMenuItems,
+  sortByMenuOrder,
   type HeaderMenuItem,
 } from "@/hooks/headerMenuItemHelpers";
 
@@ -169,5 +170,157 @@ describe("headerMenuItemHelpers", () => {
       ordered.indexOf("weather"),
     );
     expect(ordered[ordered.length - 1]).toBe("settings");
+  });
+
+  it("静的メニュー項目「Todoリスト管理」(todo-list-management)は個別のTodoリスト項目と誤って同一視されない", () => {
+    // "todo-list-management" は "todo-list-" で前方一致するが、個別の
+    // Todoリスト項目（"todo-list-<id>"）ではなく静的メニュー項目自身のID。
+    // 誤って同一視されると、menuOrder上の"todo-lists"レガシープレースホルダー
+    // 位置＋小数のランクが割り当てられ、本来configの並び順で
+    // "todo-list-management"より前に来るはずの他の項目（weather）より
+    // 前に出てきてしまう。
+    const staticItems: HeaderMenuItem[] = [
+      { id: "home", label: "Home", icon: "🏠", route: "home" },
+      { id: "weather", label: "Weather", icon: "☀️", route: "weather" },
+      {
+        id: "todo-list-management",
+        label: "Todoリスト管理",
+        icon: "📝",
+        route: "todo-list-management",
+      },
+      { id: "settings", label: "Settings", icon: "⚙️", route: "settings" },
+    ];
+    const dynamicItems: HeaderMenuItem[] = [
+      {
+        id: "todo-list-list-1",
+        label: "買い物",
+        icon: "✅",
+        route: "todo-lists",
+      },
+      {
+        id: "todo-list-list-2",
+        label: "仕事",
+        icon: "✅",
+        route: "todo-lists",
+      },
+    ];
+
+    // menuOrderにはレガシーの"todo-lists"プレースホルダーのみを含み、
+    // "weather"・"todo-list-management"のどちらも明示的には含まれていない
+    // （＝設定画面で並び替えたことが一度もない状態）。
+    const ordered = orderHeaderMenuItems({
+      staticItems,
+      dynamicItems,
+      menuOrder: ["todo-lists"],
+    }).map((item) => item.id);
+
+    // config上ではweatherがtodo-list-managementより前にあるため、
+    // どちらもmenuOrderに未設定なら自然順（config順）が保たれ、
+    // weatherが先に来るはず。
+    expect(ordered.indexOf("weather")).toBeLessThan(
+      ordered.indexOf("todo-list-management"),
+    );
+  });
+
+  it("実在の静的メニュー項目でない「todo-list-」プレフィックスidは、引き続き個別のTodoリスト項目として扱われる（除外のしすぎを防ぐ）", () => {
+    // isTodoListMenuItemIdはmenuConfig.menuItemsに実在する静的idだけを
+    // 除外する。テストで使う簡略化されたTodoリストの動的項目id
+    // （"todo-list-list-1"等）はmenuConfigには存在しないため、
+    // 個別のTodoリスト項目として正しく扱われ続けるはず
+    // （前段の「並び替えで home を先頭...」テストで暗黙に確認しているが、
+    // ここでは除外条件のしすぎ（過剰除外）がないことを明示的に検証する）。
+    const dynamicItems: HeaderMenuItem[] = [
+      {
+        id: "todo-list-list-1",
+        label: "買い物",
+        icon: "✅",
+        route: "todo-lists",
+      },
+      {
+        id: "todo-list-list-2",
+        label: "仕事",
+        icon: "✅",
+        route: "todo-lists",
+      },
+    ];
+
+    // menuOrderにレガシーの"todo-lists"プレースホルダーのみを含む状態で、
+    // 個別のTodoリスト項目同士が正しくクラスタリングされる
+    // （＝isTodoListMenuItemIdがtrueを返し続けている）ことを確認する。
+    const ordered = orderHeaderMenuItems({
+      staticItems: [
+        { id: "home", label: "Home", icon: "🏠", route: "home" },
+        { id: "settings", label: "Settings", icon: "⚙️", route: "settings" },
+      ],
+      dynamicItems,
+      menuOrder: ["todo-lists"],
+    }).map((item) => item.id);
+
+    expect(ordered.indexOf("todo-list-list-1")).toBeLessThan(
+      ordered.indexOf("todo-list-list-2"),
+    );
+  });
+});
+
+describe("sortByMenuOrder", () => {
+  type Item = { id: string; label: string };
+  const item = (id: string): Item => ({ id, label: id });
+
+  it("menuOrderが空のとき、naturalOrderIdsの順序を保つ", () => {
+    const items = [item("a"), item("b"), item("c")];
+
+    const result = sortByMenuOrder(items, (i) => i.id, ["a", "b", "c"], []);
+
+    expect(result.map((i) => i.id)).toEqual(["a", "b", "c"]);
+  });
+
+  it("menuOrderに明示エントリがあれば、その順序が優先される", () => {
+    const items = [item("a"), item("b"), item("c")];
+
+    const result = sortByMenuOrder(
+      items,
+      (i) => i.id,
+      ["a", "b", "c"],
+      ["c", "a", "b"],
+    );
+
+    expect(result.map((i) => i.id)).toEqual(["c", "a", "b"]);
+  });
+
+  it("menuOrderに存在しない項目は末尾に自然順で追加される", () => {
+    const items = [item("a"), item("b"), item("c")];
+
+    const result = sortByMenuOrder(items, (i) => i.id, ["a", "b", "c"], ["b"]);
+
+    expect(result.map((i) => i.id)).toEqual(["b", "a", "c"]);
+  });
+
+  it("空配列を渡すと空配列を返す", () => {
+    expect(sortByMenuOrder([], (i: Item) => i.id, [], [])).toEqual([]);
+  });
+
+  it("元のitems配列を変更しない（イミュータブル）", () => {
+    const items = [item("a"), item("b"), item("c")];
+    const copy = [...items];
+
+    sortByMenuOrder(items, (i) => i.id, ["a", "b", "c"], ["c", "a"]);
+
+    expect(items).toEqual(copy);
+  });
+
+  it("各itemのランク計算はitems件数分だけ行われ、sort()の比較回数分は呼ばれない（O(n log n)回の線形探索を避ける）", () => {
+    // 各itemのランク（内部でmenuOrder.indexOfという線形探索を伴う）を
+    // sort()のコンパレータ内で都度計算すると、比較回数（O(n log n)）分
+    // 呼ばれてしまう。ソート前に1回だけ計算してから比較するように
+    // なっていれば、getIdの呼び出し回数はちょうどitems.lengthになるはず。
+    const items = Array.from({ length: 50 }, (_, i) => item(`item-${i}`));
+    const naturalOrderIds = items.map((i) => i.id);
+    const menuOrder = [...naturalOrderIds].reverse();
+    const getId = jest.fn((i: Item) => i.id);
+
+    const result = sortByMenuOrder(items, getId, naturalOrderIds, menuOrder);
+
+    expect(getId).toHaveBeenCalledTimes(items.length);
+    expect(result.map((i) => i.id)).toEqual(menuOrder);
   });
 });
