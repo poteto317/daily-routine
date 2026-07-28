@@ -5,10 +5,38 @@ import type { TodoList } from "@/features/todo-lists/types";
 
 const TODO_LIST_MENU_ID_PREFIX = "todo-list-";
 
+// menuConfig.menuItemsに実在する静的メニュー項目のidセット。
+// 静的メニュー項目「Todoリスト管理」自体のid（"todo-list-management"）も
+// "todo-list-"で始まるため、前方一致だけでは個別のTodoリスト項目と
+// 誤って同一視してしまう（実際に発生した不具合）。「静的メニュー項目として
+// 実在するidかどうか」という一次情報（menuConfig自体）を基準に除外することで、
+// 将来"todo-list-"で始まる別の静的idが追加された場合も、この一次情報から
+// 自動的に対応でき、個別に除外リストを保守し続ける必要がない。
+const STATIC_MENU_ITEM_IDS = new Set(
+  menuConfig.menuItems.map((item) => item.id),
+);
+
 const isTodoListMenuItemId = (id: string): boolean => {
-  return id.startsWith(TODO_LIST_MENU_ID_PREFIX);
+  return (
+    id.startsWith(TODO_LIST_MENU_ID_PREFIX) && !STATIC_MENU_ITEM_IDS.has(id)
+  );
 };
 
+/**
+ * TodoリストのIDからメニュー項目ID（`todo-list-<id>`）を組み立てる。
+ * ハンバーガーメニュー本体・設定画面の並び替えUI・Todoリスト管理ページの
+ * 3箇所で同じ組み立て方をする必要があるため、ここに集約する。
+ */
+export const toTodoListMenuItemId = (listId: string): string =>
+  `${TODO_LIST_MENU_ID_PREFIX}${listId}`;
+
+/**
+ * メニュー項目（Todoリストの個別項目を含む）を`menuOrder`設定に基づいて
+ * 並べ替えるためのランクを算出する。ハンバーガーメニュー本体
+ * （orderHeaderMenuItems）・設定画面の並び替えUI（MenuOrderSection.tsx）・
+ * Todoリスト管理ページ（todoListManagementOrder.ts）の3箇所が同じ並び順の
+ * 基準を共有するため、ロジックをこの1箇所に集約している。
+ */
 const getMenuOrderRank = (
   itemId: string,
   fallbackIndex: number,
@@ -26,6 +54,47 @@ const getMenuOrderRank = (
   }
 
   return menuOrder.length + fallbackIndex;
+};
+
+/**
+ * items配列を、あらかじめ渡されたnaturalOrderIds（各itemの既定の
+ * フォールバック順）とmenuOrder設定を基準に並べ替える。
+ * ハンバーガーメニュー本体（orderHeaderMenuItems）・設定画面の並び替えUI
+ * （MenuOrderSection.tsx）・Todoリスト管理ページ（todoListManagementOrder.ts）
+ * の3箇所で「id→indexのMapを事前に1回だけ作り、getMenuOrderRankで
+ * 並べ替える」という同じ手順が必要なため、ここに集約する
+ * （sort()のコンパレータ内で毎回indexOf/findIndexするとO(n^2 log n)に
+ * なるアンチパターンを避けるため、Mapの構築をソート前の1回に限定している）。
+ */
+export const sortByMenuOrder = <T>(
+  items: T[],
+  getId: (item: T) => string,
+  naturalOrderIds: string[],
+  menuOrder: string[],
+): T[] => {
+  const naturalIndexById = new Map(
+    naturalOrderIds.map((id, index) => [id, index]),
+  );
+
+  return [...items].sort((a, b) => {
+    const aId = getId(a);
+    const bId = getId(b);
+
+    return (
+      getMenuOrderRank(
+        aId,
+        naturalIndexById.get(aId) ?? 0,
+        menuOrder,
+        naturalOrderIds.length,
+      ) -
+      getMenuOrderRank(
+        bId,
+        naturalIndexById.get(bId) ?? 0,
+        menuOrder,
+        naturalOrderIds.length,
+      )
+    );
+  });
 };
 
 export type HeaderMenuItem = Omit<MenuItem, "route"> & {
@@ -106,7 +175,7 @@ export const buildDynamicTodoMenuItems = ({
   return todoLists
     .filter((list) => !list.isHidden)
     .map((list) => ({
-      id: `${TODO_LIST_MENU_ID_PREFIX}${list.id}`,
+      id: toTodoListMenuItemId(list.id),
       label: list.title,
       icon: "✅",
       route: "todo-lists" as const,
@@ -169,20 +238,12 @@ export const orderHeaderMenuItems = ({
       : [];
   });
 
-  reorderable.sort((a, b) => {
-    const aFallbackIndex = defaultOrderIds.indexOf(a.id);
-    const bFallbackIndex = defaultOrderIds.indexOf(b.id);
+  const sortedReorderable = sortByMenuOrder(
+    reorderable,
+    (item) => item.id,
+    defaultOrderIds,
+    menuOrder,
+  );
 
-    return (
-      getMenuOrderRank(
-        a.id,
-        aFallbackIndex,
-        menuOrder,
-        defaultOrderIds.length,
-      ) -
-      getMenuOrderRank(b.id, bFallbackIndex, menuOrder, defaultOrderIds.length)
-    );
-  });
-
-  return [...pinnedFirst, ...reorderable, ...pinnedLast];
+  return [...pinnedFirst, ...sortedReorderable, ...pinnedLast];
 };
