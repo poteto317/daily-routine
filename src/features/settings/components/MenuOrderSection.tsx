@@ -3,32 +3,11 @@
 import { useState } from "react";
 import { menuConfig } from "@/config";
 import { getTodoLists } from "@/features/todo-lists/storage";
+import {
+  sortByMenuOrder,
+  toTodoListMenuItemId,
+} from "@/hooks/headerMenuItemHelpers";
 import texts from "../locales/ja.json";
-
-const TODO_LIST_MENU_ID_PREFIX = "todo-list-";
-
-const isTodoListMenuItemId = (id: string): boolean => {
-  return id.startsWith(TODO_LIST_MENU_ID_PREFIX);
-};
-
-const getMenuOrderRank = (
-  itemId: string,
-  fallbackIndex: number,
-  menuOrder: string[],
-  totalItems: number,
-): number => {
-  const configuredIndex = menuOrder.indexOf(itemId);
-  if (configuredIndex !== -1) return configuredIndex;
-
-  if (isTodoListMenuItemId(itemId)) {
-    const legacyTodoIndex = menuOrder.indexOf("todo-lists");
-    if (legacyTodoIndex !== -1) {
-      return legacyTodoIndex + (fallbackIndex + 1) / (totalItems + 1);
-    }
-  }
-
-  return menuOrder.length + fallbackIndex;
-};
 
 /** ハンバーガーメニューで並び替え可能な機能項目の ID セット */
 const REORDERABLE_MENU_IDS = new Set([
@@ -58,7 +37,7 @@ type Props = {
 export const MenuOrderSection = ({ menuOrder, setMenuOrderAction }: Props) => {
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
   const todoListMenuItems = getTodoLists().map((list) => ({
-    id: `${TODO_LIST_MENU_ID_PREFIX}${list.id}`,
+    id: toTodoListMenuItemId(list.id),
     label: list.title,
     icon: "✅",
   }));
@@ -72,24 +51,12 @@ export const MenuOrderSection = ({ menuOrder, setMenuOrderAction }: Props) => {
   });
 
   // config のデフォルト順を基準に menuOrder で並び替え
-  const orderedItems = [...defaultMenuItems].sort((a, b) => {
-    const aFallbackIndex = defaultMenuItems.findIndex(
-      (item) => item.id === a.id,
-    );
-    const bFallbackIndex = defaultMenuItems.findIndex(
-      (item) => item.id === b.id,
-    );
-
-    return (
-      getMenuOrderRank(
-        a.id,
-        aFallbackIndex,
-        menuOrder,
-        defaultMenuItems.length,
-      ) -
-      getMenuOrderRank(b.id, bFallbackIndex, menuOrder, defaultMenuItems.length)
-    );
-  });
+  const orderedItems = sortByMenuOrder(
+    defaultMenuItems,
+    (item) => item.id,
+    defaultMenuItems.map((item) => item.id),
+    menuOrder,
+  );
 
   const handleReorder = (fromIndex: number, toIndex: number) => {
     const ids = orderedItems.map((i) => i.id);
