@@ -23,7 +23,6 @@ import { TodoItemIndentButtons } from "./TodoItemIndentButtons";
 import { TodoItemSelectCheckbox } from "./TodoItemSelectCheckbox";
 import { TodoItemDragHandle } from "./TodoItemDragHandle";
 import { TodoItemCollapseButton } from "./TodoItemCollapseButton";
-import { TodoItemCompleteButton } from "./TodoItemCompleteButton";
 
 export type SortableTodoListItemProps = {
   item: TodoListItem;
@@ -191,14 +190,6 @@ export const SortableTodoListItem = ({
             isParent={isParent}
             isCollapsed={isCollapsed}
             onToggleCollapse={toggleCollapseItem}
-          />
-
-          <TodoItemCompleteButton
-            listId={list.id}
-            itemId={item.id}
-            isCompleted={item.isCompleted}
-            isDragActive={isDragActive}
-            onToggle={onToggleItem}
           />
 
           <TodoItemTitleArea

@@ -340,7 +340,7 @@ describe("TodoListsPage", () => {
 
     render(<TodoListsPage />);
 
-    fireEvent.click(screen.getByLabelText("完了にする"));
+    fireEvent.click(screen.getByLabelText("「Task 1」を完了にする"));
     fireEvent.click(screen.getAllByLabelText("インデントを上げる")[1]);
     fireEvent.click(screen.getAllByLabelText("インデントを下げる")[1]);
 
