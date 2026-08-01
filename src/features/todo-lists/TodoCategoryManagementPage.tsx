@@ -37,17 +37,17 @@ export const TodoCategoryManagementPage = () => {
     <div className="min-h-screen bg-linear-to-br from-teal-50 to-cyan-100 dark:from-slate-400 dark:to-slate-300">
       <main className="max-w-2xl mx-auto px-4 py-8">
         <CardPanel>
-          <TodoCategoryManagementHeader showForm={showForm} onOpenForm={openForm} />
+          <TodoCategoryManagementHeader showForm={showForm} onOpenFormAction={openForm} />
 
           {showForm && (
             <TodoCategoryCreateForm
               inputRef={inputRef}
               nameInput={nameInput}
               colorInput={colorInput}
-              onChangeName={setNameInput}
-              onChangeColor={setColorInput}
-              onCreate={handleCreate}
-              onCancel={closeForm}
+              onChangeNameAction={setNameInput}
+              onChangeColorAction={setColorInput}
+              onCreateAction={handleCreate}
+              onCancelAction={closeForm}
             />
           )}
 
@@ -57,20 +57,20 @@ export const TodoCategoryManagementPage = () => {
             <TodoCategorySortableList
               categories={categories}
               sensors={sensors}
-              onDragStart={handleDragStart}
-              onDragEnd={handleDragEnd}
-              onDragCancel={handleDragCancel}
+              onDragStartAction={handleDragStart}
+              onDragEndAction={handleDragEnd}
+              onDragCancelAction={handleDragCancel}
               editingCategoryId={editingCategoryId}
               editingCategoryNameValue={editingCategoryNameValue}
-              onChangeNameValue={setEditingCategoryNameValue}
-              onCommitEdit={commitEditCategoryName}
-              onCancelEdit={cancelEditCategoryName}
-              onStartEdit={startEditCategoryName}
+              onChangeNameValueAction={setEditingCategoryNameValue}
+              onCommitEditAction={commitEditCategoryName}
+              onCancelEditAction={cancelEditCategoryName}
+              onStartEditAction={startEditCategoryName}
               colorEditingCategoryId={colorEditingCategoryId}
-              onToggleColorPicker={toggleCategoryColorPicker}
-              onCloseColorPicker={closeCategoryColorPicker}
-              onUpdateColor={handleUpdateColor}
-              onDelete={handleDelete}
+              onToggleColorPickerAction={toggleCategoryColorPicker}
+              onCloseColorPickerAction={closeCategoryColorPicker}
+              onUpdateColorAction={handleUpdateColor}
+              onDeleteAction={handleDelete}
             />
           )}
         </CardPanel>

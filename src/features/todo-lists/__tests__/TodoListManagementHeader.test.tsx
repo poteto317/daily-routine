@@ -3,7 +3,7 @@ import { TodoListManagementHeader } from "../TodoListManagementHeader";
 
 const defaultProps = {
   showForm: false,
-  onOpenForm: jest.fn(),
+  onOpenFormAction: jest.fn(),
 };
 
 beforeEach(() => {
@@ -41,11 +41,11 @@ describe("TodoListManagementHeader", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("追加ボタンクリックで onOpenForm が呼ばれる", () => {
+  it("追加ボタンクリックで onOpenFormAction が呼ばれる", () => {
     render(<TodoListManagementHeader {...defaultProps} showForm={false} />);
     fireEvent.click(
       screen.getByRole("button", { name: /新しいリストを追加/ }),
     );
-    expect(defaultProps.onOpenForm).toHaveBeenCalledTimes(1);
+    expect(defaultProps.onOpenFormAction).toHaveBeenCalledTimes(1);
   });
 });

@@ -9,7 +9,7 @@ const meta = {
     layout: "padded",
   },
   args: {
-    onToggle: fn(),
+    onToggleAction: fn(),
   },
 } satisfies Meta<typeof TodoItemTitleButton>;
 
@@ -68,7 +68,7 @@ export const ClickToComplete: Story = {
       name: "「牛乳を買う」を完了にする",
     });
     await userEvent.click(button);
-    expect(args.onToggle).toHaveBeenCalledOnce();
+    expect(args.onToggleAction).toHaveBeenCalledOnce();
   },
 };
 
@@ -85,6 +85,6 @@ export const DisabledWhileDragging: Story = {
     });
     expect(button).toBeDisabled();
     await userEvent.click(button);
-    expect(args.onToggle).not.toHaveBeenCalled();
+    expect(args.onToggleAction).not.toHaveBeenCalled();
   },
 };

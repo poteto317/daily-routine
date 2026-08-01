@@ -9,7 +9,7 @@ export type TodoCategorySwatchesProps = {
   /** 現在選択中のカテゴリID。undefined = 未分類 */
   selectedCategoryId: string | undefined;
   /** カテゴリが選択されたときのコールバック。未分類選択時は undefined */
-  onSelect: (categoryId: string | undefined) => void;
+  onSelectAction: (categoryId: string | undefined) => void;
   /** radiogroup の追加 className */
   className?: string;
 };
@@ -22,7 +22,7 @@ export type TodoCategorySwatchesProps = {
 export const TodoCategorySwatches = ({
   categories,
   selectedCategoryId,
-  onSelect,
+  onSelectAction,
   className = "",
 }: TodoCategorySwatchesProps) => {
   // カテゴリ削除後などで selectedCategoryId が categories に存在しない場合は
@@ -39,7 +39,7 @@ export const TodoCategorySwatches = ({
         role="radio"
         aria-checked={isUncategorized}
         type="button"
-        onClick={() => onSelect(undefined)}
+        onClick={() => onSelectAction(undefined)}
         className={`px-2 py-1 rounded-lg border text-xs transition-all ${
           isUncategorized
             ? "border-teal-500 ring-2 ring-teal-300 bg-white dark:bg-gray-700"
@@ -56,7 +56,7 @@ export const TodoCategorySwatches = ({
           role="radio"
           aria-checked={selectedCategoryId === category.id}
           type="button"
-          onClick={() => onSelect(category.id)}
+          onClick={() => onSelectAction(category.id)}
           className={`px-2 py-1 rounded-lg border text-xs transition-all ${getTodoItemBgClass(category.color)} ${
             selectedCategoryId === category.id
               ? "border-teal-500 ring-2 ring-teal-300"

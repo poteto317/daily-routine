@@ -10,11 +10,11 @@ export type TodoListHeaderProps = {
   editingListTitle: boolean;
   editingListTitleValue: string;
   listTitleInputRef: RefObject<HTMLInputElement | null>;
-  onChangeListTitleValue: (value: string) => void;
-  onCommitEditListTitle: () => void;
-  onCancelEditListTitle: () => void;
-  onStartEditListTitle: () => void;
-  onDeleteList: (list: TodoList) => void;
+  onChangeListTitleValueAction: (value: string) => void;
+  onCommitEditListTitleAction: () => void;
+  onCancelEditListTitleAction: () => void;
+  onStartEditListTitleAction: () => void;
+  onDeleteListAction: (list: TodoList) => void;
 };
 
 /**
@@ -26,11 +26,11 @@ export const TodoListHeader = ({
   editingListTitle,
   editingListTitleValue,
   listTitleInputRef,
-  onChangeListTitleValue,
-  onCommitEditListTitle,
-  onCancelEditListTitle,
-  onStartEditListTitle,
-  onDeleteList,
+  onChangeListTitleValueAction,
+  onCommitEditListTitleAction,
+  onCancelEditListTitleAction,
+  onStartEditListTitleAction,
+  onDeleteListAction,
 }: TodoListHeaderProps) => (
   <div className="flex items-start justify-between gap-2 mb-6">
     {editingListTitle ? (
@@ -38,12 +38,12 @@ export const TodoListHeader = ({
         ref={listTitleInputRef}
         type="text"
         value={editingListTitleValue}
-        onChange={(e) => onChangeListTitleValue(e.target.value)}
-        onBlur={onCommitEditListTitle}
+        onChange={(e) => onChangeListTitleValueAction(e.target.value)}
+        onBlur={onCommitEditListTitleAction}
         onKeyDown={(e) => {
           if (e.key === "Enter" && !isImeComposingKeyDown(e))
-            onCommitEditListTitle();
-          if (e.key === "Escape") onCancelEditListTitle();
+            onCommitEditListTitleAction();
+          if (e.key === "Escape") onCancelEditListTitleAction();
         }}
         className="flex-1 text-xl font-bold px-2 py-0.5 border-b-2 border-teal-400 bg-transparent text-gray-900 dark:text-black focus:outline-none"
       />
@@ -54,7 +54,7 @@ export const TodoListHeader = ({
         </h1>
         <button
           type="button"
-          onClick={onStartEditListTitle}
+          onClick={onStartEditListTitleAction}
           className="shrink-0 text-gray-400 hover:text-teal-500 dark:text-gray-500 dark:hover:text-teal-400 transition-colors text-sm"
           aria-label={texts.list.editListTitleLabel}
         >
@@ -64,7 +64,7 @@ export const TodoListHeader = ({
     )}
     <button
       type="button"
-      onClick={() => onDeleteList(list)}
+      onClick={() => onDeleteListAction(list)}
       className="shrink-0 text-xs text-gray-400 hover:text-red-500 dark:text-gray-500 dark:hover:text-red-400 transition-colors whitespace-nowrap"
     >
       {texts.list.deleteListButton}

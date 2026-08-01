@@ -7,7 +7,7 @@ describe("AddItemPositionToggleButton", () => {
       render(
         <AddItemPositionToggleButton
           addItemPosition={undefined}
-          onToggle={jest.fn()}
+          onToggleAction={jest.fn()}
         />,
       );
       expect(
@@ -19,7 +19,7 @@ describe("AddItemPositionToggleButton", () => {
       render(
         <AddItemPositionToggleButton
           addItemPosition="last"
-          onToggle={jest.fn()}
+          onToggleAction={jest.fn()}
         />,
       );
       expect(
@@ -31,7 +31,7 @@ describe("AddItemPositionToggleButton", () => {
       render(
         <AddItemPositionToggleButton
           addItemPosition="first"
-          onToggle={jest.fn()}
+          onToggleAction={jest.fn()}
         />,
       );
       expect(
@@ -41,53 +41,53 @@ describe("AddItemPositionToggleButton", () => {
   });
 
   describe("トグル動作", () => {
-    it("addItemPosition が undefined のときクリックすると onToggle('first') が呼ばれる", () => {
-      const onToggle = jest.fn();
+    it("addItemPosition が undefined のときクリックすると onToggleAction('first') が呼ばれる", () => {
+      const onToggleAction = jest.fn();
       render(
         <AddItemPositionToggleButton
           addItemPosition={undefined}
-          onToggle={onToggle}
+          onToggleAction={onToggleAction}
         />,
       );
       fireEvent.click(screen.getByRole("button"));
-      expect(onToggle).toHaveBeenCalledWith("first");
+      expect(onToggleAction).toHaveBeenCalledWith("first");
     });
 
-    it("addItemPosition が 'last' のときクリックすると onToggle('first') が呼ばれる", () => {
-      const onToggle = jest.fn();
+    it("addItemPosition が 'last' のときクリックすると onToggleAction('first') が呼ばれる", () => {
+      const onToggleAction = jest.fn();
       render(
         <AddItemPositionToggleButton
           addItemPosition="last"
-          onToggle={onToggle}
+          onToggleAction={onToggleAction}
         />,
       );
       fireEvent.click(screen.getByRole("button"));
-      expect(onToggle).toHaveBeenCalledWith("first");
+      expect(onToggleAction).toHaveBeenCalledWith("first");
     });
 
-    it("addItemPosition が 'first' のときクリックすると onToggle('last') が呼ばれる", () => {
-      const onToggle = jest.fn();
+    it("addItemPosition が 'first' のときクリックすると onToggleAction('last') が呼ばれる", () => {
+      const onToggleAction = jest.fn();
       render(
         <AddItemPositionToggleButton
           addItemPosition="first"
-          onToggle={onToggle}
+          onToggleAction={onToggleAction}
         />,
       );
       fireEvent.click(screen.getByRole("button"));
-      expect(onToggle).toHaveBeenCalledWith("last");
+      expect(onToggleAction).toHaveBeenCalledWith("last");
     });
 
-    it("複数回クリックするたびに onToggle が呼ばれる", () => {
-      const onToggle = jest.fn();
+    it("複数回クリックするたびに onToggleAction が呼ばれる", () => {
+      const onToggleAction = jest.fn();
       render(
         <AddItemPositionToggleButton
           addItemPosition="last"
-          onToggle={onToggle}
+          onToggleAction={onToggleAction}
         />,
       );
       fireEvent.click(screen.getByRole("button"));
       fireEvent.click(screen.getByRole("button"));
-      expect(onToggle).toHaveBeenCalledTimes(2);
+      expect(onToggleAction).toHaveBeenCalledTimes(2);
     });
   });
 
@@ -96,7 +96,7 @@ describe("AddItemPositionToggleButton", () => {
       render(
         <AddItemPositionToggleButton
           addItemPosition={undefined}
-          onToggle={jest.fn()}
+          onToggleAction={jest.fn()}
         />,
       );
       expect(screen.getByRole("button")).toHaveAttribute("aria-pressed", "false");
@@ -106,7 +106,7 @@ describe("AddItemPositionToggleButton", () => {
       render(
         <AddItemPositionToggleButton
           addItemPosition="last"
-          onToggle={jest.fn()}
+          onToggleAction={jest.fn()}
         />,
       );
       expect(screen.getByRole("button")).toHaveAttribute("aria-pressed", "false");
@@ -116,7 +116,7 @@ describe("AddItemPositionToggleButton", () => {
       render(
         <AddItemPositionToggleButton
           addItemPosition="first"
-          onToggle={jest.fn()}
+          onToggleAction={jest.fn()}
         />,
       );
       expect(screen.getByRole("button")).toHaveAttribute("aria-pressed", "true");
@@ -128,7 +128,7 @@ describe("AddItemPositionToggleButton", () => {
       render(
         <AddItemPositionToggleButton
           addItemPosition="first"
-          onToggle={jest.fn()}
+          onToggleAction={jest.fn()}
         />,
       );
       const button = screen.getByRole("button");
@@ -139,7 +139,7 @@ describe("AddItemPositionToggleButton", () => {
       render(
         <AddItemPositionToggleButton
           addItemPosition="last"
-          onToggle={jest.fn()}
+          onToggleAction={jest.fn()}
         />,
       );
       const button = screen.getByRole("button");
@@ -150,7 +150,7 @@ describe("AddItemPositionToggleButton", () => {
       render(
         <AddItemPositionToggleButton
           addItemPosition={undefined}
-          onToggle={jest.fn()}
+          onToggleAction={jest.fn()}
         />,
       );
       const button = screen.getByRole("button");

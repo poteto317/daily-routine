@@ -12,23 +12,23 @@ type TodoItemDesktopActionsProps = {
   colorPickerItemId: string | null;
   categoryPickerItemId: string | null;
   isInlineInsertOpen: boolean;
-  toggleItemColorPicker: (id: string) => void;
-  closeItemColorPicker: () => void;
-  toggleItemCategoryPicker: (id: string) => void;
-  closeItemCategoryPicker: () => void;
-  onUpdateItemBgColor: (
+  toggleItemColorPickerAction: (id: string) => void;
+  closeItemColorPickerAction: () => void;
+  toggleItemCategoryPickerAction: (id: string) => void;
+  closeItemCategoryPickerAction: () => void;
+  onUpdateItemBgColorAction: (
     listId: string,
     itemId: string,
     bgColor: TodoItemBgColorValue | undefined,
   ) => void;
-  onUpdateItemCategory: (
+  onUpdateItemCategoryAction: (
     listId: string,
     itemId: string,
     categoryId: string | undefined,
   ) => void;
-  startEditItem: (id: string, title: string) => void;
-  onDeleteItem: (listId: string, itemId: string, title: string) => void;
-  onInsertAfter: () => void;
+  startEditItemAction: (id: string, title: string) => void;
+  onDeleteItemAction: (listId: string, itemId: string, title: string) => void;
+  onInsertAfterAction: () => void;
 };
 
 /**
@@ -42,21 +42,21 @@ export const TodoItemDesktopActions = ({
   colorPickerItemId,
   categoryPickerItemId,
   isInlineInsertOpen,
-  toggleItemColorPicker,
-  closeItemColorPicker,
-  toggleItemCategoryPicker,
-  closeItemCategoryPicker,
-  onUpdateItemBgColor,
-  onUpdateItemCategory,
-  startEditItem,
-  onDeleteItem,
-  onInsertAfter,
+  toggleItemColorPickerAction,
+  closeItemColorPickerAction,
+  toggleItemCategoryPickerAction,
+  closeItemCategoryPickerAction,
+  onUpdateItemBgColorAction,
+  onUpdateItemCategoryAction,
+  startEditItemAction,
+  onDeleteItemAction,
+  onInsertAfterAction,
 }: TodoItemDesktopActionsProps) => (
   <>
     <div className="relative hidden sm:block" data-color-picker>
       <button
         type="button"
-        onClick={() => toggleItemColorPicker(item.id)}
+        onClick={() => toggleItemColorPickerAction(item.id)}
         className="shrink-0 text-gray-300 hover:text-teal-500 dark:text-gray-500 dark:hover:text-teal-400 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100 focus-visible:opacity-100 transition-opacity"
         aria-label="背景色を変更"
         aria-expanded={colorPickerItemId === item.id}
@@ -67,9 +67,9 @@ export const TodoItemDesktopActions = ({
         <div className="absolute top-full right-0 mt-1 p-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-500 rounded-lg shadow-lg z-10 flex gap-1.5">
           <TodoItemColorSwatches
             selectedColor={item.bgColor}
-            onSelect={(value) => {
-              onUpdateItemBgColor(listId, item.id, value);
-              closeItemColorPicker();
+            onSelectAction={(value) => {
+              onUpdateItemBgColorAction(listId, item.id, value);
+              closeItemColorPickerAction();
             }}
           />
         </div>
@@ -78,7 +78,7 @@ export const TodoItemDesktopActions = ({
     <div className="relative hidden sm:block" data-category-picker>
       <button
         type="button"
-        onClick={() => toggleItemCategoryPicker(item.id)}
+        onClick={() => toggleItemCategoryPickerAction(item.id)}
         className="shrink-0 text-gray-300 hover:text-teal-500 dark:text-gray-500 dark:hover:text-teal-400 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100 focus-visible:opacity-100 transition-opacity"
         aria-label={texts.list.categoryPickerLabel}
         aria-expanded={categoryPickerItemId === item.id}
@@ -90,9 +90,9 @@ export const TodoItemDesktopActions = ({
           <TodoCategorySwatches
             categories={categories}
             selectedCategoryId={item.categoryId}
-            onSelect={(categoryId) => {
-              onUpdateItemCategory(listId, item.id, categoryId);
-              closeItemCategoryPicker();
+            onSelectAction={(categoryId) => {
+              onUpdateItemCategoryAction(listId, item.id, categoryId);
+              closeItemCategoryPickerAction();
             }}
           />
         </div>
@@ -100,7 +100,7 @@ export const TodoItemDesktopActions = ({
     </div>
     <button
       type="button"
-      onClick={() => startEditItem(item.id, item.title)}
+      onClick={() => startEditItemAction(item.id, item.title)}
       className="hidden sm:inline-flex shrink-0 text-gray-300 hover:text-teal-500 dark:text-gray-500 dark:hover:text-teal-400 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100 focus-visible:opacity-100 transition-opacity"
       aria-label={texts.list.editItemLabel}
     >
@@ -108,7 +108,7 @@ export const TodoItemDesktopActions = ({
     </button>
     <button
       type="button"
-      onClick={() => onDeleteItem(listId, item.id, item.title)}
+      onClick={() => onDeleteItemAction(listId, item.id, item.title)}
       className="hidden sm:inline-flex shrink-0 text-gray-300 hover:text-red-400 dark:text-gray-500 dark:hover:text-red-400 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100 focus-visible:opacity-100 transition-opacity"
       aria-label="削除"
     >
@@ -116,7 +116,7 @@ export const TodoItemDesktopActions = ({
     </button>
     <button
       type="button"
-      onClick={onInsertAfter}
+      onClick={onInsertAfterAction}
       aria-expanded={isInlineInsertOpen}
       className="hidden sm:inline-flex shrink-0 items-center gap-0.5 text-gray-300 hover:text-teal-500 dark:text-gray-500 dark:hover:text-teal-400 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100 focus-visible:opacity-100 transition-opacity"
       aria-label={texts.list.insertAfterLabel}

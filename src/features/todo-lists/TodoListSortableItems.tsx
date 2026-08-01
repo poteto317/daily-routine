@@ -39,7 +39,7 @@ type ItemHandlers = Omit<
   | "isParent"
   | "isCollapsed"
   | "isInlineInsertOpen"
-  | "onInsertAfter"
+  | "onInsertAfterAction"
 >;
 
 export type TodoListSortableItemsProps = {
@@ -55,13 +55,13 @@ export type TodoListSortableItemsProps = {
   insertAfterId: string | null;
   inlineInputText: string;
   sensors: SensorDescriptor<SensorOptions>[];
-  onDragStart: (event: DragStartEvent) => void;
-  onDragEnd: (event: DragEndEvent) => void;
-  onDragCancel: () => void;
-  onSetInlineInputText: (text: string) => void;
-  onHandleInlineAdd: (origIndex: number) => void;
-  onCloseInlineInsert: () => void;
-  onOpenInlineInsert: (itemId: string) => void;
+  onDragStartAction: (event: DragStartEvent) => void;
+  onDragEndAction: (event: DragEndEvent) => void;
+  onDragCancelAction: () => void;
+  onSetInlineInputTextAction: (text: string) => void;
+  onHandleInlineAddAction: (origIndex: number) => void;
+  onCloseInlineInsertAction: () => void;
+  onOpenInlineInsertAction: (itemId: string) => void;
 } & ItemHandlers;
 
 /**
@@ -81,13 +81,13 @@ export const TodoListSortableItems = ({
   insertAfterId,
   inlineInputText,
   sensors,
-  onDragStart,
-  onDragEnd,
-  onDragCancel,
-  onSetInlineInputText,
-  onHandleInlineAdd,
-  onCloseInlineInsert,
-  onOpenInlineInsert,
+  onDragStartAction,
+  onDragEndAction,
+  onDragCancelAction,
+  onSetInlineInputTextAction,
+  onHandleInlineAddAction,
+  onCloseInlineInsertAction,
+  onOpenInlineInsertAction,
   ...itemHandlers
 }: TodoListSortableItemsProps) => {
   const itemsForParentDetection = hideCompleted
@@ -122,9 +122,9 @@ export const TodoListSortableItems = ({
     <DndContext
       sensors={sensors}
       collisionDetection={closestCenter}
-      onDragStart={onDragStart}
-      onDragEnd={onDragEnd}
-      onDragCancel={onDragCancel}
+      onDragStart={onDragStartAction}
+      onDragEnd={onDragEndAction}
+      onDragCancel={onDragCancelAction}
     >
       <SortableContext
         items={visibleItems.map((i) => i.id)}
@@ -157,14 +157,14 @@ export const TodoListSortableItems = ({
                   isParent={isParent}
                   isCollapsed={isCollapsed}
                   isInlineInsertOpen={insertAfterId === item.id}
-                  onInsertAfter={() => onOpenInlineInsert(item.id)}
+                  onInsertAfterAction={() => onOpenInlineInsertAction(item.id)}
                 />
                 {insertAfterId === item.id && (
                   <InlineInsertForm
                     inputText={inlineInputText}
-                    onChangeText={onSetInlineInputText}
-                    onAdd={() => onHandleInlineAdd(origIndex)}
-                    onCancel={onCloseInlineInsert}
+                    onChangeTextAction={onSetInlineInputTextAction}
+                    onAddAction={() => onHandleInlineAddAction(origIndex)}
+                    onCancelAction={onCloseInlineInsertAction}
                   />
                 )}
               </Fragment>

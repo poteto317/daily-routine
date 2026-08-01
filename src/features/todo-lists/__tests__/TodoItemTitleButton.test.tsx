@@ -6,7 +6,7 @@ describe("TodoItemTitleButton", () => {
     title: "テストタスク",
     isCompleted: false,
     isDragActive: false,
-    onToggle: jest.fn(),
+    onToggleAction: jest.fn(),
   };
 
   beforeEach(() => {
@@ -71,24 +71,24 @@ describe("TodoItemTitleButton", () => {
   });
 
   describe("クリック動作", () => {
-    it("クリックで onToggle が呼ばれる", () => {
-      const onToggle = jest.fn();
-      render(<TodoItemTitleButton {...defaultProps} onToggle={onToggle} />);
+    it("クリックで onToggleAction が呼ばれる", () => {
+      const onToggleAction = jest.fn();
+      render(<TodoItemTitleButton {...defaultProps} onToggleAction={onToggleAction} />);
       fireEvent.click(
         screen.getByRole("button", { name: "「テストタスク」を完了にする" }),
       );
-      expect(onToggle).toHaveBeenCalledTimes(1);
+      expect(onToggleAction).toHaveBeenCalledTimes(1);
     });
 
-    it("isDragActive=true のとき クリックしても onToggle は呼ばれない", () => {
-      const onToggle = jest.fn();
+    it("isDragActive=true のとき クリックしても onToggleAction は呼ばれない", () => {
+      const onToggleAction = jest.fn();
       render(
-        <TodoItemTitleButton {...defaultProps} isDragActive={true} onToggle={onToggle} />,
+        <TodoItemTitleButton {...defaultProps} isDragActive={true} onToggleAction={onToggleAction} />,
       );
       fireEvent.click(
         screen.getByRole("button", { name: "「テストタスク」を完了にする" }),
       );
-      expect(onToggle).not.toHaveBeenCalled();
+      expect(onToggleAction).not.toHaveBeenCalled();
     });
   });
 

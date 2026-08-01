@@ -10,10 +10,10 @@ const defaultProps = {
   inputRef: createRef<HTMLInputElement>(),
   nameInput: "",
   colorInput: undefined,
-  onChangeName: jest.fn(),
-  onChangeColor: jest.fn(),
-  onCreate: jest.fn(),
-  onCancel: jest.fn(),
+  onChangeNameAction: jest.fn(),
+  onChangeColorAction: jest.fn(),
+  onCreateAction: jest.fn(),
+  onCancelAction: jest.fn(),
 };
 
 describe("TodoCategoryCreateForm", () => {
@@ -48,63 +48,63 @@ describe("TodoCategoryCreateForm", () => {
     expect(screen.getByText("作成")).not.toBeDisabled();
   });
 
-  it("入力変更で onChangeName が呼ばれる", () => {
-    const onChangeName = jest.fn();
-    render(<TodoCategoryCreateForm {...defaultProps} onChangeName={onChangeName} />);
+  it("入力変更で onChangeNameAction が呼ばれる", () => {
+    const onChangeNameAction = jest.fn();
+    render(<TodoCategoryCreateForm {...defaultProps} onChangeNameAction={onChangeNameAction} />);
     fireEvent.change(screen.getByPlaceholderText("カテゴリ名"), {
       target: { value: "テスト" },
     });
-    expect(onChangeName).toHaveBeenCalledWith("テスト");
+    expect(onChangeNameAction).toHaveBeenCalledWith("テスト");
   });
 
-  it("色スウォッチ選択で onChangeColor が呼ばれる", () => {
-    const onChangeColor = jest.fn();
-    render(<TodoCategoryCreateForm {...defaultProps} onChangeColor={onChangeColor} />);
+  it("色スウォッチ選択で onChangeColorAction が呼ばれる", () => {
+    const onChangeColorAction = jest.fn();
+    render(<TodoCategoryCreateForm {...defaultProps} onChangeColorAction={onChangeColorAction} />);
     fireEvent.click(screen.getByRole("radio", { name: "赤" }));
-    expect(onChangeColor).toHaveBeenCalledWith("bg-red-50");
+    expect(onChangeColorAction).toHaveBeenCalledWith("bg-red-50");
   });
 
-  it("作成ボタンクリックで onCreate が呼ばれる", () => {
-    const onCreate = jest.fn();
+  it("作成ボタンクリックで onCreateAction が呼ばれる", () => {
+    const onCreateAction = jest.fn();
     render(
       <TodoCategoryCreateForm
         {...defaultProps}
         nameInput="仕事"
-        onCreate={onCreate}
+        onCreateAction={onCreateAction}
       />,
     );
     fireEvent.click(screen.getByText("作成"));
-    expect(onCreate).toHaveBeenCalledTimes(1);
+    expect(onCreateAction).toHaveBeenCalledTimes(1);
   });
 
-  it("キャンセルボタンクリックで onCancel が呼ばれる", () => {
-    const onCancel = jest.fn();
-    render(<TodoCategoryCreateForm {...defaultProps} onCancel={onCancel} />);
+  it("キャンセルボタンクリックで onCancelAction が呼ばれる", () => {
+    const onCancelAction = jest.fn();
+    render(<TodoCategoryCreateForm {...defaultProps} onCancelAction={onCancelAction} />);
     fireEvent.click(screen.getByText("キャンセル"));
-    expect(onCancel).toHaveBeenCalledTimes(1);
+    expect(onCancelAction).toHaveBeenCalledTimes(1);
   });
 
-  it("Enter キーで onCreate が呼ばれる", () => {
-    const onCreate = jest.fn();
+  it("Enter キーで onCreateAction が呼ばれる", () => {
+    const onCreateAction = jest.fn();
     render(
       <TodoCategoryCreateForm
         {...defaultProps}
         nameInput="仕事"
-        onCreate={onCreate}
+        onCreateAction={onCreateAction}
       />,
     );
     fireEvent.keyDown(screen.getByPlaceholderText("カテゴリ名"), {
       key: "Enter",
     });
-    expect(onCreate).toHaveBeenCalledTimes(1);
+    expect(onCreateAction).toHaveBeenCalledTimes(1);
   });
 
-  it("Escape キーで onCancel が呼ばれる", () => {
-    const onCancel = jest.fn();
-    render(<TodoCategoryCreateForm {...defaultProps} onCancel={onCancel} />);
+  it("Escape キーで onCancelAction が呼ばれる", () => {
+    const onCancelAction = jest.fn();
+    render(<TodoCategoryCreateForm {...defaultProps} onCancelAction={onCancelAction} />);
     fireEvent.keyDown(screen.getByPlaceholderText("カテゴリ名"), {
       key: "Escape",
     });
-    expect(onCancel).toHaveBeenCalledTimes(1);
+    expect(onCancelAction).toHaveBeenCalledTimes(1);
   });
 });

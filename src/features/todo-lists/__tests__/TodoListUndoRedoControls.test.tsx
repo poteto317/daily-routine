@@ -17,12 +17,12 @@ describe("TodoListUndoRedoControls", () => {
     expect(screen.getByRole("button", { name: "元に戻す" })).toBeDisabled();
   });
 
-  it("canUndo=true かつ onUndo 指定済みのとき「元に戻す」ボタンが有効", () => {
-    render(<TodoListUndoRedoControls canUndo={true} onUndo={jest.fn()} />);
+  it("canUndo=true かつ onUndoAction 指定済みのとき「元に戻す」ボタンが有効", () => {
+    render(<TodoListUndoRedoControls canUndo={true} onUndoAction={jest.fn()} />);
     expect(screen.getByRole("button", { name: "元に戻す" })).not.toBeDisabled();
   });
 
-  it("canUndo=true でも onUndo 未指定のとき「元に戻す」ボタンが disabled", () => {
+  it("canUndo=true でも onUndoAction 未指定のとき「元に戻す」ボタンが disabled", () => {
     render(<TodoListUndoRedoControls canUndo={true} />);
     expect(screen.getByRole("button", { name: "元に戻す" })).toBeDisabled();
   });
@@ -32,12 +32,12 @@ describe("TodoListUndoRedoControls", () => {
     expect(screen.getByRole("button", { name: "やり直す" })).toBeDisabled();
   });
 
-  it("canRedo=true かつ onRedo 指定済みのとき「やり直す」ボタンが有効", () => {
-    render(<TodoListUndoRedoControls canRedo={true} onRedo={jest.fn()} />);
+  it("canRedo=true かつ onRedoAction 指定済みのとき「やり直す」ボタンが有効", () => {
+    render(<TodoListUndoRedoControls canRedo={true} onRedoAction={jest.fn()} />);
     expect(screen.getByRole("button", { name: "やり直す" })).not.toBeDisabled();
   });
 
-  it("canRedo=true でも onRedo 未指定のとき「やり直す」ボタンが disabled", () => {
+  it("canRedo=true でも onRedoAction 未指定のとき「やり直す」ボタンが disabled", () => {
     render(<TodoListUndoRedoControls canRedo={true} />);
     expect(screen.getByRole("button", { name: "やり直す" })).toBeDisabled();
   });
@@ -48,24 +48,24 @@ describe("TodoListUndoRedoControls", () => {
     expect(screen.getByRole("button", { name: "やり直す" })).toBeDisabled();
   });
 
-  it("「元に戻す」ボタンクリックで onUndo が呼ばれる", () => {
-    const onUndo = jest.fn();
-    render(<TodoListUndoRedoControls onUndo={onUndo} canUndo={true} />);
+  it("「元に戻す」ボタンクリックで onUndoAction が呼ばれる", () => {
+    const onUndoAction = jest.fn();
+    render(<TodoListUndoRedoControls onUndoAction={onUndoAction} canUndo={true} />);
     fireEvent.click(screen.getByRole("button", { name: "元に戻す" }));
-    expect(onUndo).toHaveBeenCalledTimes(1);
+    expect(onUndoAction).toHaveBeenCalledTimes(1);
   });
 
-  it("「やり直す」ボタンクリックで onRedo が呼ばれる", () => {
-    const onRedo = jest.fn();
-    render(<TodoListUndoRedoControls onRedo={onRedo} canRedo={true} />);
+  it("「やり直す」ボタンクリックで onRedoAction が呼ばれる", () => {
+    const onRedoAction = jest.fn();
+    render(<TodoListUndoRedoControls onRedoAction={onRedoAction} canRedo={true} />);
     fireEvent.click(screen.getByRole("button", { name: "やり直す" }));
-    expect(onRedo).toHaveBeenCalledTimes(1);
+    expect(onRedoAction).toHaveBeenCalledTimes(1);
   });
 
   it("disabled 時には onClick を渡しても呼ばれない", () => {
-    const onUndo = jest.fn();
-    render(<TodoListUndoRedoControls onUndo={onUndo} canUndo={false} />);
+    const onUndoAction = jest.fn();
+    render(<TodoListUndoRedoControls onUndoAction={onUndoAction} canUndo={false} />);
     fireEvent.click(screen.getByRole("button", { name: "元に戻す" }));
-    expect(onUndo).not.toHaveBeenCalled();
+    expect(onUndoAction).not.toHaveBeenCalled();
   });
 });

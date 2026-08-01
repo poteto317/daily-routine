@@ -8,7 +8,7 @@ describe("TodoItemCollapseButton", () => {
     itemId: "item-1",
     isParent: true,
     isCollapsed: false,
-    onToggleCollapse: jest.fn(),
+    onToggleCollapseAction: jest.fn(),
   };
 
   beforeEach(() => jest.clearAllMocks());
@@ -33,15 +33,15 @@ describe("TodoItemCollapseButton", () => {
     expect(screen.getByRole("button")).toHaveAttribute("aria-expanded", "false");
   });
 
-  it("クリックで onToggleCollapse が呼ばれる", async () => {
-    const onToggleCollapse = jest.fn();
+  it("クリックで onToggleCollapseAction が呼ばれる", async () => {
+    const onToggleCollapseAction = jest.fn();
     render(
       <TodoItemCollapseButton
         {...defaultProps}
-        onToggleCollapse={onToggleCollapse}
+        onToggleCollapseAction={onToggleCollapseAction}
       />,
     );
     await userEvent.click(screen.getByRole("button"));
-    expect(onToggleCollapse).toHaveBeenCalledWith("item-1");
+    expect(onToggleCollapseAction).toHaveBeenCalledWith("item-1");
   });
 });

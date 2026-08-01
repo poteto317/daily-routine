@@ -51,24 +51,24 @@ const defaultProps = {
   list,
   categories: [],
   clipboardItems: [],
-  onAddItem: jest.fn(),
-  onToggleItem: jest.fn(),
-  onDeleteItem: jest.fn(),
-  onDeleteList: jest.fn(),
-  onIndentItem: jest.fn(),
-  onOutdentItem: jest.fn(),
-  onReorderItems: jest.fn(),
-  onUpdateItemTitle: jest.fn(),
-  onUpdateListTitle: jest.fn(),
-  onUpdateItemBgColor: jest.fn(),
-  onUpdateAllItemsBgColor: jest.fn(),
-  onCutItems: jest.fn(),
-  onPasteItems: jest.fn(),
-  onSetClipboard: jest.fn(),
-  onClearClipboard: jest.fn(),
-  onUpdateListAddItemPosition: jest.fn(),
-  onUpdateListHideCompleted: jest.fn(),
-  onUpdateItemCategory: jest.fn(),
+  onAddItemAction: jest.fn(),
+  onToggleItemAction: jest.fn(),
+  onDeleteItemAction: jest.fn(),
+  onDeleteListAction: jest.fn(),
+  onIndentItemAction: jest.fn(),
+  onOutdentItemAction: jest.fn(),
+  onReorderItemsAction: jest.fn(),
+  onUpdateItemTitleAction: jest.fn(),
+  onUpdateListTitleAction: jest.fn(),
+  onUpdateItemBgColorAction: jest.fn(),
+  onUpdateAllItemsBgColorAction: jest.fn(),
+  onCutItemsAction: jest.fn(),
+  onPasteItemsAction: jest.fn(),
+  onSetClipboardAction: jest.fn(),
+  onClearClipboardAction: jest.fn(),
+  onUpdateListAddItemPositionAction: jest.fn(),
+  onUpdateListHideCompletedAction: jest.fn(),
+  onUpdateItemCategoryAction: jest.fn(),
 };
 
 const defaultCompositionMock = {
@@ -166,17 +166,17 @@ describe("TodoListDetailView", () => {
       list,
       categories: defaultProps.categories,
       clipboardItems: [],
-      onAddItem: defaultProps.onAddItem,
-      onUpdateItemTitle: defaultProps.onUpdateItemTitle,
-      onUpdateListTitle: defaultProps.onUpdateListTitle,
-      onCutItems: defaultProps.onCutItems,
-      onPasteItems: defaultProps.onPasteItems,
-      onSetClipboard: defaultProps.onSetClipboard,
-      onClearClipboard: defaultProps.onClearClipboard,
-      onReorderItems: defaultProps.onReorderItems,
-      onUpdateAllItemsBgColor: defaultProps.onUpdateAllItemsBgColor,
-      onUpdateListAddItemPosition: defaultProps.onUpdateListAddItemPosition,
-      onUpdateListHideCompleted: defaultProps.onUpdateListHideCompleted,
+      onAddItem: defaultProps.onAddItemAction,
+      onUpdateItemTitle: defaultProps.onUpdateItemTitleAction,
+      onUpdateListTitle: defaultProps.onUpdateListTitleAction,
+      onCutItems: defaultProps.onCutItemsAction,
+      onPasteItems: defaultProps.onPasteItemsAction,
+      onSetClipboard: defaultProps.onSetClipboardAction,
+      onClearClipboard: defaultProps.onClearClipboardAction,
+      onReorderItems: defaultProps.onReorderItemsAction,
+      onUpdateAllItemsBgColor: defaultProps.onUpdateAllItemsBgColorAction,
+      onUpdateListAddItemPosition: defaultProps.onUpdateListAddItemPositionAction,
+      onUpdateListHideCompleted: defaultProps.onUpdateListHideCompletedAction,
     });
   });
 
@@ -254,23 +254,23 @@ describe("TodoListDetailView", () => {
       );
     });
 
-    it("toolbar.handleUpdateAllItemsBgColor を TodoListToolbar の onUpdateAllItemsBgColor にそのまま渡す", () => {
+    it("toolbar.handleUpdateAllItemsBgColor を TodoListToolbar の onUpdateAllItemsBgColorAction にそのまま渡す", () => {
       render(<TodoListDetailView {...defaultProps} />);
 
       expect(TodoListToolbar).toHaveBeenCalledWith(
         expect.objectContaining({
-          onUpdateAllItemsBgColor: defaultCompositionMock.toolbar.handleUpdateAllItemsBgColor,
+          onUpdateAllItemsBgColorAction: defaultCompositionMock.toolbar.handleUpdateAllItemsBgColor,
         }),
         undefined,
       );
     });
 
-    it("toolbar.handleToggleAddItemPosition を TodoListToolbar の onToggleListAddItemPosition にそのまま渡す", () => {
+    it("toolbar.handleToggleAddItemPosition を TodoListToolbar の onToggleListAddItemPositionAction にそのまま渡す", () => {
       render(<TodoListDetailView {...defaultProps} />);
 
       expect(TodoListToolbar).toHaveBeenCalledWith(
         expect.objectContaining({
-          onToggleListAddItemPosition: defaultCompositionMock.toolbar.handleToggleAddItemPosition,
+          onToggleListAddItemPositionAction: defaultCompositionMock.toolbar.handleToggleAddItemPosition,
         }),
         undefined,
       );
@@ -332,10 +332,10 @@ describe("TodoListDetailView", () => {
           hasClipboard: true,
           selectedCount: 2,
           clipboardCount: 1,
-          onCut: handleCut,
-          onClearSelection: clearSelection,
-          onPaste: handlePaste,
-          onClearClipboard: defaultProps.onClearClipboard,
+          onCutAction: handleCut,
+          onClearSelectionAction: clearSelection,
+          onPasteAction: handlePaste,
+          onClearClipboardAction: defaultProps.onClearClipboardAction,
         }),
         undefined,
       );

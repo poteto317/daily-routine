@@ -4,7 +4,7 @@ import texts from "./locales/ja.json";
 
 type TodoListManagementHeaderProps = {
   showForm: boolean;
-  onOpenForm: () => void;
+  onOpenFormAction: () => void;
 };
 
 /**
@@ -12,7 +12,7 @@ type TodoListManagementHeaderProps = {
  */
 export const TodoListManagementHeader = ({
   showForm,
-  onOpenForm,
+  onOpenFormAction,
 }: TodoListManagementHeaderProps) => (
   <>
     <div className="flex items-center justify-between gap-3 mb-2">
@@ -22,7 +22,7 @@ export const TodoListManagementHeader = ({
       {!showForm && (
         <button
           type="button"
-          onClick={onOpenForm}
+          onClick={onOpenFormAction}
           className="text-sm bg-teal-500 hover:bg-teal-600 text-white px-3 py-1.5 rounded-lg font-medium transition-colors"
         >
           {texts.management.addButton}

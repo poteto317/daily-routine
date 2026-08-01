@@ -26,10 +26,10 @@ const defaultProps = {
   hasClipboard: false,
   selectedCount: 0,
   clipboardCount: 0,
-  onCut: jest.fn(),
-  onClearSelection: jest.fn(),
-  onPaste: jest.fn(),
-  onClearClipboard: jest.fn(),
+  onCutAction: jest.fn(),
+  onClearSelectionAction: jest.fn(),
+  onPasteAction: jest.fn(),
+  onClearClipboardAction: jest.fn(),
 };
 
 beforeEach(() => {
@@ -81,18 +81,18 @@ describe("TodoListActionStatusBar", () => {
       );
     });
 
-    it("onCut と onClearSelection を TodoListSelectionBar に渡す", () => {
-      const onCut = jest.fn();
-      const onClearSelection = jest.fn();
+    it("onCutAction と onClearSelectionAction を TodoListSelectionBar に渡す", () => {
+      const onCutAction = jest.fn();
+      const onClearSelectionAction = jest.fn();
       render(
         <TodoListActionStatusBar
           {...defaultProps}
-          onCut={onCut}
-          onClearSelection={onClearSelection}
+          onCutAction={onCutAction}
+          onClearSelectionAction={onClearSelectionAction}
         />,
       );
       expect(TodoListSelectionBar).toHaveBeenCalledWith(
-        expect.objectContaining({ onCut, onClearSelection }),
+        expect.objectContaining({ onCutAction, onClearSelectionAction }),
         undefined,
       );
     });
@@ -117,18 +117,18 @@ describe("TodoListActionStatusBar", () => {
       );
     });
 
-    it("onPaste と onClearClipboard を TodoListClipboardBar に渡す", () => {
-      const onPaste = jest.fn();
-      const onClearClipboard = jest.fn();
+    it("onPasteAction と onClearClipboardAction を TodoListClipboardBar に渡す", () => {
+      const onPasteAction = jest.fn();
+      const onClearClipboardAction = jest.fn();
       render(
         <TodoListActionStatusBar
           {...defaultProps}
-          onPaste={onPaste}
-          onClearClipboard={onClearClipboard}
+          onPasteAction={onPasteAction}
+          onClearClipboardAction={onClearClipboardAction}
         />,
       );
       expect(TodoListClipboardBar).toHaveBeenCalledWith(
-        expect.objectContaining({ onPaste, onClearClipboard }),
+        expect.objectContaining({ onPasteAction, onClearClipboardAction }),
         undefined,
       );
     });

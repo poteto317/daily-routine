@@ -6,7 +6,7 @@ const meta = {
   title: "Features/TodoLists/AddItemPositionToggleButton",
   component: AddItemPositionToggleButton,
   parameters: { layout: "padded" },
-  args: { onToggle: fn() },
+  args: { onToggleAction: fn() },
 } satisfies Meta<typeof AddItemPositionToggleButton>;
 
 export default meta;
@@ -26,6 +26,6 @@ export const ClickToToggle: Story = {
     const canvas = within(canvasElement);
     const button = canvas.getByRole("button");
     await userEvent.click(button);
-    expect(args.onToggle).toHaveBeenCalledWith("last");
+    expect(args.onToggleAction).toHaveBeenCalledWith("last");
   },
 };

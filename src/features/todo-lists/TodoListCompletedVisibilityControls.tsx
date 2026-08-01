@@ -5,13 +5,13 @@ import texts from "./locales/ja.json";
 export type TodoListCompletedVisibilityControlsProps = {
   hasCompletedItems: boolean;
   hideCompleted: boolean;
-  onToggleHideCompleted: () => void;
+  onToggleHideCompletedAction: () => void;
 };
 
 export const TodoListCompletedVisibilityControls = ({
   hasCompletedItems,
   hideCompleted,
-  onToggleHideCompleted,
+  onToggleHideCompletedAction,
 }: TodoListCompletedVisibilityControlsProps) => {
   if (!hasCompletedItems) return null;
 
@@ -19,7 +19,7 @@ export const TodoListCompletedVisibilityControls = ({
     <button
       type="button"
       aria-pressed={hideCompleted}
-      onClick={onToggleHideCompleted}
+      onClick={onToggleHideCompletedAction}
       className="text-xs text-gray-500 dark:text-gray-600 hover:text-teal-600 dark:hover:text-teal-700 transition-colors"
     >
       {hideCompleted

@@ -35,40 +35,40 @@ export type SortableTodoListItemProps = {
   isDragActive: boolean;
   editingItemId: string | null;
   editingItemTitle: string;
-  setEditingItemTitle: (v: string) => void;
-  commitEditItem: (id: string) => void;
-  cancelEditItem: () => void;
-  startEditItem: (id: string, title: string) => void;
+  setEditingItemTitleAction: (v: string) => void;
+  commitEditItemAction: (id: string) => void;
+  cancelEditItemAction: () => void;
+  startEditItemAction: (id: string, title: string) => void;
   isSelected: boolean;
-  toggleSelectItem: (id: string) => void;
+  toggleSelectItemAction: (id: string) => void;
   isParent: boolean;
   isCollapsed: boolean;
-  toggleCollapseItem: (id: string) => void;
+  toggleCollapseItemAction: (id: string) => void;
   colorPickerItemId: string | null;
-  toggleItemColorPicker: (id: string) => void;
-  closeItemColorPicker: () => void;
+  toggleItemColorPickerAction: (id: string) => void;
+  closeItemColorPickerAction: () => void;
   categoryPickerItemId: string | null;
-  toggleItemCategoryPicker: (id: string) => void;
-  closeItemCategoryPicker: () => void;
-  onUpdateItemBgColor: (
+  toggleItemCategoryPickerAction: (id: string) => void;
+  closeItemCategoryPickerAction: () => void;
+  onUpdateItemBgColorAction: (
     listId: string,
     itemId: string,
     bgColor: TodoItemBgColorValue | undefined,
   ) => void;
-  onUpdateItemCategory: (
+  onUpdateItemCategoryAction: (
     listId: string,
     itemId: string,
     categoryId: string | undefined,
   ) => void;
-  onToggleItem: (listId: string, itemId: string) => void;
-  onDeleteItem: (listId: string, itemId: string, title: string) => void;
-  onIndentItem: (listId: string, itemId: string) => void;
-  onOutdentItem: (listId: string, itemId: string) => void;
+  onToggleItemAction: (listId: string, itemId: string) => void;
+  onDeleteItemAction: (listId: string, itemId: string, title: string) => void;
+  onIndentItemAction: (listId: string, itemId: string) => void;
+  onOutdentItemAction: (listId: string, itemId: string) => void;
   isInlineInsertOpen: boolean;
-  onInsertAfter: () => void;
+  onInsertAfterAction: () => void;
   mobileMenuItemId: string | null;
-  toggleMobileMenu: (id: string) => void;
-  closeMobileMenu: () => void;
+  toggleMobileMenuAction: (id: string) => void;
+  closeMobileMenuAction: () => void;
 };
 
 /**
@@ -86,32 +86,32 @@ export const SortableTodoListItem = ({
   isDragActive,
   editingItemId,
   editingItemTitle,
-  setEditingItemTitle,
-  commitEditItem,
-  cancelEditItem,
-  startEditItem,
+  setEditingItemTitleAction,
+  commitEditItemAction,
+  cancelEditItemAction,
+  startEditItemAction,
   isSelected,
-  toggleSelectItem,
+  toggleSelectItemAction,
   isParent,
   isCollapsed,
-  toggleCollapseItem,
+  toggleCollapseItemAction,
   colorPickerItemId,
-  toggleItemColorPicker,
-  closeItemColorPicker,
+  toggleItemColorPickerAction,
+  closeItemColorPickerAction,
   categoryPickerItemId,
-  toggleItemCategoryPicker,
-  closeItemCategoryPicker,
-  onUpdateItemBgColor,
-  onUpdateItemCategory,
-  onToggleItem,
-  onDeleteItem,
-  onIndentItem,
-  onOutdentItem,
+  toggleItemCategoryPickerAction,
+  closeItemCategoryPickerAction,
+  onUpdateItemBgColorAction,
+  onUpdateItemCategoryAction,
+  onToggleItemAction,
+  onDeleteItemAction,
+  onIndentItemAction,
+  onOutdentItemAction,
   isInlineInsertOpen,
-  onInsertAfter,
+  onInsertAfterAction,
   mobileMenuItemId,
-  toggleMobileMenu,
-  closeMobileMenu,
+  toggleMobileMenuAction,
+  closeMobileMenuAction,
 }: SortableTodoListItemProps) => {
   const {
     attributes,
@@ -144,7 +144,7 @@ export const SortableTodoListItem = ({
       className="group relative"
     >
       <SwipeableRoutineItem
-        onSwipeAction={() => onIndentItem(list.id, item.id)}
+        onSwipeAction={() => onIndentItemAction(list.id, item.id)}
         swipeActionType="indent"
         isEditMode={canSwipeIndent}
       >
@@ -161,7 +161,7 @@ export const SortableTodoListItem = ({
             itemId={item.id}
             title={item.title}
             isSelected={isSelected}
-            onToggleSelect={toggleSelectItem}
+            onToggleSelectAction={toggleSelectItemAction}
           />
 
           {/* 並び替え（DnD）はブロックのアンカー同士でのみ許可される
@@ -181,15 +181,15 @@ export const SortableTodoListItem = ({
             currentIndent={currentIndent}
             maxIndent={maxIndent}
             sortModeActive={sortModeActive}
-            onIndent={onIndentItem}
-            onOutdent={onOutdentItem}
+            onIndentAction={onIndentItemAction}
+            onOutdentAction={onOutdentItemAction}
           />
 
           <TodoItemCollapseButton
             itemId={item.id}
             isParent={isParent}
             isCollapsed={isCollapsed}
-            onToggleCollapse={toggleCollapseItem}
+            onToggleCollapseAction={toggleCollapseItemAction}
           />
 
           <TodoItemTitleArea
@@ -199,10 +199,10 @@ export const SortableTodoListItem = ({
             isEditing={editingItemId === item.id}
             editingTitle={editingItemTitle}
             isDragActive={isDragActive}
-            onChangeTitle={setEditingItemTitle}
-            onCommitEdit={() => commitEditItem(item.id)}
-            onCancelEdit={cancelEditItem}
-            onToggle={() => onToggleItem(list.id, item.id)}
+            onChangeTitleAction={setEditingItemTitleAction}
+            onCommitEditAction={() => commitEditItemAction(item.id)}
+            onCancelEditAction={cancelEditItemAction}
+            onToggleAction={() => onToggleItemAction(list.id, item.id)}
           />
 
           {editingItemId !== item.id && (
@@ -214,20 +214,20 @@ export const SortableTodoListItem = ({
                 colorPickerItemId={colorPickerItemId}
                 categoryPickerItemId={categoryPickerItemId}
                 isInlineInsertOpen={isInlineInsertOpen}
-                toggleItemColorPicker={toggleItemColorPicker}
-                closeItemColorPicker={closeItemColorPicker}
-                toggleItemCategoryPicker={toggleItemCategoryPicker}
-                closeItemCategoryPicker={closeItemCategoryPicker}
-                onUpdateItemBgColor={onUpdateItemBgColor}
-                onUpdateItemCategory={onUpdateItemCategory}
-                startEditItem={startEditItem}
-                onDeleteItem={onDeleteItem}
-                onInsertAfter={onInsertAfter}
+                toggleItemColorPickerAction={toggleItemColorPickerAction}
+                closeItemColorPickerAction={closeItemColorPickerAction}
+                toggleItemCategoryPickerAction={toggleItemCategoryPickerAction}
+                closeItemCategoryPickerAction={closeItemCategoryPickerAction}
+                onUpdateItemBgColorAction={onUpdateItemBgColorAction}
+                onUpdateItemCategoryAction={onUpdateItemCategoryAction}
+                startEditItemAction={startEditItemAction}
+                onDeleteItemAction={onDeleteItemAction}
+                onInsertAfterAction={onInsertAfterAction}
               />
               <TodoItemMobileTrigger
                 item={item}
                 mobileMenuItemId={mobileMenuItemId}
-                toggleMobileMenu={toggleMobileMenu}
+                toggleMobileMenuAction={toggleMobileMenuAction}
               />
             </>
           )}
@@ -243,14 +243,14 @@ export const SortableTodoListItem = ({
         maxIndent={maxIndent}
         sortModeActive={sortModeActive}
         mobileMenuItemId={mobileMenuItemId}
-        closeMobileMenu={closeMobileMenu}
-        startEditItem={startEditItem}
-        onInsertAfter={onInsertAfter}
-        onOutdentItem={onOutdentItem}
-        onIndentItem={onIndentItem}
-        onUpdateItemBgColor={onUpdateItemBgColor}
-        onUpdateItemCategory={onUpdateItemCategory}
-        onDeleteItem={onDeleteItem}
+        closeMobileMenuAction={closeMobileMenuAction}
+        startEditItemAction={startEditItemAction}
+        onInsertAfterAction={onInsertAfterAction}
+        onOutdentItemAction={onOutdentItemAction}
+        onIndentItemAction={onIndentItemAction}
+        onUpdateItemBgColorAction={onUpdateItemBgColorAction}
+        onUpdateItemCategoryAction={onUpdateItemCategoryAction}
+        onDeleteItemAction={onDeleteItemAction}
       />
     </li>
   );

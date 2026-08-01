@@ -6,9 +6,9 @@ import { TodoItemColorSwatches } from "./TodoItemColorSwatches";
 export type TodoListBulkColorPickerProps = {
   items: TodoListItem[];
   showBulkColorPicker: boolean;
-  onToggle: () => void;
-  onClose: () => void;
-  onUpdateAllItemsBgColor: (bgColor: TodoItemBgColorValue | undefined) => void;
+  onToggleAction: () => void;
+  onCloseAction: () => void;
+  onUpdateAllItemsBgColorAction: (bgColor: TodoItemBgColorValue | undefined) => void;
 };
 
 /**
@@ -18,9 +18,9 @@ export type TodoListBulkColorPickerProps = {
 export const TodoListBulkColorPicker = ({
   items,
   showBulkColorPicker,
-  onToggle,
-  onClose,
-  onUpdateAllItemsBgColor,
+  onToggleAction,
+  onCloseAction,
+  onUpdateAllItemsBgColorAction,
 }: TodoListBulkColorPickerProps) => {
   const bgColors = items.map((i) => i.bgColor);
   // null = 混在（どのスウォッチも選択中にしない）
@@ -34,7 +34,7 @@ export const TodoListBulkColorPicker = ({
     <div className="relative" data-color-picker>
       <button
         type="button"
-        onClick={onToggle}
+        onClick={onToggleAction}
         className="text-xs text-gray-500 dark:text-gray-600 hover:text-teal-600 dark:hover:text-teal-700 transition-colors"
         aria-label="一括背景色変更"
         aria-expanded={showBulkColorPicker}
@@ -46,9 +46,9 @@ export const TodoListBulkColorPicker = ({
           <TodoItemColorSwatches
             selectedColor={bulkSelected}
             showDefaultBorder
-            onSelect={(color) => {
-              onUpdateAllItemsBgColor(color);
-              onClose();
+            onSelectAction={(color) => {
+              onUpdateAllItemsBgColorAction(color);
+              onCloseAction();
             }}
           />
         </div>

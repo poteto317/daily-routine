@@ -48,8 +48,8 @@ const defaultProps = {
   listId: "list-1",
   categories: [],
   clipboardItems: [],
-  onSetClipboard: jest.fn(),
-  onClearClipboard: jest.fn(),
+  onSetClipboardAction: jest.fn(),
+  onClearClipboardAction: jest.fn(),
 };
 
 describe("TodoListDetail", () => {
@@ -178,8 +178,8 @@ describe("TodoListDetail", () => {
       render(<TodoListDetail {...defaultProps} />);
       expect(TodoListUndoRedoControls).toHaveBeenCalledWith(
         expect.objectContaining({
-          onUndo: undo,
-          onRedo: redo,
+          onUndoAction: undo,
+          onRedoAction: redo,
           canUndo: false,
           canRedo: true,
         }),
@@ -217,28 +217,31 @@ describe("TodoListDetail", () => {
       });
       render(<TodoListDetail {...defaultProps} />);
       expect(TodoListDetailView).toHaveBeenCalledWith(
-        expect.objectContaining({ onAddItem, onToggleItem }),
+        expect.objectContaining({
+          onAddItemAction: onAddItem,
+          onToggleItemAction: onToggleItem,
+        }),
         undefined,
       );
     });
 
-    it("clipboardItems/onSetClipboard/onClearClipboard を TodoListDetailView にそのまま渡す", () => {
+    it("clipboardItems/onSetClipboardAction/onClearClipboardAction を TodoListDetailView にそのまま渡す", () => {
       const clipboardItem = { id: "c-1" } as never;
-      const onSetClipboard = jest.fn();
-      const onClearClipboard = jest.fn();
+      const onSetClipboardAction = jest.fn();
+      const onClearClipboardAction = jest.fn();
       render(
         <TodoListDetail
           {...defaultProps}
           clipboardItems={[clipboardItem]}
-          onSetClipboard={onSetClipboard}
-          onClearClipboard={onClearClipboard}
+          onSetClipboardAction={onSetClipboardAction}
+          onClearClipboardAction={onClearClipboardAction}
         />,
       );
       expect(TodoListDetailView).toHaveBeenCalledWith(
         expect.objectContaining({
           clipboardItems: [clipboardItem],
-          onSetClipboard,
-          onClearClipboard,
+          onSetClipboardAction,
+          onClearClipboardAction,
         }),
         undefined,
       );

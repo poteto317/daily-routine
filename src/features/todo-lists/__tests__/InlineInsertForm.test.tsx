@@ -4,9 +4,9 @@ import { InlineInsertForm } from "../InlineInsertForm";
 describe("InlineInsertForm", () => {
   const defaultProps = {
     inputText: "",
-    onChangeText: jest.fn(),
-    onAdd: jest.fn(),
-    onCancel: jest.fn(),
+    onChangeTextAction: jest.fn(),
+    onAddAction: jest.fn(),
+    onCancelAction: jest.fn(),
   };
 
   beforeEach(() => {
@@ -20,18 +20,18 @@ describe("InlineInsertForm", () => {
     expect(screen.getByRole("button", { name: "キャンセル" })).toBeInTheDocument();
   });
 
-  it("テキスト入力で onChangeText が呼ばれる", () => {
+  it("テキスト入力で onChangeTextAction が呼ばれる", () => {
     render(<InlineInsertForm {...defaultProps} />);
     fireEvent.change(screen.getByRole("textbox"), {
       target: { value: "新しいTodo" },
     });
-    expect(defaultProps.onChangeText).toHaveBeenCalledWith("新しいTodo");
+    expect(defaultProps.onChangeTextAction).toHaveBeenCalledWith("新しいTodo");
   });
 
-  it("追加ボタンクリックで onAdd が呼ばれる", () => {
+  it("追加ボタンクリックで onAddAction が呼ばれる", () => {
     render(<InlineInsertForm {...defaultProps} inputText="Todo" />);
     fireEvent.click(screen.getByRole("button", { name: "追加" }));
-    expect(defaultProps.onAdd).toHaveBeenCalledTimes(1);
+    expect(defaultProps.onAddAction).toHaveBeenCalledTimes(1);
   });
 
   it("inputText が空のとき追加ボタンは disabled", () => {
@@ -49,22 +49,22 @@ describe("InlineInsertForm", () => {
     expect(screen.getByRole("button", { name: "追加" })).toBeEnabled();
   });
 
-  it("Enter キーで onAdd が呼ばれる", () => {
+  it("Enter キーで onAddAction が呼ばれる", () => {
     render(<InlineInsertForm {...defaultProps} inputText="Todo" />);
     fireEvent.keyDown(screen.getByRole("textbox"), { key: "Enter" });
-    expect(defaultProps.onAdd).toHaveBeenCalledTimes(1);
+    expect(defaultProps.onAddAction).toHaveBeenCalledTimes(1);
   });
 
-  it("Escape キーで onCancel が呼ばれる", () => {
+  it("Escape キーで onCancelAction が呼ばれる", () => {
     render(<InlineInsertForm {...defaultProps} />);
     fireEvent.keyDown(screen.getByRole("textbox"), { key: "Escape" });
-    expect(defaultProps.onCancel).toHaveBeenCalledTimes(1);
+    expect(defaultProps.onCancelAction).toHaveBeenCalledTimes(1);
   });
 
-  it("キャンセルボタンクリックで onCancel が呼ばれる", () => {
+  it("キャンセルボタンクリックで onCancelAction が呼ばれる", () => {
     render(<InlineInsertForm {...defaultProps} />);
     fireEvent.click(screen.getByRole("button", { name: "キャンセル" }));
-    expect(defaultProps.onCancel).toHaveBeenCalledTimes(1);
+    expect(defaultProps.onCancelAction).toHaveBeenCalledTimes(1);
   });
 
   it("フォームに role=form と aria-label が設定されている", () => {

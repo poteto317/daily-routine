@@ -9,10 +9,10 @@ export type TodoListActionStatusBarProps = {
   hasClipboard: boolean;
   selectedCount: number;
   clipboardCount: number;
-  onCut: () => void;
-  onClearSelection: () => void;
-  onPaste: () => void;
-  onClearClipboard: () => void;
+  onCutAction: () => void;
+  onClearSelectionAction: () => void;
+  onPasteAction: () => void;
+  onClearClipboardAction: () => void;
 };
 
 export const TodoListActionStatusBar = ({
@@ -20,10 +20,10 @@ export const TodoListActionStatusBar = ({
   hasClipboard,
   selectedCount,
   clipboardCount,
-  onCut,
-  onClearSelection,
-  onPaste,
-  onClearClipboard,
+  onCutAction,
+  onClearSelectionAction,
+  onPasteAction,
+  onClearClipboardAction,
 }: TodoListActionStatusBarProps) => {
   const mode = getActionBarMode(hasSelection, hasClipboard);
 
@@ -31,8 +31,8 @@ export const TodoListActionStatusBar = ({
     return (
       <TodoListSelectionBar
         selectedCount={selectedCount}
-        onCut={onCut}
-        onClearSelection={onClearSelection}
+        onCutAction={onCutAction}
+        onClearSelectionAction={onClearSelectionAction}
       />
     );
   }
@@ -40,8 +40,8 @@ export const TodoListActionStatusBar = ({
     return (
       <TodoListClipboardBar
         clipboardCount={clipboardCount}
-        onPaste={onPaste}
-        onClearClipboard={onClearClipboard}
+        onPasteAction={onPasteAction}
+        onClearClipboardAction={onClearClipboardAction}
       />
     );
   }

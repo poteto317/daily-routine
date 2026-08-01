@@ -4,8 +4,8 @@ import { TodoListAddForm } from "../TodoListAddForm";
 const defaultProps = {
   inputRef: { current: null },
   inputText: "",
-  onChangeText: jest.fn(),
-  onAdd: jest.fn(),
+  onChangeTextAction: jest.fn(),
+  onAddAction: jest.fn(),
 };
 
 beforeEach(() => {
@@ -20,18 +20,18 @@ describe("TodoListAddForm", () => {
     ).toBeInTheDocument();
   });
 
-  it("入力変更で onChangeText が呼ばれる", () => {
+  it("入力変更で onChangeTextAction が呼ばれる", () => {
     render(<TodoListAddForm {...defaultProps} />);
     fireEvent.change(screen.getByPlaceholderText("Todoを追加..."), {
       target: { value: "新しいTodo" },
     });
-    expect(defaultProps.onChangeText).toHaveBeenCalledWith("新しいTodo");
+    expect(defaultProps.onChangeTextAction).toHaveBeenCalledWith("新しいTodo");
   });
 
-  it("追加ボタンクリックで onAdd が呼ばれる", () => {
+  it("追加ボタンクリックで onAddAction が呼ばれる", () => {
     render(<TodoListAddForm {...defaultProps} inputText="テスト" />);
     fireEvent.click(screen.getByRole("button", { name: "追加" }));
-    expect(defaultProps.onAdd).toHaveBeenCalledTimes(1);
+    expect(defaultProps.onAddAction).toHaveBeenCalledTimes(1);
   });
 
   it("inputText が空のとき追加ボタンが disabled になる", () => {
@@ -49,21 +49,21 @@ describe("TodoListAddForm", () => {
     expect(screen.getByRole("button", { name: "追加" })).toBeEnabled();
   });
 
-  it("Enter キーで onAdd が呼ばれる", () => {
+  it("Enter キーで onAddAction が呼ばれる", () => {
     render(<TodoListAddForm {...defaultProps} inputText="テスト" />);
     fireEvent.keyDown(screen.getByPlaceholderText("Todoを追加..."), {
       key: "Enter",
     });
-    expect(defaultProps.onAdd).toHaveBeenCalledTimes(1);
+    expect(defaultProps.onAddAction).toHaveBeenCalledTimes(1);
   });
 
-  it("IME 変換中の Enter では onAdd が呼ばれない", () => {
+  it("IME 変換中の Enter では onAddAction が呼ばれない", () => {
     render(<TodoListAddForm {...defaultProps} inputText="テスト" />);
     fireEvent.keyDown(screen.getByPlaceholderText("Todoを追加..."), {
       key: "Enter",
       nativeEvent: { isComposing: true },
       isComposing: true,
     });
-    expect(defaultProps.onAdd).not.toHaveBeenCalled();
+    expect(defaultProps.onAddAction).not.toHaveBeenCalled();
   });
 });

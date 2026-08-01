@@ -4,7 +4,7 @@ import type { TodoItemBgColorValue } from "../types";
 
 const defaultProps = {
   selectedColor: undefined as TodoItemBgColorValue | undefined | null,
-  onSelect: jest.fn(),
+  onSelectAction: jest.fn(),
 };
 
 beforeEach(() => {
@@ -51,16 +51,16 @@ describe("TodoItemColorSwatches", () => {
     );
   });
 
-  it("スウォッチクリックで onSelect が呼ばれる", () => {
+  it("スウォッチクリックで onSelectAction が呼ばれる", () => {
     render(<TodoItemColorSwatches {...defaultProps} />);
     fireEvent.click(screen.getByRole("radio", { name: "赤" }));
-    expect(defaultProps.onSelect).toHaveBeenCalledWith("bg-red-50");
+    expect(defaultProps.onSelectAction).toHaveBeenCalledWith("bg-red-50");
   });
 
-  it("デフォルト色スウォッチクリックで onSelect(undefined) が呼ばれる", () => {
+  it("デフォルト色スウォッチクリックで onSelectAction(undefined) が呼ばれる", () => {
     render(<TodoItemColorSwatches {...defaultProps} />);
     fireEvent.click(screen.getByRole("radio", { name: "デフォルト" }));
-    expect(defaultProps.onSelect).toHaveBeenCalledWith(undefined);
+    expect(defaultProps.onSelectAction).toHaveBeenCalledWith(undefined);
   });
 
   it("className prop が radiogroup に適用される", () => {

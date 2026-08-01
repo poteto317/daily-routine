@@ -9,10 +9,10 @@ const meta = {
     layout: "padded",
   },
   args: {
-    onToggle: fn(),
-    onCommitEdit: fn(),
-    onCancelEdit: fn(),
-    onChangeTitle: fn(),
+    onToggleAction: fn(),
+    onCommitEditAction: fn(),
+    onCancelEditAction: fn(),
+    onChangeTitleAction: fn(),
   },
 } satisfies Meta<typeof TodoItemTitleArea>;
 
@@ -89,7 +89,7 @@ export const ClickToToggle: Story = {
       name: "「牛乳を買う」を完了にする",
     });
     await userEvent.click(button);
-    expect(args.onToggle).toHaveBeenCalledOnce();
+    expect(args.onToggleAction).toHaveBeenCalledOnce();
   },
 };
 
@@ -108,7 +108,7 @@ export const TypeAndSubmit: Story = {
     await userEvent.clear(input);
     await userEvent.type(input, "卵を買う");
     await userEvent.keyboard("{Enter}");
-    expect(args.onCommitEdit).toHaveBeenCalledOnce();
+    expect(args.onCommitEditAction).toHaveBeenCalledOnce();
   },
 };
 
@@ -126,6 +126,6 @@ export const EscapeToCancel: Story = {
     const input = canvas.getByRole("textbox");
     await userEvent.click(input);
     await userEvent.keyboard("{Escape}");
-    expect(args.onCancelEdit).toHaveBeenCalledOnce();
+    expect(args.onCancelEditAction).toHaveBeenCalledOnce();
   },
 };

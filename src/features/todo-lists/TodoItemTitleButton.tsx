@@ -4,7 +4,7 @@ type TodoItemTitleButtonProps = {
   title: string;
   isCompleted: boolean;
   isDragActive: boolean;
-  onToggle: () => void;
+  onToggleAction: () => void;
 };
 
 /**
@@ -16,11 +16,11 @@ export const TodoItemTitleButton = ({
   title,
   isCompleted,
   isDragActive,
-  onToggle,
+  onToggleAction,
 }: TodoItemTitleButtonProps) => (
   <button
     type="button"
-    onClick={onToggle}
+    onClick={onToggleAction}
     aria-label={isCompleted ? `「${title}」を未完了に戻す` : `「${title}」を完了にする`}
     aria-pressed={isCompleted}
     disabled={isDragActive}

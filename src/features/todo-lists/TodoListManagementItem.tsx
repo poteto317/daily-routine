@@ -8,13 +8,13 @@ type Props = {
   list: TodoList;
   editingListId: string | null;
   editingListTitleValue: string;
-  onChangeTitleValue: (value: string) => void;
-  onCommitEdit: () => void;
-  onCancelEdit: () => void;
-  onOpenList: (listId: string) => void;
-  onToggleVisibility: (list: TodoList) => void;
-  onStartEdit: (listId: string, title: string) => void;
-  onDelete: (list: TodoList) => void;
+  onChangeTitleValueAction: (value: string) => void;
+  onCommitEditAction: () => void;
+  onCancelEditAction: () => void;
+  onOpenListAction: (listId: string) => void;
+  onToggleVisibilityAction: (list: TodoList) => void;
+  onStartEditAction: (listId: string, title: string) => void;
+  onDeleteAction: (list: TodoList) => void;
 };
 
 /** 管理画面の個別リスト行（タイトル表示/編集・表示切替トグル・編集/削除ボタン）。 */
@@ -22,13 +22,13 @@ export const TodoListManagementItem = ({
   list,
   editingListId,
   editingListTitleValue,
-  onChangeTitleValue,
-  onCommitEdit,
-  onCancelEdit,
-  onOpenList,
-  onToggleVisibility,
-  onStartEdit,
-  onDelete,
+  onChangeTitleValueAction,
+  onCommitEditAction,
+  onCancelEditAction,
+  onOpenListAction,
+  onToggleVisibilityAction,
+  onStartEditAction,
+  onDeleteAction,
 }: Props) => {
   const isEditing = editingListId === list.id;
   const isVisible = isTodoListVisible(list);
@@ -40,18 +40,18 @@ export const TodoListManagementItem = ({
           type="text"
           autoFocus
           value={editingListTitleValue}
-          onChange={(e) => onChangeTitleValue(e.target.value)}
-          onBlur={onCommitEdit}
+          onChange={(e) => onChangeTitleValueAction(e.target.value)}
+          onBlur={onCommitEditAction}
           onKeyDown={(e) => {
-            if (e.key === "Enter") onCommitEdit();
-            if (e.key === "Escape") onCancelEdit();
+            if (e.key === "Enter") onCommitEditAction();
+            if (e.key === "Escape") onCancelEditAction();
           }}
           className="flex-1 min-w-0 text-sm px-2 py-0.5 border-b-2 border-teal-400 bg-transparent text-gray-800 dark:text-gray-100 focus:outline-none"
         />
       ) : (
         <button
           type="button"
-          onClick={() => onOpenList(list.id)}
+          onClick={() => onOpenListAction(list.id)}
           className={`text-sm font-medium min-w-0 break-words text-left ${
             isVisible
               ? "text-gray-700 dark:text-gray-300 hover:text-teal-600 dark:hover:text-teal-400"
@@ -68,7 +68,7 @@ export const TodoListManagementItem = ({
         </span>
         <button
           type="button"
-          onClick={() => onToggleVisibility(list)}
+          onClick={() => onToggleVisibilityAction(list)}
           className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
             isVisible ? "bg-teal-500" : "bg-gray-300 dark:bg-gray-500"
           }`}
@@ -83,7 +83,7 @@ export const TodoListManagementItem = ({
         {!isEditing && (
           <button
             type="button"
-            onClick={() => onStartEdit(list.id, list.title)}
+            onClick={() => onStartEditAction(list.id, list.title)}
             className="text-gray-300 hover:text-teal-500 dark:text-gray-500 dark:hover:text-teal-400 transition-colors text-base leading-none"
             aria-label={`${list.title} を編集`}
           >
@@ -92,7 +92,7 @@ export const TodoListManagementItem = ({
         )}
         <button
           type="button"
-          onClick={() => onDelete(list)}
+          onClick={() => onDeleteAction(list)}
           className="text-gray-300 hover:text-red-400 dark:text-gray-500 dark:hover:text-red-400 transition-colors text-base leading-none ml-1"
           aria-label={`${list.title} を削除`}
         >

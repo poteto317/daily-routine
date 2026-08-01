@@ -6,7 +6,7 @@ type TodoItemSelectCheckboxProps = {
   itemId: string;
   title: string;
   isSelected: boolean;
-  onToggleSelect: (id: string) => void;
+  onToggleSelectAction: (id: string) => void;
 };
 
 /**
@@ -16,14 +16,14 @@ export const TodoItemSelectCheckbox = ({
   itemId,
   title,
   isSelected,
-  onToggleSelect,
+  onToggleSelectAction,
 }: TodoItemSelectCheckboxProps) => (
   <button
     type="button"
     role="checkbox"
     aria-checked={isSelected}
     aria-label={texts.list.selectItemLabel.replace("{title}", title)}
-    onClick={() => onToggleSelect(itemId)}
+    onClick={() => onToggleSelectAction(itemId)}
     className={`shrink-0 w-4 h-4 rounded border-2 flex items-center justify-center transition-all ${
       isSelected
         ? "bg-teal-500 border-teal-500"

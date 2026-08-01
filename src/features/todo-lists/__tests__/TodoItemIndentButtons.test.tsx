@@ -7,8 +7,8 @@ const defaultProps = {
   currentIndent: 1,
   maxIndent: 3,
   sortModeActive: false,
-  onIndent: jest.fn(),
-  onOutdent: jest.fn(),
+  onIndentAction: jest.fn(),
+  onOutdentAction: jest.fn(),
 };
 
 describe("TodoItemIndentButtons", () => {
@@ -34,18 +34,18 @@ describe("TodoItemIndentButtons", () => {
     expect(screen.getByLabelText("インデントを下げる")).not.toBeDisabled();
   });
 
-  it("「下げる」クリックで onOutdent が呼ばれる", () => {
-    const onOutdent = jest.fn();
-    render(<TodoItemIndentButtons {...defaultProps} onOutdent={onOutdent} />);
+  it("「下げる」クリックで onOutdentAction が呼ばれる", () => {
+    const onOutdentAction = jest.fn();
+    render(<TodoItemIndentButtons {...defaultProps} onOutdentAction={onOutdentAction} />);
     fireEvent.click(screen.getByLabelText("インデントを下げる"));
-    expect(onOutdent).toHaveBeenCalledWith("list-1", "item-1");
+    expect(onOutdentAction).toHaveBeenCalledWith("list-1", "item-1");
   });
 
-  it("「上げる」クリックで onIndent が呼ばれる", () => {
-    const onIndent = jest.fn();
-    render(<TodoItemIndentButtons {...defaultProps} onIndent={onIndent} />);
+  it("「上げる」クリックで onIndentAction が呼ばれる", () => {
+    const onIndentAction = jest.fn();
+    render(<TodoItemIndentButtons {...defaultProps} onIndentAction={onIndentAction} />);
     fireEvent.click(screen.getByLabelText("インデントを上げる"));
-    expect(onIndent).toHaveBeenCalledWith("list-1", "item-1");
+    expect(onIndentAction).toHaveBeenCalledWith("list-1", "item-1");
   });
 
   describe("sortModeActive=true のとき（表示順と生配列順の乖離による意図しない再構造化の防止）", () => {
@@ -55,30 +55,30 @@ describe("TodoItemIndentButtons", () => {
       expect(screen.getByLabelText("インデントを上げる")).toBeDisabled();
     });
 
-    it("「下げる」クリックしても onOutdent は呼ばれない", () => {
-      const onOutdent = jest.fn();
+    it("「下げる」クリックしても onOutdentAction は呼ばれない", () => {
+      const onOutdentAction = jest.fn();
       render(
         <TodoItemIndentButtons
           {...defaultProps}
           sortModeActive={true}
-          onOutdent={onOutdent}
+          onOutdentAction={onOutdentAction}
         />,
       );
       fireEvent.click(screen.getByLabelText("インデントを下げる"));
-      expect(onOutdent).not.toHaveBeenCalled();
+      expect(onOutdentAction).not.toHaveBeenCalled();
     });
 
-    it("「上げる」クリックしても onIndent は呼ばれない", () => {
-      const onIndent = jest.fn();
+    it("「上げる」クリックしても onIndentAction は呼ばれない", () => {
+      const onIndentAction = jest.fn();
       render(
         <TodoItemIndentButtons
           {...defaultProps}
           sortModeActive={true}
-          onIndent={onIndent}
+          onIndentAction={onIndentAction}
         />,
       );
       fireEvent.click(screen.getByLabelText("インデントを上げる"));
-      expect(onIndent).not.toHaveBeenCalled();
+      expect(onIndentAction).not.toHaveBeenCalled();
     });
   });
 });
