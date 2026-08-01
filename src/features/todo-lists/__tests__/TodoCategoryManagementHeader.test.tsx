@@ -3,7 +3,7 @@ import { TodoCategoryManagementHeader } from "../TodoCategoryManagementHeader";
 
 const defaultProps = {
   showForm: false,
-  onOpenForm: jest.fn(),
+  onOpenFormAction: jest.fn(),
 };
 
 beforeEach(() => {
@@ -41,11 +41,11 @@ describe("TodoCategoryManagementHeader", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("追加ボタンクリックで onOpenForm が呼ばれる", () => {
+  it("追加ボタンクリックで onOpenFormAction が呼ばれる", () => {
     render(<TodoCategoryManagementHeader {...defaultProps} showForm={false} />);
     fireEvent.click(
       screen.getByRole("button", { name: /新しいカテゴリを追加/ }),
     );
-    expect(defaultProps.onOpenForm).toHaveBeenCalledTimes(1);
+    expect(defaultProps.onOpenFormAction).toHaveBeenCalledTimes(1);
   });
 });

@@ -29,7 +29,7 @@ describe("TodoItemMobileTrigger", () => {
       <TodoItemMobileTrigger
         item={item}
         mobileMenuItemId={null}
-        toggleMobileMenu={jest.fn()}
+        toggleMobileMenuAction={jest.fn()}
       />,
     );
     expect(
@@ -37,17 +37,17 @@ describe("TodoItemMobileTrigger", () => {
     ).toBeInTheDocument();
   });
 
-  it("クリックで toggleMobileMenu が item.id で呼ばれる", () => {
-    const toggleMobileMenu = jest.fn();
+  it("クリックで toggleMobileMenuAction が item.id で呼ばれる", () => {
+    const toggleMobileMenuAction = jest.fn();
     render(
       <TodoItemMobileTrigger
         item={item}
         mobileMenuItemId={null}
-        toggleMobileMenu={toggleMobileMenu}
+        toggleMobileMenuAction={toggleMobileMenuAction}
       />,
     );
     fireEvent.click(screen.getByRole("button", { name: "アクションメニュー" }));
-    expect(toggleMobileMenu).toHaveBeenCalledWith("item-1");
+    expect(toggleMobileMenuAction).toHaveBeenCalledWith("item-1");
   });
 
   it("メニューが閉じているとき aria-expanded が false", () => {
@@ -55,7 +55,7 @@ describe("TodoItemMobileTrigger", () => {
       <TodoItemMobileTrigger
         item={item}
         mobileMenuItemId={null}
-        toggleMobileMenu={jest.fn()}
+        toggleMobileMenuAction={jest.fn()}
       />,
     );
     expect(
@@ -68,7 +68,7 @@ describe("TodoItemMobileTrigger", () => {
       <TodoItemMobileTrigger
         item={item}
         mobileMenuItemId="item-1"
-        toggleMobileMenu={jest.fn()}
+        toggleMobileMenuAction={jest.fn()}
       />,
     );
     expect(
@@ -87,14 +87,14 @@ describe("TodoItemMobileDropdown", () => {
     maxIndent: 3,
     sortModeActive: false,
     mobileMenuItemId: "item-1",
-    closeMobileMenu: jest.fn(),
-    startEditItem: jest.fn(),
-    onInsertAfter: jest.fn(),
-    onOutdentItem: jest.fn(),
-    onIndentItem: jest.fn(),
-    onUpdateItemBgColor: jest.fn(),
-    onUpdateItemCategory: jest.fn(),
-    onDeleteItem: jest.fn(),
+    closeMobileMenuAction: jest.fn(),
+    startEditItemAction: jest.fn(),
+    onInsertAfterAction: jest.fn(),
+    onOutdentItemAction: jest.fn(),
+    onIndentItemAction: jest.fn(),
+    onUpdateItemBgColorAction: jest.fn(),
+    onUpdateItemCategoryAction: jest.fn(),
+    onDeleteItemAction: jest.fn(),
   };
 
   beforeEach(() => {
@@ -115,18 +115,18 @@ describe("TodoItemMobileDropdown", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("編集ボタンクリックで startEditItem と closeMobileMenu が呼ばれる", () => {
+  it("編集ボタンクリックで startEditItemAction と closeMobileMenuAction が呼ばれる", () => {
     render(<TodoItemMobileDropdown {...defaultProps} />);
     fireEvent.click(screen.getByRole("button", { name: /編集/ }));
-    expect(defaultProps.startEditItem).toHaveBeenCalledWith("item-1", "テストTodo");
-    expect(defaultProps.closeMobileMenu).toHaveBeenCalledTimes(1);
+    expect(defaultProps.startEditItemAction).toHaveBeenCalledWith("item-1", "テストTodo");
+    expect(defaultProps.closeMobileMenuAction).toHaveBeenCalledTimes(1);
   });
 
-  it("インデントを下げるボタンクリックで onOutdentItem と closeMobileMenu が呼ばれる", () => {
+  it("インデントを下げるボタンクリックで onOutdentItemAction と closeMobileMenuAction が呼ばれる", () => {
     render(<TodoItemMobileDropdown {...defaultProps} currentIndent={1} />);
     fireEvent.click(screen.getByRole("button", { name: /インデントを下げる/ }));
-    expect(defaultProps.onOutdentItem).toHaveBeenCalledWith("list-1", "item-1");
-    expect(defaultProps.closeMobileMenu).toHaveBeenCalledTimes(1);
+    expect(defaultProps.onOutdentItemAction).toHaveBeenCalledWith("list-1", "item-1");
+    expect(defaultProps.closeMobileMenuAction).toHaveBeenCalledTimes(1);
   });
 
   it("currentIndent が 0 のときインデントを下げるボタンは disabled", () => {
@@ -136,11 +136,11 @@ describe("TodoItemMobileDropdown", () => {
     ).toBeDisabled();
   });
 
-  it("インデントを上げるボタンクリックで onIndentItem と closeMobileMenu が呼ばれる", () => {
+  it("インデントを上げるボタンクリックで onIndentItemAction と closeMobileMenuAction が呼ばれる", () => {
     render(<TodoItemMobileDropdown {...defaultProps} />);
     fireEvent.click(screen.getByRole("button", { name: /インデントを上げる/ }));
-    expect(defaultProps.onIndentItem).toHaveBeenCalledWith("list-1", "item-1");
-    expect(defaultProps.closeMobileMenu).toHaveBeenCalledTimes(1);
+    expect(defaultProps.onIndentItemAction).toHaveBeenCalledWith("list-1", "item-1");
+    expect(defaultProps.closeMobileMenuAction).toHaveBeenCalledTimes(1);
   });
 
   it("currentIndent が maxIndent のときインデントを上げるボタンは disabled", () => {
@@ -150,22 +150,22 @@ describe("TodoItemMobileDropdown", () => {
     ).toBeDisabled();
   });
 
-  it("削除ボタンクリックで onDeleteItem と closeMobileMenu が呼ばれる", () => {
+  it("削除ボタンクリックで onDeleteItemAction と closeMobileMenuAction が呼ばれる", () => {
     render(<TodoItemMobileDropdown {...defaultProps} />);
     fireEvent.click(screen.getByRole("button", { name: /削除/ }));
-    expect(defaultProps.onDeleteItem).toHaveBeenCalledWith(
+    expect(defaultProps.onDeleteItemAction).toHaveBeenCalledWith(
       "list-1",
       "item-1",
       "テストTodo",
     );
-    expect(defaultProps.closeMobileMenu).toHaveBeenCalledTimes(1);
+    expect(defaultProps.closeMobileMenuAction).toHaveBeenCalledTimes(1);
   });
 
-  it("下に追加ボタンクリックで onInsertAfter と closeMobileMenu が呼ばれる", () => {
+  it("下に追加ボタンクリックで onInsertAfterAction と closeMobileMenuAction が呼ばれる", () => {
     render(<TodoItemMobileDropdown {...defaultProps} />);
     fireEvent.click(screen.getByRole("button", { name: /下に追加/ }));
-    expect(defaultProps.onInsertAfter).toHaveBeenCalledTimes(1);
-    expect(defaultProps.closeMobileMenu).toHaveBeenCalledTimes(1);
+    expect(defaultProps.onInsertAfterAction).toHaveBeenCalledTimes(1);
+    expect(defaultProps.closeMobileMenuAction).toHaveBeenCalledTimes(1);
   });
 
   it("背景色の radiogroup を表示する", () => {
@@ -173,18 +173,18 @@ describe("TodoItemMobileDropdown", () => {
     expect(screen.getByRole("radiogroup", { name: "背景色" })).toBeInTheDocument();
   });
 
-  it("背景色スウォッチ選択で onUpdateItemBgColor と closeMobileMenu が呼ばれる", () => {
+  it("背景色スウォッチ選択で onUpdateItemBgColorAction と closeMobileMenuAction が呼ばれる", () => {
     render(<TodoItemMobileDropdown {...defaultProps} />);
     const radiogroup = screen.getByRole("radiogroup", { name: "背景色" });
     // index=1（赤: "bg-red-50"）を選択してデフォルト undefined を避ける
     const swatches = within(radiogroup).getAllByRole("radio");
     fireEvent.click(swatches[1]);
-    expect(defaultProps.onUpdateItemBgColor).toHaveBeenCalledWith(
+    expect(defaultProps.onUpdateItemBgColorAction).toHaveBeenCalledWith(
       "list-1",
       "item-1",
       "bg-red-50",
     );
-    expect(defaultProps.closeMobileMenu).toHaveBeenCalledTimes(1);
+    expect(defaultProps.closeMobileMenuAction).toHaveBeenCalledTimes(1);
   });
 
   it("カテゴリの radiogroup を表示する", () => {
@@ -194,16 +194,16 @@ describe("TodoItemMobileDropdown", () => {
     ).toBeInTheDocument();
   });
 
-  it("カテゴリスウォッチ選択で onUpdateItemCategory と closeMobileMenu が呼ばれる", () => {
+  it("カテゴリスウォッチ選択で onUpdateItemCategoryAction と closeMobileMenuAction が呼ばれる", () => {
     render(<TodoItemMobileDropdown {...defaultProps} />);
     const radiogroup = screen.getByRole("radiogroup", { name: "カテゴリ" });
     fireEvent.click(within(radiogroup).getByRole("radio", { name: "仕事" }));
-    expect(defaultProps.onUpdateItemCategory).toHaveBeenCalledWith(
+    expect(defaultProps.onUpdateItemCategoryAction).toHaveBeenCalledWith(
       "list-1",
       "item-1",
       "cat-work",
     );
-    expect(defaultProps.closeMobileMenu).toHaveBeenCalledTimes(1);
+    expect(defaultProps.closeMobileMenuAction).toHaveBeenCalledTimes(1);
   });
 
   describe("sortModeActive=true のとき（表示順と生配列順の乖離による意図しない再構造化の防止）", () => {
@@ -217,16 +217,16 @@ describe("TodoItemMobileDropdown", () => {
       ).toBeDisabled();
     });
 
-    it("「下げる」クリックしても onOutdentItem は呼ばれない", () => {
+    it("「下げる」クリックしても onOutdentItemAction は呼ばれない", () => {
       render(<TodoItemMobileDropdown {...defaultProps} sortModeActive={true} />);
       fireEvent.click(screen.getByRole("button", { name: /インデントを下げる/ }));
-      expect(defaultProps.onOutdentItem).not.toHaveBeenCalled();
+      expect(defaultProps.onOutdentItemAction).not.toHaveBeenCalled();
     });
 
-    it("「上げる」クリックしても onIndentItem は呼ばれない", () => {
+    it("「上げる」クリックしても onIndentItemAction は呼ばれない", () => {
       render(<TodoItemMobileDropdown {...defaultProps} sortModeActive={true} />);
       fireEvent.click(screen.getByRole("button", { name: /インデントを上げる/ }));
-      expect(defaultProps.onIndentItem).not.toHaveBeenCalled();
+      expect(defaultProps.onIndentItemAction).not.toHaveBeenCalled();
     });
   });
 });

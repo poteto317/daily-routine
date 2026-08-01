@@ -3,8 +3,8 @@ import { TodoListSelectionBar } from "../TodoListSelectionBar";
 
 const defaultProps = {
   selectedCount: 2,
-  onCut: jest.fn(),
-  onClearSelection: jest.fn(),
+  onCutAction: jest.fn(),
+  onClearSelectionAction: jest.fn(),
 };
 
 beforeEach(() => {
@@ -22,15 +22,15 @@ describe("TodoListSelectionBar", () => {
     expect(screen.getByText("1件選択中")).toBeInTheDocument();
   });
 
-  it("切り取りボタンクリックで onCut が呼ばれる", () => {
+  it("切り取りボタンクリックで onCutAction が呼ばれる", () => {
     render(<TodoListSelectionBar {...defaultProps} />);
     fireEvent.click(screen.getByRole("button", { name: /切り取り/ }));
-    expect(defaultProps.onCut).toHaveBeenCalledTimes(1);
+    expect(defaultProps.onCutAction).toHaveBeenCalledTimes(1);
   });
 
-  it("選択解除ボタンクリックで onClearSelection が呼ばれる", () => {
+  it("選択解除ボタンクリックで onClearSelectionAction が呼ばれる", () => {
     render(<TodoListSelectionBar {...defaultProps} />);
     fireEvent.click(screen.getByRole("button", { name: "選択解除" }));
-    expect(defaultProps.onClearSelection).toHaveBeenCalledTimes(1);
+    expect(defaultProps.onClearSelectionAction).toHaveBeenCalledTimes(1);
   });
 });

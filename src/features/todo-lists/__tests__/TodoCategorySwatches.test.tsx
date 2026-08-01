@@ -10,7 +10,7 @@ const categories: TodoCategory[] = [
 const defaultProps = {
   categories,
   selectedCategoryId: undefined as string | undefined,
-  onSelect: jest.fn(),
+  onSelectAction: jest.fn(),
 };
 
 beforeEach(() => {
@@ -45,18 +45,18 @@ describe("TodoCategorySwatches", () => {
     expect(checked).toHaveAttribute("aria-checked", "true");
   });
 
-  it("カテゴリスウォッチクリックで onSelect がそのカテゴリIDで呼ばれる", () => {
+  it("カテゴリスウォッチクリックで onSelectAction がそのカテゴリIDで呼ばれる", () => {
     render(<TodoCategorySwatches {...defaultProps} />);
     fireEvent.click(screen.getByRole("radio", { name: "仕事" }));
-    expect(defaultProps.onSelect).toHaveBeenCalledWith("cat-work");
+    expect(defaultProps.onSelectAction).toHaveBeenCalledWith("cat-work");
   });
 
-  it("未分類スウォッチクリックで onSelect(undefined) が呼ばれる", () => {
+  it("未分類スウォッチクリックで onSelectAction(undefined) が呼ばれる", () => {
     render(
       <TodoCategorySwatches {...defaultProps} selectedCategoryId="cat-work" />,
     );
     fireEvent.click(screen.getByRole("radio", { name: "未分類" }));
-    expect(defaultProps.onSelect).toHaveBeenCalledWith(undefined);
+    expect(defaultProps.onSelectAction).toHaveBeenCalledWith(undefined);
   });
 
   it("selectedCategoryId が categories に存在しない（削除済みなど）とき未分類が aria-checked=\"true\" になる（レビュー指摘対応）", () => {

@@ -3,8 +3,8 @@ import { TodoListClipboardBar } from "../TodoListClipboardBar";
 
 const defaultProps = {
   clipboardCount: 3,
-  onPaste: jest.fn(),
-  onClearClipboard: jest.fn(),
+  onPasteAction: jest.fn(),
+  onClearClipboardAction: jest.fn(),
 };
 
 beforeEach(() => {
@@ -17,16 +17,16 @@ describe("TodoListClipboardBar", () => {
     expect(screen.getByText(/3件のTodoをペーストできます/)).toBeInTheDocument();
   });
 
-  it("ペーストボタンクリックで onPaste が呼ばれる", () => {
+  it("ペーストボタンクリックで onPasteAction が呼ばれる", () => {
     render(<TodoListClipboardBar {...defaultProps} />);
     fireEvent.click(screen.getByRole("button", { name: /ペースト/ }));
-    expect(defaultProps.onPaste).toHaveBeenCalledTimes(1);
+    expect(defaultProps.onPasteAction).toHaveBeenCalledTimes(1);
   });
 
-  it("キャンセルボタンクリックで onClearClipboard が呼ばれる", () => {
+  it("キャンセルボタンクリックで onClearClipboardAction が呼ばれる", () => {
     render(<TodoListClipboardBar {...defaultProps} />);
     fireEvent.click(screen.getByRole("button", { name: "キャンセル" }));
-    expect(defaultProps.onClearClipboard).toHaveBeenCalledTimes(1);
+    expect(defaultProps.onClearClipboardAction).toHaveBeenCalledTimes(1);
   });
 
   it("1件の場合も正しく表示する", () => {

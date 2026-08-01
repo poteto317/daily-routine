@@ -7,8 +7,8 @@ import texts from "./locales/ja.json";
 export type TodoListAddFormProps = {
   inputRef: RefObject<HTMLInputElement | null>;
   inputText: string;
-  onChangeText: (value: string) => void;
-  onAdd: () => void;
+  onChangeTextAction: (value: string) => void;
+  onAddAction: () => void;
 };
 
 /**
@@ -18,18 +18,18 @@ export type TodoListAddFormProps = {
 export const TodoListAddForm = ({
   inputRef,
   inputText,
-  onChangeText,
-  onAdd,
+  onChangeTextAction,
+  onAddAction,
 }: TodoListAddFormProps) => (
   <div className="flex gap-2 mt-4 pt-4 border-t border-gray-100 dark:border-gray-600">
     <input
       ref={inputRef}
       type="text"
       value={inputText}
-      onChange={(e) => onChangeText(e.target.value)}
+      onChange={(e) => onChangeTextAction(e.target.value)}
       onKeyDown={(e) => {
         if (e.key === "Enter" && !isImeComposingKeyDown(e)) {
-          onAdd();
+          onAddAction();
         }
       }}
       placeholder={texts.list.itemPlaceholder}
@@ -37,7 +37,7 @@ export const TodoListAddForm = ({
     />
     <button
       type="button"
-      onClick={onAdd}
+      onClick={onAddAction}
       disabled={!inputText.trim()}
       className="text-sm bg-teal-500 hover:bg-teal-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white px-4 py-2 rounded-lg font-medium transition-colors shrink-0"
     >

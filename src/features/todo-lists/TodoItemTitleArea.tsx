@@ -10,10 +10,10 @@ type TodoItemTitleAreaProps = {
   isEditing: boolean;
   editingTitle: string;
   isDragActive: boolean;
-  onChangeTitle: (v: string) => void;
-  onCommitEdit: () => void;
-  onCancelEdit: () => void;
-  onToggle: () => void;
+  onChangeTitleAction: (v: string) => void;
+  onCommitEditAction: () => void;
+  onCancelEditAction: () => void;
+  onToggleAction: () => void;
 };
 
 /**
@@ -27,10 +27,10 @@ export const TodoItemTitleArea = ({
   isEditing,
   editingTitle,
   isDragActive,
-  onChangeTitle,
-  onCommitEdit,
-  onCancelEdit,
-  onToggle,
+  onChangeTitleAction,
+  onCommitEditAction,
+  onCancelEditAction,
+  onToggleAction,
 }: TodoItemTitleAreaProps) => {
   if (isEditing) {
     return (
@@ -38,11 +38,11 @@ export const TodoItemTitleArea = ({
         type="text"
         autoFocus
         value={editingTitle}
-        onChange={(e) => onChangeTitle(e.target.value)}
-        onBlur={onCommitEdit}
+        onChange={(e) => onChangeTitleAction(e.target.value)}
+        onBlur={onCommitEditAction}
         onKeyDown={(e) => {
-          if (e.key === "Enter" && !isImeComposingKeyDown(e)) onCommitEdit();
-          if (e.key === "Escape") onCancelEdit();
+          if (e.key === "Enter" && !isImeComposingKeyDown(e)) onCommitEditAction();
+          if (e.key === "Escape") onCancelEditAction();
         }}
         aria-label={`「${title}」のタイトルを編集`}
         data-item-id={itemId}
@@ -56,7 +56,7 @@ export const TodoItemTitleArea = ({
       title={title}
       isCompleted={isCompleted}
       isDragActive={isDragActive}
-      onToggle={onToggle}
+      onToggleAction={onToggleAction}
     />
   );
 };

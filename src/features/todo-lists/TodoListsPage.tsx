@@ -22,8 +22,8 @@ export const TodoListsPage = () => {
       listId={effectiveSelectedId}
       categories={categories}
       clipboardItems={clipboardItems}
-      onSetClipboard={setClipboard}
-      onClearClipboard={clearClipboard}
+      onSetClipboardAction={setClipboard}
+      onClearClipboardAction={clearClipboard}
     />
   );
 };

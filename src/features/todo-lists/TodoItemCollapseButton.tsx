@@ -4,7 +4,7 @@ type TodoItemCollapseButtonProps = {
   itemId: string;
   isParent: boolean;
   isCollapsed: boolean;
-  onToggleCollapse: (id: string) => void;
+  onToggleCollapseAction: (id: string) => void;
 };
 
 /**
@@ -15,7 +15,7 @@ export const TodoItemCollapseButton = ({
   itemId,
   isParent,
   isCollapsed,
-  onToggleCollapse,
+  onToggleCollapseAction,
 }: TodoItemCollapseButtonProps) => {
   if (!isParent) {
     return <span className="shrink-0 w-5" />;
@@ -24,7 +24,7 @@ export const TodoItemCollapseButton = ({
   return (
     <button
       type="button"
-      onClick={() => onToggleCollapse(itemId)}
+      onClick={() => onToggleCollapseAction(itemId)}
       className="shrink-0 w-5 h-5 text-gray-400 hover:text-teal-500 dark:text-gray-500 dark:hover:text-teal-400 flex items-center justify-center text-xs transition-colors"
       aria-expanded={!isCollapsed}
       aria-label={isCollapsed ? "子Todoを展開" : "子Todoを折りたたむ"}

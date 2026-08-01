@@ -8,7 +8,7 @@ describe("TodoItemSelectCheckbox", () => {
     itemId: "item-1",
     title: "テストタスク",
     isSelected: false,
-    onToggleSelect: jest.fn(),
+    onToggleSelectAction: jest.fn(),
   };
 
   beforeEach(() => jest.clearAllMocks());
@@ -35,15 +35,15 @@ describe("TodoItemSelectCheckbox", () => {
     );
   });
 
-  it("クリックで onToggleSelect が呼ばれる", async () => {
-    const onToggleSelect = jest.fn();
+  it("クリックで onToggleSelectAction が呼ばれる", async () => {
+    const onToggleSelectAction = jest.fn();
     render(
       <TodoItemSelectCheckbox
         {...defaultProps}
-        onToggleSelect={onToggleSelect}
+        onToggleSelectAction={onToggleSelectAction}
       />,
     );
     await userEvent.click(screen.getByRole("checkbox"));
-    expect(onToggleSelect).toHaveBeenCalledWith("item-1");
+    expect(onToggleSelectAction).toHaveBeenCalledWith("item-1");
   });
 });

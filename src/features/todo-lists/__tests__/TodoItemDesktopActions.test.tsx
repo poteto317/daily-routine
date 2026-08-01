@@ -26,15 +26,15 @@ describe("TodoItemDesktopActions", () => {
     colorPickerItemId: null,
     categoryPickerItemId: null,
     isInlineInsertOpen: false,
-    toggleItemColorPicker: jest.fn(),
-    closeItemColorPicker: jest.fn(),
-    toggleItemCategoryPicker: jest.fn(),
-    closeItemCategoryPicker: jest.fn(),
-    onUpdateItemBgColor: jest.fn(),
-    onUpdateItemCategory: jest.fn(),
-    startEditItem: jest.fn(),
-    onDeleteItem: jest.fn(),
-    onInsertAfter: jest.fn(),
+    toggleItemColorPickerAction: jest.fn(),
+    closeItemColorPickerAction: jest.fn(),
+    toggleItemCategoryPickerAction: jest.fn(),
+    closeItemCategoryPickerAction: jest.fn(),
+    onUpdateItemBgColorAction: jest.fn(),
+    onUpdateItemCategoryAction: jest.fn(),
+    startEditItemAction: jest.fn(),
+    onDeleteItemAction: jest.fn(),
+    onInsertAfterAction: jest.fn(),
   };
 
   beforeEach(() => {
@@ -50,10 +50,10 @@ describe("TodoItemDesktopActions", () => {
     expect(screen.getByRole("button", { name: "下に追加" })).toBeInTheDocument();
   });
 
-  it("カラーピッカーボタンクリックで toggleItemColorPicker が item.id で呼ばれる", () => {
+  it("カラーピッカーボタンクリックで toggleItemColorPickerAction が item.id で呼ばれる", () => {
     render(<TodoItemDesktopActions {...defaultProps} />);
     fireEvent.click(screen.getByRole("button", { name: "背景色を変更" }));
-    expect(defaultProps.toggleItemColorPicker).toHaveBeenCalledWith("item-1");
+    expect(defaultProps.toggleItemColorPickerAction).toHaveBeenCalledWith("item-1");
   });
 
   it("colorPickerItemId が item.id に一致するときカラーパネルを表示する", () => {
@@ -71,7 +71,7 @@ describe("TodoItemDesktopActions", () => {
     expect(screen.queryByRole("radiogroup", { name: "背景色" })).not.toBeInTheDocument();
   });
 
-  it("カラースウォッチ選択で onUpdateItemBgColor と closeItemColorPicker が呼ばれる", () => {
+  it("カラースウォッチ選択で onUpdateItemBgColorAction と closeItemColorPickerAction が呼ばれる", () => {
     render(
       <TodoItemDesktopActions
         {...defaultProps}
@@ -82,18 +82,18 @@ describe("TodoItemDesktopActions", () => {
     // index=1（赤: "bg-red-50"）を選択してデフォルト undefined を避ける
     const redSwatch = within(radiogroup).getAllByRole("radio")[1];
     fireEvent.click(redSwatch);
-    expect(defaultProps.onUpdateItemBgColor).toHaveBeenCalledWith(
+    expect(defaultProps.onUpdateItemBgColorAction).toHaveBeenCalledWith(
       "list-1",
       "item-1",
       "bg-red-50",
     );
-    expect(defaultProps.closeItemColorPicker).toHaveBeenCalledTimes(1);
+    expect(defaultProps.closeItemColorPickerAction).toHaveBeenCalledTimes(1);
   });
 
-  it("カテゴリピッカーボタンクリックで toggleItemCategoryPicker が item.id で呼ばれる", () => {
+  it("カテゴリピッカーボタンクリックで toggleItemCategoryPickerAction が item.id で呼ばれる", () => {
     render(<TodoItemDesktopActions {...defaultProps} />);
     fireEvent.click(screen.getByRole("button", { name: "カテゴリ" }));
-    expect(defaultProps.toggleItemCategoryPicker).toHaveBeenCalledWith(
+    expect(defaultProps.toggleItemCategoryPickerAction).toHaveBeenCalledWith(
       "item-1",
     );
   });
@@ -119,7 +119,7 @@ describe("TodoItemDesktopActions", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("カテゴリスウォッチ選択で onUpdateItemCategory と closeItemCategoryPicker が呼ばれる", () => {
+  it("カテゴリスウォッチ選択で onUpdateItemCategoryAction と closeItemCategoryPickerAction が呼ばれる", () => {
     render(
       <TodoItemDesktopActions
         {...defaultProps}
@@ -128,12 +128,12 @@ describe("TodoItemDesktopActions", () => {
     );
     const radiogroup = screen.getByRole("radiogroup", { name: "カテゴリ" });
     fireEvent.click(within(radiogroup).getByRole("radio", { name: "仕事" }));
-    expect(defaultProps.onUpdateItemCategory).toHaveBeenCalledWith(
+    expect(defaultProps.onUpdateItemCategoryAction).toHaveBeenCalledWith(
       "list-1",
       "item-1",
       "cat-work",
     );
-    expect(defaultProps.closeItemCategoryPicker).toHaveBeenCalledTimes(1);
+    expect(defaultProps.closeItemCategoryPickerAction).toHaveBeenCalledTimes(1);
   });
 
   it("カテゴリボタンの aria-expanded はカテゴリピッカーの開閉状態を反映する", () => {
@@ -157,26 +157,26 @@ describe("TodoItemDesktopActions", () => {
     );
   });
 
-  it("編集ボタンクリックで startEditItem が item.id と title で呼ばれる", () => {
+  it("編集ボタンクリックで startEditItemAction が item.id と title で呼ばれる", () => {
     render(<TodoItemDesktopActions {...defaultProps} />);
     fireEvent.click(screen.getByRole("button", { name: "編集" }));
-    expect(defaultProps.startEditItem).toHaveBeenCalledWith("item-1", "テストTodo");
+    expect(defaultProps.startEditItemAction).toHaveBeenCalledWith("item-1", "テストTodo");
   });
 
-  it("削除ボタンクリックで onDeleteItem が listId・item.id・title で呼ばれる", () => {
+  it("削除ボタンクリックで onDeleteItemAction が listId・item.id・title で呼ばれる", () => {
     render(<TodoItemDesktopActions {...defaultProps} />);
     fireEvent.click(screen.getByRole("button", { name: "削除" }));
-    expect(defaultProps.onDeleteItem).toHaveBeenCalledWith(
+    expect(defaultProps.onDeleteItemAction).toHaveBeenCalledWith(
       "list-1",
       "item-1",
       "テストTodo",
     );
   });
 
-  it("下に追加ボタンクリックで onInsertAfter が呼ばれる", () => {
+  it("下に追加ボタンクリックで onInsertAfterAction が呼ばれる", () => {
     render(<TodoItemDesktopActions {...defaultProps} />);
     fireEvent.click(screen.getByRole("button", { name: "下に追加" }));
-    expect(defaultProps.onInsertAfter).toHaveBeenCalledTimes(1);
+    expect(defaultProps.onInsertAfterAction).toHaveBeenCalledTimes(1);
   });
 
   it("isInlineInsertOpen が true のとき下に追加ボタンの aria-expanded が true", () => {

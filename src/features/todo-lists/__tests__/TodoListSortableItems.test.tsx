@@ -80,37 +80,37 @@ const defaultHandlers: Omit<
   | "inlineInputText"
   | "sensors"
 > = {
-  onDragStart: jest.fn(),
-  onDragEnd: jest.fn(),
-  onDragCancel: jest.fn(),
-  onSetInlineInputText: jest.fn(),
-  onHandleInlineAdd: jest.fn(),
-  onCloseInlineInsert: jest.fn(),
-  onOpenInlineInsert: jest.fn(),
+  onDragStartAction: jest.fn(),
+  onDragEndAction: jest.fn(),
+  onDragCancelAction: jest.fn(),
+  onSetInlineInputTextAction: jest.fn(),
+  onHandleInlineAddAction: jest.fn(),
+  onCloseInlineInsertAction: jest.fn(),
+  onOpenInlineInsertAction: jest.fn(),
   editingItemId: null,
   editingItemTitle: "",
-  setEditingItemTitle: jest.fn(),
-  commitEditItem: jest.fn(),
-  cancelEditItem: jest.fn(),
-  startEditItem: jest.fn(),
-  toggleSelectItem: jest.fn(),
-  toggleCollapseItem: jest.fn(),
+  setEditingItemTitleAction: jest.fn(),
+  commitEditItemAction: jest.fn(),
+  cancelEditItemAction: jest.fn(),
+  startEditItemAction: jest.fn(),
+  toggleSelectItemAction: jest.fn(),
+  toggleCollapseItemAction: jest.fn(),
   categories: [],
   colorPickerItemId: null,
-  toggleItemColorPicker: jest.fn(),
-  closeItemColorPicker: jest.fn(),
+  toggleItemColorPickerAction: jest.fn(),
+  closeItemColorPickerAction: jest.fn(),
   categoryPickerItemId: null,
-  toggleItemCategoryPicker: jest.fn(),
-  closeItemCategoryPicker: jest.fn(),
-  onUpdateItemBgColor: jest.fn(),
-  onUpdateItemCategory: jest.fn(),
-  onToggleItem: jest.fn(),
-  onDeleteItem: jest.fn(),
-  onIndentItem: jest.fn(),
-  onOutdentItem: jest.fn(),
+  toggleItemCategoryPickerAction: jest.fn(),
+  closeItemCategoryPickerAction: jest.fn(),
+  onUpdateItemBgColorAction: jest.fn(),
+  onUpdateItemCategoryAction: jest.fn(),
+  onToggleItemAction: jest.fn(),
+  onDeleteItemAction: jest.fn(),
+  onIndentItemAction: jest.fn(),
+  onOutdentItemAction: jest.fn(),
   mobileMenuItemId: null,
-  toggleMobileMenu: jest.fn(),
-  closeMobileMenu: jest.fn(),
+  toggleMobileMenuAction: jest.fn(),
+  closeMobileMenuAction: jest.fn(),
 };
 
 const defaultProps: TodoListSortableItemsProps = {
@@ -202,24 +202,24 @@ describe("TodoListSortableItems", () => {
       ).not.toBeInTheDocument();
     });
 
-    it("「下に追加」ボタンをクリックすると onOpenInlineInsert がアイテム ID で呼ばれる", () => {
-      const onOpenInlineInsert = jest.fn();
+    it("「下に追加」ボタンをクリックすると onOpenInlineInsertAction がアイテム ID で呼ばれる", () => {
+      const onOpenInlineInsertAction = jest.fn();
       render(
         <TodoListSortableItems
           {...defaultProps}
-          onOpenInlineInsert={onOpenInlineInsert}
+          onOpenInlineInsertAction={onOpenInlineInsertAction}
         />,
       );
       const buttons = screen.getAllByRole("button", { name: "下に追加" });
       fireEvent.click(buttons[0]);
-      expect(onOpenInlineInsert).toHaveBeenCalledWith("item-1");
+      expect(onOpenInlineInsertAction).toHaveBeenCalledWith("item-1");
     });
 
-    it("onOpenInlineInsert が no-op のとき insertAfterId は変わらずフォームが開かない", () => {
+    it("onOpenInlineInsertAction が no-op のとき insertAfterId は変わらずフォームが開かない", () => {
       render(
         <TodoListSortableItems
           {...defaultProps}
-          onOpenInlineInsert={() => {}}
+          onOpenInlineInsertAction={() => {}}
           insertAfterId={null}
         />,
       );

@@ -19,23 +19,23 @@ import { TodoCategoryManagementItem } from "./TodoCategoryManagementItem";
 export type TodoCategorySortableListProps = {
   categories: TodoCategory[];
   sensors: SensorDescriptor<SensorOptions>[];
-  onDragStart: (event: DragStartEvent) => void;
-  onDragEnd: (event: DragEndEvent) => void;
-  onDragCancel: () => void;
+  onDragStartAction: (event: DragStartEvent) => void;
+  onDragEndAction: (event: DragEndEvent) => void;
+  onDragCancelAction: () => void;
   editingCategoryId: string | null;
   editingCategoryNameValue: string;
-  onChangeNameValue: (value: string) => void;
-  onCommitEdit: () => void;
-  onCancelEdit: () => void;
-  onStartEdit: (categoryId: string, name: string) => void;
+  onChangeNameValueAction: (value: string) => void;
+  onCommitEditAction: () => void;
+  onCancelEditAction: () => void;
+  onStartEditAction: (categoryId: string, name: string) => void;
   colorEditingCategoryId: string | null;
-  onToggleColorPicker: (categoryId: string) => void;
-  onCloseColorPicker: () => void;
-  onUpdateColor: (
+  onToggleColorPickerAction: (categoryId: string) => void;
+  onCloseColorPickerAction: () => void;
+  onUpdateColorAction: (
     categoryId: string,
     color: TodoItemBgColorValue | undefined,
   ) => void;
-  onDelete: (category: TodoCategory) => void;
+  onDeleteAction: (category: TodoCategory) => void;
 };
 
 /**
@@ -49,28 +49,28 @@ export type TodoCategorySortableListProps = {
 export const TodoCategorySortableList = ({
   categories,
   sensors,
-  onDragStart,
-  onDragEnd,
-  onDragCancel,
+  onDragStartAction,
+  onDragEndAction,
+  onDragCancelAction,
   editingCategoryId,
   editingCategoryNameValue,
-  onChangeNameValue,
-  onCommitEdit,
-  onCancelEdit,
-  onStartEdit,
+  onChangeNameValueAction,
+  onCommitEditAction,
+  onCancelEditAction,
+  onStartEditAction,
   colorEditingCategoryId,
-  onToggleColorPicker,
-  onCloseColorPicker,
-  onUpdateColor,
-  onDelete,
+  onToggleColorPickerAction,
+  onCloseColorPickerAction,
+  onUpdateColorAction,
+  onDeleteAction,
 }: TodoCategorySortableListProps) => {
   return (
     <DndContext
       sensors={sensors}
       collisionDetection={closestCenter}
-      onDragStart={onDragStart}
-      onDragEnd={onDragEnd}
-      onDragCancel={onDragCancel}
+      onDragStart={onDragStartAction}
+      onDragEnd={onDragEndAction}
+      onDragCancel={onDragCancelAction}
     >
       <SortableContext
         items={categories.map((category) => category.id)}
@@ -83,15 +83,15 @@ export const TodoCategorySortableList = ({
               category={category}
               editingCategoryId={editingCategoryId}
               editingCategoryNameValue={editingCategoryNameValue}
-              onChangeNameValue={onChangeNameValue}
-              onCommitEdit={onCommitEdit}
-              onCancelEdit={onCancelEdit}
-              onStartEdit={onStartEdit}
+              onChangeNameValueAction={onChangeNameValueAction}
+              onCommitEditAction={onCommitEditAction}
+              onCancelEditAction={onCancelEditAction}
+              onStartEditAction={onStartEditAction}
               colorEditingCategoryId={colorEditingCategoryId}
-              onToggleColorPicker={onToggleColorPicker}
-              onCloseColorPicker={onCloseColorPicker}
-              onUpdateColor={onUpdateColor}
-              onDelete={onDelete}
+              onToggleColorPickerAction={onToggleColorPickerAction}
+              onCloseColorPickerAction={onCloseColorPickerAction}
+              onUpdateColorAction={onUpdateColorAction}
+              onDeleteAction={onDeleteAction}
             />
           ))}
         </div>

@@ -9,9 +9,9 @@ jest.mock("@/lib/isImeComposingKeyDown", () => ({
 const defaultProps = {
   inputRef: createRef<HTMLInputElement>(),
   titleInput: "",
-  onChangeTitle: jest.fn(),
-  onCreate: jest.fn(),
-  onCancel: jest.fn(),
+  onChangeTitleAction: jest.fn(),
+  onCreateAction: jest.fn(),
+  onCancelAction: jest.fn(),
 };
 
 describe("TodoListCreateForm", () => {
@@ -43,56 +43,56 @@ describe("TodoListCreateForm", () => {
     expect(screen.getByText("作成")).not.toBeDisabled();
   });
 
-  it("入力変更で onChangeTitle が呼ばれる", () => {
-    const onChangeTitle = jest.fn();
-    render(<TodoListCreateForm {...defaultProps} onChangeTitle={onChangeTitle} />);
+  it("入力変更で onChangeTitleAction が呼ばれる", () => {
+    const onChangeTitleAction = jest.fn();
+    render(<TodoListCreateForm {...defaultProps} onChangeTitleAction={onChangeTitleAction} />);
     fireEvent.change(screen.getByPlaceholderText("リストのタイトル"), {
       target: { value: "テスト" },
     });
-    expect(onChangeTitle).toHaveBeenCalledWith("テスト");
+    expect(onChangeTitleAction).toHaveBeenCalledWith("テスト");
   });
 
-  it("作成ボタンクリックで onCreate が呼ばれる", () => {
-    const onCreate = jest.fn();
+  it("作成ボタンクリックで onCreateAction が呼ばれる", () => {
+    const onCreateAction = jest.fn();
     render(
       <TodoListCreateForm
         {...defaultProps}
         titleInput="新しいリスト"
-        onCreate={onCreate}
+        onCreateAction={onCreateAction}
       />,
     );
     fireEvent.click(screen.getByText("作成"));
-    expect(onCreate).toHaveBeenCalledTimes(1);
+    expect(onCreateAction).toHaveBeenCalledTimes(1);
   });
 
-  it("キャンセルボタンクリックで onCancel が呼ばれる", () => {
-    const onCancel = jest.fn();
-    render(<TodoListCreateForm {...defaultProps} onCancel={onCancel} />);
+  it("キャンセルボタンクリックで onCancelAction が呼ばれる", () => {
+    const onCancelAction = jest.fn();
+    render(<TodoListCreateForm {...defaultProps} onCancelAction={onCancelAction} />);
     fireEvent.click(screen.getByText("キャンセル"));
-    expect(onCancel).toHaveBeenCalledTimes(1);
+    expect(onCancelAction).toHaveBeenCalledTimes(1);
   });
 
-  it("Enter キーで onCreate が呼ばれる", () => {
-    const onCreate = jest.fn();
+  it("Enter キーで onCreateAction が呼ばれる", () => {
+    const onCreateAction = jest.fn();
     render(
       <TodoListCreateForm
         {...defaultProps}
         titleInput="リスト"
-        onCreate={onCreate}
+        onCreateAction={onCreateAction}
       />,
     );
     fireEvent.keyDown(screen.getByPlaceholderText("リストのタイトル"), {
       key: "Enter",
     });
-    expect(onCreate).toHaveBeenCalledTimes(1);
+    expect(onCreateAction).toHaveBeenCalledTimes(1);
   });
 
-  it("Escape キーで onCancel が呼ばれる", () => {
-    const onCancel = jest.fn();
-    render(<TodoListCreateForm {...defaultProps} onCancel={onCancel} />);
+  it("Escape キーで onCancelAction が呼ばれる", () => {
+    const onCancelAction = jest.fn();
+    render(<TodoListCreateForm {...defaultProps} onCancelAction={onCancelAction} />);
     fireEvent.keyDown(screen.getByPlaceholderText("リストのタイトル"), {
       key: "Escape",
     });
-    expect(onCancel).toHaveBeenCalledTimes(1);
+    expect(onCancelAction).toHaveBeenCalledTimes(1);
   });
 });

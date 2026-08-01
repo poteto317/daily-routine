@@ -11,16 +11,16 @@ export type TodoListDetailProps = {
   listId: string;
   categories: TodoCategory[];
   clipboardItems: TodoListItem[];
-  onSetClipboard: (items: TodoListItem[]) => void;
-  onClearClipboard: () => void;
+  onSetClipboardAction: (items: TodoListItem[]) => void;
+  onClearClipboardAction: () => void;
 };
 
 export const TodoListDetail = ({
   listId,
   categories,
   clipboardItems,
-  onSetClipboard,
-  onClearClipboard,
+  onSetClipboardAction,
+  onClearClipboardAction,
 }: TodoListDetailProps) => {
   const { list, detailHandlers, undo, redo, canUndo, canRedo } =
     useTodoListDetailState(listId);
@@ -31,18 +31,52 @@ export const TodoListDetail = ({
     return <TodoListNoSelectionView />;
   }
 
+  const {
+    onAddItem: onAddItemAction,
+    onToggleItem: onToggleItemAction,
+    onDeleteItem: onDeleteItemAction,
+    onDeleteList: onDeleteListAction,
+    onIndentItem: onIndentItemAction,
+    onOutdentItem: onOutdentItemAction,
+    onReorderItems: onReorderItemsAction,
+    onUpdateItemTitle: onUpdateItemTitleAction,
+    onUpdateListTitle: onUpdateListTitleAction,
+    onUpdateListAddItemPosition: onUpdateListAddItemPositionAction,
+    onUpdateListHideCompleted: onUpdateListHideCompletedAction,
+    onUpdateItemBgColor: onUpdateItemBgColorAction,
+    onUpdateAllItemsBgColor: onUpdateAllItemsBgColorAction,
+    onUpdateItemCategory: onUpdateItemCategoryAction,
+    onCutItems: onCutItemsAction,
+    onPasteItems: onPasteItemsAction,
+  } = detailHandlers;
+
   return (
     <TodoListDetailView
       list={list}
       categories={categories}
-      {...detailHandlers}
+      onAddItemAction={onAddItemAction}
+      onToggleItemAction={onToggleItemAction}
+      onDeleteItemAction={onDeleteItemAction}
+      onDeleteListAction={onDeleteListAction}
+      onIndentItemAction={onIndentItemAction}
+      onOutdentItemAction={onOutdentItemAction}
+      onReorderItemsAction={onReorderItemsAction}
+      onUpdateItemTitleAction={onUpdateItemTitleAction}
+      onUpdateListTitleAction={onUpdateListTitleAction}
+      onUpdateItemBgColorAction={onUpdateItemBgColorAction}
+      onUpdateAllItemsBgColorAction={onUpdateAllItemsBgColorAction}
+      onCutItemsAction={onCutItemsAction}
+      onPasteItemsAction={onPasteItemsAction}
+      onUpdateListAddItemPositionAction={onUpdateListAddItemPositionAction}
+      onUpdateListHideCompletedAction={onUpdateListHideCompletedAction}
+      onUpdateItemCategoryAction={onUpdateItemCategoryAction}
       clipboardItems={clipboardItems}
-      onSetClipboard={onSetClipboard}
-      onClearClipboard={onClearClipboard}
+      onSetClipboardAction={onSetClipboardAction}
+      onClearClipboardAction={onClearClipboardAction}
       historyControls={
         <TodoListUndoRedoControls
-          onUndo={undo}
-          onRedo={redo}
+          onUndoAction={undo}
+          onRedoAction={redo}
           canUndo={canUndo}
           canRedo={canRedo}
         />

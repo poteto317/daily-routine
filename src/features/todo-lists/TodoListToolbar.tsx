@@ -12,13 +12,13 @@ export type TodoListToolbarProps = {
   hideCompleted: boolean;
   showBulkColorPicker: boolean;
   hasCompletedItems: boolean;
-  onToggleBulkColorPicker: () => void;
-  onCloseBulkColorPicker: () => void;
-  onUpdateAllItemsBgColor: (
+  onToggleBulkColorPickerAction: () => void;
+  onCloseBulkColorPickerAction: () => void;
+  onUpdateAllItemsBgColorAction: (
     bgColor: TodoItemBgColorValue | undefined,
   ) => void;
-  onToggleListAddItemPosition: (nextPosition: "first" | "last") => void;
-  onToggleHideCompleted: () => void;
+  onToggleListAddItemPositionAction: (nextPosition: "first" | "last") => void;
+  onToggleHideCompletedAction: () => void;
   historyControls?: ReactNode;
 };
 
@@ -28,11 +28,11 @@ export const TodoListToolbar = ({
   hideCompleted,
   showBulkColorPicker,
   hasCompletedItems,
-  onToggleBulkColorPicker,
-  onCloseBulkColorPicker,
-  onUpdateAllItemsBgColor,
-  onToggleListAddItemPosition,
-  onToggleHideCompleted,
+  onToggleBulkColorPickerAction,
+  onCloseBulkColorPickerAction,
+  onUpdateAllItemsBgColorAction,
+  onToggleListAddItemPositionAction,
+  onToggleHideCompletedAction,
   historyControls,
 }: TodoListToolbarProps) => (
   <div className="mb-4 flex items-center justify-between">
@@ -40,21 +40,21 @@ export const TodoListToolbar = ({
       <TodoListBulkColorPicker
         items={items}
         showBulkColorPicker={showBulkColorPicker}
-        onToggle={onToggleBulkColorPicker}
-        onClose={onCloseBulkColorPicker}
-        onUpdateAllItemsBgColor={onUpdateAllItemsBgColor}
+        onToggleAction={onToggleBulkColorPickerAction}
+        onCloseAction={onCloseBulkColorPickerAction}
+        onUpdateAllItemsBgColorAction={onUpdateAllItemsBgColorAction}
       />
       {historyControls}
     </div>
     <div className="flex items-center gap-3">
       <AddItemPositionToggleButton
         addItemPosition={addItemPosition}
-        onToggle={onToggleListAddItemPosition}
+        onToggleAction={onToggleListAddItemPositionAction}
       />
       <TodoListCompletedVisibilityControls
         hasCompletedItems={hasCompletedItems}
         hideCompleted={hideCompleted}
-        onToggleHideCompleted={onToggleHideCompleted}
+        onToggleHideCompletedAction={onToggleHideCompletedAction}
       />
     </div>
   </div>

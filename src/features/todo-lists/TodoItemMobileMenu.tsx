@@ -13,23 +13,23 @@ type TodoItemMobileMenuProps = {
   maxIndent: number;
   sortModeActive: boolean;
   mobileMenuItemId: string | null;
-  toggleMobileMenu: (id: string) => void;
-  closeMobileMenu: () => void;
-  startEditItem: (id: string, title: string) => void;
-  onInsertAfter: () => void;
-  onOutdentItem: (listId: string, itemId: string) => void;
-  onIndentItem: (listId: string, itemId: string) => void;
-  onUpdateItemBgColor: (
+  toggleMobileMenuAction: (id: string) => void;
+  closeMobileMenuAction: () => void;
+  startEditItemAction: (id: string, title: string) => void;
+  onInsertAfterAction: () => void;
+  onOutdentItemAction: (listId: string, itemId: string) => void;
+  onIndentItemAction: (listId: string, itemId: string) => void;
+  onUpdateItemBgColorAction: (
     listId: string,
     itemId: string,
     bgColor: TodoItemBgColorValue | undefined,
   ) => void;
-  onUpdateItemCategory: (
+  onUpdateItemCategoryAction: (
     listId: string,
     itemId: string,
     categoryId: string | undefined,
   ) => void;
-  onDeleteItem: (listId: string, itemId: string, title: string) => void;
+  onDeleteItemAction: (listId: string, itemId: string, title: string) => void;
 };
 
 /**
@@ -42,8 +42,8 @@ type TodoItemMobileMenuProps = {
 export const TodoItemMobileTrigger = ({
   item,
   mobileMenuItemId,
-  toggleMobileMenu,
-}: Pick<TodoItemMobileMenuProps, "item" | "mobileMenuItemId" | "toggleMobileMenu">) => (
+  toggleMobileMenuAction,
+}: Pick<TodoItemMobileMenuProps, "item" | "mobileMenuItemId" | "toggleMobileMenuAction">) => (
   <div
     className="sm:hidden"
     data-mobile-menu
@@ -52,7 +52,7 @@ export const TodoItemMobileTrigger = ({
   >
     <button
       type="button"
-      onClick={() => toggleMobileMenu(item.id)}
+      onClick={() => toggleMobileMenuAction(item.id)}
       aria-label="アクションメニュー"
       aria-haspopup="true"
       aria-expanded={mobileMenuItemId === item.id}
@@ -78,15 +78,15 @@ export const TodoItemMobileDropdown = ({
   maxIndent,
   sortModeActive,
   mobileMenuItemId,
-  closeMobileMenu,
-  startEditItem,
-  onInsertAfter,
-  onOutdentItem,
-  onIndentItem,
-  onUpdateItemBgColor,
-  onUpdateItemCategory,
-  onDeleteItem,
-}: Omit<TodoItemMobileMenuProps, "toggleMobileMenu">) => {
+  closeMobileMenuAction,
+  startEditItemAction,
+  onInsertAfterAction,
+  onOutdentItemAction,
+  onIndentItemAction,
+  onUpdateItemBgColorAction,
+  onUpdateItemCategoryAction,
+  onDeleteItemAction,
+}: Omit<TodoItemMobileMenuProps, "toggleMobileMenuAction">) => {
   if (mobileMenuItemId !== item.id) return null;
 
   return (
@@ -99,8 +99,8 @@ export const TodoItemMobileDropdown = ({
       <button
         type="button"
         onClick={() => {
-          startEditItem(item.id, item.title);
-          closeMobileMenu();
+          startEditItemAction(item.id, item.title);
+          closeMobileMenuAction();
         }}
         className="w-full text-left px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 flex items-center gap-2"
       >
@@ -109,8 +109,8 @@ export const TodoItemMobileDropdown = ({
       <button
         type="button"
         onClick={() => {
-          onInsertAfter();
-          closeMobileMenu();
+          onInsertAfterAction();
+          closeMobileMenuAction();
         }}
         className="w-full text-left px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 flex items-center gap-2"
       >
@@ -119,8 +119,8 @@ export const TodoItemMobileDropdown = ({
       <button
         type="button"
         onClick={() => {
-          onOutdentItem(listId, item.id);
-          closeMobileMenu();
+          onOutdentItemAction(listId, item.id);
+          closeMobileMenuAction();
         }}
         disabled={currentIndent === 0 || sortModeActive}
         className="w-full text-left px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2"
@@ -130,8 +130,8 @@ export const TodoItemMobileDropdown = ({
       <button
         type="button"
         onClick={() => {
-          onIndentItem(listId, item.id);
-          closeMobileMenu();
+          onIndentItemAction(listId, item.id);
+          closeMobileMenuAction();
         }}
         disabled={currentIndent >= maxIndent || sortModeActive}
         className="w-full text-left px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2"
@@ -146,9 +146,9 @@ export const TodoItemMobileDropdown = ({
         <TodoItemColorSwatches
           selectedColor={item.bgColor}
           className="flex flex-wrap gap-1.5"
-          onSelect={(value) => {
-            onUpdateItemBgColor(listId, item.id, value);
-            closeMobileMenu();
+          onSelectAction={(value) => {
+            onUpdateItemBgColorAction(listId, item.id, value);
+            closeMobileMenuAction();
           }}
         />
       </div>
@@ -160,17 +160,17 @@ export const TodoItemMobileDropdown = ({
           categories={categories}
           selectedCategoryId={item.categoryId}
           className="flex flex-wrap gap-1.5"
-          onSelect={(categoryId) => {
-            onUpdateItemCategory(listId, item.id, categoryId);
-            closeMobileMenu();
+          onSelectAction={(categoryId) => {
+            onUpdateItemCategoryAction(listId, item.id, categoryId);
+            closeMobileMenuAction();
           }}
         />
       </div>
       <button
         type="button"
         onClick={() => {
-          onDeleteItem(listId, item.id, item.title);
-          closeMobileMenu();
+          onDeleteItemAction(listId, item.id, item.title);
+          closeMobileMenuAction();
         }}
         className="w-full text-left px-3 py-2 text-sm text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center gap-2"
       >

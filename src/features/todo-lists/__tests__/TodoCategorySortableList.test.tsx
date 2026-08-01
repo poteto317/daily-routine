@@ -39,20 +39,20 @@ const defaultProps: TodoCategorySortableListProps = {
     createCategory({ id: "cat-2", name: "プライベート" }),
   ],
   sensors: [],
-  onDragStart: jest.fn(),
-  onDragEnd: jest.fn(),
-  onDragCancel: jest.fn(),
+  onDragStartAction: jest.fn(),
+  onDragEndAction: jest.fn(),
+  onDragCancelAction: jest.fn(),
   editingCategoryId: null,
   editingCategoryNameValue: "",
-  onChangeNameValue: jest.fn(),
-  onCommitEdit: jest.fn(),
-  onCancelEdit: jest.fn(),
-  onStartEdit: jest.fn(),
+  onChangeNameValueAction: jest.fn(),
+  onCommitEditAction: jest.fn(),
+  onCancelEditAction: jest.fn(),
+  onStartEditAction: jest.fn(),
   colorEditingCategoryId: null,
-  onToggleColorPicker: jest.fn(),
-  onCloseColorPicker: jest.fn(),
-  onUpdateColor: jest.fn(),
-  onDelete: jest.fn(),
+  onToggleColorPickerAction: jest.fn(),
+  onCloseColorPickerAction: jest.fn(),
+  onUpdateColorAction: jest.fn(),
+  onDeleteAction: jest.fn(),
 };
 
 describe("TodoCategorySortableList", () => {
@@ -71,20 +71,20 @@ describe("TodoCategorySortableList", () => {
     expect(screen.getAllByLabelText("並び替え").length).toBe(2);
   });
 
-  it("編集ボタンをクリックするとonStartEditが呼ばれる", () => {
-    const onStartEdit = jest.fn();
+  it("編集ボタンをクリックするとonStartEditActionが呼ばれる", () => {
+    const onStartEditAction = jest.fn();
     render(
-      <TodoCategorySortableList {...defaultProps} onStartEdit={onStartEdit} />,
+      <TodoCategorySortableList {...defaultProps} onStartEditAction={onStartEditAction} />,
     );
     fireEvent.click(screen.getByLabelText("仕事 を編集"));
-    expect(onStartEdit).toHaveBeenCalledWith("cat-1", "仕事");
+    expect(onStartEditAction).toHaveBeenCalledWith("cat-1", "仕事");
   });
 
-  it("削除ボタンをクリックするとonDeleteが呼ばれる", () => {
-    const onDelete = jest.fn();
-    render(<TodoCategorySortableList {...defaultProps} onDelete={onDelete} />);
+  it("削除ボタンをクリックするとonDeleteActionが呼ばれる", () => {
+    const onDeleteAction = jest.fn();
+    render(<TodoCategorySortableList {...defaultProps} onDeleteAction={onDeleteAction} />);
     fireEvent.click(screen.getByLabelText("プライベート を削除"));
-    expect(onDelete).toHaveBeenCalledWith(defaultProps.categories[1]);
+    expect(onDeleteAction).toHaveBeenCalledWith(defaultProps.categories[1]);
   });
 
   it("editingCategoryIdが一致するカテゴリは編集用の入力欄を表示する", () => {

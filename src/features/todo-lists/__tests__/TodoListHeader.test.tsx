@@ -17,11 +17,11 @@ const defaultProps = {
   editingListTitle: false,
   editingListTitleValue: "テストリスト",
   listTitleInputRef: { current: null },
-  onChangeListTitleValue: jest.fn(),
-  onCommitEditListTitle: jest.fn(),
-  onCancelEditListTitle: jest.fn(),
-  onStartEditListTitle: jest.fn(),
-  onDeleteList: jest.fn(),
+  onChangeListTitleValueAction: jest.fn(),
+  onCommitEditListTitleAction: jest.fn(),
+  onCancelEditListTitleAction: jest.fn(),
+  onStartEditListTitleAction: jest.fn(),
+  onDeleteListAction: jest.fn(),
 };
 
 beforeEach(() => {
@@ -39,10 +39,10 @@ describe("TodoListHeader", () => {
     expect(screen.getByRole("button", { name: "リスト名を編集" })).toBeInTheDocument();
   });
 
-  it("編集ボタンクリックで onStartEditListTitle が呼ばれる", () => {
+  it("編集ボタンクリックで onStartEditListTitleAction が呼ばれる", () => {
     render(<TodoListHeader {...defaultProps} />);
     fireEvent.click(screen.getByRole("button", { name: "リスト名を編集" }));
-    expect(defaultProps.onStartEditListTitle).toHaveBeenCalledTimes(1);
+    expect(defaultProps.onStartEditListTitleAction).toHaveBeenCalledTimes(1);
   });
 
   it("editingListTitle=true のときテキスト入力フィールドを表示する", () => {
@@ -62,36 +62,36 @@ describe("TodoListHeader", () => {
     expect(screen.getByRole("textbox")).toHaveValue("変更中タイトル");
   });
 
-  it("入力変更で onChangeListTitleValue が呼ばれる", () => {
+  it("入力変更で onChangeListTitleValueAction が呼ばれる", () => {
     render(<TodoListHeader {...defaultProps} editingListTitle />);
     fireEvent.change(screen.getByRole("textbox"), {
       target: { value: "新タイトル" },
     });
-    expect(defaultProps.onChangeListTitleValue).toHaveBeenCalledWith("新タイトル");
+    expect(defaultProps.onChangeListTitleValueAction).toHaveBeenCalledWith("新タイトル");
   });
 
-  it("Enter キーで onCommitEditListTitle が呼ばれる", () => {
+  it("Enter キーで onCommitEditListTitleAction が呼ばれる", () => {
     render(<TodoListHeader {...defaultProps} editingListTitle />);
     fireEvent.keyDown(screen.getByRole("textbox"), { key: "Enter" });
-    expect(defaultProps.onCommitEditListTitle).toHaveBeenCalledTimes(1);
+    expect(defaultProps.onCommitEditListTitleAction).toHaveBeenCalledTimes(1);
   });
 
-  it("Escape キーで onCancelEditListTitle が呼ばれる", () => {
+  it("Escape キーで onCancelEditListTitleAction が呼ばれる", () => {
     render(<TodoListHeader {...defaultProps} editingListTitle />);
     fireEvent.keyDown(screen.getByRole("textbox"), { key: "Escape" });
-    expect(defaultProps.onCancelEditListTitle).toHaveBeenCalledTimes(1);
+    expect(defaultProps.onCancelEditListTitleAction).toHaveBeenCalledTimes(1);
   });
 
-  it("Blur で onCommitEditListTitle が呼ばれる", () => {
+  it("Blur で onCommitEditListTitleAction が呼ばれる", () => {
     render(<TodoListHeader {...defaultProps} editingListTitle />);
     fireEvent.blur(screen.getByRole("textbox"));
-    expect(defaultProps.onCommitEditListTitle).toHaveBeenCalledTimes(1);
+    expect(defaultProps.onCommitEditListTitleAction).toHaveBeenCalledTimes(1);
   });
 
-  it("削除ボタンクリックで onDeleteList が list を渡して呼ばれる", () => {
+  it("削除ボタンクリックで onDeleteListAction が list を渡して呼ばれる", () => {
     const list = createList();
     render(<TodoListHeader {...defaultProps} list={list} />);
     fireEvent.click(screen.getByRole("button", { name: "リストを削除" }));
-    expect(defaultProps.onDeleteList).toHaveBeenCalledWith(list);
+    expect(defaultProps.onDeleteListAction).toHaveBeenCalledWith(list);
   });
 });

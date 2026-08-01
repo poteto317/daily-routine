@@ -5,7 +5,7 @@ import texts from "../locales/ja.json";
 const defaultProps = {
   hasCompletedItems: true,
   hideCompleted: false,
-  onToggleHideCompleted: jest.fn(),
+  onToggleHideCompletedAction: jest.fn(),
 };
 
 beforeEach(() => {
@@ -45,10 +45,10 @@ describe("TodoListCompletedVisibilityControls", () => {
       ).toBeInTheDocument();
     });
 
-    it("完了済みトグルクリックで onToggleHideCompleted が呼ばれる", () => {
+    it("完了済みトグルクリックで onToggleHideCompletedAction が呼ばれる", () => {
       render(<TodoListCompletedVisibilityControls {...defaultProps} />);
       fireEvent.click(screen.getByRole("button", { name: "完了済みを表示" }));
-      expect(defaultProps.onToggleHideCompleted).toHaveBeenCalledTimes(1);
+      expect(defaultProps.onToggleHideCompletedAction).toHaveBeenCalledTimes(1);
     });
 
     it("hideCompleted=false のとき aria-pressed が false", () => {

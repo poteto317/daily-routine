@@ -5,9 +5,9 @@ import texts from "./locales/ja.json";
 
 type InlineInsertFormProps = {
   inputText: string;
-  onChangeText: (text: string) => void;
-  onAdd: () => void;
-  onCancel: () => void;
+  onChangeTextAction: (text: string) => void;
+  onAddAction: () => void;
+  onCancelAction: () => void;
 };
 
 /**
@@ -15,9 +15,9 @@ type InlineInsertFormProps = {
  */
 export const InlineInsertForm = ({
   inputText,
-  onChangeText,
-  onAdd,
-  onCancel,
+  onChangeTextAction,
+  onAddAction,
+  onCancelAction,
 }: InlineInsertFormProps) => (
   <li>
     <div
@@ -30,13 +30,13 @@ export const InlineInsertForm = ({
         autoFocus
         aria-label={texts.list.itemPlaceholder}
         value={inputText}
-        onChange={(e) => onChangeText(e.target.value)}
+        onChange={(e) => onChangeTextAction(e.target.value)}
         onKeyDown={(e) => {
           if (e.key === "Enter" && !isImeComposingKeyDown(e)) {
-            onAdd();
+            onAddAction();
           }
           if (e.key === "Escape") {
-            onCancel();
+            onCancelAction();
           }
         }}
         placeholder={texts.list.itemPlaceholder}
@@ -44,7 +44,7 @@ export const InlineInsertForm = ({
       />
       <button
         type="button"
-        onClick={onAdd}
+        onClick={onAddAction}
         disabled={!inputText.trim()}
         className="text-sm bg-teal-500 hover:bg-teal-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white px-3 py-1.5 rounded-lg font-medium transition-colors shrink-0"
       >
@@ -52,7 +52,7 @@ export const InlineInsertForm = ({
       </button>
       <button
         type="button"
-        onClick={onCancel}
+        onClick={onCancelAction}
         className="text-sm text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 px-2 transition-colors"
         aria-label="キャンセル"
       >

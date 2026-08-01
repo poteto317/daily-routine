@@ -4,8 +4,8 @@ import texts from "./locales/ja.json";
 
 export type TodoListClipboardBarProps = {
   clipboardCount: number;
-  onPaste: () => void;
-  onClearClipboard: () => void;
+  onPasteAction: () => void;
+  onClearClipboardAction: () => void;
 };
 
 /**
@@ -14,8 +14,8 @@ export type TodoListClipboardBarProps = {
  */
 export const TodoListClipboardBar = ({
   clipboardCount,
-  onPaste,
-  onClearClipboard,
+  onPasteAction,
+  onClearClipboardAction,
 }: TodoListClipboardBarProps) => (
   <div className="flex items-center justify-between gap-2 mb-4 p-3 bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-700 rounded-xl">
     <span className="text-sm text-amber-700 dark:text-amber-300 font-medium">
@@ -25,14 +25,14 @@ export const TodoListClipboardBar = ({
     <div className="flex gap-2">
       <button
         type="button"
-        onClick={onClearClipboard}
+        onClick={onClearClipboardAction}
         className="text-xs text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
       >
         {texts.list.cancelClipboardButton}
       </button>
       <button
         type="button"
-        onClick={onPaste}
+        onClick={onPasteAction}
         className="text-xs bg-amber-500 hover:bg-amber-600 text-white px-3 py-1 rounded-lg font-medium transition-colors"
       >
         📋 {texts.list.pasteButton}

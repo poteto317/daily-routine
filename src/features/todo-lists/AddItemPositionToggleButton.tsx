@@ -4,7 +4,7 @@ import texts from "./locales/ja.json";
 
 type AddItemPositionToggleButtonProps = {
   addItemPosition: "first" | "last" | undefined;
-  onToggle: (nextPosition: "first" | "last") => void;
+  onToggleAction: (nextPosition: "first" | "last") => void;
 };
 
 /**
@@ -13,7 +13,7 @@ type AddItemPositionToggleButtonProps = {
  */
 export const AddItemPositionToggleButton = ({
   addItemPosition,
-  onToggle,
+  onToggleAction,
 }: AddItemPositionToggleButtonProps) => {
   const isFirst = addItemPosition === "first";
   const nextPosition = isFirst ? "last" : "first";
@@ -22,7 +22,7 @@ export const AddItemPositionToggleButton = ({
     <button
       type="button"
       aria-pressed={isFirst}
-      onClick={() => onToggle(nextPosition)}
+      onClick={() => onToggleAction(nextPosition)}
       className={`text-xs transition-colors ${
         isFirst
           ? "text-teal-600 dark:text-teal-500 hover:text-teal-700"

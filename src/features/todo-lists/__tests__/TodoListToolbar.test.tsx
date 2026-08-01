@@ -26,11 +26,11 @@ const defaultProps = {
   hideCompleted: false,
   showBulkColorPicker: false,
   hasCompletedItems: false,
-  onToggleBulkColorPicker: jest.fn(),
-  onCloseBulkColorPicker: jest.fn(),
-  onUpdateAllItemsBgColor: jest.fn(),
-  onToggleListAddItemPosition: jest.fn(),
-  onToggleHideCompleted: jest.fn(),
+  onToggleBulkColorPickerAction: jest.fn(),
+  onCloseBulkColorPickerAction: jest.fn(),
+  onUpdateAllItemsBgColorAction: jest.fn(),
+  onToggleListAddItemPositionAction: jest.fn(),
+  onToggleHideCompletedAction: jest.fn(),
 };
 
 beforeEach(() => {
@@ -46,10 +46,10 @@ describe("TodoListToolbar", () => {
       ).toBeInTheDocument();
     });
 
-    it("一括背景色ボタンクリックで onToggleBulkColorPicker が呼ばれる", () => {
+    it("一括背景色ボタンクリックで onToggleBulkColorPickerAction が呼ばれる", () => {
       render(<TodoListToolbar {...defaultProps} />);
       fireEvent.click(screen.getByRole("button", { name: "一括背景色変更" }));
-      expect(defaultProps.onToggleBulkColorPicker).toHaveBeenCalledTimes(1);
+      expect(defaultProps.onToggleBulkColorPickerAction).toHaveBeenCalledTimes(1);
     });
 
     it("showBulkColorPicker=false のときカラーピッカーを非表示にする", () => {
@@ -64,11 +64,11 @@ describe("TodoListToolbar", () => {
       ).toBeInTheDocument();
     });
 
-    it("カラースウォッチ選択で onUpdateAllItemsBgColor と onCloseBulkColorPicker が呼ばれる", () => {
+    it("カラースウォッチ選択で onUpdateAllItemsBgColorAction と onCloseBulkColorPickerAction が呼ばれる", () => {
       render(<TodoListToolbar {...defaultProps} showBulkColorPicker />);
       fireEvent.click(screen.getByRole("radio", { name: "赤" }));
-      expect(defaultProps.onUpdateAllItemsBgColor).toHaveBeenCalledWith("bg-red-50");
-      expect(defaultProps.onCloseBulkColorPicker).toHaveBeenCalledTimes(1);
+      expect(defaultProps.onUpdateAllItemsBgColorAction).toHaveBeenCalledWith("bg-red-50");
+      expect(defaultProps.onCloseBulkColorPickerAction).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -118,7 +118,7 @@ describe("TodoListToolbar", () => {
         ...defaultProps,
         hasCompletedItems: true,
         hideCompleted: true,
-        onToggleHideCompleted: jest.fn(),
+        onToggleHideCompletedAction: jest.fn(),
       };
 
       render(<TodoListToolbar {...props} />);
@@ -127,7 +127,7 @@ describe("TodoListToolbar", () => {
         expect.objectContaining({
           hasCompletedItems: true,
           hideCompleted: true,
-          onToggleHideCompleted: props.onToggleHideCompleted,
+          onToggleHideCompletedAction: props.onToggleHideCompletedAction,
         }),
         undefined,
       );

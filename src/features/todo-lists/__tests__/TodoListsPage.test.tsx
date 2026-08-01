@@ -1159,7 +1159,7 @@ describe("TodoListsPage", () => {
       mockGetSelectedTodoListId.mockReturnValue("list-1");
     });
 
-    it("onDragEnd で異なるアイテム間なら onReorderItems が呼ばれ永続化される", async () => {
+    it("onDragEnd で異なるアイテム間なら onReorderItemsAction が呼ばれ永続化される", async () => {
       render(<TodoListsPage />);
 
       // DndContext が capture されていること
@@ -1187,7 +1187,7 @@ describe("TodoListsPage", () => {
       });
     });
 
-    it("onDragEnd で active と over が同一 id なら onReorderItems は呼ばれない", async () => {
+    it("onDragEnd で active と over が同一 id なら onReorderItemsAction は呼ばれない", async () => {
       render(<TodoListsPage />);
 
       act(() => {
@@ -1203,7 +1203,7 @@ describe("TodoListsPage", () => {
       });
     });
 
-    it("onDragEnd で over が null なら onReorderItems は呼ばれない", async () => {
+    it("onDragEnd で over が null なら onReorderItemsAction は呼ばれない", async () => {
       render(<TodoListsPage />);
 
       act(() => {

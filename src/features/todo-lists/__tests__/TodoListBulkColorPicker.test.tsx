@@ -13,9 +13,9 @@ const makeItem = (id: string, bgColor?: string): TodoListItem => ({
 const baseProps = {
   items: [],
   showBulkColorPicker: false,
-  onToggle: jest.fn(),
-  onClose: jest.fn(),
-  onUpdateAllItemsBgColor: jest.fn(),
+  onToggleAction: jest.fn(),
+  onCloseAction: jest.fn(),
+  onUpdateAllItemsBgColorAction: jest.fn(),
 };
 
 beforeEach(() => {
@@ -40,13 +40,13 @@ describe("TodoListBulkColorPicker", () => {
     expect(screen.getByRole("radiogroup")).toBeInTheDocument();
   });
 
-  it("ボタンクリックで onToggle が呼ばれる", () => {
+  it("ボタンクリックで onToggleAction が呼ばれる", () => {
     render(<TodoListBulkColorPicker {...baseProps} />);
     fireEvent.click(screen.getByRole("button", { name: "一括背景色変更" }));
-    expect(baseProps.onToggle).toHaveBeenCalledTimes(1);
+    expect(baseProps.onToggleAction).toHaveBeenCalledTimes(1);
   });
 
-  it("色を選択すると onUpdateAllItemsBgColor と onClose が呼ばれる", () => {
+  it("色を選択すると onUpdateAllItemsBgColorAction と onCloseAction が呼ばれる", () => {
     render(
       <TodoListBulkColorPicker
         {...baseProps}
@@ -55,8 +55,8 @@ describe("TodoListBulkColorPicker", () => {
       />,
     );
     fireEvent.click(screen.getByRole("radio", { name: "赤" }));
-    expect(baseProps.onUpdateAllItemsBgColor).toHaveBeenCalledWith("bg-red-50");
-    expect(baseProps.onClose).toHaveBeenCalledTimes(1);
+    expect(baseProps.onUpdateAllItemsBgColorAction).toHaveBeenCalledWith("bg-red-50");
+    expect(baseProps.onCloseAction).toHaveBeenCalledTimes(1);
   });
 
   describe("bulkSelected 計算", () => {

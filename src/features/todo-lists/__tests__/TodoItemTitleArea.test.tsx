@@ -13,10 +13,10 @@ describe("TodoItemTitleArea", () => {
     isEditing: false,
     editingTitle: "",
     isDragActive: false,
-    onChangeTitle: jest.fn(),
-    onCommitEdit: jest.fn(),
-    onCancelEdit: jest.fn(),
-    onToggle: jest.fn(),
+    onChangeTitleAction: jest.fn(),
+    onCommitEditAction: jest.fn(),
+    onCancelEditAction: jest.fn(),
+    onToggleAction: jest.fn(),
   };
 
   beforeEach(() => {
@@ -54,15 +54,15 @@ describe("TodoItemTitleArea", () => {
       expect(btn).toBeDisabled();
     });
 
-    it("タイトルボタンをクリックすると onToggle が呼ばれる", () => {
-      const onToggle = jest.fn();
+    it("タイトルボタンをクリックすると onToggleAction が呼ばれる", () => {
+      const onToggleAction = jest.fn();
       render(
-        <TodoItemTitleArea {...defaultProps} isEditing={false} onToggle={onToggle} />,
+        <TodoItemTitleArea {...defaultProps} isEditing={false} onToggleAction={onToggleAction} />,
       );
       fireEvent.click(
         screen.getByRole("button", { name: "「テストタスク」を完了にする" }),
       );
-      expect(onToggle).toHaveBeenCalledTimes(1);
+      expect(onToggleAction).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -101,62 +101,62 @@ describe("TodoItemTitleArea", () => {
       ).toBeInTheDocument();
     });
 
-    it("Enter キーで onCommitEdit が呼ばれる", () => {
-      const onCommitEdit = jest.fn();
+    it("Enter キーで onCommitEditAction が呼ばれる", () => {
+      const onCommitEditAction = jest.fn();
       render(
         <TodoItemTitleArea
           {...defaultProps}
           isEditing={true}
           editingTitle="テスト"
-          onCommitEdit={onCommitEdit}
+          onCommitEditAction={onCommitEditAction}
         />,
       );
       fireEvent.keyDown(screen.getByRole("textbox"), { key: "Enter" });
-      expect(onCommitEdit).toHaveBeenCalledTimes(1);
+      expect(onCommitEditAction).toHaveBeenCalledTimes(1);
     });
 
-    it("Escape キーで onCancelEdit が呼ばれる", () => {
-      const onCancelEdit = jest.fn();
+    it("Escape キーで onCancelEditAction が呼ばれる", () => {
+      const onCancelEditAction = jest.fn();
       render(
         <TodoItemTitleArea
           {...defaultProps}
           isEditing={true}
           editingTitle="テスト"
-          onCancelEdit={onCancelEdit}
+          onCancelEditAction={onCancelEditAction}
         />,
       );
       fireEvent.keyDown(screen.getByRole("textbox"), { key: "Escape" });
-      expect(onCancelEdit).toHaveBeenCalledTimes(1);
+      expect(onCancelEditAction).toHaveBeenCalledTimes(1);
     });
 
-    it("blur で onCommitEdit が呼ばれる", () => {
-      const onCommitEdit = jest.fn();
+    it("blur で onCommitEditAction が呼ばれる", () => {
+      const onCommitEditAction = jest.fn();
       render(
         <TodoItemTitleArea
           {...defaultProps}
           isEditing={true}
           editingTitle="テスト"
-          onCommitEdit={onCommitEdit}
+          onCommitEditAction={onCommitEditAction}
         />,
       );
       fireEvent.blur(screen.getByRole("textbox"));
-      expect(onCommitEdit).toHaveBeenCalledTimes(1);
+      expect(onCommitEditAction).toHaveBeenCalledTimes(1);
     });
 
-    it("テキスト変更で onChangeTitle が呼ばれる", () => {
-      const onChangeTitle = jest.fn();
+    it("テキスト変更で onChangeTitleAction が呼ばれる", () => {
+      const onChangeTitleAction = jest.fn();
       render(
         <TodoItemTitleArea
           {...defaultProps}
           isEditing={true}
           editingTitle=""
-          onChangeTitle={onChangeTitle}
+          onChangeTitleAction={onChangeTitleAction}
         />,
       );
       fireEvent.change(screen.getByRole("textbox"), {
         target: { value: "新しいタイトル" },
       });
-      expect(onChangeTitle).toHaveBeenCalledWith("新しいタイトル");
+      expect(onChangeTitleAction).toHaveBeenCalledWith("新しいタイトル");
     });
   });
 });
