@@ -94,6 +94,42 @@ describe("TodoListManagementItem", () => {
     expect(onCommitEditAction).toHaveBeenCalledTimes(1);
   });
 
+  it("IME変換中のEnterではonCommitEditActionを呼ばない", () => {
+    const onCommitEditAction = jest.fn();
+    render(
+      <TodoListManagementItem
+        {...defaultProps}
+        editingListId="list-1"
+        editingListTitleValue="テスト"
+        onCommitEditAction={onCommitEditAction}
+      />,
+    );
+    fireEvent.keyDown(screen.getByDisplayValue("テスト"), {
+      key: "Enter",
+      nativeEvent: { isComposing: true },
+      isComposing: true,
+    });
+    expect(onCommitEditAction).not.toHaveBeenCalled();
+  });
+
+  it("IME変換確定のEnter（keyCode 229）でもonCommitEditActionを呼ばない", () => {
+    const onCommitEditAction = jest.fn();
+    render(
+      <TodoListManagementItem
+        {...defaultProps}
+        editingListId="list-1"
+        editingListTitleValue="テスト"
+        onCommitEditAction={onCommitEditAction}
+      />,
+    );
+    fireEvent.keyDown(screen.getByDisplayValue("テスト"), {
+      key: "Enter",
+      keyCode: 229,
+      which: 229,
+    });
+    expect(onCommitEditAction).not.toHaveBeenCalled();
+  });
+
   it("編集中に Escape キーで onCancelEditAction が呼ばれる", () => {
     const onCancelEditAction = jest.fn();
     render(

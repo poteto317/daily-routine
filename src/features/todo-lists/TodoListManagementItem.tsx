@@ -3,6 +3,7 @@
 import type { TodoList } from "./types";
 import { isTodoListVisible } from "./todoListVisibilityPredicate";
 import texts from "./locales/ja.json";
+import { isImeComposingKeyDown } from "@/lib/isImeComposingKeyDown";
 
 type Props = {
   list: TodoList;
@@ -43,7 +44,7 @@ export const TodoListManagementItem = ({
           onChange={(e) => onChangeTitleValueAction(e.target.value)}
           onBlur={onCommitEditAction}
           onKeyDown={(e) => {
-            if (e.key === "Enter") onCommitEditAction();
+            if (e.key === "Enter" && !isImeComposingKeyDown(e)) onCommitEditAction();
             if (e.key === "Escape") onCancelEditAction();
           }}
           className="flex-1 min-w-0 text-sm px-2 py-0.5 border-b-2 border-teal-400 bg-transparent text-gray-800 dark:text-gray-100 focus:outline-none"
