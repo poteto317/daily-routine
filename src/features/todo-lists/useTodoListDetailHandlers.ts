@@ -1,7 +1,4 @@
-import {
-  createDeleteItemConfirmMessage,
-  createDeleteListConfirmMessage,
-} from "./todoListDetailConfirmMessages";
+import { createDeleteItemConfirmMessage } from "./todoListDetailConfirmMessages";
 import { createTodoListDetailHandlers } from "./todoListDetailCrudHandlerFactory";
 import type { PersistTodoLists, TodoList } from "./types";
 
@@ -25,7 +22,6 @@ export const useTodoListDetailHandlers = ({
       lists,
       persist,
       deleteItemConfirmTemplate: createDeleteItemConfirmMessage,
-      deleteListConfirmTemplate: createDeleteListConfirmMessage,
     }),
   };
 };

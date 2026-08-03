@@ -2,7 +2,6 @@ import type { TodoList } from "../types";
 import {
   createAddTodoItemHandler,
   createDeleteTodoItemHandler,
-  createDeleteTodoListHandler,
   createIndentTodoItemHandler,
   createOutdentTodoItemHandler,
   createPersistTodoListsAction,
@@ -26,7 +25,6 @@ jest.mock("../pageStateActions", () => ({
 
 jest.mock("../todoListDeletePersistActions", () => ({
   deleteTodoItemAndPersist: jest.fn(),
-  deleteTodoListAndPersist: jest.fn(),
 }));
 
 import { persistTodoLists } from "../todoListPersistence";
@@ -37,10 +35,7 @@ import {
   outdentTodoItemAndPersist,
   toggleTodoItemAndPersist,
 } from "../pageStateActions";
-import {
-  deleteTodoItemAndPersist,
-  deleteTodoListAndPersist,
-} from "../todoListDeletePersistActions";
+import { deleteTodoItemAndPersist } from "../todoListDeletePersistActions";
 
 const baseList: TodoList = {
   id: "list-1",
@@ -77,11 +72,6 @@ describe("todoListDetailStateActions", () => {
   it("各 item/list handler が pageState action を組み立てる", () => {
     const persist = jest.fn();
 
-    createDeleteTodoListHandler({
-      lists: [baseList],
-      persist,
-      deleteListConfirmTemplate: (title) => `delete-list:${title}`,
-    })(baseList);
     createAddTodoItemHandler({ lists: [baseList], persist })(
       "list-1",
       "New Task",
@@ -104,12 +94,6 @@ describe("todoListDetailStateActions", () => {
       "item-1",
     );
 
-    expect(deleteTodoListAndPersist).toHaveBeenCalledWith({
-      lists: [baseList],
-      list: baseList,
-      message: "delete-list:Inbox",
-      persist,
-    });
     expect(addTodoItemAndPersist).toHaveBeenCalledWith({
       lists: [baseList],
       listId: "list-1",

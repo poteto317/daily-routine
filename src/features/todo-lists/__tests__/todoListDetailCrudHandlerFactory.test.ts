@@ -22,7 +22,6 @@ jest.mock("../todoListDetailCategoryHandlers", () => ({
 }));
 
 jest.mock("../todoListDetailListHandlers", () => ({
-  createDeleteTodoListHandler: jest.fn(),
   createUpdateListTitleHandler: jest.fn(),
   createUpdateListAddItemPositionHandler: jest.fn(),
   createUpdateListHideCompletedHandler: jest.fn(),
@@ -45,7 +44,6 @@ import {
 } from "../todoListDetailBgColorHandlers";
 import { createUpdateTodoItemCategoryHandler } from "../todoListDetailCategoryHandlers";
 import {
-  createDeleteTodoListHandler,
   createUpdateListAddItemPositionHandler,
   createUpdateListHideCompletedHandler,
   createUpdateListTitleHandler,
@@ -70,7 +68,6 @@ describe("todoListDetailCrudHandlerFactory", () => {
     const onAddItem = jest.fn();
     const onToggleItem = jest.fn();
     const onDeleteItem = jest.fn();
-    const onDeleteList = jest.fn();
     const onIndentItem = jest.fn();
     const onOutdentItem = jest.fn();
     const onReorderItems = jest.fn();
@@ -87,7 +84,6 @@ describe("todoListDetailCrudHandlerFactory", () => {
     (createAddTodoItemHandler as jest.Mock).mockReturnValue(onAddItem);
     (createToggleTodoItemHandler as jest.Mock).mockReturnValue(onToggleItem);
     (createDeleteTodoItemHandler as jest.Mock).mockReturnValue(onDeleteItem);
-    (createDeleteTodoListHandler as jest.Mock).mockReturnValue(onDeleteList);
     (createIndentTodoItemHandler as jest.Mock).mockReturnValue(onIndentItem);
     (createOutdentTodoItemHandler as jest.Mock).mockReturnValue(onOutdentItem);
     (createReorderTodoItemsHandler as jest.Mock).mockReturnValue(
@@ -119,21 +115,17 @@ describe("todoListDetailCrudHandlerFactory", () => {
 
     const deleteItemConfirmTemplate = (title: string) =>
       `アイテム「${title}」を削除しますか？`;
-    const deleteListConfirmTemplate = (title: string) =>
-      `リスト「${title}」を削除しますか？`;
 
     const handlers = createTodoListDetailHandlers({
       lists: [list],
       persist,
       deleteItemConfirmTemplate,
-      deleteListConfirmTemplate,
     });
 
     expect(handlers).toEqual({
       onAddItem,
       onToggleItem,
       onDeleteItem,
-      onDeleteList,
       onIndentItem,
       onOutdentItem,
       onReorderItems,
@@ -152,13 +144,11 @@ describe("todoListDetailCrudHandlerFactory", () => {
   it("各ハンドラファクトリに lists と persist を渡す", () => {
     const persist = jest.fn();
     const deleteItemConfirmTemplate = (title: string) => `delete:${title}`;
-    const deleteListConfirmTemplate = (title: string) => `list:${title}`;
 
     createTodoListDetailHandlers({
       lists: [list],
       persist,
       deleteItemConfirmTemplate,
-      deleteListConfirmTemplate,
     });
 
     expect(createAddTodoItemHandler).toHaveBeenCalledWith({
@@ -224,15 +214,11 @@ describe("todoListDetailCrudHandlerFactory", () => {
     const deleteItemConfirmTemplate = jest.fn(
       (title: string) => `item:${title}`,
     );
-    const deleteListConfirmTemplate = jest.fn(
-      (title: string) => `list:${title}`,
-    );
 
     createTodoListDetailHandlers({
       lists: [list],
       persist,
       deleteItemConfirmTemplate,
-      deleteListConfirmTemplate,
     });
 
     expect(createDeleteTodoItemHandler).toHaveBeenCalledWith({
@@ -240,24 +226,17 @@ describe("todoListDetailCrudHandlerFactory", () => {
       persist,
       deleteItemConfirmTemplate,
     });
-    expect(createDeleteTodoListHandler).toHaveBeenCalledWith({
-      lists: [list],
-      persist,
-      deleteListConfirmTemplate,
-    });
   });
 
   it("空リストでも正常に動作する", () => {
     const persist = jest.fn();
     const deleteItemConfirmTemplate = (title: string) => title;
-    const deleteListConfirmTemplate = (title: string) => title;
 
     expect(() =>
       createTodoListDetailHandlers({
         lists: [],
         persist,
         deleteItemConfirmTemplate,
-        deleteListConfirmTemplate,
       }),
     ).not.toThrow();
 

@@ -15,7 +15,6 @@ import {
 } from "./todoListDetailBgColorHandlers";
 import { createUpdateTodoItemCategoryHandler } from "./todoListDetailCategoryHandlers";
 import {
-  createDeleteTodoListHandler,
   createUpdateListAddItemPositionHandler,
   createUpdateListHideCompletedHandler,
   createUpdateListTitleHandler,
@@ -26,14 +25,8 @@ export const createTodoListDetailHandlers = (params: {
   lists: TodoList[];
   persist: PersistTodoLists;
   deleteItemConfirmTemplate: (title: string) => string;
-  deleteListConfirmTemplate: (title: string) => string;
 }) => {
-  const {
-    lists,
-    persist,
-    deleteItemConfirmTemplate,
-    deleteListConfirmTemplate,
-  } = params;
+  const { lists, persist, deleteItemConfirmTemplate } = params;
 
   return {
     onAddItem: createAddTodoItemHandler({ lists, persist }),
@@ -42,11 +35,6 @@ export const createTodoListDetailHandlers = (params: {
       lists,
       persist,
       deleteItemConfirmTemplate,
-    }),
-    onDeleteList: createDeleteTodoListHandler({
-      lists,
-      persist,
-      deleteListConfirmTemplate,
     }),
     onIndentItem: createIndentTodoItemHandler({ lists, persist }),
     onOutdentItem: createOutdentTodoItemHandler({ lists, persist }),

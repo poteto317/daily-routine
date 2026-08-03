@@ -23,7 +23,6 @@ export type TodoListDetailViewProps = {
   onAddItemAction: (listId: string, title: string, insertAfterIndex?: number) => void;
   onToggleItemAction: (listId: string, itemId: string) => void;
   onDeleteItemAction: (listId: string, itemId: string, title: string) => void;
-  onDeleteListAction: (list: TodoList) => void;
   onIndentItemAction: (listId: string, itemId: string) => void;
   onOutdentItemAction: (listId: string, itemId: string) => void;
   onReorderItemsAction: (listId: string, fromIndex: number, toIndex: number) => void;
@@ -59,7 +58,6 @@ export const TodoListDetailView = ({
   onAddItemAction,
   onToggleItemAction,
   onDeleteItemAction,
-  onDeleteListAction,
   onIndentItemAction,
   onOutdentItemAction,
   onReorderItemsAction,
@@ -181,7 +179,6 @@ export const TodoListDetailView = ({
             onCommitEditListTitleAction={commitEditListTitle}
             onCancelEditListTitleAction={cancelEditListTitle}
             onStartEditListTitleAction={startEditListTitle}
-            onDeleteListAction={onDeleteListAction}
           />
 
           <TodoListProgressBar

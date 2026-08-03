@@ -1,18 +1,11 @@
-import {
-  deleteTodoItemAndPersist,
-  deleteTodoListAndPersist,
-} from "../todoListDeletePersistActions";
+import { deleteTodoItemAndPersist } from "../todoListDeletePersistActions";
 import type { TodoList, TodoListItem } from "../types";
 
 jest.mock("../todoListConfirmDeleteActions", () => ({
-  confirmAndDeleteTodoList: jest.fn(),
   confirmAndDeleteTodoItem: jest.fn(),
 }));
 
-import {
-  confirmAndDeleteTodoList,
-  confirmAndDeleteTodoItem,
-} from "../todoListConfirmDeleteActions";
+import { confirmAndDeleteTodoItem } from "../todoListConfirmDeleteActions";
 
 const createItem = (overrides: Partial<TodoListItem> = {}): TodoListItem => ({
   id: "item-1",
@@ -33,110 +26,6 @@ const createList = (overrides: Partial<TodoList> = {}): TodoList => ({
 
 beforeEach(() => {
   jest.clearAllMocks();
-});
-
-describe("deleteTodoListAndPersist", () => {
-  it("確認OKなら persist を呼び true を返す", () => {
-    const lists = [createList(), createList({ id: "list-2", title: "Work" })];
-    const persist = jest.fn();
-    (confirmAndDeleteTodoList as jest.Mock).mockReturnValue([lists[1]]);
-
-    const result = deleteTodoListAndPersist({
-      lists,
-      list: lists[0],
-      message: "削除しますか？",
-      persist,
-      confirmDelete: jest.fn(() => true),
-    });
-
-    expect(result).toBe(true);
-    expect(persist).toHaveBeenCalledWith([lists[1]]);
-  });
-
-  it("確認キャンセルなら persist を呼ばず false を返す", () => {
-    const lists = [createList()];
-    const persist = jest.fn();
-    (confirmAndDeleteTodoList as jest.Mock).mockReturnValue(null);
-
-    const result = deleteTodoListAndPersist({
-      lists,
-      list: lists[0],
-      message: "削除しますか？",
-      persist,
-      confirmDelete: jest.fn(() => false),
-    });
-
-    expect(result).toBe(false);
-    expect(persist).not.toHaveBeenCalled();
-  });
-
-  it("confirmAndDeleteTodoList に正しいパラメータを渡す", () => {
-    const lists = [createList()];
-    const persist = jest.fn();
-    const confirmDelete = jest.fn(() => true);
-    (confirmAndDeleteTodoList as jest.Mock).mockReturnValue([]);
-
-    deleteTodoListAndPersist({
-      lists,
-      list: lists[0],
-      message: "msg",
-      persist,
-      confirmDelete,
-    });
-
-    expect(confirmAndDeleteTodoList).toHaveBeenCalledWith({
-      lists,
-      list: lists[0],
-      message: "msg",
-      confirmDelete,
-    });
-  });
-
-  it("confirmDelete を省略すると window.confirm をデフォルトで使う（呼び出し確認）", () => {
-    const lists = [createList()];
-    const persist = jest.fn();
-    jest.spyOn(window, "confirm").mockReturnValue(false);
-    // 渡された confirmDelete を実際に呼び出すよう mock を設定
-    (confirmAndDeleteTodoList as jest.Mock).mockImplementation(
-      ({
-        confirmDelete,
-        message,
-      }: {
-        confirmDelete: (m: string) => boolean;
-        message: string;
-      }) => {
-        confirmDelete(message);
-        return null;
-      },
-    );
-
-    deleteTodoListAndPersist({
-      lists,
-      list: lists[0],
-      message: "msg",
-      persist,
-    });
-
-    expect(window.confirm).toHaveBeenCalledWith("msg");
-    expect(persist).not.toHaveBeenCalled();
-  });
-
-  it("persist に confirmAndDeleteTodoList の戻り値をそのまま渡す", () => {
-    const lists = [createList()];
-    const persist = jest.fn();
-    const remaining = [createList({ id: "list-2" })];
-    (confirmAndDeleteTodoList as jest.Mock).mockReturnValue(remaining);
-
-    deleteTodoListAndPersist({
-      lists,
-      list: lists[0],
-      message: "msg",
-      persist,
-      confirmDelete: jest.fn(() => true),
-    });
-
-    expect(persist).toHaveBeenCalledWith(remaining);
-  });
 });
 
 describe("deleteTodoItemAndPersist", () => {

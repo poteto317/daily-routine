@@ -7,14 +7,10 @@ jest.mock("../todoListDetailCrudHandlerFactory", () => ({
 
 jest.mock("../todoListDetailConfirmMessages", () => ({
   createDeleteItemConfirmMessage: jest.fn((t: string) => `item:${t}`),
-  createDeleteListConfirmMessage: jest.fn((t: string) => `list:${t}`),
 }));
 
 import { createTodoListDetailHandlers } from "../todoListDetailCrudHandlerFactory";
-import {
-  createDeleteItemConfirmMessage,
-  createDeleteListConfirmMessage,
-} from "../todoListDetailConfirmMessages";
+import { createDeleteItemConfirmMessage } from "../todoListDetailConfirmMessages";
 
 describe("useTodoListDetailHandlers", () => {
   const list = {
@@ -34,7 +30,6 @@ describe("useTodoListDetailHandlers", () => {
       onAddItem: jest.fn(),
       onToggleItem: jest.fn(),
       onDeleteItem: jest.fn(),
-      onDeleteList: jest.fn(),
       onIndentItem: jest.fn(),
       onOutdentItem: jest.fn(),
       onReorderItems: jest.fn(),
@@ -56,7 +51,6 @@ describe("useTodoListDetailHandlers", () => {
       lists: [list],
       persist,
       deleteItemConfirmTemplate: expect.any(Function),
-      deleteListConfirmTemplate: expect.any(Function),
     });
     expect(result.current.detailHandlers).toBe(detailHandlers);
   });
@@ -86,19 +80,5 @@ describe("useTodoListDetailHandlers", () => {
     call.deleteItemConfirmTemplate("Task A");
 
     expect(createDeleteItemConfirmMessage).toHaveBeenCalledWith("Task A");
-  });
-
-  it("deleteListConfirmTemplate は createDeleteListConfirmMessage に委譲する", () => {
-    const persist = jest.fn();
-    (createTodoListDetailHandlers as jest.Mock).mockReturnValue({});
-
-    renderHook(() =>
-      useTodoListDetailHandlers({ list, lists: [list], persist }),
-    );
-
-    const call = (createTodoListDetailHandlers as jest.Mock).mock.calls[0][0];
-    call.deleteListConfirmTemplate("Inbox");
-
-    expect(createDeleteListConfirmMessage).toHaveBeenCalledWith("Inbox");
   });
 });

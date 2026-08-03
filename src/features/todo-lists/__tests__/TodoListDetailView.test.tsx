@@ -54,7 +54,6 @@ const defaultProps = {
   onAddItemAction: jest.fn(),
   onToggleItemAction: jest.fn(),
   onDeleteItemAction: jest.fn(),
-  onDeleteListAction: jest.fn(),
   onIndentItemAction: jest.fn(),
   onOutdentItemAction: jest.fn(),
   onReorderItemsAction: jest.fn(),
