@@ -20,9 +20,7 @@
     "editTitlePlaceholder": "リスト名を入力"
   },
   "list": {
-    "deleteListButton": "リストを削除",
     "editListTitleLabel": "リスト名を編集",
-    "deleteListConfirm": "「{title}」を削除しますか？この操作は元に戻せません。",
     "itemPlaceholder": "Todoを追加...",
     "addButton": "追加",
     "emptyMessage": "まだTodoがありません",

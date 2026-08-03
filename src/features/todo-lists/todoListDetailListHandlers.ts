@@ -1,6 +1,5 @@
 import { normalizeTitle } from "./todoListTitleNormalization";
 import type { PersistTodoLists, TodoList } from "./types";
-import { deleteTodoListAndPersist } from "./todoListDeletePersistActions";
 import { updateTodoListTitleAndPersist } from "./todoListTitleUpdatePersistAction";
 import {
   updateTodoListAddItemPositionAndPersist,
@@ -10,23 +9,6 @@ import {
 type TodoListsHandlerArgs = {
   lists: TodoList[];
   persist: PersistTodoLists;
-};
-
-export const createDeleteTodoListHandler = ({
-  lists,
-  persist,
-  deleteListConfirmTemplate,
-}: TodoListsHandlerArgs & {
-  deleteListConfirmTemplate: (title: string) => string;
-}) => {
-  return (target: TodoList) => {
-    deleteTodoListAndPersist({
-      lists,
-      list: target,
-      message: deleteListConfirmTemplate(target.title),
-      persist,
-    });
-  };
 };
 
 export const createUpdateListTitleHandler = ({

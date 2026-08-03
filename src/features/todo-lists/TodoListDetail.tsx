@@ -35,7 +35,6 @@ export const TodoListDetail = ({
     onAddItem: onAddItemAction,
     onToggleItem: onToggleItemAction,
     onDeleteItem: onDeleteItemAction,
-    onDeleteList: onDeleteListAction,
     onIndentItem: onIndentItemAction,
     onOutdentItem: onOutdentItemAction,
     onReorderItems: onReorderItemsAction,
@@ -57,7 +56,6 @@ export const TodoListDetail = ({
       onAddItemAction={onAddItemAction}
       onToggleItemAction={onToggleItemAction}
       onDeleteItemAction={onDeleteItemAction}
-      onDeleteListAction={onDeleteListAction}
       onIndentItemAction={onIndentItemAction}
       onOutdentItemAction={onOutdentItemAction}
       onReorderItemsAction={onReorderItemsAction}

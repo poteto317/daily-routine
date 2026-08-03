@@ -21,7 +21,6 @@ const defaultProps = {
   onCommitEditListTitleAction: jest.fn(),
   onCancelEditListTitleAction: jest.fn(),
   onStartEditListTitleAction: jest.fn(),
-  onDeleteListAction: jest.fn(),
 };
 
 beforeEach(() => {
@@ -88,10 +87,10 @@ describe("TodoListHeader", () => {
     expect(defaultProps.onCommitEditListTitleAction).toHaveBeenCalledTimes(1);
   });
 
-  it("削除ボタンクリックで onDeleteListAction が list を渡して呼ばれる", () => {
-    const list = createList();
-    render(<TodoListHeader {...defaultProps} list={list} />);
-    fireEvent.click(screen.getByRole("button", { name: "リストを削除" }));
-    expect(defaultProps.onDeleteListAction).toHaveBeenCalledWith(list);
+  it("削除ボタンは表示されない（リスト削除は管理画面からのみ行う）", () => {
+    render(<TodoListHeader {...defaultProps} />);
+    expect(
+      screen.queryByRole("button", { name: "リストを削除" }),
+    ).not.toBeInTheDocument();
   });
 });

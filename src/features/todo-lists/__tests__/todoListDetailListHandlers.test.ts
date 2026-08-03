@@ -1,17 +1,11 @@
 import type { TodoList } from "../types";
-import { deleteTodoListAndPersist } from "../todoListDeletePersistActions";
 import { updateTodoListTitleAndPersist } from "../todoListTitleUpdatePersistAction";
 import {
-  createDeleteTodoListHandler,
   createUpdateListHideCompletedHandler,
   createUpdateListTitleHandler,
 } from "../todoListDetailListHandlers";
 import { normalizeTitle } from "../todoListTitleNormalization";
 import { updateTodoListHideCompletedAndPersist } from "../pageStateActions";
-
-jest.mock("../todoListDeletePersistActions", () => ({
-  deleteTodoListAndPersist: jest.fn(),
-}));
 
 jest.mock("../todoListTitleUpdatePersistAction", () => ({
   updateTodoListTitleAndPersist: jest.fn(),
@@ -41,23 +35,6 @@ describe("todoListDetailListHandlers", () => {
       typeof import("../todoListTitleNormalization")
     >("../todoListTitleNormalization");
     (normalizeTitle as jest.Mock).mockImplementation(real.normalizeTitle);
-  });
-
-  it("list 削除 handler が確認文言を組み立てる", () => {
-    const persist = jest.fn();
-
-    createDeleteTodoListHandler({
-      lists: [baseList],
-      persist,
-      deleteListConfirmTemplate: (title) => `delete-list:${title}`,
-    })(baseList);
-
-    expect(deleteTodoListAndPersist).toHaveBeenCalledWith({
-      lists: [baseList],
-      list: baseList,
-      message: "delete-list:Inbox",
-      persist,
-    });
   });
 
   it("list title 更新 handler が trim と空文字 guard を行う", () => {

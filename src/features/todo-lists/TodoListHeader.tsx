@@ -14,12 +14,11 @@ export type TodoListHeaderProps = {
   onCommitEditListTitleAction: () => void;
   onCancelEditListTitleAction: () => void;
   onStartEditListTitleAction: () => void;
-  onDeleteListAction: (list: TodoList) => void;
 };
 
 /**
  * Todo リストのヘッダー。
- * タイトル表示・インライン編集・削除ボタンを担当する。
+ * タイトル表示・インライン編集を担当する。
  */
 export const TodoListHeader = ({
   list,
@@ -30,9 +29,8 @@ export const TodoListHeader = ({
   onCommitEditListTitleAction,
   onCancelEditListTitleAction,
   onStartEditListTitleAction,
-  onDeleteListAction,
 }: TodoListHeaderProps) => (
-  <div className="flex items-start justify-between gap-2 mb-6">
+  <div className="flex items-start gap-2 mb-6">
     {editingListTitle ? (
       <input
         ref={listTitleInputRef}
@@ -62,12 +60,5 @@ export const TodoListHeader = ({
         </button>
       </div>
     )}
-    <button
-      type="button"
-      onClick={() => onDeleteListAction(list)}
-      className="shrink-0 text-xs text-gray-400 hover:text-red-500 dark:text-gray-500 dark:hover:text-red-400 transition-colors whitespace-nowrap"
-    >
-      {texts.list.deleteListButton}
-    </button>
   </div>
 );
