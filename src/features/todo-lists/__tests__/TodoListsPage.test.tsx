@@ -103,13 +103,19 @@ const getItemTitleButton = (title: string) =>
 
 const LONG_PRESS_DELAY_MS = 550;
 
-/** タイトルボタンを長押しして選択状態をトグルする（TodoItemTitleButtonのuseLongPress既定値500msに対応）。 */
-const selectItem = async (title: string) => {
+/**
+ * タイトルボタンを長押しして選択状態をトグルする（TodoItemTitleButtonのuseLongPress既定値500msに対応）。
+ * fake timersで長押しの経過時間をシミュレートし、実時間の待機を発生させない。
+ * 呼び出し前後でreal timersに戻すため、後続のwaitFor等には影響しない。
+ */
+const selectItem = (title: string) => {
   const btn = getItemTitleButton(title);
+  jest.useFakeTimers();
   fireEvent.pointerDown(btn, { clientX: 0, clientY: 0 });
-  await act(async () => {
-    await new Promise((resolve) => setTimeout(resolve, LONG_PRESS_DELAY_MS));
+  act(() => {
+    jest.advanceTimersByTime(LONG_PRESS_DELAY_MS);
   });
+  jest.useRealTimers();
   fireEvent.pointerUp(btn);
 };
 const mockSetSelectedTodoListId = setSelectedTodoListId as jest.MockedFunction<
