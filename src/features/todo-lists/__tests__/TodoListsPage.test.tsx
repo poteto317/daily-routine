@@ -4,7 +4,6 @@ import {
   render,
   screen,
   waitFor,
-  within,
 } from "@testing-library/react";
 import { TodoListsPage } from "../TodoListsPage";
 
@@ -97,8 +96,22 @@ const mockGetSelectedTodoListId = getSelectedTodoListId as jest.MockedFunction<
   typeof getSelectedTodoListId
 >;
 
-const getSelectCheckbox = (title: string) =>
-  screen.getByRole("checkbox", { name: `「${title}」を選択` });
+const getItemTitleButton = (title: string) =>
+  screen.getByRole("button", {
+    name: (accessibleName) => accessibleName.startsWith(`「${title}」`),
+  });
+
+const LONG_PRESS_DELAY_MS = 550;
+
+/** タイトルボタンを長押しして選択状態をトグルする（TodoItemTitleButtonのuseLongPress既定値500msに対応）。 */
+const selectItem = async (title: string) => {
+  const btn = getItemTitleButton(title);
+  fireEvent.pointerDown(btn, { clientX: 0, clientY: 0 });
+  await act(async () => {
+    await new Promise((resolve) => setTimeout(resolve, LONG_PRESS_DELAY_MS));
+  });
+  fireEvent.pointerUp(btn);
+};
 const mockSetSelectedTodoListId = setSelectedTodoListId as jest.MockedFunction<
   typeof setSelectedTodoListId
 >;
@@ -848,17 +861,16 @@ describe("TodoListsPage", () => {
 
     render(<TodoListsPage />);
 
-    fireEvent.click(getSelectCheckbox("Task 1"));
+    await selectItem("Task 1");
 
     await waitFor(() => {
       expect(screen.getByText("1件選択中")).toBeInTheDocument();
     });
     expect(screen.getByText(/切り取り/)).toBeInTheDocument();
 
-    expect(within(getSelectCheckbox("Task 1")).getByText("✓")).toHaveAttribute(
-      "aria-hidden",
-      "true",
-    );
+    expect(
+      screen.getByRole("button", { name: "「Task 1」を完了にする（選択中）" }),
+    ).toBeInTheDocument();
   });
 
   it("選択解除ボタンで選択バーが消える", async () => {
@@ -867,7 +879,7 @@ describe("TodoListsPage", () => {
 
     render(<TodoListsPage />);
 
-    fireEvent.click(getSelectCheckbox("Task 1"));
+    await selectItem("Task 1");
     await waitFor(() => {
       expect(screen.getByText("1件選択中")).toBeInTheDocument();
     });
@@ -885,7 +897,7 @@ describe("TodoListsPage", () => {
 
     render(<TodoListsPage />);
 
-    fireEvent.click(getSelectCheckbox("Task 1"));
+    await selectItem("Task 1");
     await waitFor(() => {
       expect(screen.getByText(/切り取り/)).toBeInTheDocument();
     });
@@ -907,7 +919,7 @@ describe("TodoListsPage", () => {
 
     render(<TodoListsPage />);
 
-    fireEvent.click(getSelectCheckbox("Task 1"));
+    await selectItem("Task 1");
     await waitFor(() =>
       expect(screen.getByText(/切り取り/)).toBeInTheDocument(),
     );
@@ -932,7 +944,7 @@ describe("TodoListsPage", () => {
 
     render(<TodoListsPage />);
 
-    fireEvent.click(getSelectCheckbox("Task 1"));
+    await selectItem("Task 1");
     await waitFor(() =>
       expect(screen.getByText(/切り取り/)).toBeInTheDocument(),
     );
@@ -1081,7 +1093,7 @@ describe("TodoListsPage", () => {
     const { rerender } = render(<TodoListsPage />);
 
     // list-1 の Task 1 を選択して切り取り
-    fireEvent.click(getSelectCheckbox("Task 1"));
+    await selectItem("Task 1");
     await waitFor(() =>
       expect(screen.getByText(/切り取り/)).toBeInTheDocument(),
     );

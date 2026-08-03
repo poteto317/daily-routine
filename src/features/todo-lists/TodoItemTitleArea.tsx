@@ -10,10 +10,12 @@ type TodoItemTitleAreaProps = {
   isEditing: boolean;
   editingTitle: string;
   isDragActive: boolean;
+  isSelected: boolean;
   onChangeTitleAction: (v: string) => void;
   onCommitEditAction: () => void;
   onCancelEditAction: () => void;
   onToggleAction: () => void;
+  onLongPressAction: () => void;
 };
 
 /**
@@ -27,10 +29,12 @@ export const TodoItemTitleArea = ({
   isEditing,
   editingTitle,
   isDragActive,
+  isSelected,
   onChangeTitleAction,
   onCommitEditAction,
   onCancelEditAction,
   onToggleAction,
+  onLongPressAction,
 }: TodoItemTitleAreaProps) => {
   if (isEditing) {
     return (
@@ -56,7 +60,9 @@ export const TodoItemTitleArea = ({
       title={title}
       isCompleted={isCompleted}
       isDragActive={isDragActive}
+      isSelected={isSelected}
       onToggleAction={onToggleAction}
+      onLongPressAction={onLongPressAction}
     />
   );
 };
