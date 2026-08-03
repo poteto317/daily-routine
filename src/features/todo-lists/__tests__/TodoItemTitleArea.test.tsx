@@ -13,10 +13,12 @@ describe("TodoItemTitleArea", () => {
     isEditing: false,
     editingTitle: "",
     isDragActive: false,
+    isSelected: false,
     onChangeTitleAction: jest.fn(),
     onCommitEditAction: jest.fn(),
     onCancelEditAction: jest.fn(),
     onToggleAction: jest.fn(),
+    onLongPressAction: jest.fn(),
   };
 
   beforeEach(() => {
@@ -63,6 +65,13 @@ describe("TodoItemTitleArea", () => {
         screen.getByRole("button", { name: "「テストタスク」を完了にする" }),
       );
       expect(onToggleAction).toHaveBeenCalledTimes(1);
+    });
+
+    it("isSelected=true のとき aria-label に（選択中）が反映される", () => {
+      render(<TodoItemTitleArea {...defaultProps} isEditing={false} isSelected={true} />);
+      expect(
+        screen.getByRole("button", { name: "「テストタスク」を完了にする（選択中）" }),
+      ).toBeInTheDocument();
     });
   });
 

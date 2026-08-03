@@ -9,7 +9,9 @@ const meta = {
     layout: "padded",
   },
   args: {
+    isSelected: false,
     onToggleAction: fn(),
+    onLongPressAction: fn(),
     onCommitEditAction: fn(),
     onCancelEditAction: fn(),
     onChangeTitleAction: fn(),

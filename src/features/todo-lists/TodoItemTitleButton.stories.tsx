@@ -9,7 +9,9 @@ const meta = {
     layout: "padded",
   },
   args: {
+    isSelected: false,
     onToggleAction: fn(),
+    onLongPressAction: fn(),
   },
 } satisfies Meta<typeof TodoItemTitleButton>;
 
@@ -29,6 +31,15 @@ export const Completed: Story = {
     title: "牛乳を買う",
     isCompleted: true,
     isDragActive: false,
+  },
+};
+
+export const Selected: Story = {
+  args: {
+    title: "牛乳を買う",
+    isCompleted: false,
+    isDragActive: false,
+    isSelected: true,
   },
 };
 

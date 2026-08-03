@@ -20,7 +20,6 @@ import {
   TodoItemMobileDropdown,
 } from "./TodoItemMobileMenu";
 import { TodoItemIndentButtons } from "./TodoItemIndentButtons";
-import { TodoItemSelectCheckbox } from "./TodoItemSelectCheckbox";
 import { TodoItemDragHandle } from "./TodoItemDragHandle";
 import { TodoItemCollapseButton } from "./TodoItemCollapseButton";
 
@@ -157,13 +156,6 @@ export const SortableTodoListItem = ({
                 : `${getTodoItemBgClass(displayBgColor)} border-gray-100 dark:border-gray-500`
           }`}
         >
-          <TodoItemSelectCheckbox
-            itemId={item.id}
-            title={item.title}
-            isSelected={isSelected}
-            onToggleSelectAction={toggleSelectItemAction}
-          />
-
           {/* 並び替え（DnD）はブロックのアンカー同士でのみ許可される
               （todoListItemReorderAction.ts参照）。アンカーでないアイテム
               （他アイテムの子孫）は並び替えの起点・着地点として常に拒否
@@ -199,10 +191,12 @@ export const SortableTodoListItem = ({
             isEditing={editingItemId === item.id}
             editingTitle={editingItemTitle}
             isDragActive={isDragActive}
+            isSelected={isSelected}
             onChangeTitleAction={setEditingItemTitleAction}
             onCommitEditAction={() => commitEditItemAction(item.id)}
             onCancelEditAction={cancelEditItemAction}
             onToggleAction={() => onToggleItemAction(list.id, item.id)}
+            onLongPressAction={() => toggleSelectItemAction(item.id)}
           />
 
           {editingItemId !== item.id && (
