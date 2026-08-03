@@ -1,12 +1,23 @@
 import { act, renderHook } from "@testing-library/react";
 import { useLongPress } from "../useLongPress";
 
-type PointerEventLike = { clientX: number; clientY: number; pointerType: string };
+type PointerEventLike = {
+  clientX: number;
+  clientY: number;
+  pointerType: string;
+  button: number;
+};
 
-const pointerEvent = (x = 0, y = 0, pointerType = "touch"): PointerEventLike => ({
+const pointerEvent = (
+  x = 0,
+  y = 0,
+  pointerType = "touch",
+  button = 0,
+): PointerEventLike => ({
   clientX: x,
   clientY: y,
   pointerType,
+  button,
 });
 
 describe("useLongPress", () => {
@@ -224,6 +235,64 @@ describe("useLongPress", () => {
         result.current.onClick();
       });
     }).not.toThrow();
+  });
+
+  describe("マウスの非primaryボタン", () => {
+    it("マウスの右クリック（button=2）では長押しタイマーが開始されず、onLongPressは発火しない", () => {
+      const onLongPress = jest.fn();
+      const { result } = renderHook(() => useLongPress({ onLongPress, delay: 500 }));
+
+      act(() => {
+        result.current.onPointerDown(pointerEvent(0, 0, "mouse", 2) as never);
+      });
+      act(() => {
+        jest.advanceTimersByTime(500);
+      });
+
+      expect(onLongPress).not.toHaveBeenCalled();
+    });
+
+    it("マウスの中クリック（button=1）でも長押しタイマーが開始されない", () => {
+      const onLongPress = jest.fn();
+      const { result } = renderHook(() => useLongPress({ onLongPress, delay: 500 }));
+
+      act(() => {
+        result.current.onPointerDown(pointerEvent(0, 0, "mouse", 1) as never);
+      });
+      act(() => {
+        jest.advanceTimersByTime(500);
+      });
+
+      expect(onLongPress).not.toHaveBeenCalled();
+    });
+
+    it("マウスの左クリック（button=0、primary）では通常どおり長押しが機能する", () => {
+      const onLongPress = jest.fn();
+      const { result } = renderHook(() => useLongPress({ onLongPress, delay: 500 }));
+
+      act(() => {
+        result.current.onPointerDown(pointerEvent(0, 0, "mouse", 0) as never);
+      });
+      act(() => {
+        jest.advanceTimersByTime(500);
+      });
+
+      expect(onLongPress).toHaveBeenCalledTimes(1);
+    });
+
+    it("touch由来の押下はbuttonの値に関わらず長押しが機能する", () => {
+      const onLongPress = jest.fn();
+      const { result } = renderHook(() => useLongPress({ onLongPress, delay: 500 }));
+
+      act(() => {
+        result.current.onPointerDown(pointerEvent(0, 0, "touch", 0) as never);
+      });
+      act(() => {
+        jest.advanceTimersByTime(500);
+      });
+
+      expect(onLongPress).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe("disabled", () => {

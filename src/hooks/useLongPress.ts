@@ -59,6 +59,9 @@ export const useLongPress = ({
   const handlePointerDown = useCallback(
     (e: ReactPointerEvent<HTMLElement>) => {
       if (disabled) return;
+      // マウスの右クリック/中クリック（非primaryボタン）では長押しを開始しない。
+      // 右ボタン等を押し続けた場合に意図せず選択トグルが発火するのを防ぐ。
+      if (e.pointerType === "mouse" && e.button !== 0) return;
       startPositionRef.current = { x: e.clientX, y: e.clientY };
       lastPointerTypeRef.current = e.pointerType;
       triggeredRef.current = false;
