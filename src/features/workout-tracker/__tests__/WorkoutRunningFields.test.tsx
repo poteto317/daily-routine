@@ -14,6 +14,19 @@ describe("WorkoutRunningFields", () => {
     expect(screen.getByText(texts.form.caloriesLabel)).toBeInTheDocument();
   });
 
+  it("消費カロリー欄はmin=1で0以下の入力を抑制する", () => {
+    render(
+      <WorkoutRunningFields
+        caloriesBurned=""
+        onChangeCaloriesBurnedAction={jest.fn()}
+      />,
+    );
+
+    expect(
+      screen.getByPlaceholderText(texts.form.caloriesPlaceholder),
+    ).toHaveAttribute("min", "1");
+  });
+
   it("消費カロリー欄を入力するとonChangeCaloriesBurnedActionが呼ばれる", () => {
     const onChangeCaloriesBurnedAction = jest.fn();
     render(

@@ -24,6 +24,14 @@ describe("WorkoutStrengthFields", () => {
     expect(screen.getByText(texts.form.setsLabel)).toBeInTheDocument();
   });
 
+  it("重量欄はstep=0.1で小数入力を受け付ける", () => {
+    render(<WorkoutStrengthFields {...defaultProps} />);
+
+    expect(
+      screen.getByPlaceholderText(texts.form.weightPlaceholder),
+    ).toHaveAttribute("step", "0.1");
+  });
+
   it("重量欄を入力するとonChangeWeightKgActionが呼ばれる", () => {
     const onChangeWeightKgAction = jest.fn();
     render(

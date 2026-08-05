@@ -1,6 +1,5 @@
-import type { WorkoutLabel } from "@/types/routine";
+import type { NewWorkoutRecordInput, WorkoutLabel } from "@/types/routine";
 import texts from "./locales/ja.json";
-import type { NewWorkoutRecordInput } from "./storageRecords";
 
 export type WorkoutRecordFormValues = {
   label: WorkoutLabel;
@@ -20,7 +19,7 @@ const toPositiveNumber = (value: string): number | null => {
   const trimmed = value.trim();
   if (trimmed === "") return null;
   const num = Number(trimmed);
-  if (Number.isNaN(num) || num <= 0) return null;
+  if (!Number.isFinite(num) || num <= 0) return null;
   return num;
 };
 

@@ -31,6 +31,7 @@ export const WorkoutStrengthFields = ({
       <input
         type="number"
         inputMode="decimal"
+        step="0.1"
         value={weightKg}
         onChange={(e) => onChangeWeightKgAction(e.target.value)}
         placeholder={texts.form.weightPlaceholder}

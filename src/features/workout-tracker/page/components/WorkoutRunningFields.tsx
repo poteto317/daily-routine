@@ -22,6 +22,7 @@ export const WorkoutRunningFields = ({
     <input
       type="number"
       inputMode="numeric"
+      min="1"
       value={caloriesBurned}
       onChange={(e) => onChangeCaloriesBurnedAction(e.target.value)}
       placeholder={texts.form.caloriesPlaceholder}

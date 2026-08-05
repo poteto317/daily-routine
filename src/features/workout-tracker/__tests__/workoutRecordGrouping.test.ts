@@ -1,17 +1,20 @@
-import type { WorkoutRecord } from "@/types/routine";
+import type { StrengthWorkoutRecord } from "@/types/routine";
 import { groupWorkoutRecordsByDate } from "../workoutRecordGrouping";
 
-const createRecord = (overrides: Partial<WorkoutRecord> = {}): WorkoutRecord => ({
-  id: "id-1",
-  date: "2026-03-01",
-  label: "strength",
-  exerciseName: "ベンチプレス",
-  weightKg: 60,
-  reps: 10,
-  createdAt: "2026-03-01T00:00:00.000Z",
-  updatedAt: "2026-03-01T00:00:00.000Z",
-  ...overrides,
-} as WorkoutRecord);
+const createRecord = (
+  overrides: Partial<StrengthWorkoutRecord> = {},
+): StrengthWorkoutRecord =>
+  ({
+    id: "id-1",
+    date: "2026-03-01",
+    label: "strength",
+    exerciseName: "ベンチプレス",
+    weightKg: 60,
+    reps: 10,
+    createdAt: "2026-03-01T00:00:00.000Z",
+    updatedAt: "2026-03-01T00:00:00.000Z",
+    ...overrides,
+  }) satisfies StrengthWorkoutRecord;
 
 describe("groupWorkoutRecordsByDate", () => {
   it("空配列なら空配列を返す", () => {

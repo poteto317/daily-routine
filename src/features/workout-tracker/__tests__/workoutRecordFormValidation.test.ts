@@ -94,6 +94,48 @@ describe("validateWorkoutRecordForm", () => {
       });
     });
 
+    it("重量がInfinityなら無効", () => {
+      const result = validateWorkoutRecordForm({
+        ...baseValues,
+        label: "strength",
+        weightKg: "Infinity",
+        reps: "10",
+      });
+
+      expect(result).toEqual({
+        valid: false,
+        error: texts.form.errorWeightRequired,
+      });
+    });
+
+    it("重量が指数表記でInfinityにオーバーフローするなら無効", () => {
+      const result = validateWorkoutRecordForm({
+        ...baseValues,
+        label: "strength",
+        weightKg: "1e400",
+        reps: "10",
+      });
+
+      expect(result).toEqual({
+        valid: false,
+        error: texts.form.errorWeightRequired,
+      });
+    });
+
+    it("回数がInfinityなら無効", () => {
+      const result = validateWorkoutRecordForm({
+        ...baseValues,
+        label: "strength",
+        weightKg: "60",
+        reps: "Infinity",
+      });
+
+      expect(result).toEqual({
+        valid: false,
+        error: texts.form.errorRepsRequired,
+      });
+    });
+
     it("重量が0以下なら無効", () => {
       const result = validateWorkoutRecordForm({
         ...baseValues,
@@ -178,6 +220,19 @@ describe("validateWorkoutRecordForm", () => {
       expect(result).toEqual({
         valid: false,
         error: texts.form.errorDateRequired,
+      });
+    });
+
+    it("消費カロリーがInfinityなら無効", () => {
+      const result = validateWorkoutRecordForm({
+        ...baseValues,
+        label: "running",
+        caloriesBurned: "Infinity",
+      });
+
+      expect(result).toEqual({
+        valid: false,
+        error: texts.form.errorCaloriesRequired,
       });
     });
 
