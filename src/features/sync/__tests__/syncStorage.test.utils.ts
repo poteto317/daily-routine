@@ -7,6 +7,7 @@ import * as routineStorage from "@/features/routine/storage";
 import * as settingsStorage from "@/features/settings/storage";
 import * as todoListsStorage from "@/features/todo-lists/storage";
 import * as weightTrackerStorage from "@/features/weight-tracker/storage";
+import * as workoutTrackerStorage from "@/features/workout-tracker/storage";
 import * as workTrackerStorage from "@/features/work-tracker/storage";
 import type { SyncPayload } from "../sync/types";
 
@@ -41,6 +42,10 @@ const storageReadMocks: StorageReadMockMap = {
     (workTrackerStorage.getWorkTemplates as jest.Mock).mockReturnValue(value),
   weightHistory: (value) =>
     (weightTrackerStorage.getWeightHistory as jest.Mock).mockReturnValue(value),
+  workoutRecordHistory: (value) =>
+    (workoutTrackerStorage.getWorkoutRecordHistory as jest.Mock).mockReturnValue(
+      value,
+    ),
   journalHistory: (value) =>
     (journalStorage.getJournalHistory as jest.Mock).mockReturnValue(value),
   budgetData: (value) =>
@@ -84,6 +89,10 @@ const storageSaveAssertions: StorageSaveAssertionMap = {
     expect(workTrackerStorage.saveWorkTemplates).toHaveBeenCalledWith(value),
   weightHistory: (value) =>
     expect(weightTrackerStorage.saveWeightHistory).toHaveBeenCalledWith(value),
+  workoutRecordHistory: (value) =>
+    expect(workoutTrackerStorage.saveWorkoutRecordHistory).toHaveBeenCalledWith(
+      value,
+    ),
   journalHistory: (value) =>
     expect(journalStorage.saveJournalHistory).toHaveBeenCalledWith(value),
   budgetData: (value) =>
@@ -119,6 +128,8 @@ const storageReadAssertions: StorageReadAssertionMap = {
     expect(workTrackerStorage.getWorkTemplates).toHaveBeenCalled(),
   weightHistory: () =>
     expect(weightTrackerStorage.getWeightHistory).toHaveBeenCalled(),
+  workoutRecordHistory: () =>
+    expect(workoutTrackerStorage.getWorkoutRecordHistory).toHaveBeenCalled(),
   journalHistory: () =>
     expect(journalStorage.getJournalHistory).toHaveBeenCalled(),
   budgetData: () => expect(budgetStorage.getBudgetData).toHaveBeenCalled(),

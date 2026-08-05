@@ -49,6 +49,7 @@ export const VISIBLE_FEATURE_ITEMS = [
   { key: "pomodoro", label: "ポモドーロ", icon: "🍅" },
   { key: "worktracker", label: "作業記録", icon: "💼" },
   { key: "weightTracker", label: "体重記録", icon: "⚖️" },
+  { key: "workoutTracker", label: "運動記録", icon: "💪" },
   { key: "meal", label: "食事記録", icon: "🍽️" },
   { key: "budget", label: "家計簿", icon: "💰" },
   { key: "weather", label: "天気予報", icon: "🌤️" },

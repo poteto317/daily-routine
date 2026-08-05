@@ -15,6 +15,7 @@ export interface AppSettings {
     pomodoro?: boolean;
     worktracker?: boolean;
     weightTracker?: boolean;
+    workoutTracker?: boolean;
     meal?: boolean;
     budget?: boolean;
     weather?: boolean;

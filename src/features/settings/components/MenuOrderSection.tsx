@@ -17,6 +17,7 @@ const REORDERABLE_MENU_IDS = new Set([
   "pomodoro",
   "worktracker",
   "weight-tracker",
+  "workout-tracker",
   "meal",
   "budget",
   "weather",

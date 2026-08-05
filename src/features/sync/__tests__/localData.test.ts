@@ -32,6 +32,10 @@ jest.mock("@/features/weight-tracker/storage", () => ({
   getWeightHistory: jest.fn(() => ({})),
   saveWeightHistory: jest.fn(),
 }));
+jest.mock("@/features/workout-tracker/storage", () => ({
+  getWorkoutRecordHistory: jest.fn(() => ({})),
+  saveWorkoutRecordHistory: jest.fn(),
+}));
 jest.mock("@/features/journal/storage", () => ({
   getJournalHistory: jest.fn(() => ({})),
   saveJournalHistory: jest.fn(),
