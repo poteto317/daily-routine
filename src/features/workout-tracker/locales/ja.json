@@ -1,0 +1,38 @@
+{
+  "page": {
+    "title": "💪 運動記録",
+    "confirmDeleteTemplate": "「{name}」の記録を削除しますか？"
+  },
+  "form": {
+    "title": "記録を追加",
+    "labelStrength": "🏋️ 筋トレ",
+    "labelRunning": "🏃 ランニング",
+    "dateLabel": "日付",
+    "exerciseNameLabel": "種目名",
+    "exerciseNamePlaceholder": "例: ベンチプレス",
+    "weightLabel": "重量 (kg)",
+    "weightPlaceholder": "例: 60",
+    "repsLabel": "回数",
+    "repsPlaceholder": "例: 10",
+    "setsLabel": "セット数（任意）",
+    "setsPlaceholder": "例: 3",
+    "caloriesLabel": "消費カロリー (kcal)",
+    "caloriesPlaceholder": "例: 300",
+    "addButton": "追加",
+    "errorExerciseNameRequired": "種目名を入力してください",
+    "errorWeightRequired": "重量を入力してください",
+    "errorRepsRequired": "回数を入力してください",
+    "errorCaloriesRequired": "消費カロリーを入力してください"
+  },
+  "historyList": {
+    "title": "📋 記録履歴",
+    "empty": "まだ記録がありません"
+  },
+  "historyItem": {
+    "weightUnit": "kg",
+    "setsUnit": "セット",
+    "repsUnit": "回",
+    "caloriesUnit": "kcal",
+    "deleteAriaLabel": "削除"
+  }
+}
