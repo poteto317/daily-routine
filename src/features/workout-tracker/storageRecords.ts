@@ -14,7 +14,7 @@ export const addWorkoutRecord = (
     id: generateId("workout"),
     createdAt: now,
     updatedAt: now,
-  } as WorkoutRecord;
+  } satisfies WorkoutRecord;
 
   history[input.date] = [...(history[input.date] ?? []), record];
   saveWorkoutRecordHistory(history);

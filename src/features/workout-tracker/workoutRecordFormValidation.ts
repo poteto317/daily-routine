@@ -89,6 +89,10 @@ export const validateWorkoutRecordForm = (
     return { valid: false, error: texts.form.errorExerciseNameRequired };
   }
 
+  if (!values.date) {
+    return { valid: false, error: texts.form.errorDateRequired };
+  }
+
   return values.label === "strength"
     ? validateStrengthWorkoutForm(values, exerciseName)
     : validateRunningWorkoutForm(values, exerciseName);

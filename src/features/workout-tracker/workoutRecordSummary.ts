@@ -8,7 +8,7 @@ import texts from "./locales/ja.json";
 export const formatWorkoutRecordSummary = (record: WorkoutRecord): string => {
   if (record.label === "strength") {
     const base = `${record.weightKg}${texts.historyItem.weightUnit} × ${record.reps}${texts.historyItem.repsUnit}`;
-    return record.sets
+    return record.sets !== undefined
       ? `${base} × ${record.sets}${texts.historyItem.setsUnit}`
       : base;
   }

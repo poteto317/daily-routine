@@ -33,6 +33,22 @@ describe("formatWorkoutRecordSummary", () => {
     expect(formatWorkoutRecordSummary(record)).toBe("60kg × 10回 × 3セット");
   });
 
+  it("strengthはセット数が0でも「重量×回数×セット数」の形式（0を真偽値判定で除外しない）", () => {
+    const record: WorkoutRecord = {
+      id: "1",
+      date: "2026-03-01",
+      label: "strength",
+      exerciseName: "ベンチプレス",
+      weightKg: 60,
+      reps: 10,
+      sets: 0,
+      createdAt: "2026-03-01T00:00:00.000Z",
+      updatedAt: "2026-03-01T00:00:00.000Z",
+    };
+
+    expect(formatWorkoutRecordSummary(record)).toBe("60kg × 10回 × 0セット");
+  });
+
   it("runningは消費カロリーのみの形式", () => {
     const record: WorkoutRecord = {
       id: "1",

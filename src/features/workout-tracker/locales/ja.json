@@ -20,6 +20,7 @@
     "caloriesPlaceholder": "例: 300",
     "addButton": "追加",
     "errorExerciseNameRequired": "種目名を入力してください",
+    "errorDateRequired": "日付を入力してください",
     "errorWeightRequired": "重量を入力してください",
     "errorRepsRequired": "回数を入力してください",
     "errorCaloriesRequired": "消費カロリーを入力してください"

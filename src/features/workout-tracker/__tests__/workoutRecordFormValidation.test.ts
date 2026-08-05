@@ -79,6 +79,21 @@ describe("validateWorkoutRecordForm", () => {
       });
     });
 
+    it("日付が空なら無効", () => {
+      const result = validateWorkoutRecordForm({
+        ...baseValues,
+        label: "strength",
+        date: "",
+        weightKg: "60",
+        reps: "10",
+      });
+
+      expect(result).toEqual({
+        valid: false,
+        error: texts.form.errorDateRequired,
+      });
+    });
+
     it("重量が0以下なら無効", () => {
       const result = validateWorkoutRecordForm({
         ...baseValues,
@@ -149,6 +164,20 @@ describe("validateWorkoutRecordForm", () => {
       expect(result).toEqual({
         valid: false,
         error: texts.form.errorCaloriesRequired,
+      });
+    });
+
+    it("日付が空なら無効", () => {
+      const result = validateWorkoutRecordForm({
+        ...baseValues,
+        label: "running",
+        date: "",
+        caloriesBurned: "300",
+      });
+
+      expect(result).toEqual({
+        valid: false,
+        error: texts.form.errorDateRequired,
       });
     });
 
