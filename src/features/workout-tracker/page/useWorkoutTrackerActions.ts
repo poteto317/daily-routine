@@ -32,7 +32,7 @@ export const useWorkoutTrackerActions = ({
     (record: WorkoutRecord) => {
       createDeleteWorkoutRecordHandler({
         reload,
-        confirmDelete: (message) => window.confirm(message),
+        confirmDelete: window.confirm,
       })(record);
     },
     [reload],

@@ -4,5 +4,4 @@ export {
   addWorkoutRecord,
   deleteWorkoutRecord,
   getAllWorkoutRecords,
-  type NewWorkoutRecordInput,
 } from "@/features/workout-tracker/storage";
