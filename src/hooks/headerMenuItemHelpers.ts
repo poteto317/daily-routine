@@ -114,6 +114,7 @@ type FeatureMenuId =
   | "pomodoro"
   | "worktracker"
   | "weight-tracker"
+  | "workout-tracker"
   | "meal"
   | "budget"
   | "weather"
@@ -130,6 +131,7 @@ const FEATURE_KEY_MAP: Record<FeatureMenuId, keyof VisibleFeatures> = {
   pomodoro: "pomodoro",
   worktracker: "worktracker",
   "weight-tracker": "weightTracker",
+  "workout-tracker": "workoutTracker",
   meal: "meal",
   budget: "budget",
   weather: "weather",

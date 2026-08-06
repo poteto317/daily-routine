@@ -77,6 +77,16 @@
         }
       },
       {
+        "id": "workout-tracker",
+        "label": "運動記録",
+        "icon": "💪",
+        "route": "workout-tracker",
+        "badge": {
+          "text": "BETA",
+          "color": "bg-orange-500"
+        }
+      },
+      {
         "id": "pomodoro",
         "label": "ポモドーロ",
         "icon": "🍅",

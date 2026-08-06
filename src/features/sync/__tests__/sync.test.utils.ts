@@ -40,6 +40,7 @@ jest.mock("@/features/settings/storage");
 jest.mock("@/features/pomodoro/storage");
 jest.mock("@/features/work-tracker/storage");
 jest.mock("@/features/weight-tracker/storage");
+jest.mock("@/features/workout-tracker/storage");
 jest.mock("@/features/journal/storage");
 jest.mock("@/features/budget/storage");
 jest.mock("@/features/meal/storage");

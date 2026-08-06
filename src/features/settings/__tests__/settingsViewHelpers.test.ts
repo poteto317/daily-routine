@@ -32,6 +32,7 @@ describe("settings view helpers", () => {
       calendar: true,
       meal: false,
       weightTracker: false,
+      workoutTracker: false,
       worktracker: true,
       pomodoro: true,
       journal: true,

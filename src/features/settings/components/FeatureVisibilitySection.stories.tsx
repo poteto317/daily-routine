@@ -24,6 +24,7 @@ const allEnabled: VisibleFeaturesState = {
   pomodoro: true,
   worktracker: true,
   weightTracker: true,
+  workoutTracker: true,
   meal: true,
   budget: true,
   weather: true,

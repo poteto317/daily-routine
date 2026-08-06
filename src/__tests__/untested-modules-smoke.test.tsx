@@ -52,6 +52,8 @@ describe("untested modules smoke", () => {
     "../features/weight-tracker/WeightTrackerPage",
     "../features/work-tracker/index",
     "../features/work-tracker/WorkTrackerPage",
+    "../features/workout-tracker/index",
+    "../features/workout-tracker/WorkoutTrackerPage",
     "../hooks/usePWAInstaller",
     "../hooks/useThemeEffect",
     "../layouts/index",

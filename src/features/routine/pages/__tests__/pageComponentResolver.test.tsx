@@ -28,4 +28,8 @@ describe("pageComponentResolver", () => {
   it("家計簿の月次サマリーページはコンポーネントを解決できる", () => {
     expect(resolvePageComponent("budget-summary")).toBeDefined();
   });
+
+  it("運動記録ページはコンポーネントを解決できる", () => {
+    expect(resolvePageComponent("workout-tracker")).toBeDefined();
+  });
 });

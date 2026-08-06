@@ -45,3 +45,12 @@ export type {
 } from "./weather";
 
 export type { WeightHistory, WeightRecord } from "./weight";
+
+export type {
+  NewWorkoutRecordInput,
+  RunningWorkoutRecord,
+  StrengthWorkoutRecord,
+  WorkoutLabel,
+  WorkoutRecord,
+  WorkoutRecordHistory,
+} from "./workout";

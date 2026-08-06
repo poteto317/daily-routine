@@ -19,6 +19,7 @@ import * as todoListsStorage from "@/features/todo-lists/storage";
 import * as routineStorage from "@/features/routine/storage";
 import * as settingsStorage from "@/features/settings/storage";
 import * as weightTrackerStorage from "@/features/weight-tracker/storage";
+import * as workoutTrackerStorage from "@/features/workout-tracker/storage";
 import * as workTrackerStorage from "@/features/work-tracker/storage";
 import {
   createSyncDataFixture,
@@ -98,6 +99,9 @@ describe("sync download", () => {
     expect(workTrackerStorage.saveWorkSessionHistory).toHaveBeenCalledWith({});
     expect(workTrackerStorage.saveWorkTemplates).toHaveBeenCalledWith([]);
     expect(weightTrackerStorage.saveWeightHistory).toHaveBeenCalledWith({});
+    expect(
+      workoutTrackerStorage.saveWorkoutRecordHistory,
+    ).toHaveBeenCalledWith({});
     expect(journalStorage.saveJournalHistory).toHaveBeenCalledWith({});
     expect(budgetStorage.saveBudgetData).toHaveBeenCalledWith({
       expenses: {},

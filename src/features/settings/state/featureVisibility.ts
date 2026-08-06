@@ -7,6 +7,7 @@ export type VisibleFeaturesState = {
   pomodoro: boolean;
   worktracker: boolean;
   weightTracker: boolean;
+  workoutTracker: boolean;
   meal: boolean;
   budget: boolean;
   weather: boolean;
@@ -26,6 +27,7 @@ export const getInitialVisibleFeatures = (): VisibleFeaturesState => {
     pomodoro: settings.visibleFeatures?.pomodoro ?? true,
     worktracker: settings.visibleFeatures?.worktracker ?? true,
     weightTracker: settings.visibleFeatures?.weightTracker ?? true,
+    workoutTracker: settings.visibleFeatures?.workoutTracker ?? true,
     meal: settings.visibleFeatures?.meal ?? true,
     budget: settings.visibleFeatures?.budget ?? true,
     weather: settings.visibleFeatures?.weather ?? true,

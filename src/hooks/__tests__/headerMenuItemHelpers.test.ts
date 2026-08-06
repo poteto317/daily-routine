@@ -13,6 +13,7 @@ const baseVisibleFeatures = {
   pomodoro: true,
   worktracker: true,
   weightTracker: true,
+  workoutTracker: true,
   meal: true,
   budget: true,
   weather: true,
@@ -103,6 +104,29 @@ describe("headerMenuItemHelpers", () => {
     expect(items.some((item) => item.id === "weather")).toBe(false);
     expect(items.some((item) => item.id === "account-admin")).toBe(false);
     expect(items.some((item) => item.id === "settings")).toBe(true);
+  });
+
+  it("運動記録は feature 設定で表示/非表示を切り替えられる", () => {
+    const isPageType = (route: string): route is HeaderMenuItem["route"] =>
+      route !== "invalid";
+
+    const visibleItems = filterStaticHeaderMenuItems({
+      visibleFeatures: baseVisibleFeatures,
+      isAdmin: false,
+      isPageType,
+    });
+    expect(visibleItems.some((item) => item.id === "workout-tracker")).toBe(
+      true,
+    );
+
+    const hiddenItems = filterStaticHeaderMenuItems({
+      visibleFeatures: { ...baseVisibleFeatures, workoutTracker: false },
+      isAdmin: false,
+      isPageType,
+    });
+    expect(hiddenItems.some((item) => item.id === "workout-tracker")).toBe(
+      false,
+    );
   });
 
   it("test-matrix は管理者のみ表示される", () => {

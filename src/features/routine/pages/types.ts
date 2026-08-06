@@ -10,6 +10,7 @@ export type PageType =
   | "pomodoro"
   | "worktracker"
   | "weight-tracker"
+  | "workout-tracker"
   | "weather"
   | "meal"
   | "budget"
@@ -34,6 +35,7 @@ export const VALID_PAGES: PageType[] = [
   "pomodoro",
   "worktracker",
   "weight-tracker",
+  "workout-tracker",
   "weather",
   "meal",
   "budget",

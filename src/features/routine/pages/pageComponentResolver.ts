@@ -5,6 +5,7 @@ import { PomodoroPage } from "@/features/pomodoro";
 import { WorkTrackerPage } from "@/features/work-tracker";
 import { JournalPage } from "@/features/journal";
 import { WeightTrackerPage } from "@/features/weight-tracker";
+import { WorkoutTrackerPage } from "@/features/workout-tracker";
 import { WeatherPage } from "@/features/weather";
 import {
   BudgetPage,
@@ -32,6 +33,7 @@ export const PAGE_COMPONENTS: Partial<Record<PageType, React.ComponentType>> = {
   worktracker: WorkTrackerPage,
   journal: JournalPage,
   "weight-tracker": WeightTrackerPage,
+  "workout-tracker": WorkoutTrackerPage,
   meal: MealPage,
   budget: BudgetPage,
   "budget-category-management": BudgetCategoryManagementPage,

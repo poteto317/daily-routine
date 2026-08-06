@@ -5,4 +5,5 @@ export * from "./exports/pomodoro";
 export * from "./exports/workTracker";
 export * from "./exports/budget";
 export * from "./exports/weightTracker";
+export * from "./exports/workoutTracker";
 export * from "./exports/journal";
