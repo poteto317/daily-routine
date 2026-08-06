@@ -24,6 +24,10 @@ describe("useWorkoutTrackerPageState", () => {
     mockGetAllWorkoutRecords.mockReturnValue([]);
   });
 
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   it("初期状態は空のgroupsとエラーなし", () => {
     const { result } = renderHook(() => useWorkoutTrackerPageState());
 

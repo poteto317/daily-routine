@@ -50,6 +50,10 @@ describe("useWorkoutTrackerActions", () => {
     jest.clearAllMocks();
   });
 
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   describe("handleAddRecord", () => {
     it("バリデーション成功時はaddWorkoutRecord・resetForm・reloadを呼び、直前のエラーをクリアする", () => {
       mockValidate.mockReturnValue({
