@@ -2,8 +2,6 @@ import { type NewWorkoutRecordInput, type WorkoutRecord } from "@/types/routine"
 import { generateId } from "@/lib/storage/core";
 import { getWorkoutRecordHistory, saveWorkoutRecordHistory } from "./storageData";
 
-export type { NewWorkoutRecordInput };
-
 export const addWorkoutRecord = (
   input: NewWorkoutRecordInput,
 ): WorkoutRecord => {
