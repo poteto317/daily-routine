@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import type { WorkoutRecord } from "@/types/routine";
 import { getAllWorkoutRecords } from "../storage";
 
@@ -10,9 +10,9 @@ export const useWorkoutTrackerDataState = () => {
     getAllWorkoutRecords(),
   );
 
-  const reload = () => {
+  const reload = useCallback(() => {
     setRecords(getAllWorkoutRecords());
-  };
+  }, []);
 
   return { records, reload };
 };

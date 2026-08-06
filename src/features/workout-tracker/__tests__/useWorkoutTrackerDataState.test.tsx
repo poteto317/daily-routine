@@ -45,4 +45,14 @@ describe("useWorkoutTrackerDataState", () => {
 
     expect(result.current.records).toEqual([record]);
   });
+
+  it("reloadは再レンダー後も同じ関数参照を保つ（useCallbackでメモ化されている）", () => {
+    mockGetAllWorkoutRecords.mockReturnValue([]);
+    const { result, rerender } = renderHook(() => useWorkoutTrackerDataState());
+
+    const firstReload = result.current.reload;
+    rerender();
+
+    expect(result.current.reload).toBe(firstReload);
+  });
 });

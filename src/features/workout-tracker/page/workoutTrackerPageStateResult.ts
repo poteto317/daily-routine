@@ -20,8 +20,32 @@ type CreateWorkoutTrackerPageStateResultParams = {
 /**
  * useWorkoutTrackerPageStateが公開する戻り値の形を組み立てる。
  */
-export const createWorkoutTrackerPageStateResult = (
-  params: CreateWorkoutTrackerPageStateResultParams,
-) => {
-  return { ...params };
+export const createWorkoutTrackerPageStateResult = ({
+  formValues,
+  formError,
+  groups,
+  setLabel,
+  setDate,
+  setExerciseName,
+  setWeightKg,
+  setReps,
+  setSets,
+  setCaloriesBurned,
+  onSubmitAction,
+  onDeleteRecordAction,
+}: CreateWorkoutTrackerPageStateResultParams) => {
+  return {
+    formValues,
+    formError,
+    groups,
+    setLabel,
+    setDate,
+    setExerciseName,
+    setWeightKg,
+    setReps,
+    setSets,
+    setCaloriesBurned,
+    onSubmitAction,
+    onDeleteRecordAction,
+  };
 };
