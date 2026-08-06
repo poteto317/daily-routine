@@ -5,6 +5,7 @@
   },
   "form": {
     "title": "記録を追加",
+    "labelSelectorAriaLabel": "運動の種類",
     "labelStrength": "🏋️ 筋トレ",
     "labelRunning": "🏃 ランニング",
     "dateLabel": "日付",

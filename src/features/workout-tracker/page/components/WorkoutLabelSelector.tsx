@@ -25,7 +25,11 @@ export const WorkoutLabelSelector = ({
   const isStrength = label === "strength";
 
   return (
-    <div role="radiogroup" aria-label={texts.form.title} className="flex gap-2">
+    <div
+      role="radiogroup"
+      aria-label={texts.form.labelSelectorAriaLabel}
+      className="flex gap-2"
+    >
       <button
         type="button"
         role="radio"

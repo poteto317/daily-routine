@@ -3,6 +3,21 @@ import { WorkoutLabelSelector } from "../page/components/WorkoutLabelSelector";
 import texts from "../locales/ja.json";
 
 describe("WorkoutLabelSelector", () => {
+  it("radiogroupにフォーム全体の見出しではなく専用のaria-labelを持つ", () => {
+    render(
+      <WorkoutLabelSelector label="strength" onChangeLabelAction={jest.fn()} />,
+    );
+
+    expect(
+      screen.getByRole("radiogroup", {
+        name: texts.form.labelSelectorAriaLabel,
+      }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("radiogroup", { name: texts.form.title }),
+    ).not.toBeInTheDocument();
+  });
+
   it("label=strengthのとき筋トレボタンがaria-checked=trueになる", () => {
     render(
       <WorkoutLabelSelector label="strength" onChangeLabelAction={jest.fn()} />,
