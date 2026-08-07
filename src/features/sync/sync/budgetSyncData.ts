@@ -34,13 +34,19 @@ export const collectBudgetSyncData = (): BudgetSyncData => ({
   budgetExpenseItems: getBudgetExpenseItems(),
 });
 
+/**
+ * リモートに存在しないフィールドは、その機能を知らない古いバージョンの端末が
+ * アップロードしたデータである可能性がある。空の既定値で上書きするとローカル
+ * データを消してしまうため、欠損時はローカルの値を維持する。
+ * （明示的な空配列/空オブジェクトはユーザーが全削除した結果としてそのまま尊重する）
+ */
 export const normalizeBudgetSyncData = (
   data: Partial<BudgetSyncData>,
 ): BudgetSyncData => ({
-  budgetData: data.budgetData ?? { expenses: {} },
-  budgetCategories: data.budgetCategories ?? [],
-  budgetIncomeItems: data.budgetIncomeItems ?? [],
-  budgetExpenseItems: data.budgetExpenseItems ?? [],
+  budgetData: data.budgetData ?? getBudgetData(),
+  budgetCategories: data.budgetCategories ?? getBudgetCategories(),
+  budgetIncomeItems: data.budgetIncomeItems ?? getBudgetIncomeItems(),
+  budgetExpenseItems: data.budgetExpenseItems ?? getBudgetExpenseItems(),
 });
 
 export const saveBudgetSyncData = (data: BudgetSyncData): void => {

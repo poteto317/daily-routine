@@ -81,9 +81,25 @@ describe("todoListSyncData", () => {
     });
   });
 
-  it("欠損したTodoリストを空配列に正規化する", () => {
+  it("Todoリストが欠損（undefined）している場合は既存のローカルリストを保持する（本フィールド追加前のクラウドデータによる意図しない削除を防止）", () => {
+    (todoListsStorage.getTodoLists as jest.Mock).mockReturnValue([todoListFixture]);
+
     expect(
       normalizeTodoListSyncData({ todoCategories: [todoCategoryFixture] }),
+    ).toEqual({
+      todoLists: [todoListFixture],
+      todoCategories: [todoCategoryFixture],
+    });
+  });
+
+  it("Todoリストが明示的に空配列の場合はそのまま空配列として正規化する（ユーザーが全リストを削除した結果を尊重する）", () => {
+    (todoListsStorage.getTodoLists as jest.Mock).mockReturnValue([todoListFixture]);
+
+    expect(
+      normalizeTodoListSyncData({
+        todoLists: [],
+        todoCategories: [todoCategoryFixture],
+      }),
     ).toEqual({
       todoLists: [],
       todoCategories: [todoCategoryFixture],
