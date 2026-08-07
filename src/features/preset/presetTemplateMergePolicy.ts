@@ -26,10 +26,15 @@ export const resolveUpdatedRoutineTemplates = ({
   routinesToSave,
   currentRoutines,
 }: ResolveUpdatedRoutineTemplatesParams): RoutineTemplate[] => {
-  const selectedTemplates = buildRoutineTemplatesFromRoutines(routinesToSave);
-  const selectedByKey = new Map(
-    selectedTemplates.map((template) => [templateKey(template), template]),
-  );
+  // routinesToSaveにtitle+startTimeが同一のルーティンが複数含まれる場合に備え、
+  // ここで一度だけ重複排除する（先勝ち）。以降の2つのループは同じMapを参照する
+  // ため、既存プリセットに含まれていたか否かで採用される要素がぶれることはない。
+  const selectedByKey = new Map<string, RoutineTemplate>();
+  for (const template of buildRoutineTemplatesFromRoutines(routinesToSave)) {
+    const key = templateKey(template);
+    if (!selectedByKey.has(key)) selectedByKey.set(key, template);
+  }
+
   const orphanedKeys = new Set(
     findOrphanedRoutineTemplates(preset.routineTemplates, currentRoutines).map(
       templateKey,
@@ -58,8 +63,7 @@ export const resolveUpdatedRoutineTemplates = ({
   }
 
   // 新たに選択されたテンプレートを末尾に追加する
-  for (const template of selectedTemplates) {
-    const key = templateKey(template);
+  for (const [key, template] of selectedByKey) {
     if (usedKeys.has(key)) continue;
     ordered.push(template);
     usedKeys.add(key);

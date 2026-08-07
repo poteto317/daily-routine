@@ -146,6 +146,61 @@ describe("resolveUpdatedRoutineTemplates", () => {
     ).toBe(preset.routineTemplates);
   });
 
+  describe("routinesToSaveに同一title+startTimeが複数含まれる場合", () => {
+    // レビュー指摘: 既存プリセットに含まれるキー（既存順序ループ側）は
+    // Mapの上書きで「最後の要素」、新規キー（末尾追加ループ側）は配列走査で
+    // 「最初の要素」を拾ってしまい、採用ルールが割れていた。
+    // 常に先勝ち（routinesToSave内で最初に出現したもの）に統一する。
+
+    it("既存プリセットに含まれるキーでも先勝ちで採用する", () => {
+      const first = createRoutine({
+        id: "a-first",
+        title: "A",
+        startTime: "07:00",
+        duration: 30,
+      });
+      const second = createRoutine({
+        id: "a-second",
+        title: "A",
+        startTime: "07:00",
+        duration: 99,
+      });
+
+      const result = resolveUpdatedRoutineTemplates({
+        preset: createPreset([template("A", "07:00")]),
+        routinesToSave: [first, second],
+        currentRoutines: [first, second],
+      });
+
+      expect(result).toHaveLength(1);
+      expect(result[0].duration).toBe(30);
+    });
+
+    it("新規キーでも先勝ちで採用する（既存プリセットに含まれるキーの場合と一貫させる）", () => {
+      const first = createRoutine({
+        id: "a-first",
+        title: "A",
+        startTime: "07:00",
+        duration: 30,
+      });
+      const second = createRoutine({
+        id: "a-second",
+        title: "A",
+        startTime: "07:00",
+        duration: 99,
+      });
+
+      const result = resolveUpdatedRoutineTemplates({
+        preset: createPreset([]),
+        routinesToSave: [first, second],
+        currentRoutines: [first, second],
+      });
+
+      expect(result).toHaveLength(1);
+      expect(result[0].duration).toBe(30);
+    });
+  });
+
   it("削除済みが無ければ選択分だけを返す", () => {
     const a = createRoutine({ id: "a", title: "A", startTime: "07:00" });
 
