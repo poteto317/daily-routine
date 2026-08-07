@@ -10,6 +10,7 @@ import { getWorkoutRecordHistory } from "@/features/workout-tracker/storage";
 import { getJournalHistory } from "@/features/journal/storage";
 import { getMealHistory } from "@/features/meal/storage";
 import { getPresets } from "@/features/preset/storage";
+import type { AppSettings } from "@/types/routine";
 import type { SyncPayload } from "./types";
 
 /**
@@ -31,6 +32,52 @@ export type CoreSyncData = Pick<
   | "presets"
 >;
 
+const mergeNestedSettingsField = <T extends object>(
+  local: T | undefined,
+  remote: T | undefined,
+): T | undefined => {
+  if (remote === undefined) {
+    return local;
+  }
+  if (local === undefined) {
+    return remote;
+  }
+  return { ...local, ...remote };
+};
+
+/**
+ * settingsは単一オブジェクトの中に独立した設定項目が時期をずらして追加されて
+ * いくため、丸ごと置き換えると古いバージョンが送ったsettingsによって新しい
+ * 設定項目のユーザー値が失われる。トップレベルはローカルへ上書きマージする
+ * （リモートに存在するキーはリモートの値を採用する）。
+ *
+ * visibleFeatures / trainDelayはさらにその内部にキーが時期をずらして追加
+ * されていくネストしたオブジェクトのため、トップレベルのシャローマージだけでは
+ * 「リモートが一部キーのみ持つ」場合にネスト全体が置き換わり、ローカル側の
+ * 未知キーが消えてしまう。この2フィールドはキー単位でマージする。
+ */
+export const normalizeSettings = (
+  remoteSettings: AppSettings | undefined,
+): AppSettings => {
+  const local = getSettings();
+  if (!remoteSettings) {
+    return local;
+  }
+
+  return {
+    ...local,
+    ...remoteSettings,
+    visibleFeatures: mergeNestedSettingsField(
+      local?.visibleFeatures,
+      remoteSettings.visibleFeatures,
+    ),
+    trainDelay: mergeNestedSettingsField(
+      local?.trainDelay,
+      remoteSettings.trainDelay,
+    ),
+  };
+};
+
 /**
  * リモートに存在しないフィールドは、その機能を知らない古いバージョンの端末が
  * アップロードしたデータである可能性がある。空の既定値で上書きするとローカル
@@ -42,13 +89,7 @@ export const normalizeCoreSyncData = (
 ): CoreSyncData => ({
   routines: data.routines ?? getRoutines(),
   dailyHistory: data.dailyHistory ?? getMonthlyHistory(),
-  // settingsは他フィールドと異なり、単一オブジェクトの中に独立した設定項目が
-  // 時期をずらして追加されていく。丸ごと置き換えると、古いバージョンが送った
-  // settingsによって新しい設定項目のユーザー値が失われるため、ローカルへ
-  // 上書きマージする（リモートに存在するキーはリモートの値を採用する）。
-  settings: data.settings
-    ? { ...getSettings(), ...data.settings }
-    : getSettings(),
+  settings: normalizeSettings(data.settings),
   pomodoroHistory: data.pomodoroHistory ?? getPomodoroHistory(),
   workSessionHistory: data.workSessionHistory ?? getWorkSessionHistory(),
   workTemplates: data.workTemplates ?? getWorkTemplates(),

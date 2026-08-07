@@ -137,6 +137,62 @@ describe("normalizeCoreSyncData", () => {
     it("settings自体が欠損していればローカルの値を維持する", () => {
       expect(normalizeCoreSyncData({}).settings).toEqual(LOCAL.settings);
     });
+
+    it("visibleFeaturesはキー単位でマージし、リモートに無いキーのローカル値を消さない", () => {
+      // visibleFeaturesはネストしたオブジェクトの中に機能フラグが時期をずらして
+      // 追加されていく。トップレベルのシャローマージだけだと、リモートが一部
+      // キーのみ持つ場合にネスト全体が置き換わり、ローカル側の未知キーが消える。
+      (settingsStorage.getSettings as jest.Mock).mockReturnValue({
+        theme: "dark",
+        visibleFeatures: { journal: true, budget: false },
+      });
+
+      const result = normalizeCoreSyncData({
+        settings: {
+          theme: "light",
+          visibleFeatures: { journal: false },
+        } as never,
+      });
+
+      expect(result.settings.visibleFeatures).toEqual({
+        journal: false,
+        budget: false,
+      });
+    });
+
+    it("trainDelayはキー単位でマージし、リモートに無いキーのローカル値を消さない", () => {
+      (settingsStorage.getSettings as jest.Mock).mockReturnValue({
+        theme: "dark",
+        trainDelay: { enabled: true, monitoredLines: [{ lineId: "l1" }] },
+      });
+
+      const result = normalizeCoreSyncData({
+        settings: { theme: "light", trainDelay: { enabled: false } } as never,
+      });
+
+      expect(result.settings.trainDelay).toEqual({
+        enabled: false,
+        monitoredLines: [{ lineId: "l1" }],
+      });
+    });
+
+    it("visibleFeatures/trainDelayがリモートに存在しなければローカルの値を維持する", () => {
+      (settingsStorage.getSettings as jest.Mock).mockReturnValue({
+        theme: "dark",
+        visibleFeatures: { journal: true },
+        trainDelay: { enabled: true, monitoredLines: [] },
+      });
+
+      const result = normalizeCoreSyncData({
+        settings: { theme: "light" } as never,
+      });
+
+      expect(result.settings.visibleFeatures).toEqual({ journal: true });
+      expect(result.settings.trainDelay).toEqual({
+        enabled: true,
+        monitoredLines: [],
+      });
+    });
   });
 
   it("ストレージへの書き込みは行わない（正規化のみを担う）", () => {
