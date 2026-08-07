@@ -181,15 +181,134 @@ describe("presetManagerStateActions", () => {
     expect(alertFn).toHaveBeenCalled();
   });
 
+  it("編集開始時にプリセットの内容が選択済みで開く", () => {
+    // 未選択で開くと、1件チェックしただけで既存内容が全置換されてしまうため、
+    // プリセットに含まれるルーティンを選択済みにして開く。
+    const routines: Routine[] = [
+      { ...currentRoutines[0], id: "r1", title: "朝食", startTime: "07:00" },
+      { ...currentRoutines[0], id: "r2", title: "運動", startTime: "07:30" },
+    ];
+    const target: RoutinePreset = {
+      ...preset,
+      routineTemplates: [
+        { title: "朝食", startTime: "07:00", duration: 30, category: "life" },
+      ],
+    };
+
+    const result = startPresetEdit([target], "p1", routines);
+
+    expect(Array.from(result.editSelectedRoutines)).toEqual(["r1"]);
+  });
+
+  it("複数件のプリセットで1件だけ追加チェックしても既存の内容が消えない", () => {
+    // 修正前は選択が空の状態から1件チェックすると全テンプレートが
+    // その1件に置換され、既存のルーティンが消失していた。
+    const routines: Routine[] = ["A", "B", "C"].map((title, index) => ({
+      ...currentRoutines[0],
+      id: `r-${title}`,
+      title,
+      startTime: `0${7 + index}:00`,
+    }));
+    const target: RoutinePreset = {
+      ...preset,
+      routineTemplates: [
+        { title: "A", startTime: "07:00", duration: 30, category: "life" },
+        { title: "B", startTime: "08:00", duration: 30, category: "life" },
+      ],
+    };
+
+    // 編集画面を開いた時点の選択状態（A・Bが選択済み）に、Cを追加する
+    const opened = startPresetEdit([target], "p1", routines);
+    const withAddition = new Set(opened.editSelectedRoutines).add("r-C");
+
+    savePresetEditAndReload({
+      presets: [target],
+      editingPresetId: "p1",
+      editPresetName: "朝ルーティン",
+      editPresetDescription: "",
+      editSelectedRoutines: withAddition,
+      currentRoutines: routines,
+      alertFn: jest.fn(),
+    });
+
+    const saved = (updatePreset as jest.Mock).mock.calls[0][0] as RoutinePreset;
+    expect(saved.routineTemplates.map((t) => t.title)).toEqual(["A", "B", "C"]);
+  });
+
+  it("名前だけ変更して保存してもプリセットの並び順が変わらない", () => {
+    // 並び順は一覧表示とプリセット適用時のsortOrderに反映されるため、
+    // ルーティン側の並び順で上書きしてはいけない。
+    const routines: Routine[] = [
+      { ...currentRoutines[0], id: "rA", title: "A", startTime: "07:00" },
+      { ...currentRoutines[0], id: "rB", title: "B", startTime: "08:00" },
+      { ...currentRoutines[0], id: "rC", title: "C", startTime: "09:00" },
+    ];
+    const target: RoutinePreset = {
+      ...preset,
+      routineTemplates: [
+        { title: "C", startTime: "09:00", duration: 30, category: "life" },
+        { title: "A", startTime: "07:00", duration: 30, category: "life" },
+        { title: "B", startTime: "08:00", duration: 30, category: "life" },
+      ],
+    };
+
+    const opened = startPresetEdit([target], "p1", routines);
+    savePresetEditAndReload({
+      presets: [target],
+      editingPresetId: "p1",
+      editPresetName: "名前だけ変更",
+      editPresetDescription: "",
+      editSelectedRoutines: opened.editSelectedRoutines,
+      currentRoutines: routines,
+      alertFn: jest.fn(),
+    });
+
+    const saved = (updatePreset as jest.Mock).mock.calls[0][0] as RoutinePreset;
+    expect(saved.routineTemplates.map((t) => t.title)).toEqual(["C", "A", "B"]);
+  });
+
+  it("元のルーティンが削除済みのテンプレートは保存時も保持される", () => {
+    // 削除済みルーティンのテンプレートは編集画面の選択リストに表示できないため、
+    // 選択操作の対象外として保持する。
+    const routines: Routine[] = [
+      { ...currentRoutines[0], id: "r1", title: "朝食", startTime: "07:00" },
+    ];
+    const target: RoutinePreset = {
+      ...preset,
+      routineTemplates: [
+        { title: "朝食", startTime: "07:00", duration: 30, category: "life" },
+        { title: "英語学習", startTime: "08:00", duration: 30, category: "life" },
+      ],
+    };
+
+    const opened = startPresetEdit([target], "p1", routines);
+
+    savePresetEditAndReload({
+      presets: [target],
+      editingPresetId: "p1",
+      editPresetName: "朝ルーティン",
+      editPresetDescription: "",
+      editSelectedRoutines: opened.editSelectedRoutines,
+      currentRoutines: routines,
+      alertFn: jest.fn(),
+    });
+
+    const saved = (updatePreset as jest.Mock).mock.calls[0][0] as RoutinePreset;
+    const savedTitles = saved.routineTemplates.map((t) => t.title);
+    expect(savedTitles).toHaveLength(2);
+    expect(savedTitles).toEqual(expect.arrayContaining(["朝食", "英語学習"]));
+  });
+
   it("編集開始/キャンセル/保存を処理する", () => {
-    expect(startPresetEdit([preset], "missing")).toEqual({
+    expect(startPresetEdit([preset], "missing", [])).toEqual({
       editingPresetId: null,
       editPresetName: "",
       editPresetDescription: "",
       editSelectedRoutines: new Set(),
     });
 
-    expect(startPresetEdit([preset], "p1")).toEqual({
+    // 現在のルーティンが空なら、対応するものが無いため選択状態も空になる
+    expect(startPresetEdit([preset], "p1", [])).toEqual({
       editingPresetId: "p1",
       editPresetName: "朝ルーティン",
       editPresetDescription: "desc",

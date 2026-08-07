@@ -15,6 +15,7 @@ type PresetEditSetters = {
 
 type StartEditHandlerArgs = PresetEditSetters & {
   presets: RoutinePreset[];
+  currentRoutines: Routine[];
   setSelectedPresetId: Dispatch<SetStateAction<string | null>>;
   setSelectedDays: Dispatch<SetStateAction<Set<number>>>;
 };
@@ -39,6 +40,7 @@ export const applyCanceledPresetEdit = (setters: PresetEditSetters): void => {
 
 export const createPresetStartEditHandler = ({
   presets,
+  currentRoutines,
   setEditingPresetId,
   setEditPresetName,
   setEditPresetDescription,
@@ -47,7 +49,7 @@ export const createPresetStartEditHandler = ({
   setSelectedDays,
 }: StartEditHandlerArgs) => {
   return (presetId: string) => {
-    const nextState = startPresetEdit(presets, presetId);
+    const nextState = startPresetEdit(presets, presetId, currentRoutines);
     if (!nextState.editingPresetId) return;
     setEditingPresetId(nextState.editingPresetId);
     setEditPresetName(nextState.editPresetName);
