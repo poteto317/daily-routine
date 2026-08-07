@@ -1,0 +1,87 @@
+import { fireEvent, render, screen } from "@testing-library/react";
+import type { Routine } from "@/types/routine";
+import { PresetEditSection } from "../components/PresetEditSection";
+import { PRESET_EDIT_EMPTY_ROUTINES_LABEL } from "../helpers";
+
+const createRoutine = (overrides: Partial<Routine> = {}): Routine => ({
+  id: "routine-1",
+  title: "朝食",
+  startTime: "07:00",
+  duration: 30,
+  category: "life",
+  daysOfWeek: [1],
+  isCompleted: false,
+  sortOrder: 0,
+  createdAt: "2026-03-07T00:00:00.000Z",
+  updatedAt: "2026-03-07T00:00:00.000Z",
+  ...overrides,
+});
+
+const defaultProps = {
+  editPresetName: "プリセット",
+  editPresetDescription: "",
+  editSelectedRoutines: new Set<string>(),
+  onChangeEditName: jest.fn(),
+  onChangeEditDescription: jest.fn(),
+  onToggleEditRoutine: jest.fn(),
+  onSaveEdit: jest.fn(),
+  onCancelEdit: jest.fn(),
+};
+
+describe("PresetEditSection", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("ルーティンが無ければ空メッセージを表示する", () => {
+    render(<PresetEditSection {...defaultProps} routines={[]} />);
+
+    expect(
+      screen.getByText(PRESET_EDIT_EMPTY_ROUTINES_LABEL),
+    ).toBeInTheDocument();
+  });
+
+  it("title・startTimeが一致する複数曜日分のルーティンは1行だけ表示する", () => {
+    const routines = [
+      createRoutine({ id: "r-mon", daysOfWeek: [1] }),
+      createRoutine({ id: "r-wed", daysOfWeek: [3] }),
+      createRoutine({ id: "r-fri", daysOfWeek: [5] }),
+    ];
+
+    render(<PresetEditSection {...defaultProps} routines={routines} />);
+
+    expect(screen.getAllByText(/朝食/)).toHaveLength(1);
+    expect(screen.getAllByRole("checkbox")).toHaveLength(1);
+  });
+
+  it("統合された行をチェックすると代表ルーティン（最初に出現したもの）のidでonToggleEditRoutineが呼ばれる", () => {
+    const onToggleEditRoutine = jest.fn();
+    const routines = [
+      createRoutine({ id: "r-mon", daysOfWeek: [1] }),
+      createRoutine({ id: "r-wed", daysOfWeek: [3] }),
+    ];
+
+    render(
+      <PresetEditSection
+        {...defaultProps}
+        routines={routines}
+        onToggleEditRoutine={onToggleEditRoutine}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("checkbox"));
+
+    expect(onToggleEditRoutine).toHaveBeenCalledWith("r-mon");
+  });
+
+  it("titleが異なるルーティンはそれぞれ別行で表示される", () => {
+    const routines = [
+      createRoutine({ id: "a", title: "朝食" }),
+      createRoutine({ id: "b", title: "ストレッチ" }),
+    ];
+
+    render(<PresetEditSection {...defaultProps} routines={routines} />);
+
+    expect(screen.getAllByRole("checkbox")).toHaveLength(2);
+  });
+});

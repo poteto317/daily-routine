@@ -23,6 +23,7 @@ import {
   createPresetAndReload,
   deletePresetAndReload,
   loadPresetList,
+  resolveCreateFilterSelection,
   savePresetEditAndReload,
   startPresetEdit,
   togglePresetSelection,
@@ -111,6 +112,48 @@ describe("presetManagerStateActions", () => {
     expect(deletePreset).toHaveBeenCalledWith("p1");
   });
 
+  it("曜日フィルターで選択した重複ルーティンは1件だけ保存対象になる", () => {
+    // 複数曜日で作成されたルーティンは曜日ごとに別レコードへ分解されるため、
+    // 曜日フィルター選択 → プリセット作成の一連の流れで
+    // title+startTimeが同じテンプレートが重複保存されないことを検証する。
+    const splitRoutines: Routine[] = [1, 3, 5].map((day, index) => ({
+      ...currentRoutines[0],
+      id: `r-${day}`,
+      daysOfWeek: [day],
+      sortOrder: index,
+    }));
+
+    // 同一グループに属する複数の曜日を続けて選択する。統合前の実装では
+    // 曜日ごとに別レコードのidが加算され、重複テンプレートが保存されていた。
+    const firstToggle = resolveCreateFilterSelection({
+      currentRoutines: splitRoutines,
+      createFilterDays: new Set<number>(),
+      selectedRoutines: new Set<string>(),
+      day: 1,
+    });
+    const secondToggle = resolveCreateFilterSelection({
+      currentRoutines: splitRoutines,
+      createFilterDays: firstToggle.nextFilterDays,
+      selectedRoutines: firstToggle.nextSelectedRoutines,
+      day: 3,
+    });
+
+    expect(secondToggle.nextSelectedRoutines.size).toBe(1);
+
+    createPresetAndReload({
+      currentRoutines: splitRoutines,
+      newPresetName: "朝",
+      newPresetDescription: "",
+      selectedRoutines: secondToggle.nextSelectedRoutines,
+    });
+
+    const savedRoutines = (createPresetFromRoutines as jest.Mock).mock
+      .calls[0][1] as Routine[];
+    expect(savedRoutines).toHaveLength(1);
+    expect(savedRoutines[0].title).toBe("朝食");
+    expect(savedRoutines[0].startTime).toBe("07:00");
+  });
+
   it("適用を処理する", () => {
     const alertFn = jest.fn();
     const onApplyPreset = jest.fn();
@@ -185,5 +228,34 @@ describe("presetManagerStateActions", () => {
       }),
     ).toEqual({ presets: [preset], saved: true });
     expect(updatePreset).toHaveBeenCalled();
+  });
+
+  it("編集保存時も重複ルーティンからテンプレートを1件だけ生成する", () => {
+    // 編集画面は代表ルーティンのidのみを選択対象にするため、曜日分解された
+    // 重複レコードがあってもテンプレートは1件に統合される。
+    const splitRoutines: Routine[] = [1, 3, 5].map((day, index) => ({
+      ...currentRoutines[0],
+      id: `r-${day}`,
+      daysOfWeek: [day],
+      sortOrder: index,
+    }));
+
+    savePresetEditAndReload({
+      presets: [preset],
+      editingPresetId: "p1",
+      editPresetName: "更新後",
+      editPresetDescription: "",
+      editSelectedRoutines: new Set(["r-1"]),
+      currentRoutines: splitRoutines,
+      alertFn: jest.fn(),
+    });
+
+    const saved = (updatePreset as jest.Mock).mock
+      .calls[0][0] as RoutinePreset;
+    expect(saved.routineTemplates).toHaveLength(1);
+    expect(saved.routineTemplates[0]).toMatchObject({
+      title: "朝食",
+      startTime: "07:00",
+    });
   });
 });

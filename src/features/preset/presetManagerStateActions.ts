@@ -19,10 +19,8 @@ import {
   PRESET_EDIT_SAVED_MESSAGE,
   PRESET_MANAGER_MESSAGES,
 } from "./helpers";
-import {
-  buildUpdatedPreset,
-  resolveCreateFilterSelection,
-} from "./presetManagerLogic";
+import { buildUpdatedPreset } from "./presetTemplateBuilder";
+import { resolveCreateFilterSelection } from "./presetCreateFilterSelection";
 
 export const loadPresetList = (): RoutinePreset[] => {
   return getPresets();
