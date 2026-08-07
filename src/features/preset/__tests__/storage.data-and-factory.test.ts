@@ -21,6 +21,94 @@ describe("preset storage data/factory", () => {
     expect(getPresets()).toEqual(presets);
   });
 
+  it("読み込み時にtitle・startTimeが一致する重複テンプレートを排除する", () => {
+    // 複数曜日ルーティンを選択して作成された過去のプリセットを想定した
+    // 重複テンプレート（同一title・startTime）を保存し、getPresets()で
+    // 最初に出現したものだけに正規化されることを検証する。
+    const presets = [
+      createPreset({
+        routineTemplates: [
+          { title: "朝食", startTime: "07:00", duration: 30, category: "life" },
+          { title: "朝食", startTime: "07:00", duration: 30, category: "life" },
+          { title: "運動", startTime: "07:30", duration: 20, category: "health" },
+        ],
+      }),
+    ];
+    savePresets(presets);
+
+    const result = getPresets();
+
+    expect(result[0].routineTemplates).toHaveLength(2);
+    expect(result[0].routineTemplates.map((t) => t.title)).toEqual([
+      "朝食",
+      "運動",
+    ]);
+  });
+
+  it("routineTemplatesが欠落した不正データでも例外を投げず空配列に正規化する", () => {
+    // localStorage/同期経由のデータは型検証されないため、旧形式や破損データが
+    // 混入しうる。getPresetsは同期のアップロード収集経路(collectLocalSyncData)
+    // からも呼ばれるため、ここで例外を投げると同期全体が停止してしまう。
+    localStorage.setItem(
+      "routine-presets",
+      JSON.stringify([{ id: "p1", name: "壊れたプリセット" }]),
+    );
+
+    expect(() => getPresets()).not.toThrow();
+    expect(getPresets()[0].routineTemplates).toEqual([]);
+  });
+
+  it("プリセット配列にnull要素が含まれていても例外を投げず除外する", () => {
+    localStorage.setItem(
+      "routine-presets",
+      JSON.stringify([null, { id: "p1", name: "正常", routineTemplates: [] }]),
+    );
+
+    expect(() => getPresets()).not.toThrow();
+    expect(getPresets()).toHaveLength(1);
+    expect(getPresets()[0].id).toBe("p1");
+  });
+
+  it("テンプレート配列にnull要素が含まれていても例外を投げず除外する", () => {
+    localStorage.setItem(
+      "routine-presets",
+      JSON.stringify([
+        {
+          id: "p1",
+          name: "壊れたテンプレート入り",
+          routineTemplates: [
+            null,
+            { title: "朝食", startTime: "07:00", duration: 30, category: "life" },
+          ],
+        },
+      ]),
+    );
+
+    expect(() => getPresets()).not.toThrow();
+    expect(getPresets()[0].routineTemplates).toHaveLength(1);
+    expect(getPresets()[0].routineTemplates[0].title).toBe("朝食");
+  });
+
+  it("保存値が配列でない不正データなら空配列を返す", () => {
+    localStorage.setItem("routine-presets", JSON.stringify({ broken: true }));
+
+    expect(getPresets()).toEqual([]);
+  });
+
+  it("重複がなければテンプレートをそのまま返す", () => {
+    const presets = [
+      createPreset({
+        routineTemplates: [
+          { title: "朝食", startTime: "07:00", duration: 30, category: "life" },
+          { title: "朝食", startTime: "08:00", duration: 30, category: "life" },
+        ],
+      }),
+    ];
+    savePresets(presets);
+
+    expect(getPresets()[0].routineTemplates).toHaveLength(2);
+  });
+
   it("creates a preset from routines", () => {
     const preset = createPresetFromRoutines(
       "モーニング",
