@@ -13,6 +13,8 @@ import {
 } from "../sync";
 import * as routineStorage from "@/features/routine/storage";
 import * as todoListsStorage from "@/features/todo-lists/storage";
+import * as workoutTrackerStorage from "@/features/workout-tracker/storage";
+import * as presetStorage from "@/features/preset/storage";
 import {
   createSyncSnapshotFixture,
   createSyncPayloadFixture,
@@ -120,6 +122,37 @@ describe("sync snapshots", () => {
     expect(todoListsStorage.saveTodoCategories).toHaveBeenCalledWith([
       todoCategoryFixture,
     ]);
+  });
+
+  it("snapshot に含まれない項目のローカルデータを保持する（ダウンロードと同じ扱い）", async () => {
+    // 機能追加前に作成された古いsnapshotには新機能のフィールドが存在しない。
+    // 「空」ではなく「情報がない」とみなし、ダウンロード時と同様に
+    // ローカルの値を維持する。
+    const localWorkouts = { "2026-02-12": [{ id: "w1", title: "腕立て" }] };
+    const localPresets = [{ id: "p1", name: "朝ルーティン" }];
+    (
+      workoutTrackerStorage.getWorkoutRecordHistory as jest.Mock
+    ).mockReturnValue(localWorkouts);
+    (presetStorage.getPresets as jest.Mock).mockReturnValue(localPresets);
+
+    mockGetDoc.mockResolvedValue(
+      createExistingSyncSnapshotDocFixture({
+        id: "snapshot-1",
+        uploadedAt: 1,
+        // 新機能のフィールドを持たない古いsnapshotを模す
+        data: {
+          routines: [routineFixture],
+        } as never,
+      }) as never,
+    );
+
+    await applySyncSnapshot("snapshot-1");
+
+    expect(routineStorage.saveRoutines).toHaveBeenCalledWith([routineFixture]);
+    expect(
+      workoutTrackerStorage.saveWorkoutRecordHistory,
+    ).toHaveBeenCalledWith(localWorkouts);
+    expect(presetStorage.savePresets).toHaveBeenCalledWith(localPresets);
   });
 
   it("最新 snapshot を削除した場合は次の履歴を最新として更新する", async () => {

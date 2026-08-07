@@ -156,7 +156,13 @@ describe("localData", () => {
       saveSyncDataToLocal({ routines, settings, lastModified: 12345 });
 
       expect(routineStorage.saveRoutines).toHaveBeenCalledWith(routines);
-      expect(settingsStorage.saveSettings).toHaveBeenCalledWith(settings);
+      // settingsは丸ごと置き換えず、ローカルへ上書きマージする。
+      // 古いバージョンが送ったsettingsで新しい設定項目のユーザー値が
+      // 失われるのを防ぐため。
+      expect(settingsStorage.saveSettings).toHaveBeenCalledWith({
+        ...createSyncPayloadFixture().settings,
+        theme: "dark",
+      });
       expect(storageCore.setLocalDataUpdatedAt).toHaveBeenCalledWith(12345);
     });
 
