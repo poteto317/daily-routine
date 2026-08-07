@@ -1,4 +1,5 @@
 import { getUserScopedKey } from "./userScope";
+import { cloneDefaultValue, parseStorageValue } from "./storageValueGuard";
 
 const LOCAL_DATA_UPDATED_AT_KEY = "local-data-updated-at";
 export const LOCAL_DATA_UPDATED_AT_EVENT = "local-data-updated-at-changed";
@@ -77,24 +78,25 @@ export const setLocalDataUpdatedAt = (timestamp: number): void => {
 };
 
 export const getStorageItem = <T>(key: string, defaultValue: T): T => {
-  if (typeof window === "undefined") return defaultValue;
+  if (typeof window === "undefined") return cloneDefaultValue(defaultValue);
   try {
     const scopedKey = getResolvedStorageKey(key);
-    const data = localStorage.getItem(scopedKey);
-    return data ? JSON.parse(data) : defaultValue;
+    return parseStorageValue(localStorage.getItem(scopedKey), defaultValue);
   } catch {
-    return defaultValue;
+    return cloneDefaultValue(defaultValue);
   }
 };
 
 export const getUnscopedStorageItem = <T>(key: string, defaultValue: T): T => {
-  if (typeof window === "undefined") return defaultValue;
+  if (typeof window === "undefined") return cloneDefaultValue(defaultValue);
 
   try {
-    const data = localStorage.getItem(getResolvedStorageKey(key, false));
-    return data ? JSON.parse(data) : defaultValue;
+    return parseStorageValue(
+      localStorage.getItem(getResolvedStorageKey(key, false)),
+      defaultValue,
+    );
   } catch {
-    return defaultValue;
+    return cloneDefaultValue(defaultValue);
   }
 };
 
