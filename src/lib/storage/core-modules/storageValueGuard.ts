@@ -21,6 +21,22 @@ export const matchesDefaultShape = (
 };
 
 /**
+ * defaultValueをそのまま返すと、呼び出し元がその値を変更した際に
+ * モジュールレベルの共有定数（例: DEFAULT_MEAL_HISTORY）が汚染され、
+ * 以降の取得結果に前回のデータが混入する。
+ * （storageMutationsは取得結果へ直接pushする実装のため実際に起こりうる）
+ *
+ * localStorageへ入る値はJSON直列化可能なため、JSONのラウンドトリップで複製する。
+ */
+export const cloneDefaultValue = <T>(defaultValue: T): T => {
+  if (defaultValue === null || typeof defaultValue !== "object") {
+    return defaultValue;
+  }
+
+  return JSON.parse(JSON.stringify(defaultValue)) as T;
+};
+
+/**
  * 保存文字列をパースし、defaultValueの示す形と一致しない場合は
  * defaultValueへフォールバックする。
  */
@@ -28,8 +44,10 @@ export const parseStorageValue = <T>(
   data: string | null,
   defaultValue: T,
 ): T => {
-  if (!data) return defaultValue;
+  if (!data) return cloneDefaultValue(defaultValue);
 
   const parsed = JSON.parse(data);
-  return matchesDefaultShape(parsed, defaultValue) ? parsed : defaultValue;
+  return matchesDefaultShape(parsed, defaultValue)
+    ? parsed
+    : cloneDefaultValue(defaultValue);
 };

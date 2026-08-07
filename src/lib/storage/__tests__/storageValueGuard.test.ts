@@ -1,4 +1,5 @@
 import {
+  cloneDefaultValue,
   matchesDefaultShape,
   parseStorageValue,
 } from "@/lib/storage/core-modules/storageValueGuard";
@@ -82,4 +83,64 @@ describe("parseStorageValue", () => {
     expect(() => parseStorageValue("{broken", {})).toThrow();
   });
 
+  describe("フォールバック時にdefaultValueを共有しない", () => {
+    // 呼び出し元(storageMutations等)は取得結果へ直接pushするため、
+    // defaultValueを参照のまま返すとモジュールレベルの共有定数が汚染され、
+    // 以降の取得結果に前回のデータが混入してしまう。
+
+    it("dataが無い場合、返り値を変更してもdefaultValueは変わらない", () => {
+      const defaultValue: Record<string, string[]> = {};
+
+      const result = parseStorageValue(null, defaultValue);
+      result["2026-01-01"] = ["朝食"];
+
+      expect(defaultValue).toEqual({});
+    });
+
+    it("形が一致しない場合、返り値を変更してもdefaultValueは変わらない", () => {
+      const defaultValue: Record<string, string[]> = {};
+
+      const result = parseStorageValue("null", defaultValue);
+      result["2026-01-01"] = ["朝食"];
+
+      expect(defaultValue).toEqual({});
+    });
+
+    it("ネストしたオブジェクトも共有しない", () => {
+      const defaultValue = { expenses: {} as Record<string, number[]> };
+
+      const result = parseStorageValue(null, defaultValue);
+      result.expenses["2026-01"] = [100];
+
+      expect(defaultValue.expenses).toEqual({});
+    });
+  });
+});
+
+describe("cloneDefaultValue", () => {
+  it("オブジェクトは複製して返す", () => {
+    const value = { a: 1 };
+
+    expect(cloneDefaultValue(value)).not.toBe(value);
+    expect(cloneDefaultValue(value)).toEqual(value);
+  });
+
+  it("配列は複製して返す", () => {
+    const value = [1, 2];
+
+    expect(cloneDefaultValue(value)).not.toBe(value);
+    expect(cloneDefaultValue(value)).toEqual(value);
+  });
+
+  it("ネストした値も複製する", () => {
+    const value = { nested: { a: 1 } };
+
+    expect(cloneDefaultValue(value).nested).not.toBe(value.nested);
+  });
+
+  it("nullとプリミティブはそのまま返す", () => {
+    expect(cloneDefaultValue(null)).toBeNull();
+    expect(cloneDefaultValue(42)).toBe(42);
+    expect(cloneDefaultValue("x")).toBe("x");
+  });
 });
