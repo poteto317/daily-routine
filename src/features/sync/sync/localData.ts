@@ -48,7 +48,8 @@ import {
   saveTodoListSyncData,
 } from "./todoListSyncData";
 import { collectLatestTimestamp } from "./timestamp";
-import type { SyncData } from "./types";
+import { normalizeCoreSyncData } from "./syncDataNormalizer";
+import type { SyncData, SyncPayload } from "./types";
 
 export const collectLocalSyncData = (): Omit<
   SyncData,
@@ -74,23 +75,45 @@ export const saveSyncDataToLocal = (
   data: Partial<SyncData>,
   options?: { skipTimestampUpdate?: boolean },
 ): void => {
+  // 本関数はクラウドからのダウンロードとスナップショット復元の両方で使われる。
+  // どちらの経路でも、渡されたデータに存在しないフィールドは「空」ではなく
+  // 「その機能を知らない古いバージョンが書いたため情報がない」とみなし、
+  // ローカルの値を維持する（データを消さない側に倒す）。
+  //
+  // 型注釈により、SyncPayloadへフィールドを追加した際にいずれの正規化関数でも
+  // 扱われていなければコンパイルエラーになる。
+  // （収集側のcollectLocalSyncDataは戻り値型で網羅が強制されているのに対し、
+  //   復元側は強制がなく、新機能のデータがクラウドから復元されないまま
+  //   気づけない状態だったため）
+  //
+  // dailyProgressだけは上記の正規化対象に含めない。他フィールドは
+  // 「明示的な空＝ユーザーが全削除した」と解釈して尊重するが、dailyProgressの
+  // nullは「その日まだ何も完了していない」を意味するため（getDailyProgressは
+  // 記録が無いときnullを返す）、これを尊重して上書きすると他端末で記録済みの
+  // 当日の完了状況を消してしまう。undefined/nullのどちらもローカルを維持する。
+  const normalized: Omit<SyncPayload, "dailyProgress"> = {
+    ...normalizeCoreSyncData(data),
+    ...normalizeBudgetSyncData(data),
+    ...normalizeTodoListSyncData(data),
+  };
+
   withSyncBatch(() => {
-    saveRoutines(data.routines ?? []);
+    saveRoutines(normalized.routines);
     if (data.dailyProgress) {
       saveDailyProgressForSync(data.dailyProgress);
     }
-    saveMonthlyHistory(data.dailyHistory ?? {});
-    saveSettings(data.settings ?? getSettings());
-    savePomodoroHistory(data.pomodoroHistory ?? {});
-    saveWorkSessionHistory(data.workSessionHistory ?? {});
-    saveWorkTemplates(data.workTemplates ?? []);
-    saveWeightHistory(data.weightHistory ?? {});
-    saveWorkoutRecordHistory(data.workoutRecordHistory ?? {});
-    saveJournalHistory(data.journalHistory ?? {});
-    saveBudgetSyncData(normalizeBudgetSyncData(data));
-    saveMealHistory(data.mealHistory ?? {});
-    savePresets(data.presets ?? []);
-    saveTodoListSyncData(normalizeTodoListSyncData(data));
+    saveMonthlyHistory(normalized.dailyHistory);
+    saveSettings(normalized.settings);
+    savePomodoroHistory(normalized.pomodoroHistory);
+    saveWorkSessionHistory(normalized.workSessionHistory);
+    saveWorkTemplates(normalized.workTemplates);
+    saveWeightHistory(normalized.weightHistory);
+    saveWorkoutRecordHistory(normalized.workoutRecordHistory);
+    saveJournalHistory(normalized.journalHistory);
+    saveBudgetSyncData(normalized);
+    saveMealHistory(normalized.mealHistory);
+    savePresets(normalized.presets);
+    saveTodoListSyncData(normalized);
   });
   if (!options?.skipTimestampUpdate) {
     setLocalDataUpdatedAt(data.lastModified ?? Date.now());

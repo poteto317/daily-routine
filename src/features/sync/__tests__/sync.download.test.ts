@@ -10,17 +10,11 @@ import { SYNC_TIMEOUT_MS } from "../sync/constants";
 import { getSyncedContentHash } from "../sync/syncedContentHash";
 import * as syncedContentHashModule from "../sync/syncedContentHash";
 import * as storageCore from "@/lib/storage/core";
-import * as budgetStorage from "@/features/budget/storage";
 import * as journalStorage from "@/features/journal/storage";
-import * as mealStorage from "@/features/meal/storage";
-import * as pomodoroStorage from "@/features/pomodoro/storage";
 import * as presetStorage from "@/features/preset/storage";
-import * as todoListsStorage from "@/features/todo-lists/storage";
 import * as routineStorage from "@/features/routine/storage";
 import * as settingsStorage from "@/features/settings/storage";
-import * as weightTrackerStorage from "@/features/weight-tracker/storage";
 import * as workoutTrackerStorage from "@/features/workout-tracker/storage";
-import * as workTrackerStorage from "@/features/work-tracker/storage";
 import {
   createSyncDataFixture,
   routineFixture,
@@ -77,7 +71,24 @@ describe("sync download", () => {
     expectSyncPayloadSavedToLocal(remoteData);
   });
 
-  it("downloadFromFirestoreは欠損項目にデフォルト値を適用して復元する", async () => {
+  it("downloadFromFirestoreはリモートに存在しない項目のローカルデータを保持する", async () => {
+    // リモートに項目が存在しないのは、その機能を知らない古いバージョンの端末が
+    // アップロードした場合がある。空の既定値で上書きするとローカルデータを
+    // 消してしまうため、欠損時はローカルの値を維持する。
+    const localWorkouts = {
+      "2026-02-12": [{ id: "w1", title: "腕立て" }],
+    };
+    const localPresets = [{ id: "p1", name: "朝ルーティン" }];
+    const localJournal = { "2026-02-12": [{ id: "j1", content: "メモ" }] };
+
+    (workoutTrackerStorage.getWorkoutRecordHistory as jest.Mock).mockReturnValue(
+      localWorkouts,
+    );
+    (presetStorage.getPresets as jest.Mock).mockReturnValue(localPresets);
+    (journalStorage.getJournalHistory as jest.Mock).mockReturnValue(
+      localJournal,
+    );
+
     mockExistingSyncDocument({
       routines: [{ id: "r1", title: "朝活" }],
       dailyHistory: {
@@ -95,24 +106,51 @@ describe("sync download", () => {
     await downloadFromFirestore({ reload: false });
 
     expect(routineStorage.saveDailyProgressForSync).not.toHaveBeenCalled();
-    expect(pomodoroStorage.savePomodoroHistory).toHaveBeenCalledWith({});
-    expect(workTrackerStorage.saveWorkSessionHistory).toHaveBeenCalledWith({});
-    expect(workTrackerStorage.saveWorkTemplates).toHaveBeenCalledWith([]);
-    expect(weightTrackerStorage.saveWeightHistory).toHaveBeenCalledWith({});
+    expect(
+      workoutTrackerStorage.saveWorkoutRecordHistory,
+    ).toHaveBeenCalledWith(localWorkouts);
+    expect(presetStorage.savePresets).toHaveBeenCalledWith(localPresets);
+    expect(journalStorage.saveJournalHistory).toHaveBeenCalledWith(localJournal);
+  });
+
+  it("dailyProgressがnullでもローカルの当日の完了状況を消さない", async () => {
+    // 他フィールドと異なり、dailyProgressのnullは「ユーザーが全削除した」ではなく
+    // 「その日まだ何も完了していない」を意味する（getDailyProgressは記録が無いとき
+    // nullを返す）。これを尊重して上書きすると、他端末で記録済みの当日の完了状況を
+    // 消してしまうため、null/undefinedのどちらもローカルを維持する。
+    mockExistingSyncDocument({
+      routines: [],
+      dailyProgress: null,
+      deviceId: "device-1",
+      lastModified: Date.now(),
+    });
+
+    await downloadFromFirestore({ reload: false });
+
+    expect(routineStorage.saveDailyProgressForSync).not.toHaveBeenCalled();
+  });
+
+  it("downloadFromFirestoreはリモートが明示的に空の項目はそのまま反映する", async () => {
+    // ユーザーが全削除した結果としての空配列/空オブジェクトは尊重する。
+    (workoutTrackerStorage.getWorkoutRecordHistory as jest.Mock).mockReturnValue(
+      { "2026-02-12": [{ id: "w1" }] },
+    );
+    (presetStorage.getPresets as jest.Mock).mockReturnValue([{ id: "p1" }]);
+
+    mockExistingSyncDocument({
+      routines: [],
+      workoutRecordHistory: {},
+      presets: [],
+      deviceId: "device-1",
+      lastModified: Date.now(),
+    });
+
+    await downloadFromFirestore({ reload: false });
+
     expect(
       workoutTrackerStorage.saveWorkoutRecordHistory,
     ).toHaveBeenCalledWith({});
-    expect(journalStorage.saveJournalHistory).toHaveBeenCalledWith({});
-    expect(budgetStorage.saveBudgetData).toHaveBeenCalledWith({
-      expenses: {},
-    });
-    expect(budgetStorage.saveBudgetCategories).toHaveBeenCalledWith([]);
-    expect(budgetStorage.saveBudgetIncomeItems).toHaveBeenCalledWith([]);
-    expect(budgetStorage.saveBudgetExpenseItems).toHaveBeenCalledWith([]);
-    expect(mealStorage.saveMealHistory).toHaveBeenCalledWith({});
     expect(presetStorage.savePresets).toHaveBeenCalledWith([]);
-    expect(todoListsStorage.saveTodoLists).toHaveBeenCalledWith([]);
-    expect(todoListsStorage.saveTodoCategories).toHaveBeenCalledWith([]);
   });
 
   it("downloadFromFirestoreはリモートデータが存在しない場合に失敗する", async () => {
