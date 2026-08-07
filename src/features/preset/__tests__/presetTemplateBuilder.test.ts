@@ -2,8 +2,7 @@ import type { Routine, RoutinePreset } from "@/types/routine";
 import {
   buildRoutineTemplatesFromRoutines,
   buildUpdatedPreset,
-  resolveCreateFilterSelection,
-} from "../presetManagerLogic";
+} from "../presetTemplateBuilder";
 
 const createRoutine = (overrides: Partial<Routine> = {}): Routine => ({
   id: "routine-1",
@@ -38,7 +37,7 @@ const createPreset = (
   ...overrides,
 });
 
-describe("presetManagerLogic", () => {
+describe("presetTemplateBuilder", () => {
   it("ルーティンからテンプレート配列を生成する", () => {
     expect(buildRoutineTemplatesFromRoutines([createRoutine()])).toEqual([
       {
@@ -78,35 +77,5 @@ describe("presetManagerLogic", () => {
         routinesToSave: [],
       }).routineTemplates,
     ).toBe(preset.routineTemplates);
-  });
-
-  it("作成フィルター曜日を追加すると該当ルーティンを選択する", () => {
-    const result = resolveCreateFilterSelection({
-      currentRoutines: [
-        createRoutine({ id: "r1", daysOfWeek: [1] }),
-        createRoutine({ id: "r2", daysOfWeek: [2] }),
-      ],
-      createFilterDays: new Set<number>(),
-      selectedRoutines: new Set<string>(),
-      day: 1,
-    });
-
-    expect(Array.from(result.nextFilterDays)).toEqual([1]);
-    expect(Array.from(result.nextSelectedRoutines)).toEqual(["r1"]);
-  });
-
-  it("作成フィルター曜日を解除すると他曜日でカバーされない選択だけ外す", () => {
-    const result = resolveCreateFilterSelection({
-      currentRoutines: [
-        createRoutine({ id: "r1", daysOfWeek: [1, 2] }),
-        createRoutine({ id: "r2", daysOfWeek: [1] }),
-      ],
-      createFilterDays: new Set<number>([1, 2]),
-      selectedRoutines: new Set<string>(["r1", "r2"]),
-      day: 1,
-    });
-
-    expect(Array.from(result.nextFilterDays)).toEqual([2]);
-    expect(Array.from(result.nextSelectedRoutines)).toEqual(["r1"]);
   });
 });

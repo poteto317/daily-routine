@@ -1,4 +1,5 @@
 import { type Routine, ROUTINE_CATEGORIES } from "@/types/routine";
+import { groupRoutinesForSelection } from "../presetRoutineGrouping";
 import {
   isPresetEditSaveDisabled,
   PRESET_EDIT_CANCEL_LABEL,
@@ -65,26 +66,26 @@ export const PresetEditSection = ({
             {PRESET_EDIT_EMPTY_ROUTINES_LABEL}
           </p>
         ) : (
-          routines.map((routine) => {
+          groupRoutinesForSelection(routines).map((group) => {
             const categoryInfo = ROUTINE_CATEGORIES.find(
-              (item) => item.value === routine.category,
+              (item) => item.value === group.routine.category,
             );
             return (
               <label
-                key={routine.id}
+                key={group.key}
                 className="flex items-center gap-2 p-1.5 hover:bg-gray-100 dark:hover:bg-gray-600 rounded cursor-pointer"
               >
                 <input
                   type="checkbox"
-                  checked={editSelectedRoutines.has(routine.id)}
-                  onChange={() => onToggleEditRoutine(routine.id)}
+                  checked={editSelectedRoutines.has(group.routine.id)}
+                  onChange={() => onToggleEditRoutine(group.routine.id)}
                   className="w-4 h-4"
                 />
                 <span className="flex-1 text-sm text-gray-900 dark:text-white">
-                  {categoryInfo?.emoji} {routine.title}
+                  {categoryInfo?.emoji} {group.routine.title}
                 </span>
                 <span className="text-xs text-gray-500 dark:text-gray-400">
-                  {routine.startTime}
+                  {group.routine.startTime}
                 </span>
               </label>
             );
