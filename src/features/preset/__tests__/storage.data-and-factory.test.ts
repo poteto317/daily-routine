@@ -89,6 +89,48 @@ describe("preset storage data/factory", () => {
     expect(getPresets()[0].routineTemplates[0].title).toBe("朝食");
   });
 
+  it("title・startTimeが文字列でないテンプレートは除外する", () => {
+    // レビュー指摘: null以外の不正要素（title/startTime欠落や別の型）は
+    // truthyチェックだけでは弾けず、そのままroutineTemplatesに混入し得た。
+    localStorage.setItem(
+      "routine-presets",
+      JSON.stringify([
+        {
+          id: "p1",
+          name: "不正テンプレート混在",
+          routineTemplates: [
+            { title: 123, startTime: "07:00", duration: 30, category: "life" },
+            { title: "朝食", startTime: null, duration: 30, category: "life" },
+            { startTime: "07:00", duration: 30, category: "life" },
+            { title: "運動", startTime: "07:30", duration: 20, category: "health" },
+          ],
+        },
+      ]),
+    );
+
+    const result = getPresets();
+
+    expect(result[0].routineTemplates).toHaveLength(1);
+    expect(result[0].routineTemplates[0].title).toBe("運動");
+  });
+
+  it("id・nameが文字列でないプリセットは除外する", () => {
+    localStorage.setItem(
+      "routine-presets",
+      JSON.stringify([
+        { id: 1, name: "IDが数値", routineTemplates: [] },
+        { id: "p2", name: null, routineTemplates: [] },
+        { name: "IDが欠落", routineTemplates: [] },
+        { id: "p4", name: "正常", routineTemplates: [] },
+      ]),
+    );
+
+    const result = getPresets();
+
+    expect(result).toHaveLength(1);
+    expect(result[0].id).toBe("p4");
+  });
+
   it("保存値が配列でない不正データなら空配列を返す", () => {
     localStorage.setItem("routine-presets", JSON.stringify({ broken: true }));
 
