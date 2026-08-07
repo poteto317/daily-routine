@@ -89,6 +89,7 @@ describe("presetEditActions", () => {
 
     const startEdit = createPresetStartEditHandler({
       presets: [preset],
+      currentRoutines: [],
       ...setters,
       setSelectedPresetId,
       setSelectedDays,

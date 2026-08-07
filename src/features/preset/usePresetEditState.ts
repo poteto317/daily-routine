@@ -30,6 +30,7 @@ export const usePresetEditState = ({
 
   const handleStartEdit = createPresetStartEditHandler({
     presets,
+    currentRoutines,
     setEditingPresetId: targetState.setEditingPresetId,
     setEditPresetName: fieldsState.setEditPresetName,
     setEditPresetDescription: fieldsState.setEditPresetDescription,

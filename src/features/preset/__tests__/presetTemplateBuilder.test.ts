@@ -1,8 +1,6 @@
 import type { Routine, RoutinePreset } from "@/types/routine";
-import {
-  buildRoutineTemplatesFromRoutines,
-  buildUpdatedPreset,
-} from "../presetTemplateBuilder";
+import { buildUpdatedPreset } from "../presetTemplateBuilder";
+import { resolveUpdatedRoutineTemplates } from "../presetTemplateMergePolicy";
 
 const createRoutine = (overrides: Partial<Routine> = {}): Routine => ({
   id: "routine-1",
@@ -38,44 +36,73 @@ const createPreset = (
 });
 
 describe("presetTemplateBuilder", () => {
-  it("ルーティンからテンプレート配列を生成する", () => {
-    expect(buildRoutineTemplatesFromRoutines([createRoutine()])).toEqual([
-      {
-        title: "朝食",
-        startTime: "07:00",
-        duration: 30,
-        category: "life",
-        description: undefined,
-        notificationMinutes: undefined,
-      },
-    ]);
-  });
-
-  it("編集用プリセットを組み立てる", () => {
+  it("名前・説明をtrimしてプリセットを組み立てる", () => {
+    const routine = createRoutine({ title: "運動", category: "health" });
     const result = buildUpdatedPreset({
       preset: createPreset(),
       name: "  更新後  ",
       description: "  新しい説明  ",
-      routinesToSave: [createRoutine({ title: "運動", category: "health" })],
+      routinesToSave: [routine],
+      currentRoutines: [routine],
     });
 
     expect(result.name).toBe("更新後");
     expect(result.description).toBe("新しい説明");
-    expect(result.routineTemplates).toEqual([
-      expect.objectContaining({ title: "運動", category: "health" }),
-    ]);
+    // テンプレート集合の中身はresolveUpdatedRoutineTemplatesの責務のため、
+    // ここでは選択したルーティンが反映されていることのみ確認する
+    expect(result.routineTemplates).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ title: "運動", category: "health" }),
+      ]),
+    );
   });
 
-  it("保存対象ルーティンが空なら既存テンプレートを維持する", () => {
+  it("説明が空白のみならundefinedにする", () => {
+    const routine = createRoutine();
+    const result = buildUpdatedPreset({
+      preset: createPreset(),
+      name: "名前",
+      description: "   ",
+      routinesToSave: [routine],
+      currentRoutines: [routine],
+    });
+
+    expect(result.description).toBeUndefined();
+  });
+
+  it("id・createdAtなど既存フィールドは維持する", () => {
     const preset = createPreset();
+    const routine = createRoutine();
+    const result = buildUpdatedPreset({
+      preset,
+      name: "名前",
+      description: "",
+      routinesToSave: [routine],
+      currentRoutines: [routine],
+    });
+
+    expect(result.id).toBe(preset.id);
+    expect(result.createdAt).toBe(preset.createdAt);
+  });
+
+  it("保持するテンプレートの決定はresolveUpdatedRoutineTemplatesに委譲する", () => {
+    const preset = createPreset();
+    const routine = createRoutine();
 
     expect(
       buildUpdatedPreset({
         preset,
         name: "名前",
         description: "",
-        routinesToSave: [],
+        routinesToSave: [routine],
+        currentRoutines: [routine],
       }).routineTemplates,
-    ).toBe(preset.routineTemplates);
+    ).toEqual(
+      resolveUpdatedRoutineTemplates({
+        preset,
+        routinesToSave: [routine],
+        currentRoutines: [routine],
+      }),
+    );
   });
 });

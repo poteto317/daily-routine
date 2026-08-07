@@ -21,6 +21,7 @@ import {
 } from "./helpers";
 import { buildUpdatedPreset } from "./presetTemplateBuilder";
 import { resolveCreateFilterSelection } from "./presetCreateFilterSelection";
+import { resolveEditSelectedRoutineIds } from "./presetEditSelectionResolver";
 
 export const loadPresetList = (): RoutinePreset[] => {
   return getPresets();
@@ -112,6 +113,7 @@ export const applyPresetSelection = (params: {
 export const startPresetEdit = (
   presets: RoutinePreset[],
   presetId: string,
+  currentRoutines: Routine[],
 ): {
   editingPresetId: string | null;
   editPresetName: string;
@@ -132,7 +134,12 @@ export const startPresetEdit = (
     editingPresetId: presetId,
     editPresetName: preset.name,
     editPresetDescription: preset.description ?? "",
-    editSelectedRoutines: new Set(),
+    // プリセットに含まれるルーティンを選択済みにして開く。
+    // 未選択で開くと、1件チェックしただけで既存内容が全置換されてしまう。
+    editSelectedRoutines: resolveEditSelectedRoutineIds(
+      preset.routineTemplates,
+      currentRoutines,
+    ),
   };
 };
 
@@ -185,6 +192,7 @@ export const savePresetEditAndReload = (params: {
       name: editPresetName,
       description: editPresetDescription,
       routinesToSave,
+      currentRoutines,
     }),
   );
   alertFn(PRESET_EDIT_SAVED_MESSAGE);
