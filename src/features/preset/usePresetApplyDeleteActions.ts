@@ -5,6 +5,7 @@ import {
   createPresetApplyHandler,
   createPresetDeleteHandler,
 } from "./presetApplyDeleteActions";
+import { createPresetDuplicateHandler } from "./presetDuplicateActions";
 
 type UsePresetApplyDeleteActionsParams = {
   presets: RoutinePreset[];
@@ -37,9 +38,14 @@ export const usePresetApplyDeleteActions = ({
     setSelectedPresetId,
     setSelectedDays,
   });
+  const handleDuplicatePreset = createPresetDuplicateHandler({
+    presets,
+    setPresets,
+  });
 
   return createPresetApplyDeleteActionsResult({
     handleApplyPreset,
     handleDeletePreset,
+    handleDuplicatePreset,
   });
 };

@@ -9,11 +9,16 @@ jest.mock("../presetApplyDeleteActions", () => ({
   createPresetDeleteHandler: jest.fn(),
 }));
 
+jest.mock("../presetDuplicateActions", () => ({
+  createPresetDuplicateHandler: jest.fn(),
+}));
+
 import { createPresetApplyDeleteActionsResult } from "../presetApplyDeleteActionsResult";
 import {
   createPresetApplyHandler,
   createPresetDeleteHandler,
 } from "../presetApplyDeleteActions";
+import { createPresetDuplicateHandler } from "../presetDuplicateActions";
 import { usePresetApplyDeleteActions } from "../usePresetApplyDeleteActions";
 
 describe("usePresetApplyDeleteActions", () => {
@@ -24,12 +29,14 @@ describe("usePresetApplyDeleteActions", () => {
     );
   });
 
-  it("delete/apply handler を組み立てて委譲する", () => {
+  it("delete/apply/duplicate handler を組み立てて委譲する", () => {
     const handleDeletePreset = jest.fn();
     const handleApplyPreset = jest.fn();
+    const handleDuplicatePreset = jest.fn();
     const resultShape = {
       handleDeletePreset: jest.fn(),
       handleApplyPreset: jest.fn(),
+      handleDuplicatePreset: jest.fn(),
       composed: true,
     };
 
@@ -37,6 +44,9 @@ describe("usePresetApplyDeleteActions", () => {
       handleDeletePreset,
     );
     (createPresetApplyHandler as jest.Mock).mockReturnValue(handleApplyPreset);
+    (createPresetDuplicateHandler as jest.Mock).mockReturnValue(
+      handleDuplicatePreset,
+    );
     (createPresetApplyDeleteActionsResult as jest.Mock).mockReturnValue(
       resultShape,
     );
@@ -66,17 +76,20 @@ describe("usePresetApplyDeleteActions", () => {
     expect(createPresetApplyDeleteActionsResult).toHaveBeenCalledWith({
       handleDeletePreset: expect.any(Function),
       handleApplyPreset: expect.any(Function),
+      handleDuplicatePreset: expect.any(Function),
     });
 
     const builtHandlers = (createPresetApplyDeleteActionsResult as jest.Mock)
       .mock.calls[0][0] as {
       handleDeletePreset: (presetId: string) => void;
       handleApplyPreset: () => void;
+      handleDuplicatePreset: (presetId: string) => void;
     };
 
     act(() => {
       builtHandlers.handleDeletePreset("p1");
       builtHandlers.handleApplyPreset();
+      builtHandlers.handleDuplicatePreset("p1");
     });
 
     expect(createPresetDeleteHandler).toHaveBeenCalledWith({
@@ -90,7 +103,12 @@ describe("usePresetApplyDeleteActions", () => {
       setSelectedPresetId: params.setSelectedPresetId,
       setSelectedDays: params.setSelectedDays,
     });
+    expect(createPresetDuplicateHandler).toHaveBeenCalledWith({
+      presets: params.presets,
+      setPresets: params.setPresets,
+    });
     expect(handleDeletePreset).toHaveBeenCalledWith("p1");
     expect(handleApplyPreset).toHaveBeenCalled();
+    expect(handleDuplicatePreset).toHaveBeenCalledWith("p1");
   });
 });
