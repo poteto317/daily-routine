@@ -40,7 +40,22 @@ npm run test:ci
 npm run test:watch
 ```
 
-### 3. ビルドテスト
+### 3. E2Eテスト
+
+Playwrightで、実際にブラウザを操作する主要フローを検証します（`e2e/`配下）。
+
+```bash
+# E2Eテスト実行（Playwrightがdevサーバーを自動起動）
+npm run test:e2e
+
+# UIモードで実行（ブラウザ操作の様子を確認しながらデバッグ）
+npm run test:e2e:ui
+```
+
+- Firebase未設定でもlocalhostのローカル疑似ログイン（`NEXT_PUBLIC_ENABLE_LOCAL_AUTH`）で動作するため、Firebase認証情報の設定は不要です。
+- CIでは`chromium`のみ実行しています。
+
+### 4. ビルドテスト
 
 ```bash
 # 型チェック

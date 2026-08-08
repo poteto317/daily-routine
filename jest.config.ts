@@ -30,6 +30,7 @@ const config: Config = {
   testPathIgnorePatterns: [
     "/node_modules/",
     "/firebase-functions/lib/",
+    "/e2e/",
   ],
   collectCoverageFrom: [
     "src/**/*.{js,jsx,ts,tsx}",

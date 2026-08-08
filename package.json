@@ -21,6 +21,8 @@
     "test:ci": "cross-env TZ=Asia/Tokyo jest --ci --coverage --forceExit",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
     "verify:fast": "npm run tailwind:scan && npm run lint && npm run typecheck && npm test -- --runInBand",
     "verify": "npm run verify:fast && npm run build"
   },
@@ -41,6 +43,7 @@
     "workbox-strategies": "^7.4.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.62.1",
     "@storybook/nextjs-vite": "^10.4.0",
     "@tailwindcss/postcss": "^4",
     "@testing-library/jest-dom": "^6.9.1",
