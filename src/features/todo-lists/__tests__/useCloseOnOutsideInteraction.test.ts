@@ -135,8 +135,7 @@ describe("useCloseOnOutsideInteraction", () => {
     addSpy.mockRestore();
   });
 
-  it("isActive が true から false に変わるとリスナーが解除される", () => {
-    const removeSpy = jest.spyOn(document, "removeEventListener");
+  it("isActive が true から false に変わると、以後 mousedown/Escape で onClose が呼ばれなくなる", () => {
     const onClose = jest.fn();
     const { rerender } = renderHook(
       ({ isActive }) =>
@@ -146,13 +145,33 @@ describe("useCloseOnOutsideInteraction", () => {
 
     rerender({ isActive: false });
 
-    const removedEvents = removeSpy.mock.calls.map(([event]) => event);
-    expect(removedEvents).toEqual(expect.arrayContaining(["mousedown", "keydown"]));
-    removeSpy.mockRestore();
+    document.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }));
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
+
+    expect(onClose).not.toHaveBeenCalled();
   });
 
-  it("アンマウント時にリスナーが解除される", () => {
-    const removeSpy = jest.spyOn(document, "removeEventListener");
+  it("includeTouch が true のとき、isActive が false に変わると touchstart でも onClose が呼ばれなくなる", () => {
+    const onClose = jest.fn();
+    const { rerender } = renderHook(
+      ({ isActive }) =>
+        useCloseOnOutsideInteraction({
+          isActive,
+          selector: "[data-test-menu]",
+          onClose,
+          includeTouch: true,
+        }),
+      { initialProps: { isActive: true } },
+    );
+
+    rerender({ isActive: false });
+
+    document.dispatchEvent(new Event("touchstart", { bubbles: true }));
+
+    expect(onClose).not.toHaveBeenCalled();
+  });
+
+  it("アンマウント時にリスナーが解除され、以後 mousedown/Escape で onClose が呼ばれなくなる", () => {
     const onClose = jest.fn();
     const { unmount } = renderHook(() =>
       useCloseOnOutsideInteraction({ isActive: true, selector: "[data-test-menu]", onClose }),
@@ -160,8 +179,27 @@ describe("useCloseOnOutsideInteraction", () => {
 
     unmount();
 
-    const removedEvents = removeSpy.mock.calls.map(([event]) => event);
-    expect(removedEvents).toEqual(expect.arrayContaining(["mousedown", "keydown"]));
-    removeSpy.mockRestore();
+    document.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }));
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
+
+    expect(onClose).not.toHaveBeenCalled();
+  });
+
+  it("includeTouch が true のとき、アンマウント後は touchstart でも onClose が呼ばれなくなる", () => {
+    const onClose = jest.fn();
+    const { unmount } = renderHook(() =>
+      useCloseOnOutsideInteraction({
+        isActive: true,
+        selector: "[data-test-menu]",
+        onClose,
+        includeTouch: true,
+      }),
+    );
+
+    unmount();
+
+    document.dispatchEvent(new Event("touchstart", { bubbles: true }));
+
+    expect(onClose).not.toHaveBeenCalled();
   });
 });

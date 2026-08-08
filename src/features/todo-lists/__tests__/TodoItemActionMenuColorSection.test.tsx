@@ -16,4 +16,11 @@ describe("TodoItemActionMenuColorSection", () => {
     fireEvent.click(redSwatch);
     expect(onSelect).toHaveBeenCalledWith("bg-red-50");
   });
+
+  it("data-color-picker 属性を持たない（useColorPickerControllerの一括ピッカー用の外側クリック判定に誤って含まれないようにするため）", () => {
+    const { container } = render(
+      <TodoItemActionMenuColorSection selectedColor={undefined} onSelect={jest.fn()} />,
+    );
+    expect(container.querySelector("[data-color-picker]")).not.toBeInTheDocument();
+  });
 });

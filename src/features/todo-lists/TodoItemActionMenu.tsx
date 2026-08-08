@@ -1,5 +1,14 @@
 "use client";
 
+/**
+ * Todoアイテムのアクションメニュー（PC/モバイル共通、常時表示）。
+ * ⋮ トリガーボタン（TodoItemActionMenuTrigger）と、クリック/タップで開く
+ * ドロップダウンメニュー（TodoItemActionMenuDropdown）の2コンポーネントで構成する。
+ * SwipeableRoutineItem の overflow-hidden の外に配置するため、
+ * ドロップダウンは <li> 直下（SwipeableRoutineItem の兄弟）として
+ * 親コンポーネントがレンダリングする必要がある。
+ */
+
 import type { TodoCategory, TodoItemBgColorValue, TodoListItem } from "./types";
 import { TodoItemActionMenuEditButton } from "./TodoItemActionMenuEditButton";
 import { TodoItemActionMenuInsertButton } from "./TodoItemActionMenuInsertButton";
@@ -35,13 +44,7 @@ type TodoItemActionMenuProps = {
   onDeleteItemAction: (listId: string, itemId: string, title: string) => void;
 };
 
-/**
- * Todoアイテムのアクションメニュー（PC/モバイル共通、常時表示）。
- * ⋮ トリガーボタンと、クリック/タップで開くドロップダウンメニューを含む。
- * SwipeableRoutineItem の overflow-hidden の外に配置するため、
- * ドロップダウンは <li> 直下（SwipeableRoutineItem の兄弟）として
- * 親コンポーネントがレンダリングする必要がある。
- */
+/** アクションメニューの ⋮ トリガーボタン。クリックでドロップダウンの開閉をトグルする。 */
 export const TodoItemActionMenuTrigger = ({
   item,
   itemMenuItemId,
