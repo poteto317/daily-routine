@@ -6,6 +6,7 @@ jest.mock("@/features/preset/storage", () => ({
   createPresetFromRoutines: jest.fn(),
   createRoutinesFromPreset: jest.fn(),
   deletePreset: jest.fn(),
+  duplicatePreset: jest.fn(),
   getPresets: jest.fn(),
   updatePreset: jest.fn(),
 }));
@@ -15,6 +16,7 @@ import {
   createPresetFromRoutines,
   createRoutinesFromPreset,
   deletePreset,
+  duplicatePreset,
   getPresets,
   updatePreset,
 } from "@/features/preset/storage";
@@ -30,6 +32,9 @@ const mockCreateRoutinesFromPreset =
   >;
 const mockDeletePreset = deletePreset as jest.MockedFunction<
   typeof deletePreset
+>;
+const mockDuplicatePreset = duplicatePreset as jest.MockedFunction<
+  typeof duplicatePreset
 >;
 const mockGetPresets = getPresets as jest.MockedFunction<typeof getPresets>;
 const mockUpdatePreset = updatePreset as jest.MockedFunction<
@@ -154,6 +159,36 @@ describe("usePresetManagerState", () => {
     });
 
     expect(mockDeletePreset).toHaveBeenCalledWith("p1");
+  });
+
+  it("プリセットを複製する", () => {
+    const duplicated = {
+      id: "p1-copy",
+      name: "朝ルーティンのコピー",
+      description: "desc",
+      routineTemplates: [
+        {
+          title: "朝食",
+          startTime: "07:00",
+          duration: 30,
+          category: "life" as const,
+        },
+      ],
+      createdAt: "2026-03-08T00:00:00.000Z",
+      updatedAt: "2026-03-08T00:00:00.000Z",
+    };
+    mockDuplicatePreset.mockReturnValue(duplicated);
+
+    const { result } = renderHook(() =>
+      usePresetManagerState({ currentRoutines, onApplyPreset }),
+    );
+
+    act(() => {
+      result.current.handleDuplicatePreset("p1");
+    });
+
+    expect(mockDuplicatePreset).toHaveBeenCalledWith(preset);
+    expect(mockAddPreset).toHaveBeenCalledWith(duplicated);
   });
 
   it("選択不足では適用時にアラートを出す", () => {

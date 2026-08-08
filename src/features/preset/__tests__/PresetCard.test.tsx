@@ -47,6 +47,19 @@ describe("PresetCard", () => {
     expect(screen.getByRole("button", { name: /削除/ })).toBeInTheDocument();
   });
 
+  it("編集・コピー・削除ボタンが絵文字+テキストの可視ラベルを表示する（aria-labelではなく実表示内容を検証）", () => {
+    render(<PresetCard {...defaultProps} />);
+    expect(
+      screen.getByRole("button", { name: /編集/ }),
+    ).toHaveTextContent("✏️ 編集");
+    expect(
+      screen.getByRole("button", { name: /コピー/ }),
+    ).toHaveTextContent("📄 コピー");
+    expect(
+      screen.getByRole("button", { name: /削除/ }),
+    ).toHaveTextContent("🗑️ 削除");
+  });
+
   it("コピーボタンクリックで onDuplicate が呼ばれ、カード選択は発火しない", () => {
     render(<PresetCard {...defaultProps} />);
     fireEvent.click(screen.getByRole("button", { name: /コピー/ }));
