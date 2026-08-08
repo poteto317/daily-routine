@@ -47,3 +47,17 @@ export const createRoutinesFromPreset = (
     isCompleted: false,
   }));
 };
+
+export const duplicatePreset = (preset: RoutinePreset): RoutinePreset => {
+  const now = new Date().toISOString();
+  return {
+    id: createPresetId(),
+    name: `${preset.name}のコピー`,
+    description: preset.description,
+    routineTemplates: preset.routineTemplates.map((template) => ({
+      ...template,
+    })),
+    createdAt: now,
+    updatedAt: now,
+  };
+};
