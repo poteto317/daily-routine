@@ -23,6 +23,10 @@
 /.next/
 /out/
 
+# next dev が自動生成するAIエージェント向け規約ファイル（next devのたびに再生成される）
+/AGENTS.md
+/CLAUDE.md
+
 # production
 /build
 
