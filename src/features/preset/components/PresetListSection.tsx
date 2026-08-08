@@ -13,6 +13,7 @@ interface PresetListSectionProps {
   editSelectedRoutines: Set<string>;
   onSelectPreset: (presetId: string | null) => void;
   onDeletePreset: (presetId: string) => void;
+  onDuplicatePreset: (presetId: string) => void;
   onToggleDay: (day: number) => void;
   onApplyPreset: () => void;
   onStartEdit: (presetId: string) => void;
@@ -34,6 +35,7 @@ export const PresetListSection = ({
   editSelectedRoutines,
   onSelectPreset,
   onDeletePreset,
+  onDuplicatePreset,
   onToggleDay,
   onApplyPreset,
   onStartEdit,
@@ -70,6 +72,7 @@ export const PresetListSection = ({
               editSelectedRoutines={editSelectedRoutines}
               onSelect={() => onSelectPreset(isSelected ? null : preset.id)}
               onDelete={() => onDeletePreset(preset.id)}
+              onDuplicate={() => onDuplicatePreset(preset.id)}
               onToggleDay={onToggleDay}
               onApply={onApplyPreset}
               onStartEdit={() => onStartEdit(preset.id)}

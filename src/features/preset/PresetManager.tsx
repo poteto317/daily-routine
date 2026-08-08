@@ -60,6 +60,7 @@ export const PresetManager = ({
           editSelectedRoutines={state.editSelectedRoutines}
           onSelectPreset={state.setSelectedPresetId}
           onDeletePreset={state.handleDeletePreset}
+          onDuplicatePreset={state.handleDuplicatePreset}
           onToggleDay={state.toggleDaySelection}
           onApplyPreset={state.handleApplyPreset}
           onStartEdit={state.handleStartEdit}

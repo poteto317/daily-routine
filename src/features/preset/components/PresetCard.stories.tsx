@@ -15,6 +15,7 @@ const meta = {
     editPresetDescription: "",
     onSelect: fn(),
     onDelete: fn(),
+    onDuplicate: fn(),
     onToggleDay: fn(),
     onApply: fn(),
     onStartEdit: fn(),
@@ -102,5 +103,15 @@ export const ClickDelete: Story = {
     const deleteButton = canvas.getByRole("button", { name: /削除/ });
     await userEvent.click(deleteButton);
     expect(args.onDelete).toHaveBeenCalledOnce();
+  },
+};
+
+export const ClickDuplicate: Story = {
+  args: { preset, isSelected: false, isEditing: false, selectedDays: new Set<number>(), editSelectedRoutines: new Set<string>() },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    const duplicateButton = canvas.getByRole("button", { name: /コピー/ });
+    await userEvent.click(duplicateButton);
+    expect(args.onDuplicate).toHaveBeenCalledOnce();
   },
 };

@@ -1,19 +1,13 @@
+import { type Routine, type RoutinePreset } from "@/types/routine";
 import {
-  type Routine,
-  type RoutinePreset,
-  ROUTINE_CATEGORIES,
-} from "@/types/routine";
-import { DAY_LABELS } from "@/features/preset/presetConstants";
-import {
-  formatRoutineTemplateSummary,
-  getDayButtonClassName,
   getPresetCardClassName,
-  isApplyButtonDisabled,
-  PRESET_APPLY_LABEL,
-  PRESET_EDIT_LABEL,
   PRESET_ROUTINE_COUNT_SUFFIX,
 } from "../helpers";
 import { PresetEditSection } from "./PresetEditSection";
+import { PresetApplySection } from "./PresetApplySection";
+import { PresetCardEditButton } from "./PresetCardEditButton";
+import { PresetCardDuplicateButton } from "./PresetCardDuplicateButton";
+import { PresetCardDeleteButton } from "./PresetCardDeleteButton";
 
 interface PresetCardProps {
   preset: RoutinePreset;
@@ -26,6 +20,7 @@ interface PresetCardProps {
   editSelectedRoutines: Set<string>;
   onSelect: () => void;
   onDelete: () => void;
+  onDuplicate: () => void;
   onToggleDay: (day: number) => void;
   onApply: () => void;
   onStartEdit: () => void;
@@ -47,6 +42,7 @@ export const PresetCard = ({
   editSelectedRoutines,
   onSelect,
   onDelete,
+  onDuplicate,
   onToggleDay,
   onApply,
   onStartEdit,
@@ -75,30 +71,12 @@ export const PresetCard = ({
         </p>
       </div>
       <div className="flex items-center gap-1">
-        <button
-          onClick={(event) => {
-            event.stopPropagation();
-            onStartEdit();
-          }}
-          className="text-blue-400 hover:text-blue-600 p-2"
-          aria-label="プリセットを編集"
-        >
-          {PRESET_EDIT_LABEL}
-        </button>
-        <button
-          onClick={(event) => {
-            event.stopPropagation();
-            onDelete();
-          }}
-          className="text-red-500 hover:text-red-700 p-2"
-          aria-label="プリセットを削除"
-        >
-          🗑️
-        </button>
+        <PresetCardEditButton onClick={onStartEdit} />
+        <PresetCardDuplicateButton onClick={onDuplicate} />
+        <PresetCardDeleteButton onClick={onDelete} />
       </div>
     </div>
 
-    {/* 編集モード */}
     {isEditing && (
       <PresetEditSection
         routines={editRoutines}
@@ -113,59 +91,13 @@ export const PresetCard = ({
       />
     )}
 
-    {/* 適用モード（選択中かつ編集中でない場合） */}
     {isSelected && !isEditing && (
-      <div className="mt-4 pt-4 border-t dark:border-gray-600">
-        <div className="space-y-1 mb-4">
-          {preset.routineTemplates.map((template, index) => {
-            const categoryInfo = ROUTINE_CATEGORIES.find(
-              (item) => item.value === template.category,
-            );
-            return (
-              <div
-                key={index}
-                className="text-sm text-gray-600 dark:text-gray-300"
-              >
-                {formatRoutineTemplateSummary({
-                  categoryEmoji: categoryInfo?.emoji ?? "",
-                  title: template.title,
-                  startTime: template.startTime,
-                  duration: template.duration,
-                })}
-              </div>
-            );
-          })}
-        </div>
-
-        <div className="mb-4 flex gap-2 flex-wrap">
-          {DAY_LABELS.map((label, day) => (
-            <button
-              key={day}
-              onClick={(event) => {
-                event.stopPropagation();
-                onToggleDay(day);
-              }}
-              className={getDayButtonClassName(
-                selectedDays.has(day),
-                day === 7,
-              )}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
-
-        <button
-          onClick={(event) => {
-            event.stopPropagation();
-            onApply();
-          }}
-          disabled={isApplyButtonDisabled(selectedDays.size)}
-          className="w-full bg-blue-500 hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white px-4 py-2 rounded-lg transition-colors"
-        >
-          {PRESET_APPLY_LABEL}
-        </button>
-      </div>
+      <PresetApplySection
+        preset={preset}
+        selectedDays={selectedDays}
+        onToggleDay={onToggleDay}
+        onApply={onApply}
+      />
     )}
   </div>
 );

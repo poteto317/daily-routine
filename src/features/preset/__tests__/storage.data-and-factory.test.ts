@@ -1,6 +1,7 @@
 import {
   createPresetFromRoutines,
   createRoutinesFromPreset,
+  duplicatePreset,
   getPresets,
   savePresets,
 } from "../storage";
@@ -178,5 +179,55 @@ describe("preset storage data/factory", () => {
     expect(routines[0].daysOfWeek).toEqual([1, 2, 3]);
     expect(routines[0].isCompleted).toBe(false);
     expect(routines[1].title).toBe("運動");
+  });
+
+  it("プリセットを複製し、新しいidと「のコピー」を付けた名前を発行する", () => {
+    const preset = createPreset({
+      id: "preset1",
+      name: "朝ルーティン",
+      description: "朝の準備",
+      routineTemplates: [
+        { title: "朝食", startTime: "07:00", duration: 30, category: "life" },
+      ],
+    });
+
+    const duplicated = duplicatePreset(preset);
+
+    expect(duplicated.id).not.toBe(preset.id);
+    expect(duplicated.name).toBe("朝ルーティンのコピー");
+    expect(duplicated.description).toBe("朝の準備");
+    expect(duplicated.routineTemplates).toEqual(preset.routineTemplates);
+  });
+
+  it("複製後にroutineTemplates配列を書き換えても元プリセットに影響しない", () => {
+    const preset = createPreset({
+      routineTemplates: [
+        { title: "朝食", startTime: "07:00", duration: 30, category: "life" },
+      ],
+    });
+
+    const duplicated = duplicatePreset(preset);
+    duplicated.routineTemplates.push({
+      title: "追加された項目",
+      startTime: "12:00",
+      duration: 10,
+      category: "life",
+    });
+    duplicated.routineTemplates[0].title = "書き換えられたタイトル";
+
+    expect(preset.routineTemplates).toHaveLength(1);
+    expect(preset.routineTemplates[0].title).toBe("朝食");
+  });
+
+  it("複製のcreatedAt/updatedAtは元プリセットの値を引き継がない", () => {
+    const preset = createPreset({
+      createdAt: "2020-01-01T00:00:00.000Z",
+      updatedAt: "2020-01-01T00:00:00.000Z",
+    });
+
+    const duplicated = duplicatePreset(preset);
+
+    expect(duplicated.createdAt).not.toBe(preset.createdAt);
+    expect(duplicated.updatedAt).not.toBe(preset.updatedAt);
   });
 });

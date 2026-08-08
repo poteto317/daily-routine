@@ -30,6 +30,7 @@ export const createPresetManagerStateResult = ({
     setSelectedPresetId: baseState.setSelectedPresetId,
     handleDeletePreset: actionHandlers.handleDeletePreset,
     handleApplyPreset: actionHandlers.handleApplyPreset,
+    handleDuplicatePreset: actionHandlers.handleDuplicatePreset,
     toggleDaySelection: actionHandlers.toggleDaySelection,
     ...creationState,
     ...editState,

@@ -14,6 +14,7 @@ const meta = {
     editingPresetId: null,
     onSelectPreset: fn(),
     onDeletePreset: fn(),
+    onDuplicatePreset: fn(),
     onToggleDay: fn(),
     onApplyPreset: fn(),
     onStartEdit: fn(),
