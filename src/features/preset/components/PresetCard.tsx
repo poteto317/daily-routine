@@ -10,6 +10,8 @@ import {
   getPresetCardClassName,
   isApplyButtonDisabled,
   PRESET_APPLY_LABEL,
+  PRESET_DELETE_LABEL,
+  PRESET_DUPLICATE_LABEL,
   PRESET_EDIT_LABEL,
   PRESET_ROUTINE_COUNT_SUFFIX,
 } from "../helpers";
@@ -26,6 +28,7 @@ interface PresetCardProps {
   editSelectedRoutines: Set<string>;
   onSelect: () => void;
   onDelete: () => void;
+  onDuplicate: () => void;
   onToggleDay: (day: number) => void;
   onApply: () => void;
   onStartEdit: () => void;
@@ -47,6 +50,7 @@ export const PresetCard = ({
   editSelectedRoutines,
   onSelect,
   onDelete,
+  onDuplicate,
   onToggleDay,
   onApply,
   onStartEdit,
@@ -80,7 +84,7 @@ export const PresetCard = ({
             event.stopPropagation();
             onStartEdit();
           }}
-          className="text-blue-400 hover:text-blue-600 p-2"
+          className="text-blue-400 hover:text-blue-600 p-2 text-sm whitespace-nowrap"
           aria-label="プリセットを編集"
         >
           {PRESET_EDIT_LABEL}
@@ -88,12 +92,22 @@ export const PresetCard = ({
         <button
           onClick={(event) => {
             event.stopPropagation();
+            onDuplicate();
+          }}
+          className="text-gray-400 hover:text-gray-600 p-2 text-sm whitespace-nowrap"
+          aria-label="プリセットをコピー"
+        >
+          {PRESET_DUPLICATE_LABEL}
+        </button>
+        <button
+          onClick={(event) => {
+            event.stopPropagation();
             onDelete();
           }}
-          className="text-red-500 hover:text-red-700 p-2"
+          className="text-red-500 hover:text-red-700 p-2 text-sm whitespace-nowrap"
           aria-label="プリセットを削除"
         >
-          🗑️
+          {PRESET_DELETE_LABEL}
         </button>
       </div>
     </div>
