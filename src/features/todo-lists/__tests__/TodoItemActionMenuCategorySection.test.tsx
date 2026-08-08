@@ -29,4 +29,31 @@ describe("TodoItemActionMenuCategorySection", () => {
     fireEvent.click(within(radiogroup).getByRole("radio", { name: "仕事" }));
     expect(onSelect).toHaveBeenCalledWith("cat-work");
   });
+
+  it("未分類選択で onSelect が undefined で呼ばれる（カテゴリクリア）", () => {
+    const onSelect = jest.fn();
+    render(
+      <TodoItemActionMenuCategorySection
+        categories={categories}
+        selectedCategoryId="cat-work"
+        onSelect={onSelect}
+      />,
+    );
+    const radiogroup = screen.getByRole("radiogroup", { name: "カテゴリ" });
+    fireEvent.click(within(radiogroup).getByRole("radio", { name: "未分類" }));
+    expect(onSelect).toHaveBeenCalledWith(undefined);
+  });
+
+  it("categories が空配列でも未分類のみのradiogroupを表示する", () => {
+    render(
+      <TodoItemActionMenuCategorySection
+        categories={[]}
+        selectedCategoryId={undefined}
+        onSelect={jest.fn()}
+      />,
+    );
+    const radiogroup = screen.getByRole("radiogroup", { name: "カテゴリ" });
+    expect(within(radiogroup).getAllByRole("radio")).toHaveLength(1);
+    expect(within(radiogroup).getByRole("radio", { name: "未分類" })).toBeInTheDocument();
+  });
 });
