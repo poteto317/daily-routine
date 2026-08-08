@@ -9,6 +9,7 @@ describe("requestNotificationPermission", () => {
     jest.clearAllMocks();
     Object.defineProperty(global.Notification, "permission", {
       value: "default",
+      writable: true,
       configurable: true,
     });
   });
@@ -57,6 +58,7 @@ describe("hasNotificationPermission", () => {
   afterEach(() => {
     Object.defineProperty(global.Notification, "permission", {
       value: "default",
+      writable: true,
       configurable: true,
     });
   });

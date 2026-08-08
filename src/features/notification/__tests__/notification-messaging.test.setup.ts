@@ -20,8 +20,14 @@ class FakeMessageChannel {
   }
 }
 
+const originalMessageChannel = global.MessageChannel;
+
 global.MessageChannel =
   FakeMessageChannel as unknown as typeof globalThis.MessageChannel;
+
+afterAll(() => {
+  global.MessageChannel = originalMessageChannel;
+});
 
 export const setServiceWorker = (value: unknown) => {
   Object.defineProperty(global.navigator, "serviceWorker", {

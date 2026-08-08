@@ -74,6 +74,9 @@ describe("notification-messaging", () => {
       });
 
       const resultPromise = scheduleNotifications(schedules);
+      // navigator.serviceWorker.ready の await(microtask)を解決させてから
+      // setTimeoutが登録された状態を確実に作った上でタイマーを進める
+      await jest.advanceTimersByTimeAsync(0);
       await jest.advanceTimersByTimeAsync(10000);
 
       await expect(resultPromise).resolves.toBe(false);
@@ -142,6 +145,9 @@ describe("notification-messaging", () => {
       });
 
       const resultPromise = clearNotificationSchedules();
+      // navigator.serviceWorker.ready の await(microtask)を解決させてから
+      // setTimeoutが登録された状態を確実に作った上でタイマーを進める
+      await jest.advanceTimersByTimeAsync(0);
       await jest.advanceTimersByTimeAsync(5000);
 
       await expect(resultPromise).resolves.toBe(false);
