@@ -158,6 +158,42 @@ describe("headerMenuItemHelpers", () => {
     expect(nonAdminItems.some((item) => item.id === "test-matrix")).toBe(false);
   });
 
+  it("不具合報告は feature 設定に関わらず常に表示される", () => {
+    const isPageType = (route: string): route is HeaderMenuItem["route"] =>
+      route !== "invalid";
+
+    const items = filterStaticHeaderMenuItems({
+      visibleFeatures: baseVisibleFeatures,
+      isAdmin: false,
+      isPageType,
+    });
+    expect(items.some((item) => item.id === "bug-report")).toBe(true);
+
+    const itemsWithoutVisibleFeatures = filterStaticHeaderMenuItems({
+      visibleFeatures: undefined,
+      isAdmin: false,
+      isPageType,
+    });
+    expect(
+      itemsWithoutVisibleFeatures.some((item) => item.id === "bug-report"),
+    ).toBe(true);
+  });
+
+  it("常時表示対象（home/settings/bug-report）はvisibleFeaturesの内容に関わらずすべて表示される", () => {
+    const isPageType = (route: string): route is HeaderMenuItem["route"] =>
+      route !== "invalid";
+
+    const items = filterStaticHeaderMenuItems({
+      visibleFeatures: baseVisibleFeatures,
+      isAdmin: false,
+      isPageType,
+    });
+
+    expect(items.some((item) => item.id === "home")).toBe(true);
+    expect(items.some((item) => item.id === "settings")).toBe(true);
+    expect(items.some((item) => item.id === "bug-report")).toBe(true);
+  });
+
   it("並び替えで home を先頭、settings を末尾、legacy todo-lists 順序を維持する", () => {
     const staticItems: HeaderMenuItem[] = [
       { id: "home", label: "Home", icon: "🏠", route: "home" },
