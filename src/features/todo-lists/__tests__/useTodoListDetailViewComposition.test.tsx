@@ -97,15 +97,15 @@ const defaultColorPickerMock = {
   closeBulkColorPicker: jest.fn(),
 };
 
-const defaultMobileMenuMock = {
-  mobileMenuItemId: null,
-  toggleMobileMenu: jest.fn(),
-  closeMobileMenu: jest.fn(),
+const defaultItemMenuMock = {
+  itemMenuItemId: null,
+  toggleItemMenu: jest.fn(),
+  closeItemMenu: jest.fn(),
 };
 
 const defaultUIControllersMock = {
   colorPicker: defaultColorPickerMock,
-  mobileMenu: defaultMobileMenuMock,
+  itemMenu: defaultItemMenuMock,
 };
 
 const defaultInlineInsertMock = {
@@ -241,9 +241,9 @@ describe("useTodoListDetailViewComposition", () => {
     expect(result.current.hasClipboard).toBe(false);
     // viewState グループ
     expect(result.current.viewState.hideCompleted).toBe(false);
-    // uiControllers グループ: colorPicker / mobileMenu の名前付きサブグループ
+    // uiControllers グループ: colorPicker / itemMenu の名前付きサブグループ
     expect(result.current.uiControllers.colorPicker.showBulkColorPicker).toBe(false);
-    expect(result.current.uiControllers.mobileMenu.mobileMenuItemId).toBeNull();
+    expect(result.current.uiControllers.itemMenu.itemMenuItemId).toBeNull();
     // interactionMode グループ: inlineInsert / dnd の名前付きサブグループ
     expect(result.current.interactionMode.inlineInsert.insertAfterId).toBeNull();
     expect(result.current.interactionMode.dnd.activeId).toBeNull();
@@ -257,12 +257,12 @@ describe("useTodoListDetailViewComposition", () => {
   });
 
   describe("uiControllers の構造", () => {
-    it("uiControllers は colorPicker と mobileMenu のサブグループを持つ", () => {
+    it("uiControllers は colorPicker と itemMenu のサブグループを持つ", () => {
       const { result } = renderHook(() =>
         useTodoListDetailViewComposition(defaultParams),
       );
       expect(result.current.uiControllers.colorPicker).toBeDefined();
-      expect(result.current.uiControllers.mobileMenu).toBeDefined();
+      expect(result.current.uiControllers.itemMenu).toBeDefined();
     });
 
     it("colorPicker のプロパティが uiControllers トップレベルに漏れ出ない", () => {
@@ -273,17 +273,17 @@ describe("useTodoListDetailViewComposition", () => {
       expect(result.current.uiControllers).not.toHaveProperty("showBulkColorPicker");
     });
 
-    it("mobileMenu のプロパティが uiControllers トップレベルに漏れ出ない", () => {
+    it("itemMenu のプロパティが uiControllers トップレベルに漏れ出ない", () => {
       const { result } = renderHook(() =>
         useTodoListDetailViewComposition(defaultParams),
       );
-      expect(result.current.uiControllers).not.toHaveProperty("mobileMenuItemId");
+      expect(result.current.uiControllers).not.toHaveProperty("itemMenuItemId");
     });
 
     it("colorPicker が non-null のとき正しく伝播する", () => {
       (useTodoListDetailUIControllers as jest.Mock).mockReturnValue({
         colorPicker: { ...defaultColorPickerMock, colorPickerItemId: "item-5" },
-        mobileMenu: defaultMobileMenuMock,
+        itemMenu: defaultItemMenuMock,
       });
 
       const { result } = renderHook(() =>

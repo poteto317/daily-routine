@@ -23,7 +23,7 @@ import { getBlockAnchorIndices } from "./todoListItemBlocks";
 import { InlineInsertForm } from "./InlineInsertForm";
 import { SortableTodoListItem } from "./SortableTodoListItem";
 import type { SortableTodoListItemProps } from "./SortableTodoListItem";
-import texts from "./locales/ja.json";
+import { TodoListEmptyState } from "./TodoListEmptyState";
 
 /** `SortableTodoListItem` に渡すコールバック群 */
 type ItemHandlers = Omit<
@@ -38,7 +38,6 @@ type ItemHandlers = Omit<
   | "isSelected"
   | "isParent"
   | "isCollapsed"
-  | "isInlineInsertOpen"
   | "onInsertAfterAction"
 >;
 
@@ -103,19 +102,7 @@ export const TodoListSortableItems = ({
   const blockAnchorIndices = getBlockAnchorIndices(list.items);
 
   if (visibleItems.length === 0) {
-    return (
-      <div className="text-center py-10 text-gray-400 dark:text-gray-500">
-        <p className="text-3xl mb-2">✅</p>
-        <p className="text-sm font-medium">
-          {list.items.length === 0
-            ? texts.list.emptyMessage
-            : "完了済みのみです"}
-        </p>
-        {list.items.length === 0 && (
-          <p className="text-xs mt-1">{texts.list.emptyDescription}</p>
-        )}
-      </div>
-    );
+    return <TodoListEmptyState hasAnyItems={list.items.length > 0} />;
   }
 
   return (
@@ -156,7 +143,6 @@ export const TodoListSortableItems = ({
                   isSelected={isSelected}
                   isParent={isParent}
                   isCollapsed={isCollapsed}
-                  isInlineInsertOpen={insertAfterId === item.id}
                   onInsertAfterAction={() => onOpenInlineInsertAction(item.id)}
                 />
                 {insertAfterId === item.id && (

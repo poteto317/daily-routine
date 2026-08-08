@@ -129,23 +129,11 @@ export const TodoListDetailView = ({
   } = viewState;
 
   const {
-    colorPicker: {
-      colorPickerItemId,
-      showBulkColorPicker,
-      toggleItemColorPicker: toggleItemColorPickerAction,
-      closeItemColorPicker: closeItemColorPickerAction,
-      toggleBulkColorPicker,
-      closeBulkColorPicker,
-    },
-    categoryPicker: {
-      categoryPickerItemId,
-      toggleItemCategoryPicker: toggleItemCategoryPickerAction,
-      closeItemCategoryPicker: closeItemCategoryPickerAction,
-    },
-    mobileMenu: {
-      mobileMenuItemId,
-      toggleMobileMenu: toggleMobileMenuAction,
-      closeMobileMenu: closeMobileMenuAction,
+    colorPicker: { showBulkColorPicker, toggleBulkColorPicker, closeBulkColorPicker },
+    itemMenu: {
+      itemMenuItemId,
+      toggleItemMenu: toggleItemMenuAction,
+      closeItemMenu: closeItemMenuAction,
     },
   } = uiControllers;
 
@@ -241,21 +229,15 @@ export const TodoListDetailView = ({
             startEditItemAction={startEditItemAction}
             toggleSelectItemAction={toggleSelectItemAction}
             toggleCollapseItemAction={toggleCollapseItemAction}
-            colorPickerItemId={colorPickerItemId}
-            toggleItemColorPickerAction={toggleItemColorPickerAction}
-            closeItemColorPickerAction={closeItemColorPickerAction}
-            categoryPickerItemId={categoryPickerItemId}
-            toggleItemCategoryPickerAction={toggleItemCategoryPickerAction}
-            closeItemCategoryPickerAction={closeItemCategoryPickerAction}
             onUpdateItemBgColorAction={onUpdateItemBgColorAction}
             onUpdateItemCategoryAction={onUpdateItemCategoryAction}
             onToggleItemAction={onToggleItemAction}
             onDeleteItemAction={onDeleteItemAction}
             onIndentItemAction={onIndentItemAction}
             onOutdentItemAction={onOutdentItemAction}
-            mobileMenuItemId={mobileMenuItemId}
-            toggleMobileMenuAction={toggleMobileMenuAction}
-            closeMobileMenuAction={closeMobileMenuAction}
+            itemMenuItemId={itemMenuItemId}
+            toggleItemMenuAction={toggleItemMenuAction}
+            closeItemMenuAction={closeItemMenuAction}
           />
 
           <TodoListAddForm

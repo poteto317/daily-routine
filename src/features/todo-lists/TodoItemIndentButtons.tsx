@@ -1,5 +1,10 @@
 "use client";
 
+import {
+  isIndentButtonDisabled,
+  isOutdentButtonDisabled,
+} from "./todoListItemIndentButtonDisabledState";
+
 type Props = {
   listId: string;
   itemId: string;
@@ -29,7 +34,7 @@ export const TodoItemIndentButtons = ({
     <button
       type="button"
       onClick={() => onOutdentAction(listId, itemId)}
-      disabled={currentIndent === 0 || sortModeActive}
+      disabled={isOutdentButtonDisabled(currentIndent, sortModeActive)}
       className="w-5 h-5 text-gray-400 hover:text-teal-500 dark:text-gray-500 dark:hover:text-teal-400 disabled:opacity-20 disabled:cursor-not-allowed flex items-center justify-center text-xs rounded transition-colors"
       aria-label="インデントを下げる"
     >
@@ -38,7 +43,7 @@ export const TodoItemIndentButtons = ({
     <button
       type="button"
       onClick={() => onIndentAction(listId, itemId)}
-      disabled={currentIndent >= maxIndent || sortModeActive}
+      disabled={isIndentButtonDisabled(currentIndent, maxIndent, sortModeActive)}
       className="w-5 h-5 text-gray-400 hover:text-teal-500 dark:text-gray-500 dark:hover:text-teal-400 disabled:opacity-20 disabled:cursor-not-allowed flex items-center justify-center text-xs rounded transition-colors"
       aria-label="インデントを上げる"
     >

@@ -42,7 +42,11 @@
     "addItemPositionLast": "末尾に追加",
     "categoryPickerLabel": "カテゴリ",
     "uncategorizedLabel": "未分類",
-    "manageCategoriesLabel": "🏷️ カテゴリ管理"
+    "manageCategoriesLabel": "🏷️ カテゴリ管理",
+    "colorPickerLabel": "背景色",
+    "outdentLabel": "インデントを下げる",
+    "indentLabel": "インデントを上げる",
+    "deleteLabel": "削除"
   },
   "categoryManagement": {
     "title": "🏷️ カテゴリ管理",
