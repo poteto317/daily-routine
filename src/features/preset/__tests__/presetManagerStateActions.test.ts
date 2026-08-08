@@ -5,6 +5,7 @@ jest.mock("@/features/preset/storage", () => ({
   createPresetFromRoutines: jest.fn(),
   createRoutinesFromPreset: jest.fn(),
   deletePreset: jest.fn(),
+  duplicatePreset: jest.fn(),
   getPresets: jest.fn(),
   updatePreset: jest.fn(),
 }));
@@ -14,6 +15,7 @@ import {
   createPresetFromRoutines,
   createRoutinesFromPreset,
   deletePreset,
+  duplicatePreset,
   getPresets,
   updatePreset,
 } from "@/features/preset/storage";
@@ -22,6 +24,7 @@ import {
   cancelPresetEdit,
   createPresetAndReload,
   deletePresetAndReload,
+  duplicatePresetAndReload,
   loadPresetList,
   resolveCreateFilterSelection,
   savePresetEditAndReload,
@@ -110,6 +113,33 @@ describe("presetManagerStateActions", () => {
       deleted: true,
     });
     expect(deletePreset).toHaveBeenCalledWith("p1");
+  });
+
+  it("複製を処理する", () => {
+    const duplicated: RoutinePreset = {
+      id: "p1-copy",
+      name: "朝ルーティンのコピー",
+      description: "desc",
+      routineTemplates: [
+        { title: "朝食", startTime: "07:00", duration: 30, category: "life" },
+      ],
+      createdAt: "2026-03-08T00:00:00.000Z",
+      updatedAt: "2026-03-08T00:00:00.000Z",
+    };
+    (duplicatePreset as jest.Mock).mockReturnValue(duplicated);
+
+    expect(duplicatePresetAndReload([preset], "missing")).toEqual({
+      presets: [preset],
+      duplicated: false,
+    });
+    expect(addPreset).not.toHaveBeenCalled();
+
+    expect(duplicatePresetAndReload([preset], "p1")).toEqual({
+      presets: [preset],
+      duplicated: true,
+    });
+    expect(duplicatePreset).toHaveBeenCalledWith(preset);
+    expect(addPreset).toHaveBeenCalledWith(duplicated);
   });
 
   it("曜日フィルターで選択した重複ルーティンは1件だけ保存対象になる", () => {

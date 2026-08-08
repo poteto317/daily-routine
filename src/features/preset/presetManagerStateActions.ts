@@ -4,6 +4,7 @@ import {
   createPresetFromRoutines,
   createRoutinesFromPreset,
   deletePreset,
+  duplicatePreset,
   getPresets,
   updatePreset,
 } from "@/features/preset/storage";
@@ -72,6 +73,19 @@ export const deletePresetAndReload = (
 
   deletePreset(presetId);
   return { presets: loadPresetList(), deleted: true };
+};
+
+export const duplicatePresetAndReload = (
+  presets: RoutinePreset[],
+  presetId: string,
+): { presets: RoutinePreset[]; duplicated: boolean } => {
+  const preset = findPresetById(presets, presetId);
+  if (!preset) {
+    return { presets: loadPresetList(), duplicated: false };
+  }
+
+  addPreset(duplicatePreset(preset));
+  return { presets: loadPresetList(), duplicated: true };
 };
 
 export const applyPresetSelection = (params: {
