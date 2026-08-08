@@ -96,21 +96,15 @@ const defaultHandlers: Omit<
   toggleSelectItemAction: jest.fn(),
   toggleCollapseItemAction: jest.fn(),
   categories: [],
-  colorPickerItemId: null,
-  toggleItemColorPickerAction: jest.fn(),
-  closeItemColorPickerAction: jest.fn(),
-  categoryPickerItemId: null,
-  toggleItemCategoryPickerAction: jest.fn(),
-  closeItemCategoryPickerAction: jest.fn(),
   onUpdateItemBgColorAction: jest.fn(),
   onUpdateItemCategoryAction: jest.fn(),
   onToggleItemAction: jest.fn(),
   onDeleteItemAction: jest.fn(),
   onIndentItemAction: jest.fn(),
   onOutdentItemAction: jest.fn(),
-  mobileMenuItemId: null,
-  toggleMobileMenuAction: jest.fn(),
-  closeMobileMenuAction: jest.fn(),
+  itemMenuItemId: null,
+  toggleItemMenuAction: jest.fn(),
+  closeItemMenuAction: jest.fn(),
 };
 
 const defaultProps: TodoListSortableItemsProps = {
@@ -207,10 +201,11 @@ describe("TodoListSortableItems", () => {
       render(
         <TodoListSortableItems
           {...defaultProps}
+          itemMenuItemId="item-1"
           onOpenInlineInsertAction={onOpenInlineInsertAction}
         />,
       );
-      const buttons = screen.getAllByRole("button", { name: "下に追加" });
+      const buttons = screen.getAllByRole("button", { name: /下に追加/ });
       fireEvent.click(buttons[0]);
       expect(onOpenInlineInsertAction).toHaveBeenCalledWith("item-1");
     });
@@ -219,11 +214,12 @@ describe("TodoListSortableItems", () => {
       render(
         <TodoListSortableItems
           {...defaultProps}
+          itemMenuItemId="item-1"
           onOpenInlineInsertAction={() => {}}
           insertAfterId={null}
         />,
       );
-      const buttons = screen.getAllByRole("button", { name: "下に追加" });
+      const buttons = screen.getAllByRole("button", { name: /下に追加/ });
       fireEvent.click(buttons[0]);
       // insertAfterId は外部制御のため、no-op の場合はフォームが開かない
       expect(

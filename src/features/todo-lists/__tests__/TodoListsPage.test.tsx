@@ -345,7 +345,8 @@ describe("TodoListsPage", () => {
     mockGetSelectedTodoListId.mockReturnValue("list-1");
 
     render(<TodoListsPage />);
-    fireEvent.click(screen.getAllByLabelText("削除")[0]);
+    fireEvent.click(screen.getAllByLabelText("アクションメニュー")[0]);
+    fireEvent.click(screen.getByRole("button", { name: /削除/ }));
 
     await waitFor(() => {
       expect(screen.queryByText("Task 1")).toBeNull();
@@ -970,39 +971,13 @@ describe("TodoListsPage", () => {
     expect(screen.queryByText(/ペースト/)).toBeNull();
   });
 
-  it("アイテムの🎨ボタンをクリックすると色選択ポップオーバーが表示・非表示を切り替えられる", async () => {
+  it("カラーピッカーで色を選択するとbgColorが保存されアクションメニューが閉じる", async () => {
     mockGetTodoLists.mockReturnValue([baseList]);
     mockGetSelectedTodoListId.mockReturnValue("list-1");
 
     render(<TodoListsPage />);
 
-    const bgButtons = screen.getAllByLabelText("背景色を変更");
-    expect(bgButtons[0]).toHaveAttribute("aria-expanded", "false");
-
-    // クリックでピッカーが開く
-    fireEvent.click(bgButtons[0]);
-
-    await waitFor(() => {
-      expect(screen.getByRole("radio", { name: "赤" })).toBeInTheDocument();
-    });
-    expect(bgButtons[0]).toHaveAttribute("aria-expanded", "true");
-
-    // もう一度クリックでピッカーが閉じる
-    fireEvent.click(bgButtons[0]);
-
-    await waitFor(() => {
-      expect(screen.queryByRole("radio", { name: "赤" })).toBeNull();
-    });
-    expect(bgButtons[0]).toHaveAttribute("aria-expanded", "false");
-  });
-
-  it("カラーピッカーで色を選択するとbgColorが保存されピッカーが閉じる", async () => {
-    mockGetTodoLists.mockReturnValue([baseList]);
-    mockGetSelectedTodoListId.mockReturnValue("list-1");
-
-    render(<TodoListsPage />);
-
-    fireEvent.click(screen.getAllByLabelText("背景色を変更")[0]);
+    fireEvent.click(screen.getAllByLabelText("アクションメニュー")[0]);
 
     await waitFor(() => {
       expect(screen.getByRole("radio", { name: "赤" })).toBeInTheDocument();
@@ -1021,7 +996,7 @@ describe("TodoListsPage", () => {
       ]);
     });
 
-    // 選択後にピッカーが閉じる
+    // 選択後にアクションメニュー全体が閉じる
     await waitFor(() => {
       expect(screen.queryByRole("radio", { name: "赤" })).toBeNull();
     });

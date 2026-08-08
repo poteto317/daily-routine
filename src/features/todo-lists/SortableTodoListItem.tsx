@@ -14,11 +14,10 @@ import { resolveTodoItemDisplayBgColor } from "./todoCategoryLookup";
 import { getItemIndentLevel } from "./todoListItemIndentLevel";
 import { getMaxAllowedIndent } from "./todoListItemMaxIndent";
 import { TodoItemTitleArea } from "./TodoItemTitleArea";
-import { TodoItemDesktopActions } from "./TodoItemDesktopActions";
 import {
-  TodoItemMobileTrigger,
-  TodoItemMobileDropdown,
-} from "./TodoItemMobileMenu";
+  TodoItemActionMenuTrigger,
+  TodoItemActionMenuDropdown,
+} from "./TodoItemActionMenu";
 import { TodoItemIndentButtons } from "./TodoItemIndentButtons";
 import { TodoItemDragHandle } from "./TodoItemDragHandle";
 import { TodoItemCollapseButton } from "./TodoItemCollapseButton";
@@ -43,12 +42,6 @@ export type SortableTodoListItemProps = {
   isParent: boolean;
   isCollapsed: boolean;
   toggleCollapseItemAction: (id: string) => void;
-  colorPickerItemId: string | null;
-  toggleItemColorPickerAction: (id: string) => void;
-  closeItemColorPickerAction: () => void;
-  categoryPickerItemId: string | null;
-  toggleItemCategoryPickerAction: (id: string) => void;
-  closeItemCategoryPickerAction: () => void;
   onUpdateItemBgColorAction: (
     listId: string,
     itemId: string,
@@ -63,11 +56,10 @@ export type SortableTodoListItemProps = {
   onDeleteItemAction: (listId: string, itemId: string, title: string) => void;
   onIndentItemAction: (listId: string, itemId: string) => void;
   onOutdentItemAction: (listId: string, itemId: string) => void;
-  isInlineInsertOpen: boolean;
   onInsertAfterAction: () => void;
-  mobileMenuItemId: string | null;
-  toggleMobileMenuAction: (id: string) => void;
-  closeMobileMenuAction: () => void;
+  itemMenuItemId: string | null;
+  toggleItemMenuAction: (id: string) => void;
+  closeItemMenuAction: () => void;
 };
 
 /**
@@ -94,23 +86,16 @@ export const SortableTodoListItem = ({
   isParent,
   isCollapsed,
   toggleCollapseItemAction,
-  colorPickerItemId,
-  toggleItemColorPickerAction,
-  closeItemColorPickerAction,
-  categoryPickerItemId,
-  toggleItemCategoryPickerAction,
-  closeItemCategoryPickerAction,
   onUpdateItemBgColorAction,
   onUpdateItemCategoryAction,
   onToggleItemAction,
   onDeleteItemAction,
   onIndentItemAction,
   onOutdentItemAction,
-  isInlineInsertOpen,
   onInsertAfterAction,
-  mobileMenuItemId,
-  toggleMobileMenuAction,
-  closeMobileMenuAction,
+  itemMenuItemId,
+  toggleItemMenuAction,
+  closeItemMenuAction,
 }: SortableTodoListItemProps) => {
   const {
     attributes,
@@ -200,44 +185,25 @@ export const SortableTodoListItem = ({
           />
 
           {editingItemId !== item.id && (
-            <>
-              <TodoItemDesktopActions
-                item={item}
-                listId={list.id}
-                categories={categories}
-                colorPickerItemId={colorPickerItemId}
-                categoryPickerItemId={categoryPickerItemId}
-                isInlineInsertOpen={isInlineInsertOpen}
-                toggleItemColorPickerAction={toggleItemColorPickerAction}
-                closeItemColorPickerAction={closeItemColorPickerAction}
-                toggleItemCategoryPickerAction={toggleItemCategoryPickerAction}
-                closeItemCategoryPickerAction={closeItemCategoryPickerAction}
-                onUpdateItemBgColorAction={onUpdateItemBgColorAction}
-                onUpdateItemCategoryAction={onUpdateItemCategoryAction}
-                startEditItemAction={startEditItemAction}
-                onDeleteItemAction={onDeleteItemAction}
-                onInsertAfterAction={onInsertAfterAction}
-              />
-              <TodoItemMobileTrigger
-                item={item}
-                mobileMenuItemId={mobileMenuItemId}
-                toggleMobileMenuAction={toggleMobileMenuAction}
-              />
-            </>
+            <TodoItemActionMenuTrigger
+              item={item}
+              itemMenuItemId={itemMenuItemId}
+              toggleItemMenuAction={toggleItemMenuAction}
+            />
           )}
         </div>
       </SwipeableRoutineItem>
 
-      {/* モバイルドロップダウン — SwipeableRoutineItem の overflow-hidden 外に配置 */}
-      <TodoItemMobileDropdown
+      {/* アクションメニュードロップダウン — SwipeableRoutineItem の overflow-hidden 外に配置 */}
+      <TodoItemActionMenuDropdown
         item={item}
         listId={list.id}
         categories={categories}
         currentIndent={currentIndent}
         maxIndent={maxIndent}
         sortModeActive={sortModeActive}
-        mobileMenuItemId={mobileMenuItemId}
-        closeMobileMenuAction={closeMobileMenuAction}
+        itemMenuItemId={itemMenuItemId}
+        closeItemMenuAction={closeItemMenuAction}
         startEditItemAction={startEditItemAction}
         onInsertAfterAction={onInsertAfterAction}
         onOutdentItemAction={onOutdentItemAction}

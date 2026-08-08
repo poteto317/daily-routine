@@ -115,15 +115,10 @@ const defaultCompositionMock = {
       toggleBulkColorPicker: jest.fn(),
       closeBulkColorPicker: jest.fn(),
     },
-    categoryPicker: {
-      categoryPickerItemId: null,
-      toggleItemCategoryPicker: jest.fn(),
-      closeItemCategoryPicker: jest.fn(),
-    },
-    mobileMenu: {
-      mobileMenuItemId: null,
-      toggleMobileMenu: jest.fn(),
-      closeMobileMenu: jest.fn(),
+    itemMenu: {
+      itemMenuItemId: null,
+      toggleItemMenu: jest.fn(),
+      closeItemMenu: jest.fn(),
     },
   },
   interactionMode: {
