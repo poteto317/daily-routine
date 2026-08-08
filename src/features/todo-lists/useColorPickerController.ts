@@ -1,11 +1,18 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
+import { useCloseOnOutsideInteraction } from "./useCloseOnOutsideInteraction";
 
 /**
  * カラーピッカーの開閉状態を管理するフック。
  * - アイテム個別のカラーピッカー（colorPickerItemId）
  * - 一括カラーピッカー（showBulkColorPicker）
- * - カラーピッカー外クリック・Escキーによる自動クローズ
  * - アイテムピッカーと一括ピッカーの排他制御
+ * カラーピッカー外クリック・Escキーでの自動クローズは useCloseOnOutsideInteraction に委譲する。
+ *
+ * NOTE: アクションメニュー統一（TodoItemActionMenu）以降、アイテム個別の
+ * 背景色スウォッチはメニュー内に常時表示となり、colorPickerItemId /
+ * toggleItemColorPicker / closeItemColorPicker を呼び出す経路は無くなった。
+ * showBulkColorPicker（ツールバーの一括カラーピッカー）が同じフック内で
+ * 現役のため、フックごと削除せず意図的にそのまま残している。
  */
 export const useColorPickerController = () => {
   const [colorPickerItemId, setColorPickerItemId] = useState<string | null>(
@@ -42,36 +49,19 @@ export const useColorPickerController = () => {
     setShowBulkColorPicker(false);
   }, []);
 
+  /** アイテム個別・一括の両方を閉じる（外側クリック/Esc用） */
+  const closeAllColorPickers = useCallback(() => {
+    setColorPickerItemId(null);
+    setShowBulkColorPicker(false);
+  }, []);
+
   const isAnyOpen = colorPickerItemId !== null || showBulkColorPicker;
 
-  useEffect(() => {
-    if (!isAnyOpen) return;
-
-    const handleMouseDown = (e: MouseEvent) => {
-      if (
-        !(e.target instanceof Element) ||
-        !e.target.closest("[data-color-picker]")
-      ) {
-        setColorPickerItemId(null);
-        setShowBulkColorPicker(false);
-      }
-    };
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        setColorPickerItemId(null);
-        setShowBulkColorPicker(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleMouseDown);
-    document.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      document.removeEventListener("mousedown", handleMouseDown);
-      document.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [isAnyOpen]);
+  useCloseOnOutsideInteraction({
+    isActive: isAnyOpen,
+    selector: "[data-color-picker]",
+    onClose: closeAllColorPickers,
+  });
 
   return {
     colorPickerItemId,
