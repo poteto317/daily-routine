@@ -1,7 +1,4 @@
-import {
-  type Routine,
-  type RoutinePreset,
-} from "@/types/routine";
+import { type Routine, type RoutinePreset } from "@/types/routine";
 import {
   getPresetCardClassName,
   PRESET_ROUTINE_COUNT_SUFFIX,

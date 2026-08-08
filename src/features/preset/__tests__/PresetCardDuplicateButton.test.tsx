@@ -12,9 +12,7 @@ describe("PresetCardDuplicateButton", () => {
   it("クリックで onClick が呼ばれる", () => {
     const onClick = jest.fn();
     render(<PresetCardDuplicateButton onClick={onClick} />);
-    fireEvent.click(
-      screen.getByRole("button", { name: "プリセットをコピー" }),
-    );
+    fireEvent.click(screen.getByRole("button", { name: "プリセットをコピー" }));
     expect(onClick).toHaveBeenCalledTimes(1);
   });
 
@@ -26,9 +24,7 @@ describe("PresetCardDuplicateButton", () => {
         <PresetCardDuplicateButton onClick={onClick} />
       </div>,
     );
-    fireEvent.click(
-      screen.getByRole("button", { name: "プリセットをコピー" }),
-    );
+    fireEvent.click(screen.getByRole("button", { name: "プリセットをコピー" }));
     expect(onClick).toHaveBeenCalledTimes(1);
     expect(onParentClick).not.toHaveBeenCalled();
   });

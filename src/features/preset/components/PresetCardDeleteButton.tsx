@@ -1,5 +1,3 @@
-"use client";
-
 import { PRESET_DELETE_LABEL } from "../helpers";
 
 type Props = {

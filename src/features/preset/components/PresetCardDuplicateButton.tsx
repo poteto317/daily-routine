@@ -1,5 +1,3 @@
-"use client";
-
 import { PRESET_DUPLICATE_LABEL } from "../helpers";
 
 type Props = {

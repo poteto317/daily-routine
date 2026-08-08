@@ -47,9 +47,7 @@ describe("usePresetItemActions", () => {
     (createPresetDuplicateHandler as jest.Mock).mockReturnValue(
       handleDuplicatePreset,
     );
-    (createPresetItemActionsResult as jest.Mock).mockReturnValue(
-      resultShape,
-    );
+    (createPresetItemActionsResult as jest.Mock).mockReturnValue(resultShape);
 
     const params = {
       presets: [
@@ -79,8 +77,8 @@ describe("usePresetItemActions", () => {
       handleDuplicatePreset: expect.any(Function),
     });
 
-    const builtHandlers = (createPresetItemActionsResult as jest.Mock)
-      .mock.calls[0][0] as {
+    const builtHandlers = (createPresetItemActionsResult as jest.Mock).mock
+      .calls[0][0] as {
       handleDeletePreset: (presetId: string) => void;
       handleApplyPreset: () => void;
       handleDuplicatePreset: (presetId: string) => void;

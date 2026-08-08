@@ -1,5 +1,3 @@
-"use client";
-
 import { type RoutinePreset, ROUTINE_CATEGORIES } from "@/types/routine";
 import { DAY_LABELS } from "@/features/preset/presetConstants";
 import {
@@ -30,10 +28,7 @@ export const PresetApplySection = ({
           (item) => item.value === template.category,
         );
         return (
-          <div
-            key={index}
-            className="text-sm text-gray-600 dark:text-gray-300"
-          >
+          <div key={index} className="text-sm text-gray-600 dark:text-gray-300">
             {formatRoutineTemplateSummary({
               categoryEmoji: categoryInfo?.emoji ?? "",
               title: template.title,

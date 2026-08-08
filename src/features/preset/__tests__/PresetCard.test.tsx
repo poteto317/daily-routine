@@ -86,4 +86,21 @@ describe("PresetCard", () => {
     fireEvent.click(screen.getByText("朝ルーティン"));
     expect(defaultProps.onSelect).toHaveBeenCalledTimes(1);
   });
+
+  it("isSelected かつ非編集中のとき適用セクションを表示する", () => {
+    render(<PresetCard {...defaultProps} isSelected={true} isEditing={false} />);
+    expect(
+      screen.getByRole("button", { name: /選択した曜日に適用/ }),
+    ).toBeInTheDocument();
+  });
+
+  it("isEditing のとき適用セクションを表示せず編集セクションを表示する", () => {
+    render(<PresetCard {...defaultProps} isSelected={true} isEditing={true} />);
+    expect(
+      screen.queryByRole("button", { name: /選択した曜日に適用/ }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByPlaceholderText("プリセット名"),
+    ).toBeInTheDocument();
+  });
 });
