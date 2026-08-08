@@ -24,6 +24,7 @@ const REORDERABLE_MENU_IDS = new Set([
   "preset",
   "todo-lists",
   "todo-list-management",
+  "bug-report",
 ]);
 
 let _dragFromIndex: number | null = null;

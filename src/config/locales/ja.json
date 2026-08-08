@@ -183,6 +183,12 @@
         "route": "settings"
       },
       {
+        "id": "bug-report",
+        "label": "不具合を報告",
+        "icon": "🐛",
+        "route": "bug-report"
+      },
+      {
         "id": "test-matrix",
         "label": "テストマトリクス",
         "icon": "📋",

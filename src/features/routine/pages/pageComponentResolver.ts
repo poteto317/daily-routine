@@ -23,6 +23,7 @@ import {
 } from "@/features/todo-lists";
 import { TestMatrixPage } from "@/features/test-matrix/TestMatrixPage";
 import { AccountAdminPage } from "@/features/account-admin";
+import { BugReportPage } from "@/features/bug-report";
 import type { PageType } from "./types";
 
 export const PAGE_COMPONENTS: Partial<Record<PageType, React.ComponentType>> = {
@@ -47,6 +48,7 @@ export const PAGE_COMPONENTS: Partial<Record<PageType, React.ComponentType>> = {
   "sync-management": SyncManagementPage,
   "test-matrix": TestMatrixPage,
   "account-admin": AccountAdminPage,
+  "bug-report": BugReportPage,
 };
 
 export const resolvePageComponent = (
