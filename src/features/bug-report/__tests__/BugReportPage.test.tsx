@@ -1,5 +1,5 @@
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { BugReportSection } from "../components/BugReportSection";
+import { BugReportPage } from "../components/BugReportPage";
 import { submitBugReport } from "../api";
 import texts from "../locales/ja.json";
 
@@ -9,22 +9,22 @@ jest.mock("../api", () => ({
 
 const mockedSubmit = submitBugReport as jest.Mock;
 
-describe("BugReportSection", () => {
+describe("BugReportPage", () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  it("セクションのタイトルとフォームを表示する", () => {
-    render(<BugReportSection />);
-    expect(screen.getByText(texts.section.title)).toBeInTheDocument();
-    expect(screen.getByText(texts.section.description)).toBeInTheDocument();
+  it("ページのタイトルとフォームを表示する", () => {
+    render(<BugReportPage />);
+    expect(screen.getByText(texts.page.title)).toBeInTheDocument();
+    expect(screen.getByText(texts.page.description)).toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: texts.form.submitLabel }),
     ).toBeInTheDocument();
   });
 
   it("内容未入力で送信するとバリデーションエラーを表示する", async () => {
-    render(<BugReportSection />);
+    render(<BugReportPage />);
 
     fireEvent.click(
       screen.getByRole("button", { name: texts.form.submitLabel }),
@@ -38,7 +38,7 @@ describe("BugReportSection", () => {
 
   it("内容を入力して送信すると submitBugReport を呼び成功表示する", async () => {
     mockedSubmit.mockResolvedValue("report-1");
-    render(<BugReportSection />);
+    render(<BugReportPage />);
 
     fireEvent.change(
       screen.getByLabelText(texts.form.descriptionLabel),
@@ -65,7 +65,7 @@ describe("BugReportSection", () => {
     mockedSubmit.mockImplementation(
       () => new Promise<string>((resolve) => { resolveSubmit = resolve; }),
     );
-    render(<BugReportSection />);
+    render(<BugReportPage />);
 
     fireEvent.change(
       screen.getByLabelText(texts.form.descriptionLabel),
@@ -84,7 +84,7 @@ describe("BugReportSection", () => {
 
   it("submitBugReport が失敗した場合、エラーメッセージを表示する", async () => {
     mockedSubmit.mockRejectedValue(new Error("network error"));
-    render(<BugReportSection />);
+    render(<BugReportPage />);
 
     fireEvent.change(
       screen.getByLabelText(texts.form.descriptionLabel),
@@ -102,7 +102,7 @@ describe("BugReportSection", () => {
 
   it("送信成功後、フォームの全フィールドがクリアされる", async () => {
     mockedSubmit.mockResolvedValue("report-clear");
-    render(<BugReportSection />);
+    render(<BugReportPage />);
 
     fireEvent.change(
       screen.getByLabelText(texts.form.titleLabel),
@@ -129,7 +129,7 @@ describe("BugReportSection", () => {
 
   it("タイトルと再現手順を入力して送信すると submitBugReport に正しく渡る", async () => {
     mockedSubmit.mockResolvedValue("report-2");
-    render(<BugReportSection />);
+    render(<BugReportPage />);
 
     fireEvent.change(
       screen.getByLabelText(texts.form.titleLabel),

@@ -54,12 +54,16 @@ describe("SettingsPage features", () => {
     expect(screen.getByText(/アカウント管理/)).toBeInTheDocument();
   });
 
-  it("不具合報告セクションが表示される", () => {
+  it("不具合報告フォームはハンバーガーメニューへ移動したため表示されないが、メニュー並び替えUIには項目として残る", () => {
     render(<SettingsPage />);
-    expect(screen.getByText("不具合を報告")).toBeInTheDocument();
+
+    // フォーム自体は設定画面から消えている
     expect(
-      screen.getByRole("button", { name: "報告を送信" }),
-    ).toBeInTheDocument();
+      screen.queryByRole("button", { name: "報告を送信" }),
+    ).not.toBeInTheDocument();
+
+    // メニュー並び替えUI（MenuOrderSection）には並べ替え対象の項目として残る
+    expect(screen.getByText("不具合を報告")).toBeInTheDocument();
   });
 
   it("ポモドーロ設定は保存ボタンなしで即時保存される", async () => {

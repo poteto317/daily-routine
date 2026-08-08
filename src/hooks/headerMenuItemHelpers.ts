@@ -154,8 +154,16 @@ const ADMIN_ONLY_MENU_IDS = new Set<FeatureMenuId>([
 const isAdminOnlyMenuId = (id: FeatureMenuId): boolean =>
   ADMIN_ONLY_MENU_IDS.has(id);
 
+// 並び順制御用: メニュー内での固定位置（orderHeaderMenuItemsで使用）
 const PINNED_FIRST = new Set(["home"]);
 const PINNED_LAST = new Set(["settings", "account-admin"]);
+
+// 表示制御用: visibleFeaturesによる表示/非表示切り替えの対象外とし、
+// 常にメニューに表示するID（filterStaticHeaderMenuItemsで使用）。
+// 並び順制御（PINNED_FIRST/PINNED_LAST）とは別レイヤーの判定のため、
+// home/settingsのように両方に含まれるIDもあれば、bug-reportのように
+// 表示は常時だが並び順は可変（PINNEDには含まれない）IDもある。
+const ALWAYS_VISIBLE_MENU_IDS = new Set(["home", "settings", "bug-report"]);
 
 type BuildDynamicTodoMenuItemsParams = {
   isMenuOpen: boolean;
@@ -202,7 +210,7 @@ export const filterStaticHeaderMenuItems = ({
   return menuConfig.menuItems.filter((item): item is HeaderMenuItem => {
     if (!isPageType(item.route)) return false;
     if (item.id === "todo-lists") return false;
-    if (item.id === "home" || item.id === "settings") return true;
+    if (ALWAYS_VISIBLE_MENU_IDS.has(item.id)) return true;
     if (isFeatureMenuId(item.id) && visibleFeatures) {
       if (isAdminOnlyMenuId(item.id) && !isAdmin) {
         return false;

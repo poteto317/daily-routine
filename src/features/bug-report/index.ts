@@ -1,4 +1,4 @@
-export { BugReportSection } from "./components/BugReportSection";
+export { BugReportPage } from "./components/BugReportPage";
 export { submitBugReport } from "./api";
 export { collectBugReportMeta } from "./collectBugReportMeta";
 export { validateBugReportInput, buildBugReportPayload } from "./helpers";

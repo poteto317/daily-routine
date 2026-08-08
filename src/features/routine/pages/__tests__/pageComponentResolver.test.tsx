@@ -32,4 +32,8 @@ describe("pageComponentResolver", () => {
   it("運動記録ページはコンポーネントを解決できる", () => {
     expect(resolvePageComponent("workout-tracker")).toBeDefined();
   });
+
+  it("不具合報告ページはコンポーネントを解決できる", () => {
+    expect(resolvePageComponent("bug-report")).toBeDefined();
+  });
 });

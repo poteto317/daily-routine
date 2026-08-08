@@ -23,7 +23,8 @@ export type PageType =
   | "todo-category-management"
   | "sync-management"
   | "test-matrix"
-  | "account-admin";
+  | "account-admin"
+  | "bug-report";
 
 /** 有効なページ一覧 */
 export const VALID_PAGES: PageType[] = [
@@ -49,6 +50,7 @@ export const VALID_PAGES: PageType[] = [
   "sync-management",
   "test-matrix",
   "account-admin",
+  "bug-report",
 ];
 
 /** ルーティンデータ（ID・タイムスタンプを除く） */

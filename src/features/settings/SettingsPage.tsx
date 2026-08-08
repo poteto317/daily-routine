@@ -10,7 +10,6 @@ import { MenuOrderSection } from "./components/MenuOrderSection";
 import { AppearanceSection } from "./components/AppearanceSection";
 import { DataManagementSection } from "./components/DataManagementSection";
 import { PrivacyNoteSection } from "./components/PrivacyNoteSection";
-import { BugReportSection } from "@/features/bug-report";
 import texts from "./locales/ja.json";
 
 export const SettingsPage = () => {
@@ -82,7 +81,6 @@ export const SettingsPage = () => {
               handleImport={state.handleImport}
               fileInputRef={state.fileInputRef}
             />
-            <BugReportSection />
           </div>
           <PrivacyNoteSection />
         </CardPanel>
