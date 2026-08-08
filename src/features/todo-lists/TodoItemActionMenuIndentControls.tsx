@@ -1,5 +1,10 @@
 "use client";
 
+import {
+  isIndentButtonDisabled,
+  isOutdentButtonDisabled,
+} from "./todoListItemIndentButtonDisabledState";
+
 type Props = {
   currentIndent: number;
   maxIndent: number;
@@ -24,7 +29,7 @@ export const TodoItemActionMenuIndentControls = ({
     <button
       type="button"
       onClick={onOutdent}
-      disabled={currentIndent === 0 || sortModeActive}
+      disabled={isOutdentButtonDisabled(currentIndent, sortModeActive)}
       className="w-full text-left px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2"
     >
       ← インデントを下げる
@@ -32,7 +37,7 @@ export const TodoItemActionMenuIndentControls = ({
     <button
       type="button"
       onClick={onIndent}
-      disabled={currentIndent >= maxIndent || sortModeActive}
+      disabled={isIndentButtonDisabled(currentIndent, maxIndent, sortModeActive)}
       className="w-full text-left px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2"
     >
       → インデントを上げる
