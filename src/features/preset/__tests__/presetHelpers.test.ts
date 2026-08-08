@@ -18,6 +18,8 @@ import {
   PRESET_APPLY_LABEL,
   PRESET_CREATE_CANCEL_LABEL,
   PRESET_CREATE_OPEN_LABEL,
+  PRESET_DELETE_LABEL,
+  PRESET_DUPLICATE_LABEL,
   PRESET_EDIT_LABEL,
   PRESET_LIST_SECTION_TEXT,
   PRESET_MANAGER_MESSAGES,
@@ -98,7 +100,9 @@ describe("preset helpers and state helpers", () => {
     expect(PRESET_LIST_SECTION_TEXT.title).toBeTruthy();
     expect(PRESET_ROUTINE_COUNT_SUFFIX).toContain("件");
     expect(PRESET_APPLY_LABEL).toBeTruthy();
-    expect(PRESET_EDIT_LABEL).toBeTruthy();
+    expect(PRESET_EDIT_LABEL).toBe("✏️ 編集");
+    expect(PRESET_DELETE_LABEL).toBe("🗑️ 削除");
+    expect(PRESET_DUPLICATE_LABEL).toBe("📄 コピー");
     expect(PRESET_CREATE_OPEN_LABEL).toBe("➕");
     expect(PRESET_CREATE_CANCEL_LABEL).toBeTruthy();
     expect(getPresetCardClassName(true)).toContain("border-blue-500");

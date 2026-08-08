@@ -15,7 +15,10 @@
   },
   "card": {
     "routineCountSuffix": "件のルーティン",
-    "applyLabel": "選択した曜日に適用"
+    "applyLabel": "選択した曜日に適用",
+    "editLabel": "✏️ 編集",
+    "deleteLabel": "🗑️ 削除",
+    "duplicateLabel": "📄 コピー"
   },
   "createSection": {
     "openLabel": "➕",
@@ -27,7 +30,6 @@
     "submitLabel": "プリセットを作成"
   },
   "editSection": {
-    "editLabel": "✏️",
     "cancelLabel": "キャンセル",
     "saveLabel": "保存",
     "namePlaceholder": "プリセット名",

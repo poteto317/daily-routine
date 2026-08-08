@@ -35,6 +35,9 @@ export const PRESET_LIST_SECTION_TEXT = {
 // Card constants
 export const PRESET_ROUTINE_COUNT_SUFFIX = presetTexts.card.routineCountSuffix;
 export const PRESET_APPLY_LABEL = presetTexts.card.applyLabel;
+export const PRESET_EDIT_LABEL = presetTexts.card.editLabel;
+export const PRESET_DELETE_LABEL = presetTexts.card.deleteLabel;
+export const PRESET_DUPLICATE_LABEL = presetTexts.card.duplicateLabel;
 
 export const getPresetCardClassName = (isSelected: boolean): string => {
   return `p-4 border-2 rounded-lg cursor-pointer transition-all ${
@@ -97,7 +100,6 @@ export const isPresetCreateDisabled = (
 };
 
 // Edit section constants
-export const PRESET_EDIT_LABEL = presetTexts.editSection.editLabel;
 export const PRESET_EDIT_CANCEL_LABEL = presetTexts.editSection.cancelLabel;
 export const PRESET_EDIT_SAVE_LABEL = presetTexts.editSection.saveLabel;
 export const PRESET_EDIT_NAME_PLACEHOLDER =
