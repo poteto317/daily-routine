@@ -1,7 +1,7 @@
 import type { Dispatch, SetStateAction } from "react";
 import type { Routine, RoutinePreset } from "@/types/routine";
 import { createPresetManagerActionHandlersResult } from "./presetManagerActionHandlersResult";
-import { usePresetApplyDeleteActions } from "./usePresetApplyDeleteActions";
+import { usePresetItemActions } from "./usePresetItemActions";
 import { usePresetDaySelectionAction } from "./usePresetDaySelectionAction";
 
 type UsePresetManagerActionHandlersParams = {
@@ -27,7 +27,7 @@ export const usePresetManagerActionHandlers = ({
   setSelectedDays,
 }: UsePresetManagerActionHandlersParams) => {
   const { handleApplyPreset, handleDeletePreset, handleDuplicatePreset } =
-    usePresetApplyDeleteActions({
+    usePresetItemActions({
       presets,
       selectedPresetId,
       selectedDays,

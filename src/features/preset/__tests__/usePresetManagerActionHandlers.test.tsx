@@ -1,7 +1,7 @@
 import { act, renderHook } from "@testing-library/react";
 
-jest.mock("../usePresetApplyDeleteActions", () => ({
-  usePresetApplyDeleteActions: jest.fn(),
+jest.mock("../usePresetItemActions", () => ({
+  usePresetItemActions: jest.fn(),
 }));
 
 jest.mock("../usePresetDaySelectionAction", () => ({
@@ -13,7 +13,7 @@ jest.mock("../presetManagerActionHandlersResult", () => ({
 }));
 
 import { createPresetManagerActionHandlersResult } from "../presetManagerActionHandlersResult";
-import { usePresetApplyDeleteActions } from "../usePresetApplyDeleteActions";
+import { usePresetItemActions } from "../usePresetItemActions";
 import { usePresetDaySelectionAction } from "../usePresetDaySelectionAction";
 import { usePresetManagerActionHandlers } from "../usePresetManagerActionHandlers";
 
@@ -35,7 +35,7 @@ describe("usePresetManagerActionHandlers", () => {
       composed: true,
     };
 
-    (usePresetApplyDeleteActions as jest.Mock).mockReturnValue({
+    (usePresetItemActions as jest.Mock).mockReturnValue({
       handleDeletePreset,
       handleApplyPreset,
       handleDuplicatePreset,
@@ -91,7 +91,7 @@ describe("usePresetManagerActionHandlers", () => {
       builtHandlers.toggleDaySelection(2);
     });
 
-    expect(usePresetApplyDeleteActions).toHaveBeenCalledWith({
+    expect(usePresetItemActions).toHaveBeenCalledWith({
       presets: params.presets,
       selectedPresetId: "p1",
       selectedDays: params.selectedDays,

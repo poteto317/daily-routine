@@ -1,13 +1,13 @@
-import { createPresetApplyDeleteActionsResult } from "../presetApplyDeleteActionsResult";
+import { createPresetItemActionsResult } from "../presetItemActionsResult";
 
-describe("createPresetApplyDeleteActionsResult", () => {
+describe("createPresetItemActionsResult", () => {
   it("apply/delete/duplicate action を公開 shape に載せる", () => {
     const handleApplyPreset = jest.fn();
     const handleDeletePreset = jest.fn();
     const handleDuplicatePreset = jest.fn();
 
     expect(
-      createPresetApplyDeleteActionsResult({
+      createPresetItemActionsResult({
         handleApplyPreset,
         handleDeletePreset,
         handleDuplicatePreset,

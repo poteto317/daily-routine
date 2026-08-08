@@ -1,14 +1,14 @@
-type PresetApplyDeleteActionsResultArgs = {
+type PresetItemActionsResultArgs = {
   handleApplyPreset: () => void;
   handleDeletePreset: (presetId: string) => void;
   handleDuplicatePreset: (presetId: string) => void;
 };
 
-export const createPresetApplyDeleteActionsResult = ({
+export const createPresetItemActionsResult = ({
   handleApplyPreset,
   handleDeletePreset,
   handleDuplicatePreset,
-}: PresetApplyDeleteActionsResultArgs) => {
+}: PresetItemActionsResultArgs) => {
   return {
     handleApplyPreset,
     handleDeletePreset,

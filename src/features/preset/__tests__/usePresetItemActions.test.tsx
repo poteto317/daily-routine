@@ -1,7 +1,7 @@
 import { act, renderHook } from "@testing-library/react";
 
-jest.mock("../presetApplyDeleteActionsResult", () => ({
-  createPresetApplyDeleteActionsResult: jest.fn(),
+jest.mock("../presetItemActionsResult", () => ({
+  createPresetItemActionsResult: jest.fn(),
 }));
 
 jest.mock("../presetApplyDeleteActions", () => ({
@@ -13,18 +13,18 @@ jest.mock("../presetDuplicateActions", () => ({
   createPresetDuplicateHandler: jest.fn(),
 }));
 
-import { createPresetApplyDeleteActionsResult } from "../presetApplyDeleteActionsResult";
+import { createPresetItemActionsResult } from "../presetItemActionsResult";
 import {
   createPresetApplyHandler,
   createPresetDeleteHandler,
 } from "../presetApplyDeleteActions";
 import { createPresetDuplicateHandler } from "../presetDuplicateActions";
-import { usePresetApplyDeleteActions } from "../usePresetApplyDeleteActions";
+import { usePresetItemActions } from "../usePresetItemActions";
 
-describe("usePresetApplyDeleteActions", () => {
+describe("usePresetItemActions", () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    (createPresetApplyDeleteActionsResult as jest.Mock).mockImplementation(
+    (createPresetItemActionsResult as jest.Mock).mockImplementation(
       (value) => value,
     );
   });
@@ -47,7 +47,7 @@ describe("usePresetApplyDeleteActions", () => {
     (createPresetDuplicateHandler as jest.Mock).mockReturnValue(
       handleDuplicatePreset,
     );
-    (createPresetApplyDeleteActionsResult as jest.Mock).mockReturnValue(
+    (createPresetItemActionsResult as jest.Mock).mockReturnValue(
       resultShape,
     );
 
@@ -70,16 +70,16 @@ describe("usePresetApplyDeleteActions", () => {
       setSelectedDays: jest.fn(),
     };
 
-    const { result } = renderHook(() => usePresetApplyDeleteActions(params));
+    const { result } = renderHook(() => usePresetItemActions(params));
 
     expect(result.current).toBe(resultShape);
-    expect(createPresetApplyDeleteActionsResult).toHaveBeenCalledWith({
+    expect(createPresetItemActionsResult).toHaveBeenCalledWith({
       handleDeletePreset: expect.any(Function),
       handleApplyPreset: expect.any(Function),
       handleDuplicatePreset: expect.any(Function),
     });
 
-    const builtHandlers = (createPresetApplyDeleteActionsResult as jest.Mock)
+    const builtHandlers = (createPresetItemActionsResult as jest.Mock)
       .mock.calls[0][0] as {
       handleDeletePreset: (presetId: string) => void;
       handleApplyPreset: () => void;
