@@ -26,8 +26,8 @@ export const usePresetManagerActionHandlers = ({
   setSelectedPresetId,
   setSelectedDays,
 }: UsePresetManagerActionHandlersParams) => {
-  const { handleApplyPreset, handleDeletePreset } = usePresetApplyDeleteActions(
-    {
+  const { handleApplyPreset, handleDeletePreset, handleDuplicatePreset } =
+    usePresetApplyDeleteActions({
       presets,
       selectedPresetId,
       selectedDays,
@@ -35,8 +35,7 @@ export const usePresetManagerActionHandlers = ({
       setPresets,
       setSelectedPresetId,
       setSelectedDays,
-    },
-  );
+    });
   const { toggleDaySelection } = usePresetDaySelectionAction({
     selectedDays,
     setSelectedDays,
@@ -45,6 +44,7 @@ export const usePresetManagerActionHandlers = ({
   return createPresetManagerActionHandlersResult({
     handleApplyPreset,
     handleDeletePreset,
+    handleDuplicatePreset,
     toggleDaySelection,
   });
 };

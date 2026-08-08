@@ -22,13 +22,15 @@ describe("usePresetManagerActionHandlers", () => {
     jest.clearAllMocks();
   });
 
-  it("delete/apply/day toggle handler を組み立てて委譲する", () => {
+  it("delete/apply/duplicate/day toggle handler を組み立てて委譲する", () => {
     const handleDeletePreset = jest.fn();
     const handleApplyPreset = jest.fn();
+    const handleDuplicatePreset = jest.fn();
     const toggleDaySelection = jest.fn();
     const resultShape = {
       handleDeletePreset: jest.fn(),
       handleApplyPreset: jest.fn(),
+      handleDuplicatePreset: jest.fn(),
       toggleDaySelection: jest.fn(),
       composed: true,
     };
@@ -36,6 +38,7 @@ describe("usePresetManagerActionHandlers", () => {
     (usePresetApplyDeleteActions as jest.Mock).mockReturnValue({
       handleDeletePreset,
       handleApplyPreset,
+      handleDuplicatePreset,
     });
     (usePresetDaySelectionAction as jest.Mock).mockReturnValue({
       toggleDaySelection,
@@ -69,6 +72,7 @@ describe("usePresetManagerActionHandlers", () => {
     expect(createPresetManagerActionHandlersResult).toHaveBeenCalledWith({
       handleDeletePreset,
       handleApplyPreset,
+      handleDuplicatePreset,
       toggleDaySelection,
     });
 
@@ -76,12 +80,14 @@ describe("usePresetManagerActionHandlers", () => {
       .mock.calls[0][0] as {
       handleDeletePreset: (presetId: string) => void;
       handleApplyPreset: () => void;
+      handleDuplicatePreset: (presetId: string) => void;
       toggleDaySelection: (day: number) => void;
     };
 
     act(() => {
       builtHandlers.handleDeletePreset("p1");
       builtHandlers.handleApplyPreset();
+      builtHandlers.handleDuplicatePreset("p1");
       builtHandlers.toggleDaySelection(2);
     });
 
@@ -101,6 +107,7 @@ describe("usePresetManagerActionHandlers", () => {
 
     expect(handleDeletePreset).toHaveBeenCalledWith("p1");
     expect(handleApplyPreset).toHaveBeenCalled();
+    expect(handleDuplicatePreset).toHaveBeenCalledWith("p1");
     expect(toggleDaySelection).toHaveBeenCalledWith(2);
   });
 });
