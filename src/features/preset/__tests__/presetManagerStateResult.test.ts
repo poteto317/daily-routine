@@ -15,6 +15,7 @@ describe("createPresetManagerStateResult", () => {
       actionHandlers: {
         handleApplyPreset: jest.fn(),
         handleDeletePreset: jest.fn(),
+        handleDuplicatePreset: jest.fn(),
         toggleDaySelection: jest.fn(),
       },
       creationState: {
@@ -51,6 +52,7 @@ describe("createPresetManagerStateResult", () => {
       setSelectedPresetId,
       handleDeletePreset: expect.any(Function),
       handleApplyPreset: expect.any(Function),
+      handleDuplicatePreset: expect.any(Function),
       toggleDaySelection: expect.any(Function),
       isCreating: true,
       newPresetName: "朝",
