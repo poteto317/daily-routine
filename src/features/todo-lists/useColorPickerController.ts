@@ -8,11 +8,13 @@ import { useCloseOnOutsideInteraction } from "./useCloseOnOutsideInteraction";
  * - アイテムピッカーと一括ピッカーの排他制御
  * カラーピッカー外クリック・Escキーでの自動クローズは useCloseOnOutsideInteraction に委譲する。
  *
- * NOTE: アクションメニュー統一（TodoItemActionMenu）以降、アイテム個別の
- * 背景色スウォッチはメニュー内に常時表示となり、colorPickerItemId /
- * toggleItemColorPicker / closeItemColorPicker を呼び出す経路は無くなった。
- * showBulkColorPicker（ツールバーの一括カラーピッカー）が同じフック内で
- * 現役のため、フックごと削除せず意図的にそのまま残している。
+ * NOTE: アクションメニュー統一（TodoItemActionMenu）以降、Todoアイテム個別の
+ * 背景色スウォッチはメニュー内に常時表示となり、TodoItemActionMenu経由で
+ * colorPickerItemId / toggleItemColorPicker / closeItemColorPicker を呼び出す
+ * 経路は無くなった。ただし useTodoCategoryManagementPageState.ts 経由でカテゴリ
+ * 管理ページの色編集ポップオーバーに現役で使われている（colorEditingCategoryId
+ * 等にリネームして再利用）。showBulkColorPicker（ツールバーの一括カラーピッカー）
+ * も同じフック内で現役のため、フックごと削除せず意図的にそのまま残している。
  */
 export const useColorPickerController = () => {
   const [colorPickerItemId, setColorPickerItemId] = useState<string | null>(
