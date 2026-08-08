@@ -4,6 +4,8 @@ import {
   isIndentButtonDisabled,
   isOutdentButtonDisabled,
 } from "./todoListItemIndentButtonDisabledState";
+import { ACTION_MENU_DISABLED_BUTTON_CLASS } from "./todoItemActionMenuButtonClassName";
+import texts from "./locales/ja.json";
 
 type Props = {
   currentIndent: number;
@@ -30,17 +32,17 @@ export const TodoItemActionMenuIndentControls = ({
       type="button"
       onClick={onOutdent}
       disabled={isOutdentButtonDisabled(currentIndent, sortModeActive)}
-      className="w-full text-left px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2"
+      className={ACTION_MENU_DISABLED_BUTTON_CLASS}
     >
-      ← インデントを下げる
+      ← {texts.list.outdentLabel}
     </button>
     <button
       type="button"
       onClick={onIndent}
       disabled={isIndentButtonDisabled(currentIndent, maxIndent, sortModeActive)}
-      className="w-full text-left px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2"
+      className={ACTION_MENU_DISABLED_BUTTON_CLASS}
     >
-      → インデントを上げる
+      → {texts.list.indentLabel}
     </button>
   </>
 );
