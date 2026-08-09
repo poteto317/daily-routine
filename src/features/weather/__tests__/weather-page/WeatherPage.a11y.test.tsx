@@ -1,5 +1,5 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import texts from "../../locales/ja.json";
+import { WEATHER_PAGE_TEXT } from "../../texts";
 import {
   WeatherPage,
   restoreGeolocation,
@@ -33,7 +33,7 @@ describe("WeatherPage アクセシビリティ", () => {
       await screen.findByRole("button", { name: "現在地を使用" }),
     );
     await screen.findByRole("button", {
-      name: texts.weatherPage.dismissLocationErrorLabel,
+      name: WEATHER_PAGE_TEXT.dismissLocationErrorLabel,
     });
   };
 
@@ -43,14 +43,14 @@ describe("WeatherPage アクセシビリティ", () => {
     // ✕ という記号ではなく、意味のある名前でボタンを特定できる
     fireEvent.click(
       screen.getByRole("button", {
-        name: texts.weatherPage.dismissLocationErrorLabel,
+        name: WEATHER_PAGE_TEXT.dismissLocationErrorLabel,
       }),
     );
 
     await waitFor(() => {
       expect(
         screen.queryByRole("button", {
-          name: texts.weatherPage.dismissLocationErrorLabel,
+          name: WEATHER_PAGE_TEXT.dismissLocationErrorLabel,
         }),
       ).not.toBeInTheDocument();
     });

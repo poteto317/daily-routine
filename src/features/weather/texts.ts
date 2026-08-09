@@ -14,3 +14,4 @@ export const WEATHER_DAY_NAMES = weatherTexts.dayNames;
 export const WEATHER_CONSOLE_MESSAGES = weatherTexts.consoleMessages;
 export const HOURLY_FORECAST_SECTION_TEXT = weatherTexts.hourlyForecast;
 export const WEEKLY_FORECAST_SECTION_TEXT = weatherTexts.weeklyForecast;
+export const WEATHER_PAGE_TEXT = weatherTexts.weatherPage;

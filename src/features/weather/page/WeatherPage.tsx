@@ -4,7 +4,7 @@ import { ErrorState } from "./ErrorState";
 import { LoadingState } from "./LoadingState";
 import { WeatherDataView } from "./WeatherDataView";
 import { useWeatherPageState } from "./useWeatherPageState";
-import texts from "../locales/ja.json";
+import { WEATHER_PAGE_TEXT } from "../texts";
 
 export const WeatherPage = () => {
   const {
@@ -42,7 +42,7 @@ export const WeatherPage = () => {
                   type="button"
                   onClick={clearLocationError}
                   className="ml-4 text-yellow-600 dark:text-yellow-800 hover:text-yellow-800 dark:hover:text-yellow-900 font-bold"
-                  aria-label={texts.weatherPage.dismissLocationErrorLabel}
+                  aria-label={WEATHER_PAGE_TEXT.dismissLocationErrorLabel}
                 >
                   <span aria-hidden="true">✕</span>
                 </button>
