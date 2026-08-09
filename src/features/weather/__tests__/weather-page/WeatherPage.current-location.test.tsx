@@ -1,61 +1,17 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { WeatherPage } from "../../WeatherPage";
-import * as weatherApi from "../../weather-api";
-import * as weatherCache from "../../weather-cache";
-
-jest.mock("../../weather-api", () => ({ fetchWeatherData: jest.fn() }));
-jest.mock("../../weather-cache", () => ({
-  getCachedWeatherData: jest.fn(() => null),
-  getPreferredWeatherLocation: jest.fn(() => null),
-  cacheWeatherData: jest.fn(),
-  clearPreferredWeatherLocation: jest.fn(),
-  savePreferredWeatherLocation: jest.fn(),
-}));
-
-const mockFetchWeatherData = weatherApi.fetchWeatherData as jest.MockedFunction<
-  typeof weatherApi.fetchWeatherData
->;
-const mockGetCachedWeatherData =
-  weatherCache.getCachedWeatherData as jest.MockedFunction<
-    typeof weatherCache.getCachedWeatherData
-  >;
-const mockCacheWeatherData =
-  weatherCache.cacheWeatherData as jest.MockedFunction<
-    typeof weatherCache.cacheWeatherData
-  >;
-const mockGetPreferredWeatherLocation =
-  weatherCache.getPreferredWeatherLocation as jest.MockedFunction<
-    typeof weatherCache.getPreferredWeatherLocation
-  >;
-const mockSavePreferredWeatherLocation =
-  weatherCache.savePreferredWeatherLocation as jest.MockedFunction<
-    typeof weatherCache.savePreferredWeatherLocation
-  >;
-const mockClearPreferredWeatherLocation =
-  weatherCache.clearPreferredWeatherLocation as jest.MockedFunction<
-    typeof weatherCache.clearPreferredWeatherLocation
-  >;
+import {
+  WeatherPage,
+  mockCacheWeatherData,
+  mockClearPreferredWeatherLocation,
+  mockFetchWeatherData,
+  mockGetPreferredWeatherLocation,
+  mockSavePreferredWeatherLocation,
+  setupWeatherPageMocks,
+} from "./WeatherPage.test-setup";
 
 describe("WeatherPage current location", () => {
   beforeEach(() => {
-    jest.clearAllMocks();
-    mockGetCachedWeatherData.mockReturnValue(null);
-    mockGetPreferredWeatherLocation.mockReturnValue(null);
-    mockFetchWeatherData.mockResolvedValue({
-      location: "東京",
-      lastUpdated: "2026-02-13T00:00:00.000Z",
-      forecasts: [
-        {
-          date: "2026-02-13",
-          dayOfWeek: "金",
-          weather: "sunny",
-          temperature: { high: 10, low: 2 },
-          precipitation: 0,
-          description: "快晴です。",
-        },
-      ],
-      hourly: [],
-    });
+    setupWeatherPageMocks();
   });
 
   it("現在地を使用ボタン押下時のみ位置情報を要求する", async () => {

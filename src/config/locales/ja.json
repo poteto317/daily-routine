@@ -112,8 +112,8 @@
         "icon": "🍽️",
         "route": "meal",
         "badge": {
-          "text": "開発予定",
-          "color": "bg-purple-500"
+          "text": "BETA",
+          "color": "bg-orange-500"
         }
       },
       {

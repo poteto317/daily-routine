@@ -3,6 +3,14 @@ import testMatrixTexts from "./locales/ja.json";
 import { getTotalCasesLabel, getDeviceTitleText } from "./helpers";
 import { STATUS_DISPLAY } from "./statusHelpers";
 import type { TestField } from "./types";
+import { useCloseOnEscape } from "@/hooks/useCloseOnEscape";
+
+/**
+ * パネル見出しに付与する id。
+ * ダイアログ本体の aria-labelledby から参照してアクセシブル名にするため、
+ * 参照する側と付与する側で同じ値を共有する。
+ */
+const DETAIL_PANEL_TITLE_ID = "test-matrix-detail-panel-title";
 
 interface DetailPanelProps {
   itemId: string;
@@ -32,13 +40,21 @@ export const DetailPanel = ({
     (caseItem) => caseItem.pc === "unchecked" || caseItem.sp === "unchecked",
   ).length;
 
+  // aria-modal を宣言している以上、Escape で閉じられる必要がある
+  useCloseOnEscape({ isActive: true, onClose });
+
   return (
     <div className="fixed inset-0 z-50 flex">
       <div
         className="fixed inset-0 bg-black/40 transition-opacity"
         onClick={onClose}
       />
-      <div className="relative ml-auto w-full max-w-3xl bg-white shadow-xl overflow-y-auto animate-slide-in-right">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={DETAIL_PANEL_TITLE_ID}
+        className="relative ml-auto w-full max-w-3xl bg-white shadow-xl overflow-y-auto animate-slide-in-right"
+      >
         <style>{`
           @keyframes slideInRight {
             from { transform: translateX(100%); }
@@ -51,15 +67,20 @@ export const DetailPanel = ({
         <div className="sticky top-0 z-10 bg-white border-b border-gray-200 px-4 py-3">
           <div className="flex items-center gap-3 mb-2">
             <button
+              type="button"
               onClick={onClose}
               className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors text-gray-500"
               title={testMatrixTexts.detailPanel.closeTitle}
+              aria-label={testMatrixTexts.detailPanel.closeTitle}
             >
-              ✕
+              <span aria-hidden="true">✕</span>
             </button>
             <div className="flex-1 min-w-0">
               <div className="text-xs text-gray-400 font-mono">{itemId}</div>
-              <h2 className="text-lg font-bold text-gray-800 truncate">
+              <h2
+                id={DETAIL_PANEL_TITLE_ID}
+                className="text-lg font-bold text-gray-800 truncate"
+              >
                 {itemLabel}
               </h2>
             </div>
