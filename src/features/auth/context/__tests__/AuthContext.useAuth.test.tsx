@@ -1,8 +1,11 @@
 import { renderHook } from "@testing-library/react";
-import { useAuth } from "@/features/auth";
+// useAuth は @/features/auth から直接 import しない。
+// この setup より先に読み込むと jest.mock の登録前に firebase/auth の
+// 実モジュールがバインドされ、モックが効かなくなるため。
 import {
   renderUseAuthHook,
   setupAuthTestDefaults,
+  useAuth,
   withMockAuthInstance,
 } from "./AuthContext.test-setup";
 
