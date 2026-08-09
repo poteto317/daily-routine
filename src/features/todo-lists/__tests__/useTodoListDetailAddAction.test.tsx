@@ -12,18 +12,18 @@ describe("useTodoListDetailAddAction", () => {
     jest.clearAllMocks();
   });
 
-  it("追加 action を組み立てて add helper に委譲する", () => {
+  it("追加 action を組み立てて add helper に委譲し、成功時に入力欄からフォーカスを外す", () => {
     const setInputText = jest.fn();
     const onAddItem = jest.fn();
-    const focus = jest.fn();
+    const blur = jest.fn();
     const inputRef = {
-      current: { focus },
+      current: { blur },
     } as unknown as React.RefObject<HTMLInputElement | null>;
 
     (addTodoItemFromDetailInput as jest.Mock).mockImplementation(
-      ({ clearInput, focusInput }) => {
+      ({ clearInput, blurInput }) => {
         clearInput();
-        focusInput();
+        blurInput();
         return true;
       },
     );
@@ -49,9 +49,10 @@ describe("useTodoListDetailAddAction", () => {
       listId: "list-1",
       onAddItem,
       clearInput: expect.any(Function),
-      focusInput: expect.any(Function),
+      blurInput: expect.any(Function),
     });
     expect(setInputText).toHaveBeenCalledWith("");
-    expect(focus).toHaveBeenCalledTimes(1);
+    // テキスト入力から離れることでソフトウェアキーボードが閉じる
+    expect(blur).toHaveBeenCalledTimes(1);
   });
 });
