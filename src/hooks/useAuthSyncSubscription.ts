@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import type { User } from "firebase/auth";
 import { onAuthStateChanged } from "firebase/auth";
 import { isLocalAuthEnabled } from "@/features/auth/storage";
@@ -16,12 +16,11 @@ export const useAuthSyncSubscription = ({
   setLoading,
   setIsAdminLoading,
 }: UseAuthSyncSubscriptionArgs) => {
-  const initializedRef = useRef(false);
-
   useEffect(() => {
-    if (initializedRef.current) return;
-    initializedRef.current = true;
-
+    // effectはStrict Modeでmount→cleanup→mountと二重実行されるため冪等に保つ。
+    // 「初回のみ実行する」ためのrefガードを入れると、2回目のmountで
+    // 購読処理もcleanup関数を返す処理も一切行われなくなり、1回目のmountの
+    // cleanupで解除されたリスナーが二度と再登録されない不具合になる。
     if (!isFirebaseConfigured && isLocalAuthEnabled) {
       return subscribeLocalAuthUser(handleAuthStateChanged);
     }

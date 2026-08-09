@@ -1,3 +1,4 @@
+import { StrictMode } from "react";
 import { act, renderHook } from "@testing-library/react";
 import { getAuthInstance } from "@/lib/firebase";
 import { subscribeLocalAuthUser } from "@/services/authService";
@@ -134,6 +135,41 @@ describe("useAuthSyncSubscription", () => {
 
     expect(setLoading).toHaveBeenCalledWith(false);
     expect(setIsAdminLoading).toHaveBeenCalledWith(false);
+  });
+
+  it("StrictModeでeffectが二重実行されても、local auth リスナーが有効なまま残る", () => {
+    // StrictMode下ではmount→cleanup→mountの2回effectが実行される。
+    // 「初回のみ実行する」ためのrefガードがあると、2回目のmountで
+    // subscribeLocalAuthUserが呼ばれずcleanup関数も返らないため、
+    // 1回目のcleanupで解除されたリスナーが二度と再登録されず、
+    // それ以降の認証状態変化を検知できなくなる不具合があった。
+    mockIsFirebaseConfigured = false;
+    mockIsLocalAuthEnabled = true;
+    const handleAuthStateChanged = jest.fn<void, [User | null]>();
+    const setLoading = jest.fn();
+    const setIsAdminLoading = jest.fn();
+    const unsubscribeFns: (() => void)[] = [];
+    mockSubscribeLocalAuthUser.mockImplementation(() => {
+      const unsubscribe = jest.fn();
+      unsubscribeFns.push(unsubscribe);
+      return unsubscribe;
+    });
+
+    renderHook(
+      () =>
+        useAuthSyncSubscription({
+          handleAuthStateChanged,
+          setLoading,
+          setIsAdminLoading,
+        }),
+      { wrapper: StrictMode },
+    );
+
+    // StrictModeの2回目のmountでも再購読され、最終的に有効なリスナーが1つ残る
+    expect(mockSubscribeLocalAuthUser).toHaveBeenCalledTimes(2);
+    expect(unsubscribeFns).toHaveLength(2);
+    expect(unsubscribeFns[0]).toHaveBeenCalledTimes(1);
+    expect(unsubscribeFns[1]).not.toHaveBeenCalled();
   });
 
   it("auth instance の取得失敗時も loading と isAdminLoading を解除する", () => {
