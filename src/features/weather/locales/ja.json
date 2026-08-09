@@ -52,6 +52,9 @@
     "loading": "位置情報を取得中...",
     "consoleFailed": "位置情報の取得に失敗:"
   },
+  "weatherPage": {
+    "dismissLocationErrorLabel": "位置情報のエラーを閉じる"
+  },
   "dayNames": ["日", "月", "火", "水", "木", "金", "土"],
   "consoleMessages": {
     "locationFetchFailed": "地名の取得に失敗:",

@@ -49,6 +49,13 @@ export const ROUTINE_ITEM_DELETE_LABEL = texts.routineItemActions.deleteLabel;
 // ===============================
 export const ROUTINE_FORM_HEADER_TEXT = texts.routineFormHeader;
 
+/**
+ * ルーティンフォームの見出しに付与する id。
+ * ダイアログ本体の aria-labelledby から参照してアクセシブル名にするため、
+ * 参照する側（RoutineForm）と付与する側（RoutineFormHeader）で共有する。
+ */
+export const ROUTINE_FORM_TITLE_ID = "routine-form-title";
+
 export const getRoutineFormHeaderTitle = (isEditMode: boolean): string =>
   isEditMode
     ? ROUTINE_FORM_HEADER_TEXT.editTitle

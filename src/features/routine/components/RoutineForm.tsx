@@ -7,6 +7,8 @@ import { RoutineFormCoreFields } from "./RoutineFormCoreFields";
 import { RoutineFormTimeFields } from "./RoutineFormTimeFields";
 import { RoutineFormOptionalFields } from "./RoutineFormOptionalFields";
 import { RoutineFormFooter } from "./RoutineFormFooter";
+import { ROUTINE_FORM_TITLE_ID } from "./helpers";
+import { useCloseOnEscape } from "@/hooks/useCloseOnEscape";
 
 interface RoutineFormProps {
   routine?: Routine;
@@ -47,10 +49,16 @@ export const RoutineForm = ({
     onSubmit,
   });
 
+  // aria-modal を宣言している以上、Escape で閉じられる必要がある
+  useCloseOnEscape({ isActive: true, onClose: onCancel });
+
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
       <form
         onSubmit={handleSubmit}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={ROUTINE_FORM_TITLE_ID}
         className="bg-white dark:bg-slate-100 rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-hidden flex flex-col"
       >
         <RoutineFormHeader isEditMode={Boolean(routine)} onCancel={onCancel} />
