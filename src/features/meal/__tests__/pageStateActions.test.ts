@@ -37,6 +37,38 @@ describe("meal pageStateActions", () => {
     ).toEqual([dinner, breakfast]);
   });
 
+  it("recent meals は新しい順に最大20件までしか返さない", () => {
+    // 「直近20件の履歴表示」という仕様の境界。21日分（1日1件）を渡すと
+    // 新しい日付から20件だけが返り、最も古い1件は切り捨てられる。
+    const mealHistory = Object.fromEntries(
+      Array.from({ length: 21 }, (_, index) => {
+        const day = String(index + 1).padStart(2, "0");
+        const date = `2024-01-${day}`;
+        return [
+          date,
+          [
+            {
+              id: `meal-${day}`,
+              date,
+              mealType: "lunch" as const,
+              time: "12:00",
+              description: `lunch ${day}`,
+              createdAt: `${date}T12:00:00.000Z`,
+              updatedAt: `${date}T12:00:00.000Z`,
+            },
+          ],
+        ];
+      }),
+    );
+
+    const recentMeals = getRecentMealsFromHistory(mealHistory);
+
+    expect(recentMeals).toHaveLength(20);
+    expect(recentMeals[0].date).toBe("2024-01-21");
+    expect(recentMeals[19].date).toBe("2024-01-02");
+    expect(recentMeals.some((meal) => meal.date === "2024-01-01")).toBe(false);
+  });
+
   it("today meals と recent meals から page data を作る", () => {
     expect(
       createMealPageData([breakfast], {
