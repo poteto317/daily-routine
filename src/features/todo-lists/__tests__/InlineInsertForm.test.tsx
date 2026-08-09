@@ -71,4 +71,64 @@ describe("InlineInsertForm", () => {
     render(<InlineInsertForm {...defaultProps} />);
     expect(screen.getByRole("form", { name: "アイテムを挿入" })).toBeInTheDocument();
   });
+
+  it("追加ボタンクリックで入力欄からフォーカスが外れる（ソフトウェアキーボードを閉じるため）", () => {
+    render(<InlineInsertForm {...defaultProps} inputText="Todo" />);
+    const input = screen.getByRole("textbox");
+    input.focus();
+    expect(document.activeElement).toBe(input);
+
+    fireEvent.click(screen.getByRole("button", { name: "追加" }));
+
+    // blur されて body へ戻る（要素が消えただけの状態と区別する）
+    expect(document.activeElement).toBe(document.body);
+  });
+
+  it("Enterキーでの追加でも入力欄からフォーカスが外れる", () => {
+    render(<InlineInsertForm {...defaultProps} inputText="Todo" />);
+    const input = screen.getByRole("textbox");
+    input.focus();
+
+    fireEvent.keyDown(input, { key: "Enter" });
+
+    expect(document.activeElement).toBe(document.body);
+  });
+
+  it("IME変換中のEnterではフォーカスを外さない（変換確定と誤って閉じるのを防ぐ）", () => {
+    render(<InlineInsertForm {...defaultProps} inputText="Todo" />);
+    const input = screen.getByRole("textbox");
+    input.focus();
+
+    fireEvent.keyDown(input, {
+      key: "Enter",
+      nativeEvent: { isComposing: true },
+      isComposing: true,
+    });
+
+    expect(document.activeElement).toBe(input);
+  });
+
+  it("空欄でEnterを押しても何も追加されず、フォーカスも外れない", () => {
+    // ボタンはdisabledで守られているが、Enterキー経路には元々ガードがない。
+    // ここでガードしないと、何も追加されていないのにキーボードだけ閉じてしまう。
+    render(<InlineInsertForm {...defaultProps} inputText="" />);
+    const input = screen.getByRole("textbox");
+    input.focus();
+
+    fireEvent.keyDown(input, { key: "Enter" });
+
+    expect(defaultProps.onAddAction).not.toHaveBeenCalled();
+    expect(document.activeElement).toBe(input);
+  });
+
+  it("空白のみでEnterを押しても何も追加されず、フォーカスも外れない", () => {
+    render(<InlineInsertForm {...defaultProps} inputText="   " />);
+    const input = screen.getByRole("textbox");
+    input.focus();
+
+    fireEvent.keyDown(input, { key: "Enter" });
+
+    expect(defaultProps.onAddAction).not.toHaveBeenCalled();
+    expect(document.activeElement).toBe(input);
+  });
 });
