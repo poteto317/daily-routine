@@ -29,7 +29,9 @@ describe("TodoCategoryCreateForm", () => {
 
   it("色選択の radiogroup を表示する", () => {
     render(<TodoCategoryCreateForm {...defaultProps} />);
-    expect(screen.getByRole("radiogroup", { name: "背景色" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("radiogroup", { name: "背景色" }),
+    ).toBeInTheDocument();
   });
 
   it("作成・キャンセルボタンを表示する", () => {
@@ -50,7 +52,12 @@ describe("TodoCategoryCreateForm", () => {
 
   it("入力変更で onChangeNameAction が呼ばれる", () => {
     const onChangeNameAction = jest.fn();
-    render(<TodoCategoryCreateForm {...defaultProps} onChangeNameAction={onChangeNameAction} />);
+    render(
+      <TodoCategoryCreateForm
+        {...defaultProps}
+        onChangeNameAction={onChangeNameAction}
+      />,
+    );
     fireEvent.change(screen.getByPlaceholderText("カテゴリ名"), {
       target: { value: "テスト" },
     });
@@ -59,7 +66,12 @@ describe("TodoCategoryCreateForm", () => {
 
   it("色スウォッチ選択で onChangeColorAction が呼ばれる", () => {
     const onChangeColorAction = jest.fn();
-    render(<TodoCategoryCreateForm {...defaultProps} onChangeColorAction={onChangeColorAction} />);
+    render(
+      <TodoCategoryCreateForm
+        {...defaultProps}
+        onChangeColorAction={onChangeColorAction}
+      />,
+    );
     fireEvent.click(screen.getByRole("radio", { name: "赤" }));
     expect(onChangeColorAction).toHaveBeenCalledWith("bg-red-50");
   });
@@ -79,7 +91,12 @@ describe("TodoCategoryCreateForm", () => {
 
   it("キャンセルボタンクリックで onCancelAction が呼ばれる", () => {
     const onCancelAction = jest.fn();
-    render(<TodoCategoryCreateForm {...defaultProps} onCancelAction={onCancelAction} />);
+    render(
+      <TodoCategoryCreateForm
+        {...defaultProps}
+        onCancelAction={onCancelAction}
+      />,
+    );
     fireEvent.click(screen.getByText("キャンセル"));
     expect(onCancelAction).toHaveBeenCalledTimes(1);
   });
@@ -101,10 +118,73 @@ describe("TodoCategoryCreateForm", () => {
 
   it("Escape キーで onCancelAction が呼ばれる", () => {
     const onCancelAction = jest.fn();
-    render(<TodoCategoryCreateForm {...defaultProps} onCancelAction={onCancelAction} />);
+    render(
+      <TodoCategoryCreateForm
+        {...defaultProps}
+        onCancelAction={onCancelAction}
+      />,
+    );
     fireEvent.keyDown(screen.getByPlaceholderText("カテゴリ名"), {
       key: "Escape",
     });
     expect(onCancelAction).toHaveBeenCalledTimes(1);
+  });
+
+  it("作成ボタンのクリックで入力欄からフォーカスが外れる（ソフトウェアキーボードを閉じるため）", () => {
+    render(<TodoCategoryCreateForm {...defaultProps} nameInput="テスト" />);
+    const input = screen.getByPlaceholderText("カテゴリ名");
+    input.focus();
+    expect(document.activeElement).toBe(input);
+
+    fireEvent.click(screen.getByRole("button", { name: "作成" }));
+
+    expect(document.activeElement).toBe(document.body);
+  });
+
+  it("Enterキーでの作成でも入力欄からフォーカスが外れる", () => {
+    render(<TodoCategoryCreateForm {...defaultProps} nameInput="テスト" />);
+    const input = screen.getByPlaceholderText("カテゴリ名");
+    input.focus();
+
+    fireEvent.keyDown(input, { key: "Enter" });
+
+    expect(document.activeElement).toBe(document.body);
+  });
+
+  it("空欄でEnterを押しても作成されず、フォーカスも外れない", () => {
+    // 作成ボタンは disabled で守られるが、Enterキー経路には元々ガードがない。
+    // 何も作成されていないのにキーボードだけ閉じるのを防ぐ。
+    render(<TodoCategoryCreateForm {...defaultProps} />);
+    const input = screen.getByPlaceholderText("カテゴリ名");
+    input.focus();
+
+    fireEvent.keyDown(input, { key: "Enter" });
+
+    expect(defaultProps.onCreateAction).not.toHaveBeenCalled();
+    expect(document.activeElement).toBe(input);
+  });
+
+  it("送信可否の判定が作成ボタンの活性状態とEnterキーの可否で一致する", () => {
+    render(<TodoCategoryCreateForm {...defaultProps} nameInput="   " />);
+
+    expect(screen.getByRole("button", { name: "作成" })).toBeDisabled();
+
+    fireEvent.keyDown(screen.getByPlaceholderText("カテゴリ名"), {
+      key: "Enter",
+    });
+
+    expect(defaultProps.onCreateAction).not.toHaveBeenCalled();
+  });
+
+  it("全角スペースのみでも作成できない（ハンドラ側の正規化と判定が一致する）", () => {
+    render(<TodoCategoryCreateForm {...defaultProps} nameInput="　　" />);
+
+    expect(screen.getByRole("button", { name: "作成" })).toBeDisabled();
+
+    fireEvent.keyDown(screen.getByPlaceholderText("カテゴリ名"), {
+      key: "Enter",
+    });
+
+    expect(defaultProps.onCreateAction).not.toHaveBeenCalled();
   });
 });
