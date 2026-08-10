@@ -17,7 +17,7 @@ describe("addTodoItemFromDetailInput", () => {
   it("入力値から Todo 追加を実行し、成功時に入力をリセットする", () => {
     const onAddItem = jest.fn();
     const clearInput = jest.fn();
-    const focusInput = jest.fn();
+    const blurInput = jest.fn();
 
     expect(
       addTodoItemFromDetailInput({
@@ -25,19 +25,19 @@ describe("addTodoItemFromDetailInput", () => {
         listId: "list-1",
         onAddItem,
         clearInput,
-        focusInput,
+        blurInput,
       }),
     ).toBe(true);
 
     expect(onAddItem).toHaveBeenCalledWith("list-1", "New Task");
     expect(clearInput).toHaveBeenCalled();
-    expect(focusInput).toHaveBeenCalled();
+    expect(blurInput).toHaveBeenCalled();
   });
 
   it("空白のみの入力では追加せず false を返す", () => {
     const onAddItem = jest.fn();
     const clearInput = jest.fn();
-    const focusInput = jest.fn();
+    const blurInput = jest.fn();
 
     expect(
       addTodoItemFromDetailInput({
@@ -45,13 +45,13 @@ describe("addTodoItemFromDetailInput", () => {
         listId: "list-1",
         onAddItem,
         clearInput,
-        focusInput,
+        blurInput,
       }),
     ).toBe(false);
 
     expect(onAddItem).not.toHaveBeenCalled();
     expect(clearInput).not.toHaveBeenCalled();
-    expect(focusInput).not.toHaveBeenCalled();
+    expect(blurInput).not.toHaveBeenCalled();
   });
 
   it("入力値の前後の空白をトリムして追加する", () => {
@@ -62,7 +62,7 @@ describe("addTodoItemFromDetailInput", () => {
       listId: "list-2",
       onAddItem,
       clearInput: jest.fn(),
-      focusInput: jest.fn(),
+      blurInput: jest.fn(),
     });
 
     expect(onAddItem).toHaveBeenCalledWith("list-2", "trimmed task");
@@ -77,27 +77,27 @@ describe("addTodoItemFromDetailInput", () => {
         listId: "list-1",
         onAddItem,
         clearInput: jest.fn(),
-        focusInput: jest.fn(),
+        blurInput: jest.fn(),
       }),
     ).toBe(false);
 
     expect(onAddItem).not.toHaveBeenCalled();
   });
 
-  it("追加成功後に clearInput と focusInput を両方呼ぶ", () => {
+  it("追加成功後に clearInput と blurInput を両方呼ぶ", () => {
     const clearInput = jest.fn();
-    const focusInput = jest.fn();
+    const blurInput = jest.fn();
 
     addTodoItemFromDetailInput({
       inputText: "task",
       listId: "list-1",
       onAddItem: jest.fn(),
       clearInput,
-      focusInput,
+      blurInput,
     });
 
     expect(clearInput).toHaveBeenCalledTimes(1);
-    expect(focusInput).toHaveBeenCalledTimes(1);
+    expect(blurInput).toHaveBeenCalledTimes(1);
   });
 
   it("addTodoItemFromDetailInput は normalizeTitle に委譲する", () => {
@@ -109,7 +109,7 @@ describe("addTodoItemFromDetailInput", () => {
       listId: "list-1",
       onAddItem,
       clearInput: jest.fn(),
-      focusInput: jest.fn(),
+      blurInput: jest.fn(),
     });
 
     expect(normalizeTitle).toHaveBeenCalledWith("  raw input  ");
@@ -125,7 +125,7 @@ describe("addTodoItemFromDetailInput", () => {
       listId: "list-1",
       onAddItem,
       clearInput: jest.fn(),
-      focusInput: jest.fn(),
+      blurInput: jest.fn(),
     });
 
     expect(result).toBe(false);
@@ -141,7 +141,7 @@ describe("addTodoItemFromDetailInput", () => {
         listId: "list-1",
         onAddItem,
         clearInput: jest.fn(),
-        focusInput: jest.fn(),
+        blurInput: jest.fn(),
       }),
     ).toBe(false);
 
@@ -156,7 +156,7 @@ describe("addTodoItemFromDetailInput", () => {
       listId: "list-1",
       onAddItem,
       clearInput: jest.fn(),
-      focusInput: jest.fn(),
+      blurInput: jest.fn(),
     });
 
     expect(onAddItem).toHaveBeenCalledWith("list-1", "task　a");
@@ -170,14 +170,14 @@ describe("addTodoItemFromDetailInput", () => {
       listId: "list-a",
       onAddItem,
       clearInput: jest.fn(),
-      focusInput: jest.fn(),
+      blurInput: jest.fn(),
     });
     addTodoItemFromDetailInput({
       inputText: "Task B",
       listId: "list-b",
       onAddItem,
       clearInput: jest.fn(),
-      focusInput: jest.fn(),
+      blurInput: jest.fn(),
     });
 
     expect(onAddItem).toHaveBeenNthCalledWith(1, "list-a", "Task A");

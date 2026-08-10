@@ -1,9 +1,19 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 import {
   clearStorageOnFirstNavigation,
   loginAnonymously,
   navigateViaMenu,
 } from "./helpers";
+
+/** Todoリストを新規作成し、そのリストの詳細画面まで遷移する */
+const createListAndOpen = async (page: Page, title: string) => {
+  await navigateViaMenu(page, "Todoリスト管理");
+  await page.getByRole("button", { name: "＋ 新しいリストを追加" }).click();
+  await page.getByPlaceholder("リストのタイトル").fill(title);
+  await page.getByRole("button", { name: "作成" }).click();
+  // 作成したリストはハンバーガーメニューの項目として現れる
+  await navigateViaMenu(page, title);
+};
 
 test.describe("Todoリスト", () => {
   test.beforeEach(async ({ page }) => {
@@ -13,14 +23,7 @@ test.describe("Todoリスト", () => {
   test("リストを作成してTodoを追加し、完了にできる", async ({ page }) => {
     await loginAnonymously(page);
 
-    // リストを作成する
-    await navigateViaMenu(page, "Todoリスト管理");
-    await page.getByRole("button", { name: "＋ 新しいリストを追加" }).click();
-    await page.getByPlaceholder("リストのタイトル").fill("E2E買い物リスト");
-    await page.getByRole("button", { name: "作成" }).click();
-
-    // 作成したリストはハンバーガーメニューの項目として現れる
-    await navigateViaMenu(page, "E2E買い物リスト");
+    await createListAndOpen(page, "E2E買い物リスト");
 
     // Todoを追加する
     await page.getByPlaceholder("Todoを追加...").fill("牛乳を買う");
@@ -35,5 +38,54 @@ test.describe("Todoリスト", () => {
       .click();
 
     await expect(page.getByText("1/1 完了")).toBeVisible();
+  });
+
+  test("Todo追加後は入力欄からフォーカスが外れる（ソフトウェアキーボードを閉じるため）", async ({
+    page,
+  }) => {
+    // jsdomでは実ブラウザのフォーカス挙動を完全には再現できないため、
+    // 実際に想定どおりキーボードが閉じる状態になるかをここで担保する。
+    await loginAnonymously(page);
+    await createListAndOpen(page, "フォーカス検証リスト");
+
+    const addInput = page.getByPlaceholder("Todoを追加...");
+    const addButton = page.getByRole("button", { name: "追加", exact: true });
+
+    // 追加ボタンのクリックで追加した場合
+    await addInput.click();
+    await addInput.fill("ボタンで追加");
+    await expect(addInput).toBeFocused();
+
+    await addButton.click();
+
+    await expect(page.getByText("ボタンで追加")).toBeVisible();
+    // テキスト入力から離れることでソフトウェアキーボードが閉じる
+    await expect(addInput).not.toBeFocused();
+
+    // Enterキーで追加した場合も同じ
+    await addInput.click();
+    await addInput.fill("Enterで追加");
+    await addInput.press("Enter");
+
+    await expect(page.getByText("Enterで追加")).toBeVisible();
+    await expect(addInput).not.toBeFocused();
+  });
+
+  test("空欄でEnterを押しても追加されず、入力欄のフォーカスは維持される", async ({
+    page,
+  }) => {
+    await loginAnonymously(page);
+    await createListAndOpen(page, "空欄検証リスト");
+
+    const addInput = page.getByPlaceholder("Todoを追加...");
+    await addInput.click();
+    await addInput.press("Enter");
+
+    // 空アイテムが追加されていないこと（空リストの案内が出たまま）
+    await expect(page.getByText("まだTodoがありません")).toBeVisible();
+
+    // 何も追加されていないのにキーボードが閉じると再入力しづらいため、
+    // 入力欄にフォーカスが残ったままであること
+    await expect(addInput).toBeFocused();
   });
 });

@@ -27,7 +27,8 @@ export const useTodoListDetailAddAction = ({
       listId,
       onAddItem,
       clearInput: () => setInputText(""),
-      focusInput: () => inputRef.current?.focus(),
+      // 追加後は入力欄からフォーカスを外し、モバイルのソフトウェアキーボードを閉じる
+      blurInput: () => inputRef.current?.blur(),
     });
   }, [inputRef, inputText, listId, onAddItem, setInputText]);
 
