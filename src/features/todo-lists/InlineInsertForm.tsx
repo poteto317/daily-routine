@@ -21,7 +21,7 @@ export const InlineInsertForm = ({
   onAddAction,
   onCancelAction,
 }: InlineInsertFormProps) => {
-  const { inputRef, canSubmit, handleAdd } = useInlineInsertSubmit({
+  const { canSubmit, handleAdd } = useInlineInsertSubmit({
     inputText,
     onAddAction,
   });
@@ -34,7 +34,6 @@ export const InlineInsertForm = ({
         className="flex gap-2 py-1.5 pl-2"
       >
         <input
-          ref={inputRef}
           type="text"
           autoFocus
           aria-label={texts.list.itemPlaceholder}
