@@ -88,4 +88,28 @@ test.describe("Todoリスト", () => {
     // 入力欄にフォーカスが残ったままであること
     await expect(addInput).toBeFocused();
   });
+
+  // 「作成後に入力欄から blur してソフトウェアキーボードを閉じる」挙動は、
+  // ここでは検証できない。作成に成功するとフォームがアンマウントされ、
+  // その際ブラウザは明示的な blur() と区別のつかない blur イベントを発火し、
+  // フォーカスも同じく body に移るため、blur を消しても全ての観測結果が
+  // 一致してしまう（実際に blur を削除して確認済み）。
+  // blur の有無と呼び出し順序はユニットテストが、実機でのキーボード開閉は
+  // docs/03-testing/test-matrix.md の手動確認項目が担う。
+  test("Enterキーでリストを作成できる", async ({ page }) => {
+    // 作成ボタン経由は createListAndOpen が通っているため、Enterキー経路を押さえる
+    await loginAnonymously(page);
+    await navigateViaMenu(page, "Todoリスト管理");
+
+    await page.getByRole("button", { name: "＋ 新しいリストを追加" }).click();
+    const titleInput = page.getByPlaceholder("リストのタイトル");
+    await titleInput.click();
+    await titleInput.fill("Enter作成リスト");
+
+    await titleInput.press("Enter");
+
+    // 作成に成功するとフォームが閉じ、入力欄自体が画面から消える
+    await expect(titleInput).toBeHidden();
+    await expect(page.getByText("Enter作成リスト")).toBeVisible();
+  });
 });
