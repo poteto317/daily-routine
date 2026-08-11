@@ -147,6 +147,22 @@ describe("replayLastStorageWriteFailure", () => {
     cleanup();
   });
 
+  it("リスナーが受け取った失敗も再送の対象になる", () => {
+    // 受け取れたかどうかは追跡していない。購読側はルートレイアウトに 1 つだけ
+    // 置かれて再マウントしないため実害は無いが、追跡していないという事実を
+    // ここで固定し、JSDoc の説明と食い違わないようにする。
+    const first = listenFailures();
+    dispatchStorageWriteFailed("todo-lists", new Error("boom"));
+    expect(first.details).toHaveLength(1);
+    first.cleanup();
+
+    const second = listenFailures();
+    replayLastStorageWriteFailure();
+
+    expect(second.details).toEqual([{ key: "todo-lists", reason: "unknown" }]);
+    second.cleanup();
+  });
+
   it("複数回失敗したときは最後の失敗を再送する", () => {
     dispatchStorageWriteFailed("first", new Error("boom"));
     dispatchStorageWriteFailed(
