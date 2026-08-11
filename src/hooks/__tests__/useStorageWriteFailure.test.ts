@@ -91,6 +91,41 @@ describe("useStorageWriteFailure", () => {
     });
   });
 
+  it("同じ内容の失敗が続いても状態を差し替えない", () => {
+    // 容量超過は解消されない限り書き込みのたびに起きる。
+    // 毎回状態を差し替えると再描画が走り続け、その再描画中の書き込みが
+    // また失敗すると連鎖が止まらなくなる。
+    const { result } = renderHook(() => useStorageWriteFailure());
+    emitFailure({ key: "todo-lists", reason: "quota-exceeded" });
+    const first = result.current.failure;
+
+    emitFailure({ key: "todo-lists", reason: "quota-exceeded" });
+
+    expect(result.current.failure).toBe(first);
+  });
+
+  it("キーが変わったら状態を差し替える", () => {
+    const { result } = renderHook(() => useStorageWriteFailure());
+    emitFailure({ key: "todo-lists", reason: "quota-exceeded" });
+    const first = result.current.failure;
+
+    emitFailure({ key: "routines", reason: "quota-exceeded" });
+
+    expect(result.current.failure).not.toBe(first);
+    expect(result.current.failure?.key).toBe("routines");
+  });
+
+  it("理由が変わったら状態を差し替える", () => {
+    const { result } = renderHook(() => useStorageWriteFailure());
+    emitFailure({ key: "todo-lists", reason: "quota-exceeded" });
+    const first = result.current.failure;
+
+    emitFailure({ key: "todo-lists", reason: "unknown" });
+
+    expect(result.current.failure).not.toBe(first);
+    expect(result.current.failure?.reason).toBe("unknown");
+  });
+
   it("アンマウント後はリスナーを解除する", () => {
     const removeSpy = jest.spyOn(window, "removeEventListener");
     const { unmount } = renderHook(() => useStorageWriteFailure());
