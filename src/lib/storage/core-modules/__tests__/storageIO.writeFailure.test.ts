@@ -9,7 +9,7 @@ import {
 import {
   STORAGE_WRITE_FAILED_EVENT,
   type StorageWriteFailureDetail,
-} from "../storageWriteFailure";
+} from "../storageWriteFailureEvent";
 
 /** 発火された detail を集めるリスナーを張る */
 const listenFailures = () => {

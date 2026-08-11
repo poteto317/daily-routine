@@ -1,6 +1,6 @@
 import { getUserScopedKey } from "./userScope";
 import { cloneDefaultValue, parseStorageValue } from "./storageValueGuard";
-import { dispatchStorageWriteFailed } from "./storageWriteFailure";
+import { runStorageWrite } from "./storageWrite";
 
 const LOCAL_DATA_UPDATED_AT_KEY = "local-data-updated-at";
 export const LOCAL_DATA_UPDATED_AT_EVENT = "local-data-updated-at-changed";
@@ -63,9 +63,7 @@ export const getLocalDataUpdatedAt = (): number => {
 };
 
 export const setLocalDataUpdatedAt = (timestamp: number): void => {
-  if (typeof window === "undefined") return;
-
-  try {
+  runStorageWrite(LOCAL_DATA_UPDATED_AT_KEY, () => {
     const scopedKey = getUserScopedKey(LOCAL_DATA_UPDATED_AT_KEY);
     localStorage.setItem(scopedKey, String(timestamp));
     window.dispatchEvent(
@@ -73,9 +71,7 @@ export const setLocalDataUpdatedAt = (timestamp: number): void => {
         detail: { timestamp },
       }),
     );
-  } catch (error) {
-    dispatchStorageWriteFailed(LOCAL_DATA_UPDATED_AT_KEY, error);
-  }
+  });
 };
 
 export const getStorageItem = <T>(key: string, defaultValue: T): T => {
@@ -120,8 +116,7 @@ export const setStorageItem = <T>(
   value: T,
   options?: SetStorageItemOptions,
 ): void => {
-  if (typeof window === "undefined") return;
-  try {
+  runStorageWrite(key, () => {
     const scopedKey = getResolvedStorageKey(key);
     localStorage.setItem(scopedKey, JSON.stringify(value));
 
@@ -132,9 +127,7 @@ export const setStorageItem = <T>(
     ) {
       setLocalDataUpdatedAt(Date.now());
     }
-  } catch (error) {
-    dispatchStorageWriteFailed(key, error);
-  }
+  });
 };
 
 export const setUnscopedStorageItem = <T>(
@@ -142,9 +135,7 @@ export const setUnscopedStorageItem = <T>(
   value: T,
   options?: SetStorageItemOptions,
 ): void => {
-  if (typeof window === "undefined") return;
-
-  try {
+  runStorageWrite(key, () => {
     localStorage.setItem(
       getResolvedStorageKey(key, false),
       JSON.stringify(value),
@@ -157,18 +148,14 @@ export const setUnscopedStorageItem = <T>(
     ) {
       setLocalDataUpdatedAt(Date.now());
     }
-  } catch (error) {
-    dispatchStorageWriteFailed(key, error);
-  }
+  });
 };
 
 export const removeStorageItem = (
   key: string,
   options?: SetStorageItemOptions,
 ): void => {
-  if (typeof window === "undefined") return;
-
-  try {
+  runStorageWrite(key, () => {
     const scopedKey = getResolvedStorageKey(key);
     localStorage.removeItem(scopedKey);
 
@@ -179,18 +166,14 @@ export const removeStorageItem = (
     ) {
       setLocalDataUpdatedAt(Date.now());
     }
-  } catch (error) {
-    dispatchStorageWriteFailed(key, error);
-  }
+  });
 };
 
 export const removeUnscopedStorageItem = (
   key: string,
   options?: SetStorageItemOptions,
 ): void => {
-  if (typeof window === "undefined") return;
-
-  try {
+  runStorageWrite(key, () => {
     localStorage.removeItem(getResolvedStorageKey(key, false));
 
     if (
@@ -200,7 +183,5 @@ export const removeUnscopedStorageItem = (
     ) {
       setLocalDataUpdatedAt(Date.now());
     }
-  } catch (error) {
-    dispatchStorageWriteFailed(key, error);
-  }
+  });
 };

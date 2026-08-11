@@ -1,28 +1,14 @@
-export const STORAGE_WRITE_FAILED_EVENT = "storage-write-failed";
+import {
+  toStorageWriteFailureReason,
+  type StorageWriteFailureReason,
+} from "./storageWriteFailureReason";
 
-/** 書き込みが失敗した理由 */
-export type StorageWriteFailureReason = "quota-exceeded" | "unknown";
+export const STORAGE_WRITE_FAILED_EVENT = "storage-write-failed";
 
 export type StorageWriteFailureDetail = {
   /** 書き込もうとしたキー（ユーザースコープ適用前） */
   key: string;
   reason: StorageWriteFailureReason;
-};
-
-/**
- * 保存領域の上限超過かどうかを判定する。
- *
- * ブラウザによって例外の name が異なるため両方を見る。
- * Chrome / Safari は QuotaExceededError、Firefox は
- * NS_ERROR_DOM_QUOTA_REACHED を投げる。
- */
-export const isQuotaExceededError = (error: unknown): boolean => {
-  if (!(error instanceof DOMException)) return false;
-
-  return (
-    error.name === "QuotaExceededError" ||
-    error.name === "NS_ERROR_DOM_QUOTA_REACHED"
-  );
 };
 
 // 発火中フラグ。リスナーの中で再び書き込みが失敗したときの連鎖を止める。
@@ -68,7 +54,8 @@ export const replayLastStorageWriteFailure = (): void => {
  * 発火中に同期的に呼び直された場合は無視する。リスナーの中で別の書き込みを
  * 行い、それも失敗したときの直接の連鎖を止めるため。防げるのは同期的な再入
  * だけである点に注意。React の再描画はバッチされてこの関数を抜けたあとに
- * 走るため、再描画をきっかけにした失敗はここでは止まらない。
+ * 走るため、再描画をきっかけにした失敗はここでは止まらない。そちらは購読側で
+ * 「同じ失敗なら状態を据え置く」ことで再描画のループを断つ。
  */
 export const dispatchStorageWriteFailed = (
   key: string,
@@ -79,7 +66,7 @@ export const dispatchStorageWriteFailed = (
 
   const detail: StorageWriteFailureDetail = {
     key,
-    reason: isQuotaExceededError(error) ? "quota-exceeded" : "unknown",
+    reason: toStorageWriteFailureReason(error),
   };
   lastFailure = detail;
 
