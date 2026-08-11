@@ -147,6 +147,25 @@ describe("replayLastStorageWriteFailure", () => {
     cleanup();
   });
 
+  it("再送の最中に同期的に失敗しても連鎖しない", () => {
+    // 再送も dispatchEvent でリスナーを呼ぶ以上、通常の発火と同じ連鎖が起きうる。
+    // 再入ガードが発火経路にしか掛かっていないと、ここだけ素通りする。
+    const details: StorageWriteFailureDetail[] = [];
+    const handle = (event: Event) => {
+      details.push((event as CustomEvent<StorageWriteFailureDetail>).detail);
+      dispatchStorageWriteFailed("nested", new Error("boom"));
+    };
+    // リスナーが居ない状態で失敗させ、バッファに載せる
+    dispatchStorageWriteFailed("outer", new Error("boom"));
+    window.addEventListener(STORAGE_WRITE_FAILED_EVENT, handle);
+
+    replayLastStorageWriteFailure();
+
+    expect(details).toHaveLength(1);
+    expect(details[0].key).toBe("outer");
+    window.removeEventListener(STORAGE_WRITE_FAILED_EVENT, handle);
+  });
+
   it("リスナーが受け取った失敗も再送の対象になる", () => {
     // 受け取れたかどうかは追跡していない。購読側はルートレイアウトに 1 つだけ
     // 置かれて再マウントしないため実害は無いが、追跡していないという事実を

@@ -19,6 +19,28 @@ let isDispatching = false;
 let lastFailure: StorageWriteFailureDetail | null = null;
 
 /**
+ * 再入ガードをかけて 1 件だけ発火する。
+ *
+ * 発火中に呼び直された場合は無視する。リスナーの中で別の書き込みを行い、
+ * それも失敗したときの直接の連鎖を止めるため。防げるのは同期的な再入だけで
+ * ある点に注意。React の再描画はバッチされてこの関数を抜けたあとに走るため、
+ * 再描画をきっかけにした失敗はここでは止まらない。そちらは購読側で
+ * 「同じ失敗なら状態を据え置く」ことで再描画のループを断つ。
+ */
+const emitStorageWriteFailure = (detail: StorageWriteFailureDetail): void => {
+  isDispatching = true;
+  try {
+    window.dispatchEvent(
+      new CustomEvent<StorageWriteFailureDetail>(STORAGE_WRITE_FAILED_EVENT, {
+        detail,
+      }),
+    );
+  } finally {
+    isDispatching = false;
+  }
+};
+
+/**
  * 直近の失敗を、いま張られているリスナーへ再送する。
  *
  * React は子の effect を親より先に実行するため、アプリ全体を包む側で
@@ -38,16 +60,14 @@ let lastFailure: StorageWriteFailureDetail | null = null;
  */
 export const replayLastStorageWriteFailure = (): void => {
   if (typeof window === "undefined") return;
+  // 発火中なら失敗を消さずに戻る。ここで消すと再送先が居ないまま失われる
+  if (isDispatching) return;
 
   const failure = lastFailure;
   if (!failure) return;
   lastFailure = null;
 
-  window.dispatchEvent(
-    new CustomEvent<StorageWriteFailureDetail>(STORAGE_WRITE_FAILED_EVENT, {
-      detail: failure,
-    }),
-  );
+  emitStorageWriteFailure(failure);
 };
 
 /**
@@ -57,11 +77,7 @@ export const replayLastStorageWriteFailure = (): void => {
  * 伝える形にすると全箇所に手が入る。既存の LOCAL_DATA_UPDATED_AT_EVENT と
  * 同じく CustomEvent で伝播させ、受け手を 1 つに集約する。
  *
- * 発火中に同期的に呼び直された場合は無視する。リスナーの中で別の書き込みを
- * 行い、それも失敗したときの直接の連鎖を止めるため。防げるのは同期的な再入
- * だけである点に注意。React の再描画はバッチされてこの関数を抜けたあとに
- * 走るため、再描画をきっかけにした失敗はここでは止まらない。そちらは購読側で
- * 「同じ失敗なら状態を据え置く」ことで再描画のループを断つ。
+ * 再入の扱いは emitStorageWriteFailure に委ねる。
  */
 export const dispatchStorageWriteFailed = (
   key: string,
@@ -76,14 +92,5 @@ export const dispatchStorageWriteFailed = (
   };
   lastFailure = detail;
 
-  isDispatching = true;
-  try {
-    window.dispatchEvent(
-      new CustomEvent<StorageWriteFailureDetail>(STORAGE_WRITE_FAILED_EVENT, {
-        detail,
-      }),
-    );
-  } finally {
-    isDispatching = false;
-  }
+  emitStorageWriteFailure(detail);
 };
