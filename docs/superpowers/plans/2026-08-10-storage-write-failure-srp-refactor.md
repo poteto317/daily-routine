@@ -671,7 +671,9 @@ describe("getStorageWriteFailureMessage", () => {
     const message = getStorageWriteFailureMessage("quota-exceeded");
 
     expect(message).toContain("保存できる容量の上限に達したため");
-    expect(message).toContain("設定画面から不要なデータを削除してください");
+    expect(message).toContain(
+      "不要な記録を削除してから、もう一度お試しください",
+    );
   });
 
   it("原因が不明なときは別の文言を返す", () => {

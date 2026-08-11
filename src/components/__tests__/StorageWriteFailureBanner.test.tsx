@@ -18,7 +18,7 @@ describe("StorageWriteFailureBanner", () => {
       screen.getByText(/保存できる容量の上限に達したため/),
     ).toBeInTheDocument();
     expect(
-      screen.getByText(/設定画面から不要なデータを削除してください/),
+      screen.getByText(/不要な記録を削除してから、もう一度お試しください/),
     ).toBeInTheDocument();
   });
 

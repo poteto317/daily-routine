@@ -685,7 +685,7 @@ npx jest src/hooks/__tests__/useStorageWriteFailure.test.ts
 
 ```json
   "storageWriteFailure": {
-    "quotaExceeded": "保存できる容量の上限に達したため、データを保存できませんでした。設定画面から不要なデータを削除してください。",
+    "quotaExceeded": "保存できる容量の上限に達したため、データを保存できませんでした。不要な記録を削除してから、もう一度お試しください。",
     "unknown": "データの保存に失敗しました。ブラウザの設定で保存が制限されている可能性があります。",
     "dismissLabel": "閉じる"
   }
@@ -716,7 +716,7 @@ describe("StorageWriteFailureBanner", () => {
       screen.getByText(/保存できる容量の上限に達したため/),
     ).toBeInTheDocument();
     expect(
-      screen.getByText(/設定画面から不要なデータを削除してください/),
+      screen.getByText(/不要な記録を削除してから、もう一度お試しください/),
     ).toBeInTheDocument();
   });
 
