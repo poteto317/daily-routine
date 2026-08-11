@@ -1,6 +1,7 @@
 "use client";
 
 import type { StorageWriteFailureReason } from "@/lib/storage/core";
+import { getStorageWriteFailureMessage } from "./storageWriteFailureHelpers";
 import texts from "./locales/ja.json";
 
 type StorageWriteFailureBannerProps = {
@@ -22,10 +23,7 @@ export const StorageWriteFailureBanner = ({
   reason,
   onDismiss,
 }: StorageWriteFailureBannerProps) => {
-  const message =
-    reason === "quota-exceeded"
-      ? texts.storageWriteFailure.quotaExceeded
-      : texts.storageWriteFailure.unknown;
+  const message = getStorageWriteFailureMessage(reason);
 
   return (
     <div
