@@ -21,6 +21,17 @@ export {
 export type { SetStorageItemOptions } from "./core-modules/storageIO";
 
 export {
+  STORAGE_WRITE_FAILED_EVENT,
+  dispatchStorageWriteFailed,
+  isQuotaExceededError,
+  replayLastStorageWriteFailure,
+} from "./core-modules/storageWriteFailure";
+export type {
+  StorageWriteFailureDetail,
+  StorageWriteFailureReason,
+} from "./core-modules/storageWriteFailure";
+
+export {
   getTodayString,
   getCurrentTime,
   timeToMinutes,

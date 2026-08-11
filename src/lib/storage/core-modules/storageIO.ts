@@ -1,5 +1,6 @@
 import { getUserScopedKey } from "./userScope";
 import { cloneDefaultValue, parseStorageValue } from "./storageValueGuard";
+import { dispatchStorageWriteFailed } from "./storageWriteFailure";
 
 const LOCAL_DATA_UPDATED_AT_KEY = "local-data-updated-at";
 export const LOCAL_DATA_UPDATED_AT_EVENT = "local-data-updated-at-changed";
@@ -72,8 +73,8 @@ export const setLocalDataUpdatedAt = (timestamp: number): void => {
         detail: { timestamp },
       }),
     );
-  } catch {
-    // Silently fail
+  } catch (error) {
+    dispatchStorageWriteFailed(LOCAL_DATA_UPDATED_AT_KEY, error);
   }
 };
 
@@ -131,8 +132,8 @@ export const setStorageItem = <T>(
     ) {
       setLocalDataUpdatedAt(Date.now());
     }
-  } catch {
-    // Silently fail
+  } catch (error) {
+    dispatchStorageWriteFailed(key, error);
   }
 };
 
@@ -156,8 +157,8 @@ export const setUnscopedStorageItem = <T>(
     ) {
       setLocalDataUpdatedAt(Date.now());
     }
-  } catch {
-    // Silently fail
+  } catch (error) {
+    dispatchStorageWriteFailed(key, error);
   }
 };
 
@@ -178,8 +179,8 @@ export const removeStorageItem = (
     ) {
       setLocalDataUpdatedAt(Date.now());
     }
-  } catch {
-    // Silently fail
+  } catch (error) {
+    dispatchStorageWriteFailed(key, error);
   }
 };
 
@@ -199,7 +200,7 @@ export const removeUnscopedStorageItem = (
     ) {
       setLocalDataUpdatedAt(Date.now());
     }
-  } catch {
-    // Silently fail
+  } catch (error) {
+    dispatchStorageWriteFailed(key, error);
   }
 };
