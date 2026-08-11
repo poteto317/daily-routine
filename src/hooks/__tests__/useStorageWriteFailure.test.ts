@@ -2,10 +2,11 @@ import { act, renderHook } from "@testing-library/react";
 import { StrictMode } from "react";
 import {
   STORAGE_WRITE_FAILED_EVENT,
-  dispatchStorageWriteFailed,
   replayLastStorageWriteFailure,
   type StorageWriteFailureDetail,
 } from "@/lib/storage/core";
+// 公開 API を最小に保つため、バレルには載せず内部モジュールから直接取る
+import { dispatchStorageWriteFailed } from "@/lib/storage/core-modules/storageWriteFailureEvent";
 import { useStorageWriteFailure } from "../useStorageWriteFailure";
 
 /** 書き込み失敗イベントを発火する */
