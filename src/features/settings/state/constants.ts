@@ -1,12 +1,12 @@
+import {
+  TRANSFER_GROUP_KEYS,
+  type TransferGroupKey,
+} from "./transferGroupKeys";
+
 export type NotificationStatus = "idle" | "testing" | "success" | "error";
 export type TransferStatus = "idle" | "success" | "error";
 
-export type TransferOptions = {
-  routines: boolean;
-  progress: boolean;
-  history: boolean;
-  settings: boolean;
-};
+export type TransferOptions = Record<TransferGroupKey, boolean>;
 
 export type MonitoredLine = {
   lineId: string;
@@ -14,19 +14,18 @@ export type MonitoredLine = {
   company: string;
 };
 
-export const ALL_TRANSFER_OPTIONS: TransferOptions = {
-  routines: true,
-  progress: true,
-  history: true,
-  settings: true,
-};
+/** 全キーを同じ値で埋めた選択状態を作る */
+const createTransferOptions = (value: boolean): TransferOptions =>
+  TRANSFER_GROUP_KEYS.reduce(
+    (options, key) => ({ ...options, [key]: value }),
+    {} as TransferOptions,
+  );
 
-export const EMPTY_TRANSFER_OPTIONS: TransferOptions = {
-  routines: false,
-  progress: false,
-  history: false,
-  settings: false,
-};
+export const ALL_TRANSFER_OPTIONS: TransferOptions =
+  createTransferOptions(true);
+
+export const EMPTY_TRANSFER_OPTIONS: TransferOptions =
+  createTransferOptions(false);
 
 export const AVAILABLE_LINES = [
   { id: "yamanote", name: "山手線", company: "JR東日本" },
