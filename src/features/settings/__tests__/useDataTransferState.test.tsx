@@ -2,17 +2,20 @@ import { act, renderHook } from "@testing-library/react";
 
 jest.mock("../state/dataTransferHelpers", () => ({
   createExportData: jest.fn(() => ({ exported: true })),
-  downloadExportData: jest.fn(),
   getSelectedTypeLabels: jest.fn(() => ["設定"]),
   importSelectedData: jest.fn(),
 }));
+jest.mock("../state/exportFileDownload", () => ({
+  downloadExportData: jest.fn(),
+}));
 
 import {
-  downloadExportData,
   getSelectedTypeLabels,
   importSelectedData,
 } from "../state/dataTransferHelpers";
+import { downloadExportData } from "../state/exportFileDownload";
 import { useDataTransferState } from "../state/useDataTransferState";
+import { EMPTY_TRANSFER_OPTIONS } from "../state/constants";
 
 describe("useDataTransferState", () => {
   beforeEach(() => {
@@ -126,12 +129,7 @@ describe("useDataTransferState", () => {
     const { result } = renderHook(() => useDataTransferState());
 
     act(() => {
-      result.current.setImportOptions({
-        routines: false,
-        progress: false,
-        history: false,
-        settings: false,
-      });
+      result.current.setImportOptions(EMPTY_TRANSFER_OPTIONS);
     });
 
     const target = {

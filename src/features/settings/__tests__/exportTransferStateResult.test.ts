@@ -1,4 +1,5 @@
 import { createExportTransferStateResult } from "../state/exportTransferStateResult";
+import { EMPTY_TRANSFER_OPTIONS } from "../state/constants";
 
 describe("exportTransferStateResult", () => {
   it("export transfer state の公開 shape を組み立てる", () => {
@@ -9,10 +10,9 @@ describe("exportTransferStateResult", () => {
       createExportTransferStateResult({
         exportStatus: "success",
         exportOptions: {
+          ...EMPTY_TRANSFER_OPTIONS,
           routines: true,
-          progress: false,
           history: true,
-          settings: false,
         },
         setExportOptions,
         handleExport,
@@ -20,10 +20,9 @@ describe("exportTransferStateResult", () => {
     ).toEqual({
       exportStatus: "success",
       exportOptions: {
+        ...EMPTY_TRANSFER_OPTIONS,
         routines: true,
-        progress: false,
         history: true,
-        settings: false,
       },
       setExportOptions,
       handleExport,

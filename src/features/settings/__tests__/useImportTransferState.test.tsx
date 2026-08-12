@@ -10,6 +10,7 @@ import {
   importSelectedData,
 } from "../state/dataTransferHelpers";
 import { useImportTransferState } from "../state/useImportTransferState";
+import { EMPTY_TRANSFER_OPTIONS } from "../state/constants";
 
 describe("useImportTransferState", () => {
   beforeEach(() => {
@@ -91,12 +92,7 @@ describe("useImportTransferState", () => {
     const { result } = renderHook(() => useImportTransferState());
 
     act(() => {
-      result.current.setImportOptions({
-        routines: false,
-        progress: false,
-        history: false,
-        settings: false,
-      });
+      result.current.setImportOptions(EMPTY_TRANSFER_OPTIONS);
     });
 
     const target = {

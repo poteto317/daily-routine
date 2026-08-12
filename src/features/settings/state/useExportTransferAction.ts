@@ -1,6 +1,7 @@
 import type { Dispatch, SetStateAction } from "react";
 import type { TransferOptions, TransferStatus } from "./constants";
-import { createExportData, downloadExportData } from "./dataTransferHelpers";
+import { createExportData } from "./dataTransferHelpers";
+import { downloadExportData } from "./exportFileDownload";
 import { runExportTransfer } from "./dataTransferStateActions";
 
 type UseExportTransferActionArgs = {

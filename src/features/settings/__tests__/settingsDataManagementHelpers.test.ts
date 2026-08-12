@@ -10,6 +10,7 @@ import {
   EMPTY_TRANSFER_OPTIONS,
   type TransferOptions,
 } from "../state/constants";
+import { TRANSFER_GROUPS } from "../state/dataTransferGroups";
 
 describe("settings data management helpers", () => {
   const someOptions: TransferOptions = {
@@ -51,7 +52,11 @@ describe("settings data management helpers", () => {
       ...EMPTY_TRANSFER_OPTIONS,
       settings: true,
     });
-    expect(DATA_OPTION_ITEMS).toHaveLength(4);
+    // 項目はグループ定義表から導く。表に足したのに一覧へ出ない、を防ぐ
+    expect(DATA_OPTION_ITEMS).toHaveLength(TRANSFER_GROUPS.length);
+    expect(DATA_OPTION_ITEMS.map((item) => item.key)).toEqual(
+      TRANSFER_GROUPS.map((group) => group.key),
+    );
     expect(DATA_MANAGEMENT_MESSAGES.confirmImport(["設定", "履歴"])).toContain(
       "設定, 履歴",
     );

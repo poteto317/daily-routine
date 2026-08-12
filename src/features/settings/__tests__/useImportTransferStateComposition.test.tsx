@@ -16,6 +16,7 @@ import { useImportTransferState } from "../state/useImportTransferState";
 import { useImportTransferAction } from "../state/useImportTransferAction";
 import { useImportTransferFileInput } from "../state/useImportTransferFileInput";
 import { createImportTransferStateResult } from "../state/importTransferStateResult";
+import { ALL_TRANSFER_OPTIONS } from "../state/constants";
 
 describe("useImportTransferState composition", () => {
   it("state と file input/action hook を compose する", () => {
@@ -36,24 +37,14 @@ describe("useImportTransferState composition", () => {
 
     expect(useImportTransferFileInput).toHaveBeenCalledWith();
     expect(useImportTransferAction).toHaveBeenCalledWith({
-      importOptions: {
-        routines: true,
-        progress: true,
-        history: true,
-        settings: true,
-      },
+      importOptions: ALL_TRANSFER_OPTIONS,
       setImportStatus: expect.any(Function),
     });
     expect(createImportTransferStateResult).toHaveBeenCalledWith({
       fileInputRef,
       handleImport,
       handleImportClick,
-      importOptions: {
-        routines: true,
-        progress: true,
-        history: true,
-        settings: true,
-      },
+      importOptions: ALL_TRANSFER_OPTIONS,
       importStatus: "idle",
       setImportOptions: expect.any(Function),
     });
@@ -61,12 +52,7 @@ describe("useImportTransferState composition", () => {
       fileInputRef,
       handleImport,
       handleImportClick,
-      importOptions: {
-        routines: true,
-        progress: true,
-        history: true,
-        settings: true,
-      },
+      importOptions: ALL_TRANSFER_OPTIONS,
       importStatus: "idle",
       setImportOptions: expect.any(Function),
     });

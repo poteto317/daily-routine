@@ -1,4 +1,5 @@
 import { type TransferOptions, type TransferStatus } from "../state/constants";
+import { TRANSFER_GROUPS } from "../state/dataTransferGroups";
 
 type ButtonViewState = {
   disabled: boolean;
@@ -98,12 +99,15 @@ export const DATA_MANAGEMENT_MESSAGES = {
     `以下のデータをインポートします（現在のデータは上書きされます）：\n\n${types.join(", ")}\n\n続行しますか？`,
 } as const;
 
-export const DATA_OPTION_ITEMS: DataOptionItem[] = [
-  { key: "routines", label: "ルーティン登録データ" },
-  { key: "progress", label: "今日の進捗データ" },
-  { key: "history", label: "達成カレンダー・統計データ（全履歴）" },
-  { key: "settings", label: "アプリ設定" },
-];
+/**
+ * チェックボックスに並べる項目。
+ *
+ * グループ定義表から導く。表にだけ足してチェックボックスに出し忘れる、
+ * という取りこぼしを防ぐため。
+ */
+export const DATA_OPTION_ITEMS: DataOptionItem[] = TRANSFER_GROUPS.map(
+  (group) => ({ key: group.key, label: group.label }),
+);
 
 export const getUpdatedTransferOptions = (
   options: TransferOptions,

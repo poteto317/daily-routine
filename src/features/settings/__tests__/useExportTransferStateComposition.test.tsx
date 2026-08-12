@@ -11,6 +11,7 @@ jest.mock("../state/useExportTransferAction", () => ({
 import { createExportTransferStateResult } from "../state/exportTransferStateResult";
 import { useExportTransferAction } from "../state/useExportTransferAction";
 import { useExportTransferState } from "../state/useExportTransferState";
+import { ALL_TRANSFER_OPTIONS } from "../state/constants";
 
 describe("useExportTransferState composition", () => {
   it("state と export action hook を compose する", () => {
@@ -23,33 +24,18 @@ describe("useExportTransferState composition", () => {
     const { result } = renderHook(() => useExportTransferState());
 
     expect(useExportTransferAction).toHaveBeenCalledWith({
-      exportOptions: {
-        routines: true,
-        progress: true,
-        history: true,
-        settings: true,
-      },
+      exportOptions: ALL_TRANSFER_OPTIONS,
       setExportStatus: expect.any(Function),
     });
     expect(createExportTransferStateResult).toHaveBeenCalledWith({
       exportStatus: "idle",
-      exportOptions: {
-        routines: true,
-        progress: true,
-        history: true,
-        settings: true,
-      },
+      exportOptions: ALL_TRANSFER_OPTIONS,
       setExportOptions: expect.any(Function),
       handleExport,
     });
     expect(result.current).toEqual({
       exportStatus: "idle",
-      exportOptions: {
-        routines: true,
-        progress: true,
-        history: true,
-        settings: true,
-      },
+      exportOptions: ALL_TRANSFER_OPTIONS,
       setExportOptions: expect.any(Function),
       handleExport,
     });

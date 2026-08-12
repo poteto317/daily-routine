@@ -11,6 +11,7 @@ import {
 } from "../state/dataTransferHelpers";
 import { ALL_TRANSFER_OPTIONS } from "../state/constants";
 import { useImportTransferAction } from "../state/useImportTransferAction";
+import { EMPTY_TRANSFER_OPTIONS } from "../state/constants";
 
 describe("useImportTransferAction", () => {
   beforeEach(() => {
@@ -90,12 +91,7 @@ describe("useImportTransferAction", () => {
     (getSelectedTypeLabels as jest.Mock).mockReturnValueOnce([]);
     const { result } = renderHook(() =>
       useImportTransferAction({
-        importOptions: {
-          routines: false,
-          progress: false,
-          history: false,
-          settings: false,
-        },
+        importOptions: EMPTY_TRANSFER_OPTIONS,
         setImportStatus,
       }),
     );

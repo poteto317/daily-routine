@@ -1,5 +1,6 @@
 import type { AppSettings } from "@/types/routine";
 import { createSettingsPageStateResult } from "../state/settingsPageStateResult";
+import { ALL_TRANSFER_OPTIONS } from "../state/constants";
 
 const baseSettings: AppSettings = {
   defaultDurationMinutes: 30,
@@ -48,19 +49,9 @@ describe("settingsPageStateResult", () => {
       transfer: {
         exportStatus: "idle",
         importStatus: "idle",
-        exportOptions: {
-          routines: true,
-          progress: true,
-          history: true,
-          settings: true,
-        },
+        exportOptions: ALL_TRANSFER_OPTIONS,
         setExportOptions: jest.fn(),
-        importOptions: {
-          routines: true,
-          progress: true,
-          history: true,
-          settings: true,
-        },
+        importOptions: ALL_TRANSFER_OPTIONS,
         setImportOptions: jest.fn(),
         fileInputRef: { current: null },
         handleExport: jest.fn(),

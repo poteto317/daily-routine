@@ -1,4 +1,5 @@
 import { createImportTransferStateResult } from "../state/importTransferStateResult";
+import { EMPTY_TRANSFER_OPTIONS } from "../state/constants";
 
 describe("importTransferStateResult", () => {
   it("import transfer state の公開 shape を組み立てる", () => {
@@ -11,9 +12,8 @@ describe("importTransferStateResult", () => {
       createImportTransferStateResult({
         importStatus: "error",
         importOptions: {
-          routines: false,
+          ...EMPTY_TRANSFER_OPTIONS,
           progress: true,
-          history: false,
           settings: true,
         },
         setImportOptions,
@@ -24,9 +24,8 @@ describe("importTransferStateResult", () => {
     ).toEqual({
       importStatus: "error",
       importOptions: {
-        routines: false,
+        ...EMPTY_TRANSFER_OPTIONS,
         progress: true,
-        history: false,
         settings: true,
       },
       setImportOptions,
