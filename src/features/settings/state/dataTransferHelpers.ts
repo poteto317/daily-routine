@@ -1,95 +1,77 @@
-import {
-  getRoutines,
-  getDailyProgress,
-  getMonthlyHistory,
-  saveRoutines,
-  saveDailyProgress,
-  saveMonthlyHistory,
-} from "@/features/routine/storage";
-import { getSettings, saveSettings } from "@/features/settings/storage";
+import { setLocalDataUpdatedAt, withSyncBatch } from "@/lib/storage/core";
 import { type TransferOptions } from "./constants";
 import {
-  type AppSettings,
-  type DailyProgress,
-  type MonthlyHistory,
-} from "@/types/routine";
-import { DATA_TRANSFER_ERROR_MESSAGES } from "./errorMessages";
+  TRANSFER_GROUPS,
+  type TransferGroup,
+  type TransferPayload,
+} from "./dataTransferGroups";
 
-export type ImportPayload = {
-  routines?: unknown;
-  progress?: unknown;
-  history?: unknown;
-  settings?: unknown;
-};
+export type ImportPayload = TransferPayload;
+
+/** エクスポートファイルの形式バージョン */
+const EXPORT_FORMAT_VERSION = "3.0";
+
+/** 選択されているグループだけを返す */
+const selectedGroups = (options: TransferOptions): TransferGroup[] =>
+  TRANSFER_GROUPS.filter((group) => options[group.key]);
 
 export const createExportData = (options: TransferOptions) => {
-  const data: Record<string, unknown> = {
+  const data: TransferPayload = {
     exportDate: new Date().toISOString(),
-    version: "2.0",
+    version: EXPORT_FORMAT_VERSION,
   };
-  if (options.routines) data.routines = getRoutines();
-  if (options.progress) data.progress = getDailyProgress();
-  if (options.history) data.history = getMonthlyHistory();
-  if (options.settings) data.settings = getSettings();
+
+  selectedGroups(options).forEach((group) => {
+    Object.assign(data, group.collect());
+  });
+
   return data;
 };
 
-export const downloadExportData = (options: TransferOptions, data: object) => {
-  const blob = new Blob([JSON.stringify(data, null, 2)], {
-    type: "application/json",
-  });
-  const url = URL.createObjectURL(blob);
-  const anchor = document.createElement("a");
-  anchor.href = url;
-  const date = new Date().toISOString().split("T")[0];
-  const types = Object.entries(options)
-    .filter(([, value]) => value)
-    .map(([key]) => key)
-    .join("-");
-  anchor.download = `daily-routine-${types}-${date}.json`;
-  document.body.appendChild(anchor);
-  anchor.click();
-  document.body.removeChild(anchor);
-  URL.revokeObjectURL(url);
-};
+export const getSelectedTypeLabels = (options: TransferOptions) =>
+  selectedGroups(options).map((group) => group.label);
 
-export const getSelectedTypeLabels = (options: TransferOptions) => {
-  return Object.entries(options)
-    .filter(([, value]) => value)
-    .map(([key]) => {
-      switch (key) {
-        case "routines":
-          return "ルーティン";
-        case "progress":
-          return "今日の進捗";
-        case "history":
-          return "達成履歴";
-        case "settings":
-          return "設定";
-        default:
-          return key;
-      }
-    });
-};
-
+/**
+ * 選択したグループだけをローカルへ書き戻す。
+ *
+ * ファイルに該当データが無いグループは飛ばす。旧バージョンで書き出した
+ * ファイルには新しいグループのキーが存在せず、既定値で上書きすると
+ * 手元のデータを消してしまうため。
+ *
+ * 書き込む前に全グループを検証しきる。書きながら検証すると、途中で形の
+ * 誤りに当たったときに、それより前のグループだけが置き換わった中途半端な
+ * 状態が残る。ユーザーには「インポート失敗」と出るのに手元のデータは
+ * 変わっており、どこまで反映されたか分からなくなる。
+ *
+ * 保存はバッチにまとめる。まとめないと保存のたびに更新時刻が書かれ、
+ * そのたびに購読側がストレージを読み直す。全グループを取り込むと
+ * 保存は 19 件あり、更新時刻の書き込みも同じ回数になる。
+ * クラウド同期の saveSyncDataToLocal と同じ扱いにする。
+ *
+ * バッチを抜けたあとに更新時刻を進める。進めないと、クラウド同期が
+ * ローカルを「古いまま」と判断して取り込んだ内容を上書きしてしまう。
+ *
+ * 逆に、取り込む対象が 1 つも無いときは更新時刻を進めない。旧バージョンの
+ * ファイルには新しいグループのデータが入っておらず、何も書き換えていないのに
+ * 進めると、クラウド同期がローカルを「新しい」と誤認して他端末の新しい
+ * データを上書きしてしまう。
+ */
 export const importSelectedData = (
   data: ImportPayload,
   options: TransferOptions,
 ) => {
-  if (options.routines && data.routines) {
-    if (!Array.isArray(data.routines))
-      throw new Error(DATA_TRANSFER_ERROR_MESSAGES.invalidRoutinesFormat);
-    saveRoutines(data.routines);
-  }
-  if (options.progress && data.progress) {
-    saveDailyProgress(data.progress as DailyProgress);
-  }
-  if (options.history && data.history) {
-    if (typeof data.history !== "object")
-      throw new Error(DATA_TRANSFER_ERROR_MESSAGES.invalidHistoryFormat);
-    saveMonthlyHistory(data.history as MonthlyHistory);
-  }
-  if (options.settings && data.settings) {
-    saveSettings(data.settings as AppSettings);
-  }
+  const groups = selectedGroups(options).filter((group) => group.hasData(data));
+  if (groups.length === 0) return;
+
+  groups.forEach((group) => {
+    group.validate(data);
+  });
+
+  withSyncBatch(() => {
+    groups.forEach((group) => {
+      group.restore(data);
+    });
+  });
+
+  setLocalDataUpdatedAt(Date.now());
 };

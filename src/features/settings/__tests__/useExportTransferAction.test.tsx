@@ -2,10 +2,12 @@ import { act, renderHook } from "@testing-library/react";
 
 jest.mock("../state/dataTransferHelpers", () => ({
   createExportData: jest.fn(() => ({ exported: true })),
+}));
+jest.mock("../state/exportFileDownload", () => ({
   downloadExportData: jest.fn(),
 }));
 
-import { downloadExportData } from "../state/dataTransferHelpers";
+import { downloadExportData } from "../state/exportFileDownload";
 import { ALL_TRANSFER_OPTIONS } from "../state/constants";
 import { useExportTransferAction } from "../state/useExportTransferAction";
 
