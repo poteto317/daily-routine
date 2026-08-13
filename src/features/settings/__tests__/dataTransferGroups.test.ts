@@ -30,12 +30,14 @@ describe("TRANSFER_GROUPS", () => {
   });
 
   it("書き出したキーはすべて取り込みの対象になっている", () => {
-    // 書き出しているのに復元されないキーがあると、往復しても戻らない
+    // 書き出しているのに復元されないキーがあると、往復しても戻らない。
+    // 進捗のように「その日の記録が無ければ何も書き出さない」グループもあるため、
+    // キーを書き出した場合だけを対象にする。
     TRANSFER_GROUPS.forEach((group) => {
-      const exported = group.collect();
-      const filled = Object.fromEntries(
-        Object.keys(exported).map((key) => [key, []]),
-      );
+      const exportedKeys = Object.keys(group.collect());
+      if (exportedKeys.length === 0) return;
+
+      const filled = Object.fromEntries(exportedKeys.map((key) => [key, []]));
       expect(group.hasData(filled)).toBe(true);
     });
   });

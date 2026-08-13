@@ -10,6 +10,10 @@ import {
 import { TRANSFER_GROUPS } from "../state/dataTransferGroups";
 import { getTodoLists, saveTodoLists } from "@/features/todo-lists/storage";
 import { getPresets, savePresets } from "@/features/preset/storage";
+import {
+  getDailyProgress,
+  saveDailyProgress,
+} from "@/features/routine/storage";
 
 /** 指定したキーだけを選んだ状態を作る */
 const select = (...keys: (keyof typeof EMPTY_TRANSFER_OPTIONS)[]) =>
@@ -37,6 +41,32 @@ describe("createExportData", () => {
     expect(data).toHaveProperty("todoCategories");
     expect(data).not.toHaveProperty("routines");
     expect(data).not.toHaveProperty("budgetData");
+  });
+
+  it("今日の進捗が無い日は progress を書き出さない", () => {
+    // getDailyProgress は記録が無いとき null を返す。null を書き出しても
+    // saveDailyProgress は null を受け取れず復元できないため、
+    // 「ファイルに入っているものは戻る」という約束が崩れる。
+    localStorage.clear();
+
+    const data = createExportData(select("progress"));
+
+    expect(data).not.toHaveProperty("progress");
+  });
+
+  it("今日の進捗があれば書き出して取り込める", () => {
+    localStorage.clear();
+    saveDailyProgress({
+      date: "2026-08-13",
+      completedRoutineIds: ["routine-1"],
+      lastResetTime: "2026-08-13T00:00:00.000Z",
+    });
+
+    const data = createExportData(select("progress"));
+    localStorage.clear();
+    importSelectedData(data, select("progress"));
+
+    expect(getDailyProgress()?.completedRoutineIds).toEqual(["routine-1"]);
   });
 
   it("何も選ばなければデータを含めない", () => {

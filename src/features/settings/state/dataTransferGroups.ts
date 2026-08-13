@@ -85,7 +85,18 @@ const GROUP_DEFINITIONS: Record<TransferGroupKey, TransferGroupDefinition> = {
   },
   progress: {
     label: "今日の進捗データ",
-    collect: () => ({ progress: getDailyProgress() }),
+    // 進捗が無い日は書き出さない。getDailyProgress は記録が無いとき null を
+    // 返すが、saveDailyProgress は null を受け取れないため復元できず、
+    // 「ファイルに入っているものは戻る」という約束が崩れるため。
+    //
+    // null を「進捗なし」として復元する案もあるが、取り込み先の端末で
+    // その日すでに完了させたルーティンを消してしまう。同期側も同じ理由で
+    // dailyProgress の null は尊重せずローカルを維持している
+    // （src/features/sync/sync/localData.ts）。
+    collect: () => {
+      const progress = getDailyProgress();
+      return progress === null ? {} : { progress };
+    },
     fields: [anyField("progress", saveDailyProgress)],
   },
   history: {
