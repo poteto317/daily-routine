@@ -1,8 +1,7 @@
 import { type MealRecord, type MealType } from "@/types/routine";
+import { getTodayString } from "@/lib/storage/core";
 
-export const getTodayDateString = (): string => {
-  return new Date().toISOString().split("T")[0];
-};
+export const getTodayDateString = (): string => getTodayString();
 
 export const getCurrentTimeString = (): string => {
   const now = new Date();

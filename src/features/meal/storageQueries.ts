@@ -1,12 +1,13 @@
 import { type MealRecord } from "@/types/routine";
 import { getMealHistory } from "./storageData";
+import { getTodayString } from "@/lib/storage/core";
 
 export const getMealRecordsByDate = (date: string): MealRecord[] => {
   return getMealHistory()[date] || [];
 };
 
 export const getTodayMealRecords = (): MealRecord[] => {
-  const today = new Date().toISOString().split("T")[0];
+  const today = getTodayString();
   return getMealRecordsByDate(today);
 };
 

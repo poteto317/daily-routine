@@ -1,6 +1,7 @@
 import { type WeightRecord } from "@/types/routine";
 import { generateId } from "@/lib/storage/core";
 import { getWeightHistory, saveWeightHistory } from "./storageData";
+import { getTodayString } from "@/lib/storage/core";
 
 export const getWeightRecord = (date: string): WeightRecord | null => {
   const history = getWeightHistory();
@@ -8,7 +9,7 @@ export const getWeightRecord = (date: string): WeightRecord | null => {
 };
 
 export const getTodayWeightRecord = (): WeightRecord | null => {
-  const today = new Date().toISOString().split("T")[0];
+  const today = getTodayString();
   return getWeightRecord(today);
 };
 

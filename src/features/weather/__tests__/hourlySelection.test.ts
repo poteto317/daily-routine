@@ -5,16 +5,9 @@ import {
   getUpcomingHourlyForecasts,
   isTodayForecastDate,
   resolveSelectedForecastDate,
-  toLocalDateKey,
 } from "../page/hourlySelection";
 
 describe("hourlySelection", () => {
-  it("toLocalDateKey はローカル日付キーへ変換する", () => {
-    expect(toLocalDateKey(new Date("2026-02-10T10:00:00.000Z"))).toBe(
-      "2026-02-10",
-    );
-  });
-
   it("isTodayForecastDate は今日かどうかを判定する", () => {
     expect(
       isTodayForecastDate("2026-02-10", new Date("2026-02-10T10:00:00.000Z")),

@@ -1,4 +1,5 @@
 import { type TransferOptions } from "./constants";
+import { getTodayString } from "@/lib/storage/core";
 
 /**
  * 組み立てたデータを JSON ファイルとしてブラウザに配る。
@@ -13,7 +14,7 @@ export const downloadExportData = (options: TransferOptions, data: object) => {
   const url = URL.createObjectURL(blob);
   const anchor = document.createElement("a");
   anchor.href = url;
-  const date = new Date().toISOString().split("T")[0];
+  const date = getTodayString();
   const types = Object.entries(options)
     .filter(([, value]) => value)
     .map(([key]) => key)

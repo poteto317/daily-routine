@@ -1,12 +1,5 @@
+import { getTodayString, toJstDateKey } from "@/lib/storage/core";
 import type { HourlyWeatherForecast } from "@/types/routine";
-
-export const toLocalDateKey = (date: Date): string => {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-
-  return `${year}-${month}-${day}`;
-};
 
 export const isTodayForecastDate = (
   selectedDate: string | null,
@@ -14,12 +7,12 @@ export const isTodayForecastDate = (
 ): boolean => {
   if (!selectedDate) return false;
 
-  return selectedDate === toLocalDateKey(now);
+  return selectedDate === toJstDateKey(now);
 };
 
 export const getDefaultSelectedForecastDate = (
   dates: string[],
-  today: string = new Date().toISOString().split("T")[0] ?? "",
+  today: string = getTodayString(),
 ): string | null => {
   if (dates.length === 0) return null;
   return dates.includes(today) ? today : (dates[0] ?? null);
@@ -28,7 +21,7 @@ export const getDefaultSelectedForecastDate = (
 export const resolveSelectedForecastDate = (
   dates: string[],
   selectedDate: string | null,
-  today: string = new Date().toISOString().split("T")[0] ?? "",
+  today: string = getTodayString(),
 ): string | null => {
   if (selectedDate && dates.includes(selectedDate)) {
     return selectedDate;
@@ -58,7 +51,7 @@ export const getHourlyForecastsForSelectedDate = (
 ): HourlyWeatherForecast[] => {
   return limitHourlyForecasts(
     hourly.filter(
-      (entry) => toLocalDateKey(new Date(entry.time)) === selectedDate,
+      (entry) => toJstDateKey(new Date(entry.time)) === selectedDate,
     ),
   );
 };

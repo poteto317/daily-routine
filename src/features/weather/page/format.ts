@@ -1,5 +1,6 @@
 import { type WeatherForecast } from "@/types/routine";
 import { WEATHER_LABELS } from "../texts";
+import { getTodayString } from "@/lib/storage/core";
 
 export const getWeatherIcon = (weather: WeatherForecast["weather"]) => {
   switch (weather) {
@@ -46,6 +47,6 @@ export const formatHourlyTime = (timeStr: string) => {
 };
 
 export const isToday = (dateStr: string) => {
-  const today = new Date().toISOString().split("T")[0];
+  const today = getTodayString();
   return dateStr === today;
 };

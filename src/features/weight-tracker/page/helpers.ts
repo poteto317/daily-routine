@@ -1,9 +1,8 @@
 import { type WeightHistory, type WeightRecord } from "@/types/routine";
 import texts from "../locales/ja.json";
+import { getTodayString } from "@/lib/storage/core";
 
-export const getTodayDateKey = (): string => {
-  return new Date().toISOString().split("T")[0];
-};
+export const getTodayDateKey = (): string => getTodayString();
 
 export const formatWeightDate = (dateStr: string): string => {
   const date = new Date(dateStr + "T00:00:00");

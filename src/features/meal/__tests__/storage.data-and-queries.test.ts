@@ -16,6 +16,7 @@ import {
   getTodayMealRecords,
   getMealRecordsByPeriod,
 } from "../storage";
+import { getTodayString } from "@/lib/storage/core";
 
 describe("meal storage data and queries", () => {
   beforeEach(() => {
@@ -49,7 +50,9 @@ describe("meal storage data and queries", () => {
   });
 
   it("日付・今日・期間で記録取得できる", () => {
-    const today = new Date().toISOString().split("T")[0];
+    // 本番と同じ「今日」の求め方を使う。テスト側で別の求め方をすると、
+    // 実装のタイムゾーン不整合を検出できない
+    const today = getTodayString();
     mockGetStorageItem.mockReturnValue({
       [today]: [
         {
