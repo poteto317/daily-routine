@@ -47,6 +47,7 @@ import {
   normalizeTodoListSyncData,
   saveTodoListSyncData,
 } from "./todoListSyncData";
+import { migrateDateKeys } from "@/lib/dateKeyMigration";
 import { collectLatestTimestamp } from "./timestamp";
 import { normalizeCoreSyncData } from "./syncDataNormalizer";
 import type { SyncData, SyncPayload } from "./types";
@@ -115,6 +116,13 @@ export const saveSyncDataToLocal = (
     savePresets(normalized.presets);
     saveTodoListSyncData(normalized);
   });
+
+  // クラウド側には日付キーの修正前に保存された記録が残っている。
+  // そのまま書き戻すと、直したはずのローカルが元へ戻り、ログイン時の
+  // 1 度きりの移行はもう走らないため直せなくなる。
+  // ダウンロードとスナップショット復元の両方がここを通る。
+  migrateDateKeys();
+
   if (!options?.skipTimestampUpdate) {
     setLocalDataUpdatedAt(data.lastModified ?? Date.now());
   }

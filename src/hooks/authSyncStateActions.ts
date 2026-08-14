@@ -13,18 +13,23 @@ export type AuthSyncSetters = {
   setIsAdminLoading: SetIsAdminLoading;
 };
 
-type AuthStateStorageActions = {
+/** ログイン直後に 1 度だけ行う準備処理 */
+type AuthenticatedUserSetupActions = {
   setCurrentUserId: (uid: string | null) => void;
   migrateToUserStorage: (uid: string) => void;
+  runDateKeyMigrationOnce: (uid: string) => void;
 };
 
 export const applyAuthenticatedUserState = (
   user: User,
   setters: Pick<AuthSyncSetters, "setUser" | "setLoading">,
-  storageActions: AuthStateStorageActions,
+  setupActions: AuthenticatedUserSetupActions,
 ): void => {
-  storageActions.setCurrentUserId(user.uid);
-  storageActions.migrateToUserStorage(user.uid);
+  setupActions.setCurrentUserId(user.uid);
+  setupActions.migrateToUserStorage(user.uid);
+  // ユーザースコープが確定してから移行する。先に走らせるとスコープ外の
+  // キーを読んでしまい、何も移せない。
+  setupActions.runDateKeyMigrationOnce(user.uid);
   setters.setUser(user);
   setters.setLoading(false);
 };

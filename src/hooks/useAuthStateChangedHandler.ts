@@ -15,6 +15,7 @@ import {
   checkIsAdmin,
   ensureAccountRecord,
 } from "@/features/account-admin/accountService";
+import { runDateKeyMigrationOnce } from "@/lib/dateKeyMigration";
 import { createAuthStateChangedHandler } from "./authSyncHandlers";
 
 export type UseAuthSyncParams = {
@@ -51,6 +52,7 @@ export const useAuthStateChangedHandler = ({
         setCurrentUserId,
         getCurrentUserId,
         migrateToUserStorage,
+        runDateKeyMigrationOnce,
         ensureAccountRecord,
         checkIsAdmin,
         isMounted,

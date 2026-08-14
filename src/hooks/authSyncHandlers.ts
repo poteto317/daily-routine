@@ -11,13 +11,14 @@ import {
 import { createAuthenticatedAuthStateHandler } from "./authSyncAuthenticatedHandler";
 import { createSignedOutAuthStateHandler } from "./authSyncSignedOutHandler";
 
-type AuthStateStorageActions = {
+type AuthenticatedUserSetupActions = {
   setCurrentUserId: (uid: string | null) => void;
   migrateToUserStorage: (uid: string) => void;
+  runDateKeyMigrationOnce: (uid: string) => void;
 };
 
 type CreateAuthStateChangedHandlerArgs = AuthSyncSetters &
-  AuthStateStorageActions & {
+  AuthenticatedUserSetupActions & {
     ensureAccountRecord: SyncAdminStatusArgs["ensureAccountRecord"];
     checkIsAdmin: SyncAdminStatusArgs["checkIsAdmin"];
     isMounted: SyncAdminStatusArgs["isMounted"];
@@ -31,6 +32,7 @@ export const createAuthStateChangedHandler = ({
   setLoading,
   setCurrentUserId,
   migrateToUserStorage,
+  runDateKeyMigrationOnce,
   ensureAccountRecord,
   checkIsAdmin,
   isMounted,
@@ -43,6 +45,7 @@ export const createAuthStateChangedHandler = ({
     setLoading,
     setCurrentUserId,
     migrateToUserStorage,
+    runDateKeyMigrationOnce,
     ensureAccountRecord,
     checkIsAdmin,
     isMounted,

@@ -30,6 +30,7 @@ describe("authSyncAuthenticatedHandler", () => {
       setLoading,
       setCurrentUserId,
       migrateToUserStorage,
+      runDateKeyMigrationOnce: jest.fn(),
       ensureAccountRecord,
       checkIsAdmin,
       isMounted: () => true,

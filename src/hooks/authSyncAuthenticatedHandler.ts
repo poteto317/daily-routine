@@ -8,16 +8,17 @@ import {
   type AuthSyncSetters,
 } from "./authSyncStateActions";
 
-type AuthStateStorageActions = {
+type AuthenticatedUserSetupActions = {
   setCurrentUserId: (uid: string | null) => void;
   migrateToUserStorage: (uid: string) => void;
+  runDateKeyMigrationOnce: (uid: string) => void;
 };
 
 type CreateAuthenticatedAuthStateHandlerArgs = Pick<
   AuthSyncSetters,
   "setUser" | "setLoading"
 > &
-  AuthStateStorageActions &
+  AuthenticatedUserSetupActions &
   Pick<
     SyncAdminStatusArgs,
     | "setIsAdmin"
@@ -35,6 +36,7 @@ export const createAuthenticatedAuthStateHandler = ({
   setLoading,
   setCurrentUserId,
   migrateToUserStorage,
+  runDateKeyMigrationOnce,
   ensureAccountRecord,
   checkIsAdmin,
   isMounted,
@@ -44,7 +46,7 @@ export const createAuthenticatedAuthStateHandler = ({
     applyAuthenticatedUserState(
       user,
       { setUser, setLoading },
-      { setCurrentUserId, migrateToUserStorage },
+      { setCurrentUserId, migrateToUserStorage, runDateKeyMigrationOnce },
     );
 
     void syncAdminStatus({
