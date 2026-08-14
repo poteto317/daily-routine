@@ -1,10 +1,3 @@
-export const getTodayString = (): string => {
-  const now = new Date();
-  const jstOffsetMinutes = 9 * 60;
-  const jstDate = new Date(now.getTime() + jstOffsetMinutes * 60 * 1000);
-  return jstDate.toISOString().split("T")[0];
-};
-
 export const getCurrentTime = (): string => {
   const now = new Date();
   return `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
