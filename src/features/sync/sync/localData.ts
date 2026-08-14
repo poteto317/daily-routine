@@ -115,13 +115,17 @@ export const saveSyncDataToLocal = (
     saveMealHistory(normalized.mealHistory);
     savePresets(normalized.presets);
     saveTodoListSyncData(normalized);
-  });
 
-  // クラウド側には日付キーの修正前に保存された記録が残っている。
-  // そのまま書き戻すと、直したはずのローカルが元へ戻り、ログイン時の
-  // 1 度きりの移行はもう走らないため直せなくなる。
-  // ダウンロードとスナップショット復元の両方がここを通る。
-  migrateDateKeys();
+    // クラウド側には日付キーの修正前に保存された記録が残っている。
+    // そのまま書き戻すと、直したはずのローカルが元へ戻り、ログイン時の
+    // 1 度きりの移行はもう走らないため直せなくなる。
+    // ダウンロードとスナップショット復元の両方がここを通る。
+    //
+    // バッチの中で行う。外に出すと移行の保存ごとに更新時刻が書かれ、
+    // そのたびにイベントが飛んで購読側が一瞬「ローカル変更あり」と
+    // 判断しうる。更新時刻の確定はこの下の 1 回に統一する。
+    migrateDateKeys();
+  });
 
   if (!options?.skipTimestampUpdate) {
     setLocalDataUpdatedAt(data.lastModified ?? Date.now());
