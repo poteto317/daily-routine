@@ -110,4 +110,17 @@ describe("migrateDateKeys", () => {
     });
     expect(migrateDateKeys()).toBe(false);
   });
+
+  it("移行が例外を投げてもログイン処理を止めない", () => {
+    // runDateKeyMigrationOnce はログイン直後の準備処理から同期的に
+    // 呼ばれる。例外が抜けるとログインそのものが失敗する。
+    (migrateWeightDateKeys as jest.Mock).mockImplementation(() => {
+      throw new Error("boom");
+    });
+    (migrateMealDateKeys as jest.Mock).mockImplementation(() => {
+      throw new Error("boom");
+    });
+
+    expect(() => runDateKeyMigrationOnce("uid-1")).not.toThrow();
+  });
 });

@@ -62,4 +62,47 @@ describe("runOncePerUser", () => {
     expect(() => runOncePerUser("uid-1", "_probe", task)).not.toThrow();
     expect(task).toHaveBeenCalledTimes(1);
   });
+
+  it("task が例外を投げても呼び出し元へ伝播させない", () => {
+    // ログイン直後の準備処理から呼ばれる。ここで例外が抜けると
+    // ログインそのものが失敗する。
+    expect(() =>
+      runOncePerUser("uid-1", "_probe", () => {
+        throw new Error("boom");
+      }),
+    ).not.toThrow();
+  });
+
+  it("task が例外を投げた場合は次回もう一度実行する", () => {
+    runOncePerUser("uid-1", "_probe", () => {
+      throw new Error("boom");
+    });
+    const task = jest.fn(() => true);
+
+    runOncePerUser("uid-1", "_probe", task);
+
+    expect(task).toHaveBeenCalledTimes(1);
+  });
+
+  it("マーカーを読めなくても落ちない", () => {
+    // Safari のプライベートモードなど、localStorage への参照自体が
+    // 例外になる環境がある。
+    jest.spyOn(Storage.prototype, "getItem").mockImplementation(() => {
+      throw new Error("SecurityError");
+    });
+
+    expect(() => runOncePerUser("uid-1", "_probe", () => true)).not.toThrow();
+  });
+
+  it("マーカーを読めない場合は実行する", () => {
+    // 実行済みか判断できない。移行は冪等なので、飛ばすより試すほうがよい
+    jest.spyOn(Storage.prototype, "getItem").mockImplementation(() => {
+      throw new Error("SecurityError");
+    });
+    const task = jest.fn(() => true);
+
+    runOncePerUser("uid-1", "_probe", task);
+
+    expect(task).toHaveBeenCalledTimes(1);
+  });
 });
