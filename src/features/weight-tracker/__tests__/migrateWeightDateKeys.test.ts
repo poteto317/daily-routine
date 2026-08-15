@@ -59,6 +59,22 @@ describe("migrateWeightDateKeys", () => {
     expect(history["2026-08-13"].weight).toBe(71);
   });
 
+  it("移し先の中身が壊れている場合は実データで置き換える", () => {
+    // localStorage の値は内側の形まで検証していないため、キーはあるのに
+    // 中身が null という状態がありうる。キーの有無だけで「埋まっている」と
+    // 扱うと、中身の無い日付が居座り正しい記録が誤った日付に取り残される。
+    seed({
+      "2026-08-12": record("2026-08-12", "2026-08-12T22:00:00Z", 69.5),
+      "2026-08-13": null as unknown as WeightRecord,
+    });
+
+    expect(migrateWeightDateKeys()).toBe(1);
+
+    const history = getWeightHistory();
+    expect(Object.keys(history)).toEqual(["2026-08-13"]);
+    expect(history["2026-08-13"].weight).toBe(69.5);
+  });
+
   it("複数日分をまとめて移す", () => {
     seed({
       "2026-08-11": record("2026-08-11", "2026-08-11T22:00:00Z", 70),

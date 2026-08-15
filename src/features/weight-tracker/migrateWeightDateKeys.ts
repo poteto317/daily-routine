@@ -34,7 +34,12 @@ export const migrateWeightDateKeys = (): number => {
     const { targetKey } = plan;
     if (!targetKey) continue;
 
-    // 動かさない記録と、先に移ってきた記録の両方をここで避ける
+    // 動かさない記録と、先に移ってきた記録の両方をここで避ける。
+    //
+    // キーの有無ではなく中身の有無で見る。localStorage の値は内側の形まで
+    // 検証していないため、キーはあるのに中身が null という状態がありうる。
+    // それを「埋まっている」と扱うと、中身の無い日付が居座り、正しい記録が
+    // 誤った日付に取り残される。実データで置き換えるほうが良い。
     if (migrated[targetKey]) {
       migrated[plan.dateKey] = plan.record;
       continue;
