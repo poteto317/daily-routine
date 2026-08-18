@@ -2,6 +2,7 @@
 
 import type { TodoList } from "./types";
 import { isTodoListVisible } from "./todoListVisibilityPredicate";
+import { ToggleSwitch } from "@/components";
 import texts from "./locales/ja.json";
 import { isImeComposingKeyDown } from "@/lib/isImeComposingKeyDown";
 
@@ -44,7 +45,8 @@ export const TodoListManagementItem = ({
           onChange={(e) => onChangeTitleValueAction(e.target.value)}
           onBlur={onCommitEditAction}
           onKeyDown={(e) => {
-            if (e.key === "Enter" && !isImeComposingKeyDown(e)) onCommitEditAction();
+            if (e.key === "Enter" && !isImeComposingKeyDown(e))
+              onCommitEditAction();
             if (e.key === "Escape") onCancelEditAction();
           }}
           className="flex-1 min-w-0 text-sm px-2 py-0.5 border-b-2 border-teal-400 bg-transparent text-gray-800 dark:text-gray-100 focus:outline-none"
@@ -65,22 +67,21 @@ export const TodoListManagementItem = ({
       )}
       <div className="flex items-center gap-3 shrink-0">
         <span className="text-xs text-gray-400 dark:text-gray-500">
-          {isVisible ? texts.management.visibleLabel : texts.management.hiddenLabel}
+          {isVisible
+            ? texts.management.visibleLabel
+            : texts.management.hiddenLabel}
         </span>
-        <button
-          type="button"
-          onClick={() => onToggleVisibilityAction(list)}
+        <ToggleSwitch
+          checked={isVisible}
+          label={`${list.title} の表示切替`}
+          onToggle={() => onToggleVisibilityAction(list)}
           className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
             isVisible ? "bg-teal-500" : "bg-gray-300 dark:bg-gray-500"
           }`}
-          aria-label={`${list.title} の表示切替`}
-        >
-          <span
-            className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-              isVisible ? "translate-x-6" : "translate-x-1"
-            }`}
-          />
-        </button>
+          thumbClassName={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+            isVisible ? "translate-x-6" : "translate-x-1"
+          }`}
+        />
         {!isEditing && (
           <button
             type="button"

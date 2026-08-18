@@ -10,6 +10,9 @@ jest.mock("../selectedTodoList", () => ({
 }));
 
 jest.mock("@/components", () => ({
+  // CardPanel だけを差し替え、他は本物を使う。個別に列挙すると、
+  // 新しい共通コンポーネントを使い始めたときに undefined になって落ちる
+  ...jest.requireActual("@/components"),
   CardPanel: ({ children }: { children: React.ReactNode }) => (
     <div>{children}</div>
   ),

@@ -6,6 +6,7 @@ import {
   getTrainDelayToggleClassName,
   isAddLineButtonDisabled,
 } from "../helpers/trainDelay";
+import { ToggleSwitch } from "@/components";
 import texts from "../locales/ja.json";
 
 type LineOption = { id: string; name: string; company: string };
@@ -52,13 +53,13 @@ export const TrainDelaySection = ({
           <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
             {texts.trainDelay.toggleLabel}
           </span>
-          <button
-            type="button"
-            onClick={() => setTrainDelayEnabled(!trainDelayEnabled)}
+          <ToggleSwitch
+            checked={trainDelayEnabled}
+            label={texts.trainDelay.toggleLabel}
+            onToggle={() => setTrainDelayEnabled(!trainDelayEnabled)}
             className={getTrainDelayToggleClassName(trainDelayEnabled)}
-          >
-            <span className={getTrainDelayThumbClassName(trainDelayEnabled)} />
-          </button>
+            thumbClassName={getTrainDelayThumbClassName(trainDelayEnabled)}
+          />
         </div>
 
         {trainDelayEnabled && (

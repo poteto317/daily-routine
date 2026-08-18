@@ -5,6 +5,7 @@ import {
   getFeatureToggleClassName,
   getUpdatedVisibleFeatures,
 } from "../helpers/featureVisibility";
+import { ToggleSwitch } from "@/components";
 import texts from "../locales/ja.json";
 
 type Props = {
@@ -33,19 +34,17 @@ export const FeatureVisibilitySection = ({
             <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
               {icon} {label}
             </span>
-            <button
-              type="button"
-              onClick={() =>
+            <ToggleSwitch
+              checked={visibleFeatures[key]}
+              label={label}
+              onToggle={() =>
                 setVisibleFeatures(
                   getUpdatedVisibleFeatures(visibleFeatures, key),
                 )
               }
               className={getFeatureToggleClassName(visibleFeatures[key])}
-            >
-              <span
-                className={getFeatureThumbClassName(visibleFeatures[key])}
-              />
-            </button>
+              thumbClassName={getFeatureThumbClassName(visibleFeatures[key])}
+            />
           </div>
         ))}
       </div>
