@@ -1,5 +1,8 @@
 import { type Routine, ROUTINE_CATEGORIES } from "@/types/routine";
-import { groupRoutinesForSelection } from "../presetRoutineGrouping";
+import {
+  groupRoutinesForSelection,
+  sortRoutineSelectionGroupsByStartTime,
+} from "../presetRoutineGrouping";
 import {
   isPresetEditSaveDisabled,
   PRESET_EDIT_CANCEL_LABEL,
@@ -66,7 +69,9 @@ export const PresetEditSection = ({
             {PRESET_EDIT_EMPTY_ROUTINES_LABEL}
           </p>
         ) : (
-          groupRoutinesForSelection(routines).map((group) => {
+          sortRoutineSelectionGroupsByStartTime(
+            groupRoutinesForSelection(routines),
+          ).map((group) => {
             const categoryInfo = ROUTINE_CATEGORIES.find(
               (item) => item.value === group.routine.category,
             );

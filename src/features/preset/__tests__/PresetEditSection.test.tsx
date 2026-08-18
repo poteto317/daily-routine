@@ -84,4 +84,45 @@ describe("PresetEditSection", () => {
 
     expect(screen.getAllByRole("checkbox")).toHaveLength(2);
   });
+
+  it("ルーティンは開始時刻の昇順で表示される", () => {
+    const routines = [
+      createRoutine({ id: "late", title: "夜食", startTime: "22:00" }),
+      createRoutine({ id: "early", title: "朝食", startTime: "06:00" }),
+      createRoutine({ id: "middle", title: "昼食", startTime: "12:00" }),
+    ];
+
+    render(<PresetEditSection {...defaultProps} routines={routines} />);
+
+    // 各行に表示される時刻を上から順に読む
+    expect(
+      screen.getAllByText(/^\d{2}:\d{2}$/).map((el) => el.textContent),
+    ).toEqual(["06:00", "12:00", "22:00"]);
+  });
+
+  it("時刻順に並べても、チェック時は代表ルーティンのidで通知される", () => {
+    const onToggleEditRoutine = jest.fn();
+    const routines = [
+      createRoutine({ id: "late", title: "夜食", startTime: "22:00" }),
+      createRoutine({ id: "early-mon", title: "朝食", startTime: "06:00" }),
+      createRoutine({
+        id: "early-wed",
+        title: "朝食",
+        startTime: "06:00",
+        daysOfWeek: [3],
+      }),
+    ];
+
+    render(
+      <PresetEditSection
+        {...defaultProps}
+        routines={routines}
+        onToggleEditRoutine={onToggleEditRoutine}
+      />,
+    );
+
+    fireEvent.click(screen.getAllByRole("checkbox")[0]);
+
+    expect(onToggleEditRoutine).toHaveBeenCalledWith("early-mon");
+  });
 });
