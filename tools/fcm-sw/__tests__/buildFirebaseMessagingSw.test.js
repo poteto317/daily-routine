@@ -1,4 +1,4 @@
-import { buildFirebaseMessagingSw } from "../buildFirebaseMessagingSw";
+import { buildFirebaseMessagingSw } from "../buildFirebaseMessagingSw.js";
 
 const template = `const config = { apiKey: __NEXT_PUBLIC_FIREBASE_API_KEY__ };
 __JST_DATE_HELPERS__

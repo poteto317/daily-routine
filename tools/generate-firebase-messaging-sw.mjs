@@ -1,6 +1,6 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
-import { buildFirebaseMessagingSw } from "./buildFirebaseMessagingSw.js";
+import { buildFirebaseMessagingSw } from "./fcm-sw/buildFirebaseMessagingSw.js";
 
 const workspaceRoot = process.cwd();
 const templatePath = join(
