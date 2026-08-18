@@ -70,11 +70,28 @@ describe("checkAndSendNotifications", () => {
     expect(showNotification).not.toHaveBeenCalled();
   });
 
-  it("曜日が一致しないスケジュールは通知しない", async () => {
-    const mismatchedDayOfWeek = (new Date("2026-07-11T09:00:00+09:00").getDay() + 1) % 7;
+  it("minutesAfter で日付をまたいだ時刻でも通知する", async () => {
+    // JST 00:20。前日 23:50 の 30 分後がちょうど今なので通知する
+    jest.setSystemTime(new Date("2026-07-12T00:20:00+09:00"));
 
     await checkAndSendNotifications(
-      new Map([["routine-1-0", { ...schedule, dayOfWeek: mismatchedDayOfWeek }]]),
+      new Map([
+        ["routine-1-0", { ...schedule, time: "23:50", minutesAfter: 30 }],
+      ]),
+    );
+
+    expect(showNotification).toHaveBeenCalled();
+  });
+
+  it("曜日が一致しないスケジュールは通知しない", async () => {
+    // 2026-07-11 は JST で土曜（6）。端末ローカルの getDay() で求めると
+    // 日本国外では別の曜日になり、一致しないはずの値が一致してしまう
+    const mismatchedDayOfWeek = 0;
+
+    await checkAndSendNotifications(
+      new Map([
+        ["routine-1-0", { ...schedule, dayOfWeek: mismatchedDayOfWeek }],
+      ]),
     );
 
     expect(showNotification).not.toHaveBeenCalled();

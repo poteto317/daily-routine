@@ -1,5 +1,6 @@
 import { getCacheValue, setCacheValue } from "./notificationFlagsCache";
 import { logToClient } from "./logToClient";
+import { diffFromJstScheduleMs, toJstDateKey, toJstDay } from "./jstDate";
 
 const getRoutineIdFromScheduleId = (id) =>
   id.replace(/-\d+$/, "").replace(/-holiday$/, "");
@@ -21,8 +22,10 @@ const shouldSkipSchedule = (schedule, currentDayOfWeek, isWeekend) => {
 
 export const checkAndSendNotifications = async (schedules) => {
   const now = new Date();
-  const today = now.toISOString().split("T")[0];
-  const currentDayOfWeek = now.getDay();
+  // 本体の記録と同じ JST 基準にする。UTC や端末ローカルのままだと、
+  // 日本時間の 0〜9 時に通知の日付と曜日が前日のものになる。
+  const today = toJstDateKey(now);
+  const currentDayOfWeek = toJstDay(now);
   const isWeekend = currentDayOfWeek === 0 || currentDayOfWeek === 6;
 
   logToClient(
@@ -42,19 +45,14 @@ export const checkAndSendNotifications = async (schedules) => {
       continue;
     }
 
-    const [scheduleHour, scheduleMinute] = schedule.time.split(":").map(Number);
-    const notificationTime = new Date(now);
-    notificationTime.setHours(
-      scheduleHour,
-      scheduleMinute + (schedule.minutesAfter || 0),
-      0,
-      0,
+    const timeDiff = diffFromJstScheduleMs(
+      now,
+      schedule.time,
+      schedule.minutesAfter || 0,
     );
 
-    const timeDiff = Math.abs(now.getTime() - notificationTime.getTime());
-
     logToClient(
-      `[Custom SW] Check: ${schedule.title} scheduled:${schedule.time} notify:${notificationTime.toLocaleTimeString("ja-JP")} after:${schedule.minutesAfter}min diff:${Math.round(timeDiff / 1000)}s`,
+      `[Custom SW] Check: ${schedule.title} scheduled:${schedule.time} after:${schedule.minutesAfter}min diff:${Math.round(timeDiff / 1000)}s`,
     );
 
     if (timeDiff >= 90000) {

@@ -1,12 +1,9 @@
 import { type MealRecord, type MealType } from "@/types/routine";
-import { getTodayString } from "@/lib/storage/core";
+import { getCurrentTime, getTodayString } from "@/lib/storage/core";
 
 export const getTodayDateString = (): string => getTodayString();
 
-export const getCurrentTimeString = (): string => {
-  const now = new Date();
-  return `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
-};
+export const getCurrentTimeString = (): string => getCurrentTime();
 
 export const formatMealDate = (dateStr: string): string => {
   return new Date(`${dateStr}T00:00:00`).toLocaleDateString("ja-JP", {

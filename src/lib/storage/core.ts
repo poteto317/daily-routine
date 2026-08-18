@@ -30,7 +30,13 @@ export {
 export type { StorageWriteFailureDetail } from "./core-modules/storageWriteFailureEvent";
 export type { StorageWriteFailureReason } from "./core-modules/storageWriteFailureReason";
 
-export { getTodayString, toJstDateKey } from "./core-modules/dateKey";
+export {
+  getTodayString,
+  toJstDateKey,
+  toJstDay,
+  toJstTime,
+  getJstToday,
+} from "./core-modules/jstDateTime";
 
 export { runOncePerUser } from "./core-modules/runOncePerUser";
 

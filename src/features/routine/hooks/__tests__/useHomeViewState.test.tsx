@@ -7,6 +7,10 @@ describe("useHomeViewState", () => {
     localStorage.clear();
   });
 
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
   it("祝日ならviewMode初期値をholidayにする", () => {
     localStorage.setItem("viewMode", "1");
 
@@ -18,7 +22,11 @@ describe("useHomeViewState", () => {
   });
 
   it("祝日でない場合は保存済みviewMode/filterCategoryを復元する", () => {
-    const today = new Date().getDay();
+    // viewMode の初期値は JST の曜日。端末ローカルの getDay() を期待値に使うと
+    // 日本国外で別の曜日になるため、瞬間を固定して JST の曜日を直接書く。
+    // 2026-08-13 22:00 UTC = 2026-08-14 07:00 JST（金曜 = 5）
+    jest.useFakeTimers().setSystemTime(new Date("2026-08-13T22:00:00Z"));
+    const today = 5;
     localStorage.setItem("viewMode", "3");
     localStorage.setItem("filterCategory", "health");
     localStorage.setItem("isEditMode", "false");

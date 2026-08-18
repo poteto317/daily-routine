@@ -16,6 +16,7 @@ jest.mock("@/features/routine/helpers", () => ({
 
 jest.mock("@/lib/storage/core", () => ({
   getCurrentTime: jest.fn(() => "12:00"),
+  toJstDay: jest.fn(() => new Date().getDay()),
   timeToMinutes: jest.fn((time: string) => {
     const [hours, minutes] = time.split(":").map(Number);
     return hours * 60 + minutes;

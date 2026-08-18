@@ -132,11 +132,18 @@ const stopNotificationCheck = () => {
   }
 };
 
+// JST の日付処理は src/service-worker/custom-sw/jstDate.js を唯一の実装とし、
+// 生成時にここへ差し込む。テンプレートに書き写すと、片方だけ直したときに
+// custom SW と通知の重複防止キーが食い違う。
+__JST_DATE_HELPERS__;
+
 // 現在時刻をチェックして通知を送信
 const checkAndSendNotifications = async () => {
   const now = new Date();
-  const today = now.toISOString().split("T")[0];
-  const currentDayOfWeek = now.getDay();
+  // 本体の記録と同じ JST 基準にする。UTC や端末ローカルのままだと、
+  // 日本時間の 0〜9 時に通知の日付と曜日が前日のものになる。
+  const today = toJstDateKey(now);
+  const currentDayOfWeek = toJstDay(now);
   const isWeekend = currentDayOfWeek === 0 || currentDayOfWeek === 6;
 
   logToClient(
@@ -168,17 +175,12 @@ const checkAndSendNotifications = async () => {
       continue;
     }
 
-    // 通知時刻を計算（開始時刻 + 指定分数後）
-    const [scheduleHour, scheduleMinute] = schedule.time.split(":").map(Number);
-    const notificationTime = new Date(now);
-    notificationTime.setHours(
-      scheduleHour,
-      scheduleMinute + (schedule.minutesAfter || 0),
-      0,
-      0,
+    // 通知時刻（開始時刻 + 指定分数後）と今の差。日付キーや曜日と同じ JST 基準
+    const timeDiff = diffFromJstScheduleMs(
+      now,
+      schedule.time,
+      schedule.minutesAfter || 0,
     );
-
-    const timeDiff = Math.abs(now.getTime() - notificationTime.getTime());
 
     // 通知時刻が現在時刻と一致する（±90秒の誤差を許容）
     if (timeDiff < 90000) {

@@ -7,6 +7,7 @@ jest.mock("@/lib/firebase", () => ({ getFCMToken: jest.fn() }));
 jest.mock("@/lib/storage/core", () => ({
   getCurrentTime: jest.fn(),
   getTodayString: jest.fn(),
+  toJstDay: jest.fn(),
   timeToMinutes: jest.fn((time: string) => {
     const [hours, minutes] = time.split(":").map(Number);
     return hours * 60 + minutes;
@@ -38,6 +39,9 @@ export const mockGetTodayString =
   coreStorage.getTodayString as jest.MockedFunction<
     typeof coreStorage.getTodayString
   >;
+export const mockToJstDay = coreStorage.toJstDay as jest.MockedFunction<
+  typeof coreStorage.toJstDay
+>;
 export const mockGetSettings =
   settingsStorage.getSettings as jest.MockedFunction<
     typeof settingsStorage.getSettings

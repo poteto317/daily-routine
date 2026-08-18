@@ -1,7 +1,7 @@
-export const getCurrentTime = (): string => {
-  const now = new Date();
-  return `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
-};
+import { toJstTime } from "./jstDateTime";
+
+/** 今の時刻（JST）。日付キーと同じ基準で求める */
+export const getCurrentTime = (): string => toJstTime(new Date());
 
 export const timeToMinutes = (time: string): number => {
   const [hours, minutes] = time.split(":").map(Number);
@@ -14,13 +14,17 @@ export const minutesToTime = (minutes: number): string => {
   return `${String(hours).padStart(2, "0")}:${String(mins).padStart(2, "0")}`;
 };
 
+/**
+ * 指定時刻を過ぎたか（JST 基準）。
+ *
+ * Date の setHours で比べると端末のタイムゾーンが混ざり、日付をまたぐ
+ * 計算も絡む。JST の時刻を分に直して比べるだけにする。
+ */
 export const isTimePassed = (
   targetTime: string,
   minutesAfter: number = 0,
 ): boolean => {
-  const now = new Date();
-  const [hours, minutes] = targetTime.split(":").map(Number);
-  const target = new Date();
-  target.setHours(hours, minutes + minutesAfter, 0, 0);
-  return now >= target;
+  return (
+    timeToMinutes(getCurrentTime()) >= timeToMinutes(targetTime) + minutesAfter
+  );
 };

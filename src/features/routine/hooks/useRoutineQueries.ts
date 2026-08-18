@@ -5,6 +5,7 @@ import {
   shouldShowRoutineToday,
 } from "@/features/routine/storage";
 import { isHoliday } from "@/lib/holidays";
+import { getJstToday } from "@/lib/storage/core";
 import { createRoutineQueriesResult } from "./routineQueriesResult";
 import type { RoutineQueryActions } from "./routineHookContract";
 
@@ -27,7 +28,7 @@ export const useRoutineQueries = (routines: Routine[]): RoutineQueryActions => {
   }, [routines]);
 
   const getIsTodayHoliday = useCallback((): boolean => {
-    return isHoliday(new Date());
+    return isHoliday(getJstToday());
   }, []);
 
   return createRoutineQueriesResult({

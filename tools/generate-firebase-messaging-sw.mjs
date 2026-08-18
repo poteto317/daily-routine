@@ -1,5 +1,6 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
+import { buildFirebaseMessagingSw } from "./buildFirebaseMessagingSw.js";
 
 const workspaceRoot = process.cwd();
 const templatePath = join(
@@ -8,6 +9,13 @@ const templatePath = join(
   "firebase-messaging-sw.template.js",
 );
 const outputPath = join(workspaceRoot, "public", "firebase-messaging-sw.js");
+const jstHelpersPath = join(
+  workspaceRoot,
+  "src",
+  "service-worker",
+  "custom-sw",
+  "jstDate.js",
+);
 
 const parseEnvFile = (filePath) => {
   if (!existsSync(filePath)) {
@@ -64,11 +72,11 @@ const replacements = {
   ),
 };
 
-const template = readFileSync(templatePath, "utf8");
-const output = Object.entries(replacements).reduce(
-  (content, [token, value]) => content.replaceAll(token, value),
-  template,
-);
+const output = buildFirebaseMessagingSw({
+  template: readFileSync(templatePath, "utf8"),
+  jstHelpers: readFileSync(jstHelpersPath, "utf8"),
+  replacements,
+});
 
 mkdirSync(dirname(outputPath), { recursive: true });
 writeFileSync(outputPath, output, "utf8");

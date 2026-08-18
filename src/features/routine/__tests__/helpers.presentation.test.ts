@@ -8,6 +8,7 @@ import {
 import {
   baseRoutine,
   mockGetCurrentTime,
+  mockToJstDay,
   mockGetSettings,
   setupHelpersDefaults,
 } from "./helpers.test.setup";
@@ -17,17 +18,15 @@ describe("helpers presentation", () => {
   beforeEach(setupHelpersDefaults);
 
   it("isRoutinePastは当日かつ時刻超過でtrue", () => {
-    const daySpy = jest.spyOn(Date.prototype, "getDay").mockReturnValue(1);
+    mockToJstDay.mockReturnValue(1);
     mockGetCurrentTime.mockReturnValue("09:00");
     expect(isRoutinePast(baseRoutine)).toBe(true);
-    daySpy.mockRestore();
   });
 
   it("開始時刻が1桁時の旧データでも時刻超過を正しく判定する", () => {
-    const daySpy = jest.spyOn(Date.prototype, "getDay").mockReturnValue(1);
+    mockToJstDay.mockReturnValue(1);
     mockGetCurrentTime.mockReturnValue("09:00");
     expect(isRoutinePast({ ...baseRoutine, startTime: "8:30" })).toBe(true);
-    daySpy.mockRestore();
   });
 
   it("カテゴリ情報とカードスタイルを返す", () => {

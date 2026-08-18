@@ -16,7 +16,7 @@ const config: Config = {
         tsconfig: "<rootDir>/tsconfig.test.json",
       },
     ],
-    "src/service-worker/.+\\.js$": [
+    "(src/service-worker|tools)/.+\\.js$": [
       "ts-jest",
       {
         tsconfig: "<rootDir>/tsconfig.test.json",

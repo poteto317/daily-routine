@@ -1,10 +1,10 @@
 import { type Routine, ROUTINE_CATEGORIES } from "@/types/routine";
-import { getCurrentTime, timeToMinutes } from "@/lib/storage/core";
+import { getCurrentTime, timeToMinutes, toJstDay } from "@/lib/storage/core";
 import { getSettings } from "@/features/settings/storage";
 
 export const isRoutinePast = (routine: Routine): boolean => {
   const currentTime = getCurrentTime();
-  const today = new Date().getDay();
+  const today = toJstDay(new Date());
   const isTodayRoutine = routine.daysOfWeek.includes(today);
   return (
     isTodayRoutine &&
