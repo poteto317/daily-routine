@@ -101,6 +101,19 @@ describe("registerServiceWorkers", () => {
     });
   });
 
+  it("Service Worker 非対応の環境では何も登録せず落ちない", async () => {
+    // 呼び出し側のガードが漏れても、ここで例外にしない。
+    // 取得側（getFcmServiceWorkerRegistration）と同じ扱いにそろえる
+    await jest.isolateModulesAsync(async () => {
+      deleteServiceWorker();
+      const { registerServiceWorkers } = await importFresh();
+
+      await expect(
+        registerServiceWorkers({ enableAppShell: true }),
+      ).resolves.toBeUndefined();
+    });
+  });
+
   it("呼び出しごとに渡した options を必ず使う", async () => {
     // 前の呼び出しの結果を使い回すと、2回目に渡した指定が黙って無視される
     await jest.isolateModulesAsync(async () => {
@@ -140,6 +153,15 @@ describe("registerAppServiceWorkers", () => {
         APP_SHELL_SW_PATH,
         FCM_SW_PATH,
       ]);
+    });
+  });
+
+  it("Service Worker 非対応の環境でも落ちない", async () => {
+    await jest.isolateModulesAsync(async () => {
+      deleteServiceWorker();
+      const { registerAppServiceWorkers } = await importFresh();
+
+      await expect(registerAppServiceWorkers()).resolves.toBeUndefined();
     });
   });
 

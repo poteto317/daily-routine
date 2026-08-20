@@ -37,10 +37,15 @@ const isServiceWorkerSupported = (): boolean =>
  * しないなら競合しないので、FCM の SW をスコープ / に置いて画面を制御させる。
  * 専用スコープのままだと画面を制御する SW が無くなり、
  * navigator.serviceWorker.ready が解決しないまま残る。
+ *
+ * Service Worker 非対応の環境では何もしない。呼び出し側のガードが漏れても
+ * ここで落とさないため。取得側と同じ扱いにそろえる。
  */
 export const registerServiceWorkers = async ({
   enableAppShell,
 }: RegisterOptions): Promise<void> => {
+  if (!isServiceWorkerSupported()) return;
+
   if (!enableAppShell) {
     await navigator.serviceWorker.register(FCM_SW_PATH, { scope: "/" });
     return;
