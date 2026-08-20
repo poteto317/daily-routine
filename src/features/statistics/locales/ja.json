@@ -26,13 +26,26 @@
   },
   "modeSelector": {
     "options": [
-      { "mode": "week", "label": "📅 週次" },
-      { "mode": "month", "label": "📆 月次" },
-      { "mode": "category", "label": "🏷️ カテゴリ別" }
+      {
+        "mode": "week",
+        "label": "📅 週次"
+      },
+      {
+        "mode": "month",
+        "label": "📆 月次"
+      },
+      {
+        "mode": "category",
+        "label": "🏷️ カテゴリ別"
+      }
     ],
     "periodControls": {
       "currentWeek": "今週",
       "currentMonth": "今月"
     }
+  },
+  "periodControls": {
+    "previousLabel": "前の期間へ",
+    "nextLabel": "次の期間へ"
   }
 }

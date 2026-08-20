@@ -1,5 +1,9 @@
 import { type ViewMode } from "../types";
-import { getCurrentPeriodLabel } from "../../helpers";
+import {
+  getCurrentPeriodLabel,
+  STATISTICS_PERIOD_NEXT_LABEL,
+  STATISTICS_PERIOD_PREVIOUS_LABEL,
+} from "../../helpers";
 
 type Props = {
   viewMode: ViewMode;
@@ -18,7 +22,9 @@ export const StatisticsPeriodControls = ({
 }: Props) => (
   <div className="flex items-center justify-between mb-6">
     <button
+      type="button"
       onClick={onPrevious}
+      aria-label={STATISTICS_PERIOD_PREVIOUS_LABEL}
       className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-200 transition-colors"
     >
       <svg
@@ -45,7 +51,9 @@ export const StatisticsPeriodControls = ({
       </button>
     </div>
     <button
+      type="button"
       onClick={onNext}
+      aria-label={STATISTICS_PERIOD_NEXT_LABEL}
       className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-200 transition-colors"
     >
       <svg

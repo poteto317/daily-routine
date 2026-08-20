@@ -10,6 +10,10 @@ import textsJson from "./locales/ja.json";
 // Constants
 // ========================================
 
+export const STATISTICS_PERIOD_PREVIOUS_LABEL =
+  textsJson.periodControls.previousLabel;
+export const STATISTICS_PERIOD_NEXT_LABEL = textsJson.periodControls.nextLabel;
+
 export const STATISTICS_PAGE_TITLE = textsJson.page.title;
 export const STATISTICS_PAGE_DESCRIPTION = textsJson.page.description;
 

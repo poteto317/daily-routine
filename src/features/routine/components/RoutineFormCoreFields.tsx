@@ -1,3 +1,4 @@
+import { FieldGroup, LabeledField } from "@/components";
 import { ROUTINE_CATEGORIES } from "@/types/routine";
 import { uiTextConfig } from "@/config";
 import type { RoutineFormCoreProps } from "./routineFormViewTypes";
@@ -25,26 +26,26 @@ export const RoutineFormCoreFields = ({
 }: RoutineFormCoreProps) => {
   return (
     <>
-      <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-          {ROUTINE_FORM_TITLE_LABEL}
-        </label>
-        <input
-          type="text"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          required
-          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-400 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-white dark:text-gray-900"
-          placeholder={ROUTINE_FORM_TITLE_PLACEHOLDER}
-        />
-      </div>
+      <LabeledField label={ROUTINE_FORM_TITLE_LABEL}>
+        {(inputId) => (
+          <input
+            id={inputId}
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            required
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-400 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-white dark:text-gray-900"
+            placeholder={ROUTINE_FORM_TITLE_PLACEHOLDER}
+          />
+        )}
+      </LabeledField>
 
       {!routine && (
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            {ROUTINE_FORM_DAYS_LABEL}
-          </label>
-          <div className="grid grid-cols-4 gap-2" role="group" aria-label={ROUTINE_FORM_DAYS_LABEL}>
+          <FieldGroup
+            label={ROUTINE_FORM_DAYS_LABEL}
+            groupClassName="grid grid-cols-4 gap-2"
+          >
             {DAYS.map((day) => (
               <button
                 key={day.value}
@@ -59,7 +60,7 @@ export const RoutineFormCoreFields = ({
                 {day.label}
               </button>
             ))}
-          </div>
+          </FieldGroup>
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
             {daysOfWeek.length === 0 ? (
               <span className="text-red-600 dark:text-red-400 font-medium">
@@ -72,27 +73,25 @@ export const RoutineFormCoreFields = ({
         </div>
       )}
 
-      <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-          {ROUTINE_FORM_CATEGORY_LABEL}
-        </label>
-        <div className="grid grid-cols-3 gap-2">
-          {ROUTINE_CATEGORIES.map((cat) => (
-            <button
-              key={cat.value}
-              type="button"
-              onClick={() => setCategory(cat.value)}
-              className={getRoutineCategoryButtonClassName(
-                cat.value,
-                category,
-                cat.color,
-              )}
-            >
-              {cat.emoji} {cat.label}
-            </button>
-          ))}
-        </div>
-      </div>
+      <FieldGroup
+        label={ROUTINE_FORM_CATEGORY_LABEL}
+        groupClassName="grid grid-cols-3 gap-2"
+      >
+        {ROUTINE_CATEGORIES.map((cat) => (
+          <button
+            key={cat.value}
+            type="button"
+            onClick={() => setCategory(cat.value)}
+            className={getRoutineCategoryButtonClassName(
+              cat.value,
+              category,
+              cat.color,
+            )}
+          >
+            {cat.emoji} {cat.label}
+          </button>
+        ))}
+      </FieldGroup>
     </>
   );
 };

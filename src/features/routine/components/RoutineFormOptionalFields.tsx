@@ -1,3 +1,4 @@
+import { LabeledField } from "@/components";
 import {
   getRoutineNotificationPlaceholder,
   ROUTINE_FORM_DESCRIPTION_LABEL,
@@ -26,45 +27,51 @@ export const RoutineFormOptionalFields = ({
 }: RoutineFormOptionalFieldsProps) => {
   return (
     <>
-      <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-          {ROUTINE_FORM_DESCRIPTION_LABEL}
-        </label>
-        <textarea
-          value={description}
-          onChange={(event) => setDescription(event.target.value)}
-          rows={3}
-          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-400 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-white dark:text-gray-900"
-          placeholder={ROUTINE_FORM_DESCRIPTION_PLACEHOLDER}
-        />
-      </div>
+      <LabeledField label={ROUTINE_FORM_DESCRIPTION_LABEL}>
+        {(inputId) => (
+          <textarea
+            id={inputId}
+            value={description}
+            onChange={(event) => setDescription(event.target.value)}
+            rows={3}
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-400 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-white dark:text-gray-900"
+            placeholder={ROUTINE_FORM_DESCRIPTION_PLACEHOLDER}
+          />
+        )}
+      </LabeledField>
 
-      <div>
-        <div className="flex items-center gap-2 mb-1">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-            {ROUTINE_FORM_NOTIFICATION_LABEL}
-          </label>
+      <LabeledField
+        label={ROUTINE_FORM_NOTIFICATION_LABEL}
+        labelClassName="block text-sm font-medium text-gray-700 dark:text-gray-300"
+        labelAdornment={
           <span className="px-2 py-0.5 text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded">
             {ROUTINE_FORM_NOTIFICATION_BETA}
           </span>
-        </div>
-        <input
-          type="number"
-          value={notificationMinutes}
-          onChange={(event) => setNotificationMinutes(event.target.value)}
-          min="0"
-          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-400 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-white dark:text-gray-900"
-          placeholder={getRoutineNotificationPlaceholder(
-            defaultNotificationMinutes,
-          )}
-        />
-        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-          {ROUTINE_FORM_NOTIFICATION_HINT_PREFIX} {defaultNotificationMinutes}
-          {ROUTINE_FORM_NOTIFICATION_HINT_SUFFIX}
-          <br />
-          {ROUTINE_FORM_NOTIFICATION_PERMISSION_HINT}
-        </p>
-      </div>
+        }
+      >
+        {(inputId) => (
+          <>
+            <input
+              id={inputId}
+              type="number"
+              value={notificationMinutes}
+              onChange={(event) => setNotificationMinutes(event.target.value)}
+              min="0"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-400 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-white dark:text-gray-900"
+              placeholder={getRoutineNotificationPlaceholder(
+                defaultNotificationMinutes,
+              )}
+            />
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              {ROUTINE_FORM_NOTIFICATION_HINT_PREFIX}{" "}
+              {defaultNotificationMinutes}
+              {ROUTINE_FORM_NOTIFICATION_HINT_SUFFIX}
+              <br />
+              {ROUTINE_FORM_NOTIFICATION_PERMISSION_HINT}
+            </p>
+          </>
+        )}
+      </LabeledField>
     </>
   );
 };

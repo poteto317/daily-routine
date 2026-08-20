@@ -1,3 +1,7 @@
+import {
+  ROUTINE_FORM_CATEGORY_LABEL,
+  ROUTINE_FORM_DAYS_LABEL,
+} from "../helpers";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { RoutineFormCoreFields } from "../RoutineFormCoreFields";
@@ -14,11 +18,22 @@ const defaultProps = {
 
 describe("RoutineFormCoreFields", () => {
   describe("曜日選択ボタン（新規作成時）", () => {
-    it("曜日グループに role=group と aria-label が付与される", () => {
+    it("曜日グループが見出しの文字列で引ける", () => {
+      // 見出しは <label> ではなく aria-labelledby で結ぶため、
+      // 属性の有無ではなくアクセシブル名で確かめる
       render(<RoutineFormCoreFields {...defaultProps} />);
-      const group = screen.getByRole("group");
-      expect(group).toBeInTheDocument();
-      expect(group).toHaveAttribute("aria-label");
+
+      expect(
+        screen.getByRole("group", { name: ROUTINE_FORM_DAYS_LABEL }),
+      ).toBeInTheDocument();
+    });
+
+    it("カテゴリグループも見出しの文字列で引ける", () => {
+      render(<RoutineFormCoreFields {...defaultProps} />);
+
+      expect(
+        screen.getByRole("group", { name: ROUTINE_FORM_CATEGORY_LABEL }),
+      ).toBeInTheDocument();
     });
 
     it("選択済み曜日のボタンの aria-pressed が true", () => {
@@ -66,9 +81,7 @@ describe("RoutineFormCoreFields", () => {
     it("ボタンクリックで toggleDay が呼ばれる", async () => {
       const user = userEvent.setup();
       const toggleDay = jest.fn();
-      render(
-        <RoutineFormCoreFields {...defaultProps} toggleDay={toggleDay} />,
-      );
+      render(<RoutineFormCoreFields {...defaultProps} toggleDay={toggleDay} />);
       await user.click(screen.getByRole("button", { name: "火" }));
       expect(toggleDay).toHaveBeenCalledWith(2);
     });
@@ -89,7 +102,14 @@ describe("RoutineFormCoreFields", () => {
         updatedAt: "2024-01-01T00:00:00.000Z",
       };
       render(<RoutineFormCoreFields {...defaultProps} routine={mockRoutine} />);
-      expect(screen.queryByRole("group")).not.toBeInTheDocument();
+
+      expect(
+        screen.queryByRole("group", { name: ROUTINE_FORM_DAYS_LABEL }),
+      ).not.toBeInTheDocument();
+      // カテゴリは編集モードでも選べる
+      expect(
+        screen.getByRole("group", { name: ROUTINE_FORM_CATEGORY_LABEL }),
+      ).toBeInTheDocument();
     });
   });
 });
