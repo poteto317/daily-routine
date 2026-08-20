@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { ERROR_MESSAGES } from "./constants";
-import { registerMessagingServiceWorkerOnce } from "./pwaInstallerActions";
+import { registerAppServiceWorkers } from "./serviceWorkerRegistration";
 
 export const useMessagingServiceWorkerRegistration = (
   onRegistered: () => Promise<void>,
@@ -14,7 +14,7 @@ export const useMessagingServiceWorkerRegistration = (
 
     const registerSW = async () => {
       try {
-        await registerMessagingServiceWorkerOnce();
+        await registerAppServiceWorkers();
         await navigator.serviceWorker.ready;
         await onRegistered();
       } catch (error) {

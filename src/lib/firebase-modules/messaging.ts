@@ -1,4 +1,5 @@
 import { getToken, onMessage, type MessagePayload } from "firebase/messaging";
+import { getFcmServiceWorkerRegistration } from "@/hooks/serviceWorkerRegistration";
 import { getFirebaseState } from "./state";
 import { FirebaseError } from "./error";
 import texts from "../locales/ja.json";
@@ -27,7 +28,9 @@ export const getFCMToken = async (): Promise<string> => {
       );
     }
 
-    const registration = await navigator.serviceWorker.ready;
+    // 画面を制御しているのはアプリ本体の SW のため、ready では FCM の登録を
+    // 取れない。FCM 用スコープの登録を明示的に引く
+    const registration = await getFcmServiceWorkerRegistration();
 
     const token = await getToken(messaging, {
       vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY,

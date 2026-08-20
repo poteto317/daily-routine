@@ -8,6 +8,10 @@ import { NetworkFirst, StaleWhileRevalidate } from "workbox-strategies";
 import { logToClient } from "./custom-sw/logToClient";
 import { handleSchedulerMessage } from "./custom-sw/schedulerControl";
 import { handleNotificationClick } from "./custom-sw/notificationClickHandler";
+import {
+  DOCUMENT_CACHE_NAME,
+  warmDocumentCache,
+} from "./custom-sw/warmDocumentCache";
 
 // Workboxの事前キャッシュ（ビルド時に__WB_MANIFESTが注入される）
 precacheAndRoute(self.__WB_MANIFEST || []);
@@ -16,7 +20,7 @@ precacheAndRoute(self.__WB_MANIFEST || []);
 registerRoute(
   ({ request }) => request.destination === "document",
   new NetworkFirst({
-    cacheName: "document-cache",
+    cacheName: DOCUMENT_CACHE_NAME,
     plugins: [
       new ExpirationPlugin({
         maxEntries: 10,
@@ -48,9 +52,12 @@ self.addEventListener("install", () => {
 
 self.addEventListener("activate", (event) => {
   event.waitUntil(
-    self.clients.claim().then(() => {
-      logToClient("[Custom SW] Activated and claimed clients");
-    }),
+    self.clients
+      .claim()
+      .then(() => warmDocumentCache())
+      .then(() => {
+        logToClient("[Custom SW] Activated and claimed clients");
+      }),
   );
 });
 

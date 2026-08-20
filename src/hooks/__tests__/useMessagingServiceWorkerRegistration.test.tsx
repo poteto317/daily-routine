@@ -1,10 +1,10 @@
 import { act, renderHook } from "@testing-library/react";
 
-jest.mock("../pwaInstallerActions", () => ({
-  registerMessagingServiceWorkerOnce: jest.fn(),
+jest.mock("../serviceWorkerRegistration", () => ({
+  registerAppServiceWorkers: jest.fn(),
 }));
 
-import { registerMessagingServiceWorkerOnce } from "../pwaInstallerActions";
+import { registerAppServiceWorkers } from "../serviceWorkerRegistration";
 import { useMessagingServiceWorkerRegistration } from "../useMessagingServiceWorkerRegistration";
 
 describe("useMessagingServiceWorkerRegistration", () => {
@@ -40,7 +40,7 @@ describe("useMessagingServiceWorkerRegistration", () => {
       await Promise.resolve();
     });
 
-    expect(registerMessagingServiceWorkerOnce).toHaveBeenCalled();
+    expect(registerAppServiceWorkers).toHaveBeenCalled();
     expect(onRegistered).toHaveBeenCalled();
   });
 
@@ -59,7 +59,7 @@ describe("useMessagingServiceWorkerRegistration", () => {
       await Promise.resolve();
     });
 
-    expect(registerMessagingServiceWorkerOnce).toHaveBeenCalled();
+    expect(registerAppServiceWorkers).toHaveBeenCalled();
     expect(onRegistered).toHaveBeenCalled();
   });
 });

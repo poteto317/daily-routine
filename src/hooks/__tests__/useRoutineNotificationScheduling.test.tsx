@@ -1,10 +1,10 @@
 import { act, renderHook } from "@testing-library/react";
 
-jest.mock("../pwaInstallerActions", () => ({
+jest.mock("../routineNotificationScheduling", () => ({
   scheduleRoutineNotificationsIfPermitted: jest.fn(),
 }));
 
-import { scheduleRoutineNotificationsIfPermitted } from "../pwaInstallerActions";
+import { scheduleRoutineNotificationsIfPermitted } from "../routineNotificationScheduling";
 import { useRoutineNotificationScheduling } from "../useRoutineNotificationScheduling";
 
 describe("useRoutineNotificationScheduling", () => {
