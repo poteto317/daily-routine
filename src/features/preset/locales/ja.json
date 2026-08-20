@@ -38,5 +38,9 @@
     "emptyRoutinesLabel": "ルーティンがありません",
     "savedMessage": "プリセットを更新しました",
     "alertMissingName": "プリセット名を入力してください"
+  },
+  "fields": {
+    "nameLabel": "プリセット名",
+    "descriptionLabel": "プリセットの説明"
   }
 }

@@ -117,3 +117,8 @@ export const PRESET_EDIT_ALERT_MISSING_NAME =
 export const isPresetEditSaveDisabled = (name: string): boolean => {
   return !name.trim();
 };
+
+// 作成画面・編集画面で共有する入力欄のアクセシブル名
+export const PRESET_FIELD_NAME_LABEL = presetTexts.fields.nameLabel;
+export const PRESET_FIELD_DESCRIPTION_LABEL =
+  presetTexts.fields.descriptionLabel;
