@@ -87,15 +87,17 @@ describe("registerServiceWorkers", () => {
     });
   });
 
-  it("アプリ本体のSWを無効にするとFCMのSWだけを登録する", async () => {
+  it("アプリ本体のSWを無効にするとFCMのSWをスコープ / に登録する", async () => {
+    // 競合する相手がいないので専用スコープへ寄せる必要がない。
+    // スコープ / に置かないと画面を制御する SW が無くなり、
+    // navigator.serviceWorker.ready が解決しないまま残る
     await jest.isolateModulesAsync(async () => {
       const { calls } = setupServiceWorker();
-      const { FCM_SW_PATH, FCM_SW_SCOPE, registerServiceWorkers } =
-        await importFresh();
+      const { FCM_SW_PATH, registerServiceWorkers } = await importFresh();
 
       await registerServiceWorkers({ enableAppShell: false });
 
-      expect(calls).toEqual([{ script: FCM_SW_PATH, scope: FCM_SW_SCOPE }]);
+      expect(calls).toEqual([{ script: FCM_SW_PATH, scope: "/" }]);
     });
   });
 
@@ -187,7 +189,7 @@ describe("registerAppServiceWorkers", () => {
         await registerAppServiceWorkers();
       });
 
-      expect(calls.map((c) => c.script)).toEqual([FCM_SW_PATH]);
+      expect(calls).toEqual([{ script: FCM_SW_PATH, scope: "/" }]);
     });
   });
 });
@@ -198,25 +200,85 @@ describe("getFcmServiceWorkerRegistration", () => {
     jest.clearAllMocks();
   });
 
-  it("FCM用スコープの登録を返す", async () => {
+  it("登録が1つも無ければ undefined を返す", async () => {
     await jest.isolateModulesAsync(async () => {
-      const { FCM_SW_SCOPE, getFcmServiceWorkerRegistration } =
-        await importFresh();
-      const fcmRegistration = { scope: FCM_SW_SCOPE };
-      const getRegistration = jest.fn(async (scope?: string) =>
-        scope === FCM_SW_SCOPE ? fcmRegistration : undefined,
-      );
+      setServiceWorker({
+        register: jest.fn(),
+        getRegistrations: jest.fn(async () => []),
+      });
+      const { getFcmServiceWorkerRegistration } = await importFresh();
+
+      await expect(getFcmServiceWorkerRegistration()).resolves.toBeUndefined();
+    });
+  });
+
+  it("スコープが前方一致しただけの別の登録は返さない", async () => {
+    // getRegistration はクライアントURLに対する最長前方一致で探すため、
+    // FCM の登録が無いとスコープ / のアプリ本体の登録が返る。
+    // それを FCM のものとして渡すと、Firebase が通知を扱えない SW を掴む
+    await jest.isolateModulesAsync(async () => {
+      const appShellRegistration = {
+        scope: "https://example.test/",
+        active: { scriptURL: "https://example.test/sw.js" },
+      };
 
       setServiceWorker({
-        register: jest.fn(async () => fcmRegistration),
-        getRegistration,
+        register: jest.fn(),
+        getRegistration: jest.fn(async () => appShellRegistration),
+        getRegistrations: jest.fn(async () => [appShellRegistration]),
       });
+      const { getFcmServiceWorkerRegistration } = await importFresh();
 
-      // アプリ本体のSWが画面を制御しているため、ready ではFCMの登録を取れない
+      await expect(getFcmServiceWorkerRegistration()).resolves.toBeUndefined();
+    });
+  });
+
+  it("FCM の Service Worker を読み込んでいる登録だけを返す", async () => {
+    await jest.isolateModulesAsync(async () => {
+      const appShellRegistration = {
+        scope: "https://example.test/",
+        active: { scriptURL: "https://example.test/sw.js" },
+      };
+      const fcmRegistration = {
+        scope: "https://example.test/firebase-cloud-messaging-push-scope",
+        active: { scriptURL: "https://example.test/firebase-messaging-sw.js" },
+      };
+
+      setServiceWorker({
+        register: jest.fn(),
+        getRegistration: jest.fn(async () => appShellRegistration),
+        getRegistrations: jest.fn(async () => [
+          appShellRegistration,
+          fcmRegistration,
+        ]),
+      });
+      const { getFcmServiceWorkerRegistration } = await importFresh();
+
       await expect(getFcmServiceWorkerRegistration()).resolves.toBe(
         fcmRegistration,
       );
-      expect(getRegistration).toHaveBeenCalledWith(FCM_SW_SCOPE);
+    });
+  });
+
+  it("有効化前（installing / waiting）の登録も見つける", async () => {
+    await jest.isolateModulesAsync(async () => {
+      const fcmRegistration = {
+        scope: "https://example.test/firebase-cloud-messaging-push-scope",
+        active: null,
+        installing: {
+          scriptURL: "https://example.test/firebase-messaging-sw.js",
+        },
+      };
+
+      setServiceWorker({
+        register: jest.fn(),
+        getRegistrations: jest.fn(async () => [fcmRegistration]),
+      });
+      const { getFcmServiceWorkerRegistration } = await importFresh();
+
+      await expect(getFcmServiceWorkerRegistration()).resolves.toBe(
+        fcmRegistration,
+      );
     });
   });
 
