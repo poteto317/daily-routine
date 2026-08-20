@@ -1,4 +1,5 @@
-import { type RoutinePreset, ROUTINE_CATEGORIES } from "@/types/routine";
+import type { RoutinePreset } from "@/types/routine";
+import { getCategoryInfo } from "@/features/routine";
 import { DAY_LABELS } from "@/features/preset/presetConstants";
 import {
   formatRoutineTemplateSummary,
@@ -24,13 +25,11 @@ export const PresetApplySection = ({
   <div className="mt-4 pt-4 border-t dark:border-gray-600">
     <div className="space-y-1 mb-4">
       {preset.routineTemplates.map((template, index) => {
-        const categoryInfo = ROUTINE_CATEGORIES.find(
-          (item) => item.value === template.category,
-        );
+        const categoryInfo = getCategoryInfo(template);
         return (
           <div key={index} className="text-sm text-gray-600 dark:text-gray-300">
             {formatRoutineTemplateSummary({
-              categoryEmoji: categoryInfo?.emoji ?? "",
+              categoryEmoji: categoryInfo.emoji,
               title: template.title,
               startTime: template.startTime,
               duration: template.duration,

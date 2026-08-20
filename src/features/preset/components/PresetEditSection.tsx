@@ -1,8 +1,7 @@
-import { type Routine, ROUTINE_CATEGORIES } from "@/types/routine";
-import {
-  groupRoutinesForSelection,
-  sortRoutineSelectionGroupsByStartTime,
-} from "../presetRoutineGrouping";
+import type { Routine } from "@/types/routine";
+import { toTimeOrderedSelectionGroups } from "../presetRoutineSelectionOrder";
+import { PresetNameDescriptionFields } from "./PresetNameDescriptionFields";
+import { RoutineSelectionList } from "./RoutineSelectionList";
 import {
   isPresetEditSaveDisabled,
   PRESET_EDIT_CANCEL_LABEL,
@@ -42,19 +41,13 @@ export const PresetEditSection = ({
   >
     {/* 名前・説明 */}
     <div className="space-y-2">
-      <input
-        type="text"
-        value={editPresetName}
-        onChange={(e) => onChangeEditName(e.target.value)}
-        className="w-full p-2 border rounded-lg dark:bg-gray-600 dark:text-white dark:border-gray-500"
-        placeholder={PRESET_EDIT_NAME_PLACEHOLDER}
-      />
-      <textarea
-        value={editPresetDescription}
-        onChange={(e) => onChangeEditDescription(e.target.value)}
-        className="w-full p-2 border rounded-lg dark:bg-gray-600 dark:text-white dark:border-gray-500"
-        placeholder={PRESET_EDIT_DESCRIPTION_PLACEHOLDER}
-        rows={2}
+      <PresetNameDescriptionFields
+        name={editPresetName}
+        description={editPresetDescription}
+        namePlaceholder={PRESET_EDIT_NAME_PLACEHOLDER}
+        descriptionPlaceholder={PRESET_EDIT_DESCRIPTION_PLACEHOLDER}
+        onChangeName={onChangeEditName}
+        onChangeDescription={onChangeEditDescription}
       />
     </div>
 
@@ -64,38 +57,12 @@ export const PresetEditSection = ({
         {PRESET_EDIT_ROUTINE_LIST_LABEL}
       </p>
       <div className="space-y-1 max-h-48 overflow-y-auto border rounded-lg p-2 dark:border-gray-600">
-        {routines.length === 0 ? (
-          <p className="text-gray-500 dark:text-gray-400 text-sm">
-            {PRESET_EDIT_EMPTY_ROUTINES_LABEL}
-          </p>
-        ) : (
-          sortRoutineSelectionGroupsByStartTime(
-            groupRoutinesForSelection(routines),
-          ).map((group) => {
-            const categoryInfo = ROUTINE_CATEGORIES.find(
-              (item) => item.value === group.routine.category,
-            );
-            return (
-              <label
-                key={group.key}
-                className="flex items-center gap-2 p-1.5 hover:bg-gray-100 dark:hover:bg-gray-600 rounded cursor-pointer"
-              >
-                <input
-                  type="checkbox"
-                  checked={editSelectedRoutines.has(group.routine.id)}
-                  onChange={() => onToggleEditRoutine(group.routine.id)}
-                  className="w-4 h-4"
-                />
-                <span className="flex-1 text-sm text-gray-900 dark:text-white">
-                  {categoryInfo?.emoji} {group.routine.title}
-                </span>
-                <span className="text-xs text-gray-500 dark:text-gray-400">
-                  {group.routine.startTime}
-                </span>
-              </label>
-            );
-          })
-        )}
+        <RoutineSelectionList
+          groups={toTimeOrderedSelectionGroups(routines)}
+          selectedRoutineIds={editSelectedRoutines}
+          onToggleRoutine={onToggleEditRoutine}
+          emptyLabel={PRESET_EDIT_EMPTY_ROUTINES_LABEL}
+        />
       </div>
     </div>
 

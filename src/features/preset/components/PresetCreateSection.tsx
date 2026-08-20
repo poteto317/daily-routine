@@ -1,6 +1,8 @@
-import { type Routine, ROUTINE_CATEGORIES } from "@/types/routine";
+import type { Routine } from "@/types/routine";
 import { DAY_LABELS } from "@/features/preset/presetConstants";
 import { groupRoutinesForSelection } from "../presetRoutineGrouping";
+import { PresetNameDescriptionFields } from "./PresetNameDescriptionFields";
+import { RoutineSelectionList } from "./RoutineSelectionList";
 import {
   getDayButtonClassName,
   getPresetCreateToggleLabel,
@@ -51,19 +53,13 @@ export const PresetCreateSection = ({
 
     {isCreating && (
       <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg space-y-4">
-        <input
-          type="text"
-          value={newPresetName}
-          onChange={(event) => onChangeName(event.target.value)}
-          className="w-full p-2 border rounded-lg dark:bg-gray-600 dark:text-white dark:border-gray-500"
-          placeholder={PRESET_CREATE_NAME_PLACEHOLDER}
-        />
-        <textarea
-          value={newPresetDescription}
-          onChange={(event) => onChangeDescription(event.target.value)}
-          className="w-full p-2 border rounded-lg dark:bg-gray-600 dark:text-white dark:border-gray-500"
-          placeholder={PRESET_CREATE_DESCRIPTION_PLACEHOLDER}
-          rows={2}
+        <PresetNameDescriptionFields
+          name={newPresetName}
+          description={newPresetDescription}
+          namePlaceholder={PRESET_CREATE_NAME_PLACEHOLDER}
+          descriptionPlaceholder={PRESET_CREATE_DESCRIPTION_PLACEHOLDER}
+          onChangeName={onChangeName}
+          onChangeDescription={onChangeDescription}
         />
         {/* 曜日フィルター */}
         <div>
@@ -88,36 +84,12 @@ export const PresetCreateSection = ({
         </div>
 
         <div className="space-y-2 max-h-60 overflow-y-auto">
-          {currentRoutines.length === 0 ? (
-            <p className="text-gray-500 dark:text-gray-400">
-              {PRESET_CREATE_EMPTY_ROUTINES_LABEL}
-            </p>
-          ) : (
-            groupRoutinesForSelection(currentRoutines).map((group) => {
-              const categoryInfo = ROUTINE_CATEGORIES.find(
-                (item) => item.value === group.routine.category,
-              );
-              return (
-                <label
-                  key={group.key}
-                  className="flex items-center gap-2 p-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded cursor-pointer"
-                >
-                  <input
-                    type="checkbox"
-                    checked={selectedRoutines.has(group.routine.id)}
-                    onChange={() => onToggleRoutine(group.routine.id)}
-                    className="w-4 h-4"
-                  />
-                  <span className="flex-1 text-gray-900 dark:text-white">
-                    {categoryInfo?.emoji} {group.routine.title}
-                  </span>
-                  <span className="text-sm text-gray-500 dark:text-gray-400">
-                    {group.routine.startTime}
-                  </span>
-                </label>
-              );
-            })
-          )}
+          <RoutineSelectionList
+            groups={groupRoutinesForSelection(currentRoutines)}
+            selectedRoutineIds={selectedRoutines}
+            onToggleRoutine={onToggleRoutine}
+            emptyLabel={PRESET_CREATE_EMPTY_ROUTINES_LABEL}
+          />
         </div>
         <button
           onClick={onCreatePreset}

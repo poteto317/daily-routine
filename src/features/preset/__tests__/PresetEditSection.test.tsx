@@ -125,4 +125,41 @@ describe("PresetEditSection", () => {
 
     expect(onToggleEditRoutine).toHaveBeenCalledWith("early-mon");
   });
+
+  it("名前を編集すると onChangeEditName に入力値を渡す", () => {
+    const onChangeEditName = jest.fn();
+    render(
+      <PresetEditSection
+        {...defaultProps}
+        routines={[]}
+        onChangeEditName={onChangeEditName}
+      />,
+    );
+
+    fireEvent.change(screen.getByRole("textbox", { name: "プリセット名" }), {
+      target: { value: "更新後の名前" },
+    });
+
+    expect(onChangeEditName).toHaveBeenCalledWith("更新後の名前");
+  });
+
+  it("説明を編集すると onChangeEditDescription に入力値を渡す", () => {
+    const onChangeEditDescription = jest.fn();
+    render(
+      <PresetEditSection
+        {...defaultProps}
+        routines={[]}
+        onChangeEditDescription={onChangeEditDescription}
+      />,
+    );
+
+    fireEvent.change(
+      screen.getByRole("textbox", { name: "プリセットの説明" }),
+      {
+        target: { value: "更新後の説明" },
+      },
+    );
+
+    expect(onChangeEditDescription).toHaveBeenCalledWith("更新後の説明");
+  });
 });

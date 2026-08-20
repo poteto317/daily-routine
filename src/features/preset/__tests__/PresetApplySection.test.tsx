@@ -27,6 +27,50 @@ describe("PresetApplySection", () => {
     expect(screen.getByText(/運動 \(07:30, 20分\)/)).toBeInTheDocument();
   });
 
+  it("既知のカテゴリはその絵文字を表示する", () => {
+    render(
+      <PresetApplySection
+        preset={preset}
+        selectedDays={new Set()}
+        onToggleDay={jest.fn()}
+        onApply={jest.fn()}
+      />,
+    );
+
+    expect(screen.getByText(/朝食/).textContent).toBe("🏠 朝食 (07:00, 30分)");
+    expect(screen.getByText(/運動/).textContent).toBe("💪 運動 (07:30, 20分)");
+  });
+
+  it("型から外れたカテゴリでも「その他」の絵文字で表示する", () => {
+    // 旧データやインポートしたデータには型に無いカテゴリが入りうる。
+    // 選択リスト（RoutineSelectionList）やホーム画面と同じく📌にそろえ、
+    // 同じプリセット画面の中で絵文字の有無が食い違わないようにする
+    const presetWithUnknown: RoutinePreset = {
+      ...preset,
+      routineTemplates: [
+        {
+          title: "謎の予定",
+          startTime: "22:00",
+          duration: 30,
+          category: "legacy-unknown" as never,
+        },
+      ],
+    };
+
+    render(
+      <PresetApplySection
+        preset={presetWithUnknown}
+        selectedDays={new Set()}
+        onToggleDay={jest.fn()}
+        onApply={jest.fn()}
+      />,
+    );
+
+    expect(screen.getByText(/謎の予定/).textContent).toBe(
+      "📌 謎の予定 (22:00, 30分)",
+    );
+  });
+
   it("曜日ボタンクリックで onToggleDay が該当曜日で呼ばれ、伝播が止まる", () => {
     const onToggleDay = jest.fn();
     const onParentClick = jest.fn();

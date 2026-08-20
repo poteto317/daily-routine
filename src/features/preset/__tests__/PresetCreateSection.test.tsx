@@ -52,7 +52,10 @@ describe("PresetCreateSection", () => {
     ];
 
     render(
-      <PresetCreateSection {...defaultProps} currentRoutines={currentRoutines} />,
+      <PresetCreateSection
+        {...defaultProps}
+        currentRoutines={currentRoutines}
+      />,
     );
 
     expect(screen.getAllByText(/朝食/)).toHaveLength(1);
@@ -86,9 +89,49 @@ describe("PresetCreateSection", () => {
     ];
 
     render(
-      <PresetCreateSection {...defaultProps} currentRoutines={currentRoutines} />,
+      <PresetCreateSection
+        {...defaultProps}
+        currentRoutines={currentRoutines}
+      />,
     );
 
     expect(screen.getAllByRole("checkbox")).toHaveLength(2);
+  });
+
+  it("名前を入力すると onChangeName に入力値を渡す", () => {
+    const onChangeName = jest.fn();
+    render(
+      <PresetCreateSection
+        {...defaultProps}
+        currentRoutines={[]}
+        onChangeName={onChangeName}
+      />,
+    );
+
+    fireEvent.change(screen.getByRole("textbox", { name: "プリセット名" }), {
+      target: { value: "平日セット" },
+    });
+
+    expect(onChangeName).toHaveBeenCalledWith("平日セット");
+  });
+
+  it("説明を入力すると onChangeDescription に入力値を渡す", () => {
+    const onChangeDescription = jest.fn();
+    render(
+      <PresetCreateSection
+        {...defaultProps}
+        currentRoutines={[]}
+        onChangeDescription={onChangeDescription}
+      />,
+    );
+
+    fireEvent.change(
+      screen.getByRole("textbox", { name: "プリセットの説明" }),
+      {
+        target: { value: "朝だけ" },
+      },
+    );
+
+    expect(onChangeDescription).toHaveBeenCalledWith("朝だけ");
   });
 });
