@@ -2,13 +2,16 @@
 
 import { useEffect } from "react";
 import { ERROR_MESSAGES } from "./constants";
-import { registerAppServiceWorkers } from "./serviceWorkerRegistration";
+import {
+  isServiceWorkerSupported,
+  registerAppServiceWorkers,
+} from "./serviceWorkerRegistration";
 
 export const useMessagingServiceWorkerRegistration = (
   onRegistered: () => Promise<void>,
 ) => {
   useEffect(() => {
-    if (typeof window === "undefined" || !("serviceWorker" in navigator)) {
+    if (typeof window === "undefined" || !isServiceWorkerSupported()) {
       return;
     }
 

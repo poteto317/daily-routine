@@ -26,8 +26,14 @@ type RegisterOptions = {
   enableAppShell: boolean;
 };
 
-/** Service Worker を使える環境か */
-const isServiceWorkerSupported = (): boolean =>
+/**
+ * Service Worker を使える環境か。
+ *
+ * 判定はここに一本化する。呼び出し側が別の条件で判断すると、片方が
+ * 「使えない」と見なした後にもう片方が navigator.serviceWorker へ触れて
+ * 例外になる。
+ */
+export const isServiceWorkerSupported = (): boolean =>
   typeof navigator !== "undefined" && Boolean(navigator.serviceWorker);
 
 /**
