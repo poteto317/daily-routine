@@ -61,7 +61,8 @@ describe("RoutineTimeConflictWarning", () => {
   });
 
   it("重なっている曜日を文言に含める", () => {
-    // どの曜日でぶつかっているか分からないと、直しようがない
+    // どの曜日でぶつかっているか分からないと、直しようがない。
+    // 部分一致だと括弧の重複などの崩れを見逃すため、文字列全体で確かめる
     render(
       <RoutineTimeConflictWarning
         conflictInfo={{
@@ -71,6 +72,19 @@ describe("RoutineTimeConflictWarning", () => {
       />,
     );
 
-    expect(screen.getByRole("listitem").textContent).toMatch(/月/);
+    expect(screen.getByRole("listitem").textContent).toBe("「朝食」(月)");
+  });
+
+  it("曜日が複数あれば並べて表示する", () => {
+    render(
+      <RoutineTimeConflictWarning
+        conflictInfo={{
+          hasConflict: true,
+          conflictingRoutines: [{ routine, commonDays: [1, 3] }],
+        }}
+      />,
+    );
+
+    expect(screen.getByRole("listitem").textContent).toBe("「朝食」(月, 水)");
   });
 });

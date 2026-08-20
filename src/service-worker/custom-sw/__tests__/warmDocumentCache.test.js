@@ -3,11 +3,17 @@ import { DOCUMENT_CACHE_NAME, warmDocumentCache } from "../warmDocumentCache";
 describe("warmDocumentCache", () => {
   let addAll;
   let open;
+  // 同じ worker の後続テストへ持ち越さないよう、元の値を退避して戻す
+  const originalCaches = global.caches;
 
   beforeEach(() => {
     addAll = jest.fn().mockResolvedValue(undefined);
     open = jest.fn().mockResolvedValue({ addAll });
     global.caches = { open };
+  });
+
+  afterEach(() => {
+    global.caches = originalCaches;
   });
 
   it("トップページを document-cache に入れる", async () => {

@@ -9,11 +9,14 @@ export type RoutineSelectionGroup = {
 };
 
 /**
- * 曜日の配列。壊れた記録では欠けていたり配列でなかったりする。
+ * 曜日の配列。壊れた記録では配列でないことがある。
  *
- * インポートは配列かどうかしか検証していないため（transferPayloadRestore の
- * arrayField）、曜日を持たない記録が保存されうる。そのまま展開すると
- * 例外になり、選択リストを出す画面ごと落ちる。
+ * 取り込み時は hasValidRoutineShape で配列かどうかを見ているが、それ以前から
+ * localStorage にある記録は素通りする。getRoutines は migrateRoutineRecord で
+ * `daysOfWeek || 既定値` を通すため欠けていれば配列に直るものの、数値や
+ * オブジェクトのような truthy な値はそのまま残る。
+ *
+ * これを展開すると例外になり、選択リストを出す画面ごと落ちる。
  */
 const toDaysOfWeek = (routine: Routine): number[] =>
   Array.isArray(routine.daysOfWeek) ? routine.daysOfWeek : [];

@@ -27,7 +27,7 @@ export const RoutineTimeConflictWarning = ({
       <ul className="list-disc list-inside space-y-0.5 ml-2">
         {conflictInfo.conflictingRoutines.map(({ routine, commonDays }) => (
           <li key={routine.id}>
-            {formatConflictRoutineLabel(routine.title, commonDays)})
+            {formatConflictRoutineLabel(routine.title, commonDays)}
           </li>
         ))}
       </ul>

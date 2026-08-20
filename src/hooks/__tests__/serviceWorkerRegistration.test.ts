@@ -1,8 +1,29 @@
 type RegisterCall = { script: string; scope: string | undefined };
 
+type MutableNavigator = { serviceWorker?: unknown };
+
+// 同じ worker の後続テストへ持ち越さないよう、元の値を退避して戻す
+const originalServiceWorker = (navigator as unknown as MutableNavigator)
+  .serviceWorker;
+
+afterEach(() => {
+  (navigator as unknown as MutableNavigator).serviceWorker =
+    originalServiceWorker;
+});
+
 /** jest.setup が writable で定義しているため、値の差し替えで置き換える */
 const setServiceWorker = (value: unknown) => {
-  (navigator as unknown as { serviceWorker: unknown }).serviceWorker = value;
+  (navigator as unknown as MutableNavigator).serviceWorker = value;
+};
+
+/**
+ * Service Worker 非対応の環境を模す。
+ *
+ * jest.setup は writable のみで定義しており delete できないため、
+ * undefined を入れて「持っていない」状態にする。
+ */
+const deleteServiceWorker = () => {
+  (navigator as unknown as MutableNavigator).serviceWorker = undefined;
 };
 
 const setupServiceWorker = () => {
@@ -196,6 +217,16 @@ describe("getFcmServiceWorkerRegistration", () => {
         fcmRegistration,
       );
       expect(getRegistration).toHaveBeenCalledWith(FCM_SW_SCOPE);
+    });
+  });
+
+  it("Service Worker 非対応の環境では undefined を返す", async () => {
+    // 呼び出し側のガードが漏れても、ここで落ちないようにする
+    await jest.isolateModulesAsync(async () => {
+      deleteServiceWorker();
+      const { getFcmServiceWorkerRegistration } = await importFresh();
+
+      await expect(getFcmServiceWorkerRegistration()).resolves.toBeUndefined();
     });
   });
 });

@@ -26,6 +26,10 @@ type RegisterOptions = {
   enableAppShell: boolean;
 };
 
+/** Service Worker を使える環境か */
+const isServiceWorkerSupported = (): boolean =>
+  typeof navigator !== "undefined" && Boolean(navigator.serviceWorker);
+
 /** Service Worker をまとめて登録する。呼び出すたびに渡した指定で登録する */
 export const registerServiceWorkers = async ({
   enableAppShell,
@@ -43,10 +47,16 @@ export const registerServiceWorkers = async ({
  * navigator.serviceWorker.ready は「画面を制御している SW」を返すため、
  * アプリ本体の SW が制御している状態では FCM の登録を取れない。
  * スコープを指定して明示的に引く。
+ *
+ * Service Worker 非対応の環境では undefined を返す。呼び出し側のガードが
+ * 漏れてもここで落とさないため。渡された側（Firebase）は undefined を
+ * 受け取ると自分で既定のスコープへ登録する。
  */
 export const getFcmServiceWorkerRegistration = async (): Promise<
   ServiceWorkerRegistration | undefined
 > => {
+  if (!isServiceWorkerSupported()) return undefined;
+
   return navigator.serviceWorker.getRegistration(FCM_SW_SCOPE);
 };
 
