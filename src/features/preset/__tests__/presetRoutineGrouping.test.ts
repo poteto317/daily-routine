@@ -82,3 +82,81 @@ describe("groupRoutinesForSelection", () => {
     expect(groups[0].daysOfWeek).toEqual([1, 2, 3]);
   });
 });
+
+describe("groupRoutinesForSelection の壊れた記録への耐性", () => {
+  // インポートは配列かどうかしか見ておらず、項目ごとの形は検証していない。
+  // 画面ごと落ちるより、その記録を表示できる形で拾うほうがよい
+  it("daysOfWeek が無くても落ちない", () => {
+    const broken = { id: "broken", title: "壊れた記録", startTime: "07:00" };
+
+    expect(() =>
+      groupRoutinesForSelection([broken as unknown as Routine]),
+    ).not.toThrow();
+  });
+
+  it("daysOfWeek が無い記録は曜日なしのグループになる", () => {
+    const broken = {
+      id: "broken",
+      title: "壊れた記録",
+      startTime: "07:00",
+    } as unknown as Routine;
+
+    const groups = groupRoutinesForSelection([broken]);
+
+    expect(groups).toHaveLength(1);
+    expect(groups[0].routineIds).toEqual(["broken"]);
+    expect(groups[0].daysOfWeek).toEqual([]);
+  });
+
+  // getRoutines は migrateRoutineRecord で `daysOfWeek || 既定値` を通すため、
+  // 欠けている場合は配列に直る。一方 truthy な非配列はそのまま通り抜けるので、
+  // 実際に画面へ届くのはこちらの形になる
+  it.each([
+    ["数値", 5],
+    ["オブジェクト", {}],
+    ["true", true],
+    ["文字列", "月曜"],
+  ])("daysOfWeek が%s でも落ちない", (_label, daysOfWeek) => {
+    const broken = {
+      id: "broken",
+      title: "壊れた記録",
+      startTime: "07:00",
+      daysOfWeek,
+    } as unknown as Routine;
+
+    expect(() => groupRoutinesForSelection([broken])).not.toThrow();
+  });
+
+  it("daysOfWeek が配列でなければ曜日なしとして扱う", () => {
+    const broken = {
+      id: "broken",
+      title: "壊れた記録",
+      startTime: "07:00",
+      daysOfWeek: 5,
+    } as unknown as Routine;
+
+    const groups = groupRoutinesForSelection([broken]);
+
+    expect(groups[0].daysOfWeek).toEqual([]);
+  });
+
+  it("同じ内容の記録が続いても daysOfWeek 欠損でまとめられる", () => {
+    const first = {
+      id: "a",
+      title: "同じ",
+      startTime: "07:00",
+    } as unknown as Routine;
+    const second = {
+      id: "b",
+      title: "同じ",
+      startTime: "07:00",
+      daysOfWeek: [2],
+    } as unknown as Routine;
+
+    const groups = groupRoutinesForSelection([first, second]);
+
+    expect(groups).toHaveLength(1);
+    expect(groups[0].routineIds).toEqual(["a", "b"]);
+    expect(groups[0].daysOfWeek).toEqual([2]);
+  });
+});

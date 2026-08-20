@@ -1,3 +1,4 @@
+import { hasValidRoutineShape } from "./routineShapeValidation";
 import {
   getDailyProgress,
   getMonthlyHistory,
@@ -80,6 +81,9 @@ const GROUP_DEFINITIONS: Record<TransferGroupKey, TransferGroupDefinition> = {
         "routines",
         saveRoutines,
         DATA_TRANSFER_ERROR_MESSAGES.invalidRoutinesFormat,
+        // 画面が素で参照する項目が欠けた記録を取り込むと、一覧の組み立てで
+        // 例外になる。取り込む時点で断る
+        { isValidItem: hasValidRoutineShape },
       ),
     ],
   },

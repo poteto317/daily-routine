@@ -45,11 +45,22 @@ export const anyField = <T>(
   },
 });
 
+type ArrayFieldOptions = {
+  /**
+   * 要素ごとの検証。渡すと、条件を満たさない要素が1つでもあれば取り込みを断る。
+   *
+   * 配列かどうかだけを見ていると、形の壊れた記録がそのまま保存され、
+   * あとで一覧を組み立てる箇所で例外になる。取り込む時点で気付けるようにする。
+   */
+  isValidItem?: (item: unknown) => boolean;
+};
+
 /** 配列であることを確かめてから保存する項目 */
 export const arrayField = <T>(
   key: string,
   save: (value: T[]) => void,
   errorMessage: string,
+  options: ArrayFieldOptions = {},
 ): TransferField => ({
   key,
   hasValue: (payload) => isPresent(payload[key]),
@@ -57,6 +68,11 @@ export const arrayField = <T>(
     const value = payload[key];
     if (!isPresent(value)) return;
     if (!Array.isArray(value)) throw new Error(errorMessage);
+
+    const { isValidItem } = options;
+    if (isValidItem && !value.every(isValidItem)) {
+      throw new Error(errorMessage);
+    }
   },
   restore: (payload) => {
     const value = payload[key];

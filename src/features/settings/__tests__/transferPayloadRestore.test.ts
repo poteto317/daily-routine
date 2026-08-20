@@ -77,6 +77,33 @@ describe("arrayField", () => {
       arrayField("a", jest.fn(), "boom").restore({ a: "x" }),
     ).not.toThrow();
   });
+
+  it("要素の検証を渡すと、条件を満たさない要素があればエラーにする", () => {
+    // 配列であることしか見ないと、形の壊れた記録がそのまま保存され、
+    // 一覧を組み立てる箇所で例外になる
+    const field = arrayField("a", jest.fn(), "boom", {
+      isValidItem: (item) => typeof item === "number",
+    });
+
+    expect(() => field.validate({ a: [1, "x"] })).toThrow("boom");
+  });
+
+  it("要素の検証を渡しても、すべて満たせば通る", () => {
+    const save = jest.fn();
+    const field = arrayField("a", save, "boom", {
+      isValidItem: (item) => typeof item === "number",
+    });
+
+    expect(() => field.validate({ a: [1, 2] })).not.toThrow();
+    field.restore({ a: [1, 2] });
+    expect(save).toHaveBeenCalledWith([1, 2]);
+  });
+
+  it("要素の検証を渡さなければ従来どおり配列かどうかだけを見る", () => {
+    const field = arrayField("a", jest.fn(), "boom");
+
+    expect(() => field.validate({ a: [1, "x", null] })).not.toThrow();
+  });
 });
 
 describe("objectField", () => {
