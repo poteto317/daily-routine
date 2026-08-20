@@ -46,20 +46,3 @@ export const groupRoutinesForSelection = (
 
   return Array.from(groups.values());
 };
-
-/**
- * ルーティン選択グループを開始時刻の昇順に並べ替える。
- *
- * startTime は常に HH:mm のゼロ埋め文字列のため、文字列比較がそのまま
- * 時刻の昇順になる。ホーム画面の並び順（routineDisplayActions）と同じ方式。
- *
- * グルーピングは新規作成側でも使うため、並べ替えはここに分けて、
- * 時間順で見せたい画面だけが呼ぶ。
- */
-export const sortRoutineSelectionGroupsByStartTime = (
-  groups: RoutineSelectionGroup[],
-): RoutineSelectionGroup[] => {
-  return [...groups].sort((left, right) =>
-    left.routine.startTime.localeCompare(right.routine.startTime),
-  );
-};
