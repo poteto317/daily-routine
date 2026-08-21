@@ -256,6 +256,20 @@ describe("calculateWeeklyGoalProgress", () => {
     });
   });
 
+  it("削除済みルーティンは現在週のsnapshotに残っていても表示しない", () => {
+    const result = calculateWeeklyGoalProgress({
+      selectedDate: new Date("2026-08-19T12:00:00+09:00"),
+      today: new Date("2026-08-19T12:00:00+09:00"),
+      routines: [],
+      history: history(
+        historyEntry("2026-08-17", ["exercise-mon"]),
+        historyEntry("2026-08-19", ["exercise-wed"]),
+      ),
+    });
+
+    expect(result).toEqual([]);
+  });
+
   it("壊れた週間目標は無視する", () => {
     const invalidRoutine = routine("invalid", {
       targetPerWeek: 0,

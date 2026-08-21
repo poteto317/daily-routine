@@ -123,9 +123,12 @@ const resolveDefinitionsForWeek = (
     history,
   );
 
+  // 現在週は現在も存在する目標だけを表示する。削除・解除済みの目標が
+  // 今週前半のsnapshotに残っていても、現在の一覧へ復活させない。
+  // 過去週は当時の状態を再現するためsnapshotを優先する。
   const definitions =
     selectedWeekStartKey === todayWeekStartKey
-      ? new Map([...snapshotDefinitions, ...currentDefinitions])
+      ? currentDefinitions
       : new Map([...currentDefinitions, ...snapshotDefinitions]);
 
   return [...definitions.values()].sort(
