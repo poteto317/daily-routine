@@ -48,4 +48,23 @@ describe("RoutineItem render", () => {
     );
     expect(screen.queryByText(/分後に通知/)).not.toBeInTheDocument();
   });
+
+  it("週間目標があれば週あたりの回数を表示する", () => {
+    render(
+      <RoutineItem
+        routine={{
+          ...mockRoutine,
+          weeklyGoal: {
+            targetPerWeek: 3,
+            startedAt: "2026-08-22T00:00:00.000Z",
+          },
+        }}
+        onToggle={mockOnToggle}
+        onEdit={mockOnEdit}
+        onDelete={mockOnDelete}
+      />,
+    );
+
+    expect(screen.getByText("週3回")).toBeInTheDocument();
+  });
 });

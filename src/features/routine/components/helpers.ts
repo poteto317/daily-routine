@@ -12,6 +12,9 @@ export const getDurationLabel = (minutes: number): string =>
 export const getNotificationLabel = (minutes: number): string =>
   `${ROUTINE_CARD_CONTENT_TEXT.notificationEmoji} ${minutes}${ROUTINE_CARD_CONTENT_TEXT.notificationSuffix}`;
 
+export const getWeeklyGoalLabel = (targetPerWeek: number): string =>
+  `${ROUTINE_CARD_CONTENT_TEXT.weeklyGoalPrefix}${targetPerWeek}${ROUTINE_CARD_CONTENT_TEXT.weeklyGoalSuffix}`;
+
 export const getRoutineTitleClassName = (
   routine: Routine,
   showDuration: boolean,

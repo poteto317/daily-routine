@@ -34,9 +34,31 @@ export const updateRoutineInState = (
   updates: Partial<Routine>,
   now: string,
 ): Routine[] => {
-  return routines.map((routine) =>
-    routine.id === id ? buildUpdatedRoutine(routine, updates, now) : routine,
+  const target = routines.find((routine) => routine.id === id);
+  const hasWeeklyGoalUpdate = Object.prototype.hasOwnProperty.call(
+    updates,
+    "weeklyGoal",
   );
+
+  return routines.map((routine) => {
+    if (routine.id === id) {
+      return buildUpdatedRoutine(routine, updates, now);
+    }
+
+    if (
+      hasWeeklyGoalUpdate &&
+      target?.groupId &&
+      routine.groupId === target.groupId
+    ) {
+      return buildUpdatedRoutine(
+        routine,
+        { weeklyGoal: updates.weeklyGoal },
+        now,
+      );
+    }
+
+    return routine;
+  });
 };
 
 export const deleteRoutineFromState = (

@@ -37,7 +37,9 @@
     "durationEmoji": "⏱️",
     "durationUnit": "分",
     "notificationEmoji": "🔔",
-    "notificationSuffix": "分後に通知"
+    "notificationSuffix": "分後に通知",
+    "weeklyGoalPrefix": "週",
+    "weeklyGoalSuffix": "回"
   },
   "routineItemActions": {
     "editAriaLabel": "編集",

@@ -129,6 +129,59 @@ describe("routineCrudActions", () => {
     expect(updated[1]).toEqual(routines[1]);
   });
 
+  it("週間目標だけを同一グループの全メンバーへ伝播する", () => {
+    const groupedRoutines = [
+      routines[0],
+      {
+        ...routines[0],
+        id: "3",
+        title: "Wednesday Run",
+        daysOfWeek: [3],
+      },
+      routines[1],
+    ];
+    const weeklyGoal = {
+      targetPerWeek: 2,
+      startedAt: "2026-08-22T00:00:00.000Z",
+    };
+
+    const updated = updateRoutineInState(
+      groupedRoutines,
+      "1",
+      { title: "Updated Run", weeklyGoal },
+      "2026-08-22T00:00:00.000Z",
+    );
+
+    expect(updated[0]).toMatchObject({ title: "Updated Run", weeklyGoal });
+    expect(updated[1]).toMatchObject({
+      title: "Wednesday Run",
+      weeklyGoal,
+    });
+    expect(updated[2]?.weeklyGoal).toBeUndefined();
+  });
+
+  it("週間目標を解除すると同一グループの全メンバーから除去する", () => {
+    const weeklyGoal = {
+      targetPerWeek: 2,
+      startedAt: "2026-08-01T00:00:00.000Z",
+    };
+    const groupedRoutines = [
+      { ...routines[0], weeklyGoal },
+      { ...routines[0], id: "3", daysOfWeek: [3], weeklyGoal },
+    ];
+
+    const updated = updateRoutineInState(
+      groupedRoutines,
+      "1",
+      { weeklyGoal: undefined },
+      "2026-08-22T00:00:00.000Z",
+    );
+
+    expect(updated.every((routine) => routine.weeklyGoal === undefined)).toBe(
+      true,
+    );
+  });
+
   it("単体削除とグループ削除を行える", () => {
     expect(deleteRoutineFromState(routines, "1")).toEqual([routines[1]]);
     expect(deleteRoutineGroupFromState(routines, "g2")).toEqual([routines[0]]);

@@ -110,6 +110,18 @@ export const WithNotification: Story = {
   },
 };
 
+export const WithWeeklyGoal: Story = {
+  args: {
+    routine: {
+      ...baseRoutine,
+      weeklyGoal: {
+        targetPerWeek: 3,
+        startedAt: "2026-08-22T00:00:00+09:00",
+      },
+    },
+  },
+};
+
 export const ShowDuration: Story = {
   args: {
     routine: {

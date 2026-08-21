@@ -6,6 +6,7 @@ import {
   getDurationLabel,
   getNotificationLabel,
   getRoutineTitleClassName,
+  getWeeklyGoalLabel,
 } from "./helpers";
 
 interface RoutineCardContentProps {
@@ -40,6 +41,11 @@ export const RoutineCardContent = ({
         >
           {categoryInfo.emoji} {categoryInfo.label}
         </span>
+        {routine.weeklyGoal && (
+          <span className="text-xs px-2 py-0.5 rounded-full shrink-0 bg-blue-100 text-blue-700 dark:bg-blue-200 dark:text-blue-800">
+            {getWeeklyGoalLabel(routine.weeklyGoal.targetPerWeek)}
+          </span>
+        )}
         {!showDuration && <h3 className={titleClassName}>{routine.title}</h3>}
       </div>
       {showDuration && <h3 className={titleClassName}>{routine.title}</h3>}
