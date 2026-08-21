@@ -34,6 +34,7 @@ describe("useStatisticsPageState", () => {
       weeklyStats: { weekStart: "2026-03-02", weekEnd: "2026-03-08" },
       monthlyStats: { totalCompleted: 20 },
       categoryStats: [{ category: "work", totalCompleted: 10 }],
+      weeklyGoalProgress: [{ goalId: "exercise", completedCount: 2 }],
     });
     (createStatisticsPageStateResult as jest.Mock).mockReturnValue({
       composed: true,
@@ -56,6 +57,7 @@ describe("useStatisticsPageState", () => {
       weeklyStats: { weekStart: "2026-03-02", weekEnd: "2026-03-08" },
       monthlyStats: { totalCompleted: 20 },
       categoryStats: [{ category: "work", totalCompleted: 10 }],
+      weeklyGoalProgress: [{ goalId: "exercise", completedCount: 2 }],
       goToPreviousPeriod: expect.any(Function),
       goToNextPeriod: expect.any(Function),
       goToToday: expect.any(Function),

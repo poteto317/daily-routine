@@ -18,6 +18,7 @@ export const useStatisticsPageState = () => {
     weeklyStats: computedStats.weeklyStats,
     monthlyStats: computedStats.monthlyStats,
     categoryStats: computedStats.categoryStats,
+    weeklyGoalProgress: computedStats.weeklyGoalProgress,
     goToPreviousPeriod: periodState.goToPreviousPeriod,
     goToNextPeriod: periodState.goToNextPeriod,
     goToToday: periodState.goToToday,

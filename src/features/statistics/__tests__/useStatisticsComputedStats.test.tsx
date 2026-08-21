@@ -13,9 +13,14 @@ jest.mock("../page/useCategoryStats", () => ({
   useCategoryStats: jest.fn(),
 }));
 
+jest.mock("../page/useWeeklyGoalProgress", () => ({
+  useWeeklyGoalProgress: jest.fn(),
+}));
+
 import { useCategoryStats } from "../page/useCategoryStats";
 import { useMonthlyStats } from "../page/useMonthlyStats";
 import { useWeeklyStats } from "../page/useWeeklyStats";
+import { useWeeklyGoalProgress } from "../page/useWeeklyGoalProgress";
 
 describe("useStatisticsComputedStats", () => {
   beforeEach(() => {
@@ -24,6 +29,9 @@ describe("useStatisticsComputedStats", () => {
     (useMonthlyStats as jest.Mock).mockReturnValue({ totalCompleted: 20 });
     (useCategoryStats as jest.Mock).mockReturnValue([
       { category: "work", totalCompleted: 10 },
+    ]);
+    (useWeeklyGoalProgress as jest.Mock).mockReturnValue([
+      { goalId: "exercise", completedCount: 2 },
     ]);
   });
 
@@ -40,10 +48,12 @@ describe("useStatisticsComputedStats", () => {
     expect(useWeeklyStats).toHaveBeenCalledWith(currentDate);
     expect(useMonthlyStats).toHaveBeenCalledWith(2026, 3);
     expect(useCategoryStats).toHaveBeenCalledWith(2026, 3);
+    expect(useWeeklyGoalProgress).toHaveBeenCalledWith(currentDate);
     expect(result.current).toEqual({
       weeklyStats: { weekStart: "2026-03-02" },
       monthlyStats: { totalCompleted: 20 },
       categoryStats: [{ category: "work", totalCompleted: 10 }],
+      weeklyGoalProgress: [{ goalId: "exercise", completedCount: 2 }],
     });
   });
 });

@@ -7,6 +7,7 @@ import { StatisticsChartPanel } from "./page/components/StatisticsChartPanel";
 import { StatisticsModeSelector } from "./page/components/StatisticsModeSelector";
 import { StatisticsPeriodControls } from "./page/components/StatisticsPeriodControls";
 import { StatisticsSummaryCards } from "./page/components/StatisticsSummaryCards";
+import { WeeklyGoalsPanel } from "./page/components/WeeklyGoalsPanel";
 import {
   getStatisticsPeriodLabel,
   STATISTICS_PAGE_DESCRIPTION,
@@ -24,6 +25,7 @@ export const StatisticsPage = () => {
     weeklyStats,
     monthlyStats,
     categoryStats,
+    weeklyGoalProgress,
     goToPreviousPeriod,
     goToNextPeriod,
     goToToday,
@@ -79,6 +81,10 @@ export const StatisticsPage = () => {
             year={year}
             month={month}
           />
+
+          {viewMode === "week" && (
+            <WeeklyGoalsPanel goals={weeklyGoalProgress} />
+          )}
 
           <StatisticsChartPanel
             viewMode={viewMode}

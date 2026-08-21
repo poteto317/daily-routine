@@ -5,6 +5,7 @@ export const createStatisticsPageStateResult = <
   TWeekly,
   TMonthly,
   TCategory,
+  TWeeklyGoals,
 >(params: {
   viewMode: ViewMode;
   setViewMode: Dispatch<SetStateAction<ViewMode>>;
@@ -13,6 +14,7 @@ export const createStatisticsPageStateResult = <
   weeklyStats: TWeekly;
   monthlyStats: TMonthly;
   categoryStats: TCategory;
+  weeklyGoalProgress: TWeeklyGoals;
   goToPreviousPeriod: () => Date;
   goToNextPeriod: () => Date;
   goToToday: () => Date;

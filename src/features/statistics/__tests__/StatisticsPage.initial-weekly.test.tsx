@@ -21,6 +21,11 @@ describe("StatisticsPage initial and weekly", () => {
     expect(screen.getByText("74.3%")).toBeInTheDocument();
     expect(screen.getByText("2024/6/10 〜 2024/6/16")).toBeInTheDocument();
     expect(screen.getByText("今週")).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "週間目標" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("2 / 3回")).toBeInTheDocument();
+    expect(screen.getByText("現在 4週")).toBeInTheDocument();
   });
 
   it("前週・翌週移動で再計算される", () => {

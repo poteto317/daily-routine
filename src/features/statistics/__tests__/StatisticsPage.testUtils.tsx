@@ -23,6 +23,7 @@ jest.mock("@/features/statistics/statistics", () => ({
   calculateWeeklyStats: jest.fn(),
   calculateMonthlyStats: jest.fn(),
   calculateCategoryStats: jest.fn(),
+  calculateWeeklyGoalProgress: jest.fn(),
 }));
 
 export const defaultWeeklyStats = {
@@ -57,6 +58,19 @@ export const defaultCategoryStats = [
   { category: "study", completed: 5, total: 10, achievementRate: 50.0 },
 ];
 
+export const defaultWeeklyGoalProgress = [
+  {
+    goalId: "exercise",
+    title: "運動",
+    targetPerWeek: 3,
+    completedCount: 2,
+    remainingCount: 1,
+    isAchieved: false,
+    currentStreak: 4,
+    longestStreak: 7,
+  },
+];
+
 export const setupStatisticsMocks = () => {
   jest.clearAllMocks();
   (statistics.calculateWeeklyStats as jest.Mock).mockReturnValue(
@@ -67,6 +81,9 @@ export const setupStatisticsMocks = () => {
   );
   (statistics.calculateCategoryStats as jest.Mock).mockReturnValue(
     defaultCategoryStats,
+  );
+  (statistics.calculateWeeklyGoalProgress as jest.Mock).mockReturnValue(
+    defaultWeeklyGoalProgress,
   );
   jest.useFakeTimers();
   jest.setSystemTime(new Date("2024-06-15"));

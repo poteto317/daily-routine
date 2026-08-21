@@ -73,6 +73,7 @@ describe("statisticsPageStateActions", () => {
       weeklyStats: { totalCompleted: 1 },
       monthlyStats: { totalCompleted: 2 },
       categoryStats: [{ category: "work", totalCompleted: 3 }],
+      weeklyGoalProgress: [],
       goToPreviousPeriod: jest.fn(() => today),
       goToNextPeriod: jest.fn(() => today),
       goToToday: jest.fn(() => today),
