@@ -67,4 +67,29 @@ describe("RoutineItem render", () => {
 
     expect(screen.getByText("週3回")).toBeInTheDocument();
   });
+
+  it.each([
+    {
+      weeklyGoal: {
+        targetPerWeek: 0,
+        startedAt: "2026-08-22T00:00:00.000Z",
+      },
+      label: "週0回",
+    },
+    {
+      weeklyGoal: { targetPerWeek: 3, startedAt: "invalid-date" },
+      label: "週3回",
+    },
+  ])("不正な週間目標はバッジを表示しない", ({ weeklyGoal, label }) => {
+    render(
+      <RoutineItem
+        routine={{ ...mockRoutine, weeklyGoal }}
+        onToggle={mockOnToggle}
+        onEdit={mockOnEdit}
+        onDelete={mockOnDelete}
+      />,
+    );
+
+    expect(screen.queryByText(label)).not.toBeInTheDocument();
+  });
 });

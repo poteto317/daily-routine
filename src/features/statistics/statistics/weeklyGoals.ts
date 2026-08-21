@@ -1,4 +1,5 @@
 import { toJstDateKey } from "@/lib/storage/core";
+import { isValidWeeklyGoal } from "@/lib/weeklyGoal";
 import type {
   DailyHistory,
   Routine,
@@ -40,19 +41,6 @@ const getWeekStartKey = (date: Date): string =>
 
 const getGoalId = (item: Pick<Routine, "id" | "groupId">): string =>
   item.groupId ?? item.id;
-
-const isValidWeeklyGoal = (value: unknown): value is WeeklyGoal => {
-  if (!value || typeof value !== "object") return false;
-
-  const candidate = value as Partial<WeeklyGoal>;
-  return (
-    Number.isInteger(candidate.targetPerWeek) &&
-    Number(candidate.targetPerWeek) >= 1 &&
-    Number(candidate.targetPerWeek) <= 7 &&
-    typeof candidate.startedAt === "string" &&
-    Number.isFinite(Date.parse(candidate.startedAt))
-  );
-};
 
 const toGoalDefinition = (
   item: Pick<Routine, "id" | "groupId" | "title" | "weeklyGoal">,

@@ -34,6 +34,10 @@ export const WeeklyGoalsPanel = ({ goals }: WeeklyGoalsPanelProps) => (
     ) : (
       <div className="space-y-4">
         {goals.map((goal) => {
+          const clampedCompletedCount = Math.min(
+            goal.completedCount,
+            goal.targetPerWeek,
+          );
           const progressPercentage = Math.min(
             100,
             (goal.completedCount / goal.targetPerWeek) * 100,
@@ -97,8 +101,15 @@ export const WeeklyGoalsPanel = ({ goals }: WeeklyGoalsPanelProps) => (
                   { title: goal.title },
                 )}
                 aria-valuemin={0}
-                aria-valuenow={goal.completedCount}
+                aria-valuenow={clampedCompletedCount}
                 aria-valuemax={goal.targetPerWeek}
+                aria-valuetext={formatTemplate(
+                  STATISTICS_WEEKLY_GOALS_TEXT.progressTemplate,
+                  {
+                    completed: goal.completedCount,
+                    target: goal.targetPerWeek,
+                  },
+                )}
                 className="mt-2 h-2 overflow-hidden rounded-full bg-gray-200"
               >
                 <div

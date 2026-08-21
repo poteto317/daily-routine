@@ -52,6 +52,27 @@ describe("WeeklyGoalsPanel", () => {
     expect(screen.queryByText(/あと/)).not.toBeInTheDocument();
   });
 
+  it("完了回数が目標を超えても進捗バーのARIA値を上限内に保つ", () => {
+    render(
+      <WeeklyGoalsPanel
+        goals={[
+          progress({
+            completedCount: 5,
+            remainingCount: 0,
+            isAchieved: true,
+          }),
+        ]}
+      />,
+    );
+
+    const progressbar = screen.getByRole("progressbar", {
+      name: "運動の進捗",
+    });
+    expect(progressbar).toHaveAttribute("aria-valuenow", "3");
+    expect(progressbar).toHaveAttribute("aria-valuemax", "3");
+    expect(progressbar).toHaveAttribute("aria-valuetext", "5 / 3回");
+  });
+
   it("対象目標がない週は空状態を表示する", () => {
     render(<WeeklyGoalsPanel goals={[]} />);
 

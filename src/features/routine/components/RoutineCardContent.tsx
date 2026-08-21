@@ -1,6 +1,7 @@
 "use client";
 
 import { type Routine } from "@/types/routine";
+import { isValidWeeklyGoal } from "@/lib/weeklyGoal";
 import { getCategoryInfo } from "../helpers";
 import {
   getDurationLabel,
@@ -41,7 +42,7 @@ export const RoutineCardContent = ({
         >
           {categoryInfo.emoji} {categoryInfo.label}
         </span>
-        {routine.weeklyGoal && (
+        {isValidWeeklyGoal(routine.weeklyGoal) && (
           <span className="text-xs px-2 py-0.5 rounded-full shrink-0 bg-blue-100 text-blue-700 dark:bg-blue-200 dark:text-blue-800">
             {getWeeklyGoalLabel(routine.weeklyGoal.targetPerWeek)}
           </span>
