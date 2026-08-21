@@ -173,6 +173,14 @@ export const ROUTINE_FORM_NOTIFICATION_HINT_SUFFIX =
   texts.routineFormOptional.notificationHintSuffix;
 export const ROUTINE_FORM_NOTIFICATION_PERMISSION_HINT =
   texts.routineFormOptional.notificationPermissionHint;
+export const ROUTINE_FORM_WEEKLY_GOAL_LABEL =
+  texts.routineFormOptional.weeklyGoalLabel;
+export const ROUTINE_FORM_WEEKLY_GOAL_PLACEHOLDER =
+  texts.routineFormOptional.weeklyGoalPlaceholder;
+export const ROUTINE_FORM_WEEKLY_GOAL_HINT =
+  texts.routineFormOptional.weeklyGoalHint;
+export const ROUTINE_FORM_WEEKLY_GOAL_ERROR =
+  texts.routineFormOptional.weeklyGoalError;
 
 export const getRoutineNotificationPlaceholder = (
   defaultNotificationMinutes: number,

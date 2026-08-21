@@ -31,6 +31,7 @@ describe("useRoutineFormFieldsState composition", () => {
       duration: "30",
       description: "準備",
       notificationMinutes: "10",
+      weeklyGoalTarget: "3",
     };
     const metaState = {
       title: "朝活",
@@ -39,6 +40,8 @@ describe("useRoutineFormFieldsState composition", () => {
       setCategory: jest.fn(),
       description: "準備",
       setDescription: jest.fn(),
+      weeklyGoalTarget: "3",
+      setWeeklyGoalTarget: jest.fn(),
     };
     const scheduleState = {
       daysOfWeek: [1, 2],
@@ -67,6 +70,7 @@ describe("useRoutineFormFieldsState composition", () => {
       initialTitle: "朝活",
       initialCategory: "work",
       initialDescription: "準備",
+      initialWeeklyGoalTarget: "3",
     });
     expect(useRoutineScheduleFieldsState).toHaveBeenCalledWith({
       initialDaysOfWeek: [1, 2],

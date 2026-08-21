@@ -42,7 +42,24 @@ describe("routineFormModel", () => {
       duration: "25",
       description: "",
       notificationMinutes: "",
+      weeklyGoalTarget: "",
     });
+  });
+
+  it("既存の週間目標を初期状態へ反映する", () => {
+    const state = resolveRoutineFormInitialState({
+      routine: {
+        ...baseRoutine,
+        weeklyGoal: {
+          targetPerWeek: 3,
+          startedAt: "2026-02-13T00:00:00.000Z",
+        },
+      },
+      existingRoutines: [],
+      defaultDurationMinutes: 30,
+    });
+
+    expect(state.weeklyGoalTarget).toBe("3");
   });
 
   it("groupDaysOfWeek が未指定の場合は routine.daysOfWeek を使う", () => {
@@ -69,21 +86,31 @@ describe("routineFormModel", () => {
       duration: "40",
       description: "desc",
       notificationMinutes: "15",
+      weeklyGoalTarget: "3",
     };
 
     const { routineData } = buildRoutineSubmitPayload({
       routine: baseRoutine,
       state,
       defaultDurationMinutes: 30,
+      now: "2026-08-22T00:00:00.000Z",
     });
 
     const expected: RoutineData = {
-      ...state,
+      title: "更新朝活",
+      category: "health",
+      daysOfWeek: [2, 4],
+      startTime: "09:00",
       duration: 40,
+      description: "desc",
       notificationMinutes: 15,
       isCompleted: false,
       sortOrder: 1,
       groupId: "g1",
+      weeklyGoal: {
+        targetPerWeek: 3,
+        startedAt: "2026-08-22T00:00:00.000Z",
+      },
     };
 
     expect(routineData).toEqual(expected);

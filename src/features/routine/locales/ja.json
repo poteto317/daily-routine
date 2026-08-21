@@ -74,7 +74,11 @@
     "notificationBeta": "Beta",
     "notificationHintPrefix": "開始時間を過ぎて何分後に通知するか（デフォルト:",
     "notificationHintSuffix": "分）",
-    "notificationPermissionHint": "※ ブラウザ通知権限が必要です"
+    "notificationPermissionHint": "※ ブラウザ通知権限が必要です",
+    "weeklyGoalLabel": "週間目標",
+    "weeklyGoalPlaceholder": "例: 3",
+    "weeklyGoalHint": "1週間に達成したい回数（1〜7回、空欄なら設定なし）",
+    "weeklyGoalError": "1〜7の整数で入力してください"
   },
   "routineFormFooter": {
     "cancel": "キャンセル",

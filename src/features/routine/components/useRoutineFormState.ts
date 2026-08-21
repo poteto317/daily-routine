@@ -49,6 +49,7 @@ export const useRoutineFormState = ({
     duration: fieldsState.duration,
     description: fieldsState.description,
     notificationMinutes: fieldsState.notificationMinutes,
+    weeklyGoalTarget: fieldsState.weeklyGoalTarget,
     defaultDurationMinutes: contextData.defaultDurationMinutes,
     hasConflict: conflictInfo.hasConflict,
     onSubmit,

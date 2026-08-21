@@ -24,6 +24,8 @@ describe("createRoutineFormStateResult", () => {
         setDescription: jest.fn(),
         notificationMinutes: "10",
         setNotificationMinutes: jest.fn(),
+        weeklyGoalTarget: "3",
+        setWeeklyGoalTarget: jest.fn(),
       },
       conflictInfo: {
         hasConflict: false,
@@ -32,6 +34,7 @@ describe("createRoutineFormStateResult", () => {
       submitState: {
         handleSubmit: jest.fn(),
         isSubmitDisabled: false,
+        isWeeklyGoalTargetValid: true,
       },
       toggleDay: jest.fn(),
     });
@@ -50,6 +53,9 @@ describe("createRoutineFormStateResult", () => {
       setDescription: expect.any(Function),
       notificationMinutes: "10",
       setNotificationMinutes: expect.any(Function),
+      weeklyGoalTarget: "3",
+      setWeeklyGoalTarget: expect.any(Function),
+      isWeeklyGoalTargetValid: true,
       defaultNotificationMinutes: 15,
       defaultDurationMinutes: 30,
       conflictInfo: {

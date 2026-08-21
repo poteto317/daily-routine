@@ -37,6 +37,9 @@ export const RoutineForm = ({
     setDescription,
     notificationMinutes,
     setNotificationMinutes,
+    weeklyGoalTarget,
+    setWeeklyGoalTarget,
+    isWeeklyGoalTargetValid,
     defaultNotificationMinutes,
     defaultDurationMinutes,
     conflictInfo,
@@ -87,6 +90,9 @@ export const RoutineForm = ({
             notificationMinutes={notificationMinutes}
             setNotificationMinutes={setNotificationMinutes}
             defaultNotificationMinutes={defaultNotificationMinutes}
+            weeklyGoalTarget={weeklyGoalTarget}
+            setWeeklyGoalTarget={setWeeklyGoalTarget}
+            isWeeklyGoalTargetValid={isWeeklyGoalTargetValid}
           />
         </div>
 

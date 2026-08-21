@@ -8,6 +8,7 @@ export const useRoutineFormFieldsState = (initialState: RoutineFormState) => {
     initialTitle: initialState.title,
     initialCategory: initialState.category,
     initialDescription: initialState.description,
+    initialWeeklyGoalTarget: initialState.weeklyGoalTarget,
   });
   const scheduleFieldsState = useRoutineScheduleFieldsState({
     initialDaysOfWeek: initialState.daysOfWeek,

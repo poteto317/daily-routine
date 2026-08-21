@@ -9,6 +9,7 @@ export type RoutineFormState = {
   duration: string;
   description: string;
   notificationMinutes: string;
+  weeklyGoalTarget: string;
 };
 
 type ResolveInitialStateParams = {
@@ -56,5 +57,6 @@ export const resolveRoutineFormInitialState = (
       routine?.duration?.toString() ?? defaultDurationMinutes.toString(),
     description: routine?.description ?? "",
     notificationMinutes: routine?.notificationMinutes?.toString() ?? "",
+    weeklyGoalTarget: routine?.weeklyGoal?.targetPerWeek.toString() ?? "",
   };
 };

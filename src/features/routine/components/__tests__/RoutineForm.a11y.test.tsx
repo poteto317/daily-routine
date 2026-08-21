@@ -71,4 +71,17 @@ describe("RoutineForm アクセシビリティ", () => {
 
     expect(onCancel).not.toHaveBeenCalled();
   });
+
+  it("不正な週間目標では保存できない", () => {
+    render(<RoutineForm {...defaultProps} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "月" }));
+    expect(screen.getByRole("button", { name: "追加" })).toBeEnabled();
+
+    fireEvent.change(screen.getByRole("spinbutton", { name: "週間目標" }), {
+      target: { value: "8" },
+    });
+
+    expect(screen.getByRole("button", { name: "追加" })).toBeDisabled();
+  });
 });

@@ -1,11 +1,13 @@
 import type { Routine } from "@/types/routine";
 import type { RoutineData } from "../pages/types";
 import type { RoutineFormState } from "./routineFormInitialModel";
+import { buildWeeklyGoal } from "./weeklyGoalFormModel";
 
 type BuildSubmitPayloadParams = {
   routine?: Routine;
   state: RoutineFormState;
   defaultDurationMinutes: number;
+  now?: string;
 };
 
 export const parseDurationOrDefault = (
@@ -31,6 +33,7 @@ export const buildRoutineSubmitPayload = ({
   routine,
   state,
   defaultDurationMinutes,
+  now = new Date().toISOString(),
 }: BuildSubmitPayloadParams): {
   routineData: RoutineData;
 } => {
@@ -45,6 +48,11 @@ export const buildRoutineSubmitPayload = ({
     isCompleted: routine?.isCompleted || false,
     sortOrder: routine?.sortOrder ?? 0,
     groupId: routine?.groupId,
+    weeklyGoal: buildWeeklyGoal(
+      state.weeklyGoalTarget,
+      routine?.weeklyGoal,
+      now,
+    ),
   };
 
   return { routineData };
