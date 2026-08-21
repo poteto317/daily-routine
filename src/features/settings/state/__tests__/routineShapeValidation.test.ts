@@ -18,6 +18,19 @@ describe("hasValidRoutineShape", () => {
     ).toBe(true);
   });
 
+  it("週間目標を持つルーティンも true", () => {
+    expect(
+      hasValidRoutineShape({
+        ...valid,
+        groupId: "group-1",
+        weeklyGoal: {
+          targetPerWeek: 3,
+          startedAt: "2026-08-10T00:00:00.000Z",
+        },
+      }),
+    ).toBe(true);
+  });
+
   it("曜日が空配列でも true", () => {
     // 曜日を1つも選べない画面ではないが、保存済みデータとしてはありうる
     expect(hasValidRoutineShape({ ...valid, daysOfWeek: [] })).toBe(true);

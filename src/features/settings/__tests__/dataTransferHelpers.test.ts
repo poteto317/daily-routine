@@ -12,7 +12,11 @@ import { getTodoLists, saveTodoLists } from "@/features/todo-lists/storage";
 import { getPresets, savePresets } from "@/features/preset/storage";
 import {
   getDailyProgress,
+  getMonthlyHistory,
+  getRoutines,
   saveDailyProgress,
+  saveMonthlyHistory,
+  saveRoutines,
 } from "@/features/routine/storage";
 
 /** 指定したキーだけを選んだ状態を作る */
@@ -263,6 +267,60 @@ describe("書き出してから取り込む", () => {
     expect(getTodoLists()).toHaveLength(1);
     expect(getTodoLists()[0].title).toBe("買い物");
     expect(getPresets()).toHaveLength(1);
+  });
+
+  it("週間目標を含むルーティンと履歴を欠落なく往復する", () => {
+    const weeklyGoal = {
+      targetPerWeek: 3,
+      startedAt: "2026-08-10T00:00:00.000Z",
+    };
+    const routine = {
+      id: "routine-weekly-goal",
+      groupId: "group-weekly-goal",
+      weeklyGoal,
+      title: "朝の散歩",
+      startTime: "07:00",
+      duration: 30,
+      category: "health" as const,
+      daysOfWeek: [1, 3, 5],
+      isCompleted: false,
+      sortOrder: 0,
+      createdAt: "2026-08-10T00:00:00.000Z",
+      updatedAt: "2026-08-10T00:00:00.000Z",
+    };
+    const history = {
+      "2026-08-12": {
+        date: "2026-08-12",
+        completedRoutineIds: [routine.id],
+        routineSnapshots: [
+          {
+            id: routine.id,
+            groupId: routine.groupId,
+            weeklyGoal,
+            title: routine.title,
+            category: routine.category,
+            startTime: routine.startTime,
+          },
+        ],
+      },
+    };
+    saveRoutines([routine]);
+    saveMonthlyHistory(history);
+
+    const exported = createExportData(select("routines", "history"));
+    localStorage.clear();
+    importSelectedData(exported, select("routines", "history"));
+
+    expect(getRoutines()[0]).toMatchObject({
+      groupId: routine.groupId,
+      weeklyGoal,
+    });
+    expect(getMonthlyHistory()["2026-08-12"].routineSnapshots[0]).toMatchObject(
+      {
+        groupId: routine.groupId,
+        weeklyGoal,
+      },
+    );
   });
 
   it("選んだグループだけが戻り、選ばなかったグループは消えたままになる", () => {

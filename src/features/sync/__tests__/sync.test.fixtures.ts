@@ -10,6 +10,11 @@ export const todoListFixture = {
 
 export const routineFixture = {
   id: "r1",
+  groupId: "group-1",
+  weeklyGoal: {
+    targetPerWeek: 3,
+    startedAt: "2026-03-09T00:00:00.000Z",
+  },
   title: "朝活",
   startTime: "07:00",
   duration: 30,

@@ -107,6 +107,22 @@ const resetLocalDataStorageMocks = (): void => {
 
 const collectLocalSyncDataStorageFixture = createSyncPayloadFixture({
   routines: [routineFixture],
+  dailyHistory: {
+    "2026-03-12": {
+      date: "2026-03-12",
+      completedRoutineIds: [routineFixture.id],
+      routineSnapshots: [
+        {
+          id: routineFixture.id,
+          groupId: routineFixture.groupId,
+          weeklyGoal: routineFixture.weeklyGoal,
+          title: routineFixture.title,
+          category: routineFixture.category,
+          startTime: routineFixture.startTime,
+        },
+      ],
+    },
+  },
   settings: {
     ...createSyncPayloadFixture().settings,
     theme: "dark",
@@ -132,6 +148,9 @@ describe("localData", () => {
       const result = collectLocalSyncData();
 
       expect(result.routines).toEqual([routineFixture]);
+      expect(result.dailyHistory).toEqual(
+        collectLocalSyncDataStorageFixture.dailyHistory,
+      );
       expect(result.settings).toEqual(collectLocalSyncDataStorageFixture.settings);
       expect(result.presets).toEqual([{ id: "p1" }]);
       expect(result.budgetCategories).toEqual([budgetCategoryFixture]);
@@ -149,6 +168,20 @@ describe("localData", () => {
   });
 
   describe("saveSyncDataToLocal", () => {
+    it("週間目標を含むルーティンと履歴をそのまま復元する", () => {
+      const payload = collectLocalSyncDataStorageFixture;
+
+      saveSyncDataToLocal({
+        routines: payload.routines,
+        dailyHistory: payload.dailyHistory,
+      });
+
+      expect(routineStorage.saveRoutines).toHaveBeenCalledWith(payload.routines);
+      expect(routineStorage.saveMonthlyHistory).toHaveBeenCalledWith(
+        payload.dailyHistory,
+      );
+    });
+
     it("各ストレージ setter を呼び出す", () => {
       const routines = [{ id: "r1" }] as never[];
       const settings = { theme: "dark" as const } as never;
