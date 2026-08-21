@@ -37,6 +37,17 @@ export const STATISTICS_PERIOD_CONTROLS_TEXT = {
   currentMonth: textsJson.modeSelector.periodControls.currentMonth,
 } as const;
 
+export const STATISTICS_WEEKLY_GOALS_TEXT = {
+  title: textsJson.weeklyGoals.title,
+  empty: textsJson.weeklyGoals.empty,
+  completed: textsJson.weeklyGoals.completed,
+  remainingTemplate: textsJson.weeklyGoals.remainingTemplate,
+  progressTemplate: textsJson.weeklyGoals.progressTemplate,
+  currentStreakTemplate: textsJson.weeklyGoals.currentStreakTemplate,
+  longestStreakTemplate: textsJson.weeklyGoals.longestStreakTemplate,
+  progressAriaTemplate: textsJson.weeklyGoals.progressAriaTemplate,
+} as const;
+
 const NO_DATA_LABEL = textsJson.summaryCards.noDataLabel;
 
 // ========================================

@@ -62,6 +62,23 @@ describe("routineFormModel", () => {
     expect(state.weeklyGoalTarget).toBe("3");
   });
 
+  it("週間目標の回数が欠損したデータでも初期状態を解決する", () => {
+    const malformedRoutine = {
+      ...baseRoutine,
+      weeklyGoal: {
+        startedAt: "2026-02-13T00:00:00.000Z",
+      },
+    } as unknown as Routine;
+
+    expect(
+      resolveRoutineFormInitialState({
+        routine: malformedRoutine,
+        existingRoutines: [],
+        defaultDurationMinutes: 30,
+      }).weeklyGoalTarget,
+    ).toBe("");
+  });
+
   it("groupDaysOfWeek が未指定の場合は routine.daysOfWeek を使う", () => {
     const state = resolveRoutineFormInitialState({
       routine: baseRoutine,

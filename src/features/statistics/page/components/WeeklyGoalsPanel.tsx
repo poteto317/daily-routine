@@ -1,5 +1,5 @@
+import { STATISTICS_WEEKLY_GOALS_TEXT } from "../../helpers";
 import type { WeeklyGoalProgress } from "../../statistics/types";
-import texts from "../../locales/ja.json";
 
 type WeeklyGoalsPanelProps = {
   goals: WeeklyGoalProgress[];
@@ -24,11 +24,13 @@ export const WeeklyGoalsPanel = ({ goals }: WeeklyGoalsPanelProps) => (
       id="weekly-goals-title"
       className="mb-4 text-lg font-semibold text-gray-900"
     >
-      {texts.weeklyGoals.title}
+      {STATISTICS_WEEKLY_GOALS_TEXT.title}
     </h3>
 
     {goals.length === 0 ? (
-      <p className="text-sm text-gray-600">{texts.weeklyGoals.empty}</p>
+      <p className="text-sm text-gray-600">
+        {STATISTICS_WEEKLY_GOALS_TEXT.empty}
+      </p>
     ) : (
       <div className="space-y-4">
         {goals.map((goal) => {
@@ -54,30 +56,34 @@ export const WeeklyGoalsPanel = ({ goals }: WeeklyGoalsPanelProps) => (
                   }`}
                 >
                   {goal.isAchieved
-                    ? texts.weeklyGoals.completed
-                    : formatTemplate(texts.weeklyGoals.remainingTemplate, {
-                        count: goal.remainingCount,
-                      })}
+                    ? STATISTICS_WEEKLY_GOALS_TEXT.completed
+                    : formatTemplate(
+                        STATISTICS_WEEKLY_GOALS_TEXT.remainingTemplate,
+                        { count: goal.remainingCount },
+                      )}
                 </span>
               </div>
 
               <div className="mt-3 flex items-center justify-between text-sm text-gray-700">
                 <span>
-                  {formatTemplate(texts.weeklyGoals.progressTemplate, {
-                    completed: goal.completedCount,
-                    target: goal.targetPerWeek,
-                  })}
+                  {formatTemplate(
+                    STATISTICS_WEEKLY_GOALS_TEXT.progressTemplate,
+                    {
+                      completed: goal.completedCount,
+                      target: goal.targetPerWeek,
+                    },
+                  )}
                 </span>
                 <span className="flex gap-3">
                   <span>
                     {formatTemplate(
-                      texts.weeklyGoals.currentStreakTemplate,
+                      STATISTICS_WEEKLY_GOALS_TEXT.currentStreakTemplate,
                       { count: goal.currentStreak },
                     )}
                   </span>
                   <span>
                     {formatTemplate(
-                      texts.weeklyGoals.longestStreakTemplate,
+                      STATISTICS_WEEKLY_GOALS_TEXT.longestStreakTemplate,
                       { count: goal.longestStreak },
                     )}
                   </span>
@@ -87,7 +93,7 @@ export const WeeklyGoalsPanel = ({ goals }: WeeklyGoalsPanelProps) => (
               <div
                 role="progressbar"
                 aria-label={formatTemplate(
-                  texts.weeklyGoals.progressAriaTemplate,
+                  STATISTICS_WEEKLY_GOALS_TEXT.progressAriaTemplate,
                   { title: goal.title },
                 )}
                 aria-valuemin={0}

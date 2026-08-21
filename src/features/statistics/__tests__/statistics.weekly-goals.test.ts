@@ -289,4 +289,37 @@ describe("calculateWeeklyGoalProgress", () => {
 
     expect(result).toEqual([]);
   });
+
+  it("複数週の進捗とストリークを履歴1回の走査で集計する", () => {
+    let traversalCount = 0;
+    const trackedHistory = new Proxy(
+      history(
+        historyEntry("2026-08-03", ["exercise-mon"]),
+        historyEntry("2026-08-05", ["exercise-wed"]),
+        historyEntry("2026-08-10", ["exercise-mon"]),
+        historyEntry("2026-08-12", ["exercise-wed"]),
+        historyEntry("2026-08-17", ["exercise-mon"]),
+      ),
+      {
+        ownKeys(target) {
+          traversalCount += 1;
+          return Reflect.ownKeys(target);
+        },
+      },
+    );
+
+    const result = calculateWeeklyGoalProgress({
+      selectedDate: new Date("2026-08-19T12:00:00+09:00"),
+      today: new Date("2026-08-19T12:00:00+09:00"),
+      routines,
+      history: trackedHistory,
+    });
+
+    expect(result[0]).toMatchObject({
+      completedCount: 1,
+      currentStreak: 2,
+      longestStreak: 2,
+    });
+    expect(traversalCount).toBe(1);
+  });
 });

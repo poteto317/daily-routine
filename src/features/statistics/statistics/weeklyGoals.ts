@@ -9,6 +9,8 @@ import type { HistoryMap, WeeklyGoalProgress } from "./types";
 const DAY_MS = 24 * 60 * 60 * 1000;
 
 type RoutineSnapshot = DailyHistory["routineSnapshots"][number];
+type HistoryEntry = [dateKey: string, entry: DailyHistory];
+type CompletionDaysByGoal = Map<string, Map<string, Set<string>>>;
 
 type GoalDefinition = {
   goalId: string;
@@ -64,20 +66,17 @@ const toGoalDefinition = (
   };
 };
 
-const isDateKeyInWeek = (
-  dateKey: string,
-  weekStartKey: string,
-): boolean =>
-  dateKey >= weekStartKey && dateKey <= addDaysToDateKey(weekStartKey, 6);
-
 const collectSnapshotDefinitions = (
   weekStartKey: string,
-  history: HistoryMap,
+  historyEntries: HistoryEntry[],
 ): Map<string, GoalDefinition> => {
   const definitions = new Map<string, GoalDefinition>();
+  const weekEndKey = addDaysToDateKey(weekStartKey, 6);
 
-  Object.entries(history)
-    .filter(([dateKey]) => isDateKeyInWeek(dateKey, weekStartKey))
+  historyEntries
+    .filter(
+      ([dateKey]) => dateKey >= weekStartKey && dateKey <= weekEndKey,
+    )
     .sort(([left], [right]) => left.localeCompare(right))
     .forEach(([, entry]) => {
       entry.routineSnapshots.forEach((snapshot) => {
@@ -112,7 +111,7 @@ const resolveDefinitionsForWeek = (
   selectedWeekStartKey: string,
   todayWeekStartKey: string,
   routines: Routine[],
-  history: HistoryMap,
+  historyEntries: HistoryEntry[],
 ): GoalDefinition[] => {
   const currentDefinitions = collectCurrentDefinitions(
     selectedWeekStartKey,
@@ -120,7 +119,7 @@ const resolveDefinitionsForWeek = (
   );
   const snapshotDefinitions = collectSnapshotDefinitions(
     selectedWeekStartKey,
-    history,
+    historyEntries,
   );
 
   // 現在週は現在も存在する目標だけを表示する。削除・解除済みの目標が
@@ -152,30 +151,42 @@ const resolveCompletedGoalId = (
   return snapshot?.id ?? null;
 };
 
-const countCompletionDays = (
-  goalId: string,
-  weekStartKey: string,
-  history: HistoryMap,
+const indexCompletionDays = (
+  historyEntries: HistoryEntry[],
   routinesById: Map<string, Routine>,
-): number => {
-  const completedDates = new Set<string>();
+): CompletionDaysByGoal => {
+  const completionDaysByGoal: CompletionDaysByGoal = new Map();
 
-  Object.entries(history).forEach(([dateKey, entry]) => {
-    if (!isDateKeyInWeek(dateKey, weekStartKey)) return;
+  historyEntries.forEach(([dateKey, entry]) => {
+    const weekStartKey = getWeekStartKeyFromDateKey(dateKey);
 
-    const completedForGoal = entry.completedRoutineIds.some(
-      (routineId) =>
-        resolveCompletedGoalId(
-          routineId,
-          entry.routineSnapshots,
-          routinesById,
-        ) === goalId,
-    );
-    if (completedForGoal) completedDates.add(dateKey);
+    entry.completedRoutineIds.forEach((routineId) => {
+      const goalId = resolveCompletedGoalId(
+        routineId,
+        entry.routineSnapshots,
+        routinesById,
+      );
+      if (!goalId) return;
+
+      const completionDaysByWeek =
+        completionDaysByGoal.get(goalId) ?? new Map<string, Set<string>>();
+      const completedDates =
+        completionDaysByWeek.get(weekStartKey) ?? new Set<string>();
+      completedDates.add(dateKey);
+      completionDaysByWeek.set(weekStartKey, completedDates);
+      completionDaysByGoal.set(goalId, completionDaysByWeek);
+    });
   });
 
-  return completedDates.size;
+  return completionDaysByGoal;
 };
+
+const countCompletionDays = (
+  completionDaysByGoal: CompletionDaysByGoal,
+  goalId: string,
+  weekStartKey: string,
+): number =>
+  completionDaysByGoal.get(goalId)?.get(weekStartKey)?.size ?? 0;
 
 const buildWeekStartKeys = (
   firstWeekStartKey: string,
@@ -228,20 +239,24 @@ export const calculateWeeklyGoalProgress = ({
 }: CalculateWeeklyGoalProgressParams): WeeklyGoalProgress[] => {
   const selectedWeekStartKey = getWeekStartKey(selectedDate);
   const todayWeekStartKey = getWeekStartKey(today);
+  const historyEntries = Object.entries(history);
   const routinesById = new Map(routines.map((routine) => [routine.id, routine]));
+  const completionDaysByGoal = indexCompletionDays(
+    historyEntries,
+    routinesById,
+  );
   const definitions = resolveDefinitionsForWeek(
     selectedWeekStartKey,
     todayWeekStartKey,
     routines,
-    history,
+    historyEntries,
   );
 
   return definitions.map(({ goalId, title, weeklyGoal }) => {
     const completedCount = countCompletionDays(
+      completionDaysByGoal,
       goalId,
       selectedWeekStartKey,
-      history,
-      routinesById,
     );
     const firstWeekStartKey = getWeekStartKey(
       new Date(weeklyGoal.startedAt),
@@ -255,10 +270,9 @@ export const calculateWeeklyGoalProgress = ({
         ? buildWeekStartKeys(firstWeekStartKey, streakEndKey).map(
             (weekStartKey) =>
               countCompletionDays(
+                completionDaysByGoal,
                 goalId,
                 weekStartKey,
-                history,
-                routinesById,
               ) >= weeklyGoal.targetPerWeek,
           )
         : [];
