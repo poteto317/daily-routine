@@ -16,6 +16,17 @@ export interface WeeklyStats {
   totalRoutines: number;
 }
 
+export interface WeeklyGoalProgress {
+  goalId: string;
+  title: string;
+  targetPerWeek: number;
+  completedCount: number;
+  remainingCount: number;
+  isAchieved: boolean;
+  currentStreak: number;
+  longestStreak: number;
+}
+
 export interface MonthlyStats {
   year: number;
   month: number;
