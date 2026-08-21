@@ -1,4 +1,5 @@
 import type { RoutineCategory } from "./categories";
+import type { WeeklyGoal } from "./core";
 
 export interface DailyProgress {
   date: string;
@@ -14,6 +15,8 @@ export interface DailyHistory {
     title: string;
     category: RoutineCategory;
     startTime: string;
+    groupId?: string;
+    weeklyGoal?: WeeklyGoal;
   }[];
 }
 

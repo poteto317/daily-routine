@@ -1,8 +1,14 @@
 import type { RoutineCategory } from "./categories";
 
+export interface WeeklyGoal {
+  targetPerWeek: number;
+  startedAt: string;
+}
+
 export interface Routine {
   id: string;
   groupId?: string;
+  weeklyGoal?: WeeklyGoal;
   title: string;
   startTime: string;
   duration: number;

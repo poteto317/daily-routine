@@ -96,6 +96,31 @@ describe("storageDailyHistory", () => {
     ]);
   });
 
+  it("週間目標とグループIDを履歴スナップショットへ保存する", () => {
+    const routine = createRoutine({
+      id: "monday",
+      groupId: "exercise",
+      weeklyGoal: {
+        targetPerWeek: 3,
+        startedAt: "2026-03-02T00:00:00.000Z",
+      },
+    });
+
+    expect(createRoutineSnapshots([routine])).toEqual([
+      {
+        id: "monday",
+        title: "Morning Run",
+        category: "health",
+        startTime: "07:00",
+        groupId: "exercise",
+        weeklyGoal: {
+          targetPerWeek: 3,
+          startedAt: "2026-03-02T00:00:00.000Z",
+        },
+      },
+    ]);
+  });
+
   it("日次履歴エントリを組み立てる", () => {
     const routine = createRoutine({ id: "routine-7", daysOfWeek: [1] });
 

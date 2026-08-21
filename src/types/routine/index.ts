@@ -4,7 +4,12 @@ export {
   type RoutineCategory,
 } from "./categories";
 
-export type { Routine, RoutinePreset, RoutineTemplate } from "./core";
+export type {
+  Routine,
+  RoutinePreset,
+  RoutineTemplate,
+  WeeklyGoal,
+} from "./core";
 
 export type {
   DailyHistory,

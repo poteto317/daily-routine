@@ -29,6 +29,10 @@ export const createRoutineSnapshots = (
     title: routine.title,
     category: routine.category,
     startTime: routine.startTime,
+    ...(routine.groupId ? { groupId: routine.groupId } : {}),
+    ...(routine.weeklyGoal
+      ? { weeklyGoal: { ...routine.weeklyGoal } }
+      : {}),
   }));
 };
 
