@@ -1,11 +1,14 @@
 import { renderHook } from "@testing-library/react";
 
-jest.mock("../storage", () => ({
+jest.mock("../testMatrixLocalStorage", () => ({
   saveTestMatrixCategories: jest.fn(),
   saveTestMatrixDetailData: jest.fn(),
 }));
 
-import { saveTestMatrixCategories, saveTestMatrixDetailData } from "../storage";
+import {
+  saveTestMatrixCategories,
+  saveTestMatrixDetailData,
+} from "../testMatrixLocalStorage";
 import { useTestMatrixPersistence } from "../useTestMatrixPersistence";
 
 describe("useTestMatrixPersistence", () => {

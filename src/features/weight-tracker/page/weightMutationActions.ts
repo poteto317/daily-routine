@@ -1,6 +1,6 @@
 import type { Dispatch, SetStateAction } from "react";
 import type { WeightHistory, WeightRecord } from "@/types/routine";
-import { WEIGHT_TRACKER_MESSAGES } from "./helpers";
+import { WEIGHT_TRACKER_MESSAGES } from "./weightPagePresentation";
 import { deleteWeightAndReload, saveWeightAndReload } from "./pageStateActions";
 import { createLoadWeightDataAction } from "./weightReloadActions";
 

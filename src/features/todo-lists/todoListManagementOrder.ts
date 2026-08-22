@@ -1,7 +1,5 @@
-import {
-  sortByMenuOrder,
-  toTodoListMenuItemId,
-} from "@/hooks/headerMenuItemHelpers";
+import { toTodoListMenuItemId } from "@/hooks/dynamicTodoMenuItems";
+import { sortByMenuOrder } from "@/hooks/headerMenuOrder";
 import type { TodoList } from "./types";
 
 /**

@@ -7,7 +7,7 @@ import { RoutineFormCoreFields } from "./RoutineFormCoreFields";
 import { RoutineFormTimeFields } from "./RoutineFormTimeFields";
 import { RoutineFormOptionalFields } from "./RoutineFormOptionalFields";
 import { RoutineFormFooter } from "./RoutineFormFooter";
-import { ROUTINE_FORM_TITLE_ID } from "./helpers";
+import { ROUTINE_FORM_TITLE_ID } from "./routineFormHeaderPresentation";
 import { useCloseOnEscape } from "@/hooks/useCloseOnEscape";
 
 interface RoutineFormProps {

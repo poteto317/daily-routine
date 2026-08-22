@@ -2,7 +2,7 @@ import {
   ROUTINE_FORM_FOOTER_TEXT,
   getRoutineFormSubmitLabel,
   getSubmitButtonClassName,
-} from "./helpers";
+} from "./routineFormFooterPresentation";
 
 type RoutineFormFooterProps = {
   isEditMode: boolean;

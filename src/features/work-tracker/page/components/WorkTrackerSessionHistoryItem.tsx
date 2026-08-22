@@ -5,7 +5,7 @@ import {
   getSessionHistoryMeta,
   formatWorkSessionStatsSummary,
   formatWorkSessionTimeRange,
-} from "../helpers";
+} from "../sessionHistoryPresentation";
 import workTrackerTexts from "../../locales/ja.json";
 
 type Props = {

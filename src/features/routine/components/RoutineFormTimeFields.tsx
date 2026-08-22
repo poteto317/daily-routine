@@ -10,7 +10,7 @@ import {
   ROUTINE_FORM_DURATION_LABEL,
   ROUTINE_FORM_START_TIME_LABEL,
   getRoutineTimeInputClassName,
-} from "./helpers";
+} from "./routineFormTimePresentation";
 
 type RoutineFormTimeFieldsProps = {
   startTime: string;

@@ -1,4 +1,4 @@
-import { PRESET_DELETE_LABEL } from "../helpers";
+import { PRESET_DELETE_LABEL } from "../presetCardPresentation";
 
 type Props = {
   onClick: () => void;

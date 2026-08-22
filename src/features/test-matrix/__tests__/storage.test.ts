@@ -1,17 +1,22 @@
 import {
   getStoredTestMatrixCategories,
   getStoredTestMatrixDetailData,
-  hasBrokenVersionDetailData,
-  mergeStoredDetailData,
-  mergeStoredTestMatrixCategories,
-  migrateLegacyCategories,
-  migrateLegacyDetailData,
   saveTestMatrixCategories,
   saveTestMatrixDetailData,
-} from "../storage";
+} from "../testMatrixLocalStorage";
+import {
+  hasBrokenVersionDetailData,
+  migrateLegacyCategories,
+  migrateLegacyDetailData,
+} from "../testMatrixIdMigration";
+import {
+  mergeStoredDetailData,
+  mergeStoredTestMatrixCategories,
+} from "../testMatrixStoredDataMerge";
 import { DETAILED_TEST_CASES } from "../detailedTestCases";
 import type { StoredDetailData } from "../matrixComputations";
 import type { TestCategory } from "../types";
+import * as legacyStorage from "../storage";
 
 jest.mock("../initialData", () => ({
   buildInitialData: jest.fn(() => [
@@ -30,6 +35,24 @@ jest.mock("../initialData", () => ({
     },
   ]),
 }));
+
+describe("test matrix storage compatibility", () => {
+  it("旧storage moduleから分割後のAPIを再公開する", () => {
+    expect(Object.keys(legacyStorage).sort()).toEqual(
+      [
+        "getStoredTestMatrixCategories",
+        "getStoredTestMatrixDetailData",
+        "hasBrokenVersionDetailData",
+        "mergeStoredDetailData",
+        "mergeStoredTestMatrixCategories",
+        "migrateLegacyCategories",
+        "migrateLegacyDetailData",
+        "saveTestMatrixCategories",
+        "saveTestMatrixDetailData",
+      ].sort(),
+    );
+  });
+});
 
 describe("test matrix storage", () => {
   const detailItemId = "1-2";

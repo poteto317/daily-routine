@@ -1,4 +1,4 @@
-import { PRESET_DUPLICATE_LABEL } from "../helpers";
+import { PRESET_DUPLICATE_LABEL } from "../presetCardPresentation";
 
 type Props = {
   onClick: () => void;

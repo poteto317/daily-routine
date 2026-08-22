@@ -3,7 +3,7 @@ import {
   getCurrentPeriodLabel,
   STATISTICS_PERIOD_NEXT_LABEL,
   STATISTICS_PERIOD_PREVIOUS_LABEL,
-} from "../../helpers";
+} from "../../statisticsPeriodPresentation";
 
 type Props = {
   viewMode: ViewMode;

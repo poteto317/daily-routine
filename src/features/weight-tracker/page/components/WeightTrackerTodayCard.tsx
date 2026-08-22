@@ -1,12 +1,12 @@
 import { type WeightRecord } from "@/types/routine";
+import { formatWeightDate } from "../weightRecordQueries";
 import {
-  formatWeightDate,
   formatWeightTodayNote,
   getWeightTodayEditButtonLabel,
   WEIGHT_TODAY_EMPTY_LABEL,
   WEIGHT_TODAY_TITLE,
   WEIGHT_TODAY_UPDATED_AT_LABEL,
-} from "../helpers";
+} from "../weightTodayPresentation";
 import { WeightTrackerForm } from "./WeightTrackerForm";
 
 type WeightTrackerTodayCardProps = {

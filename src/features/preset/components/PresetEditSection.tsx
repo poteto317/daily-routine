@@ -10,7 +10,7 @@ import {
   PRESET_EDIT_NAME_PLACEHOLDER,
   PRESET_EDIT_ROUTINE_LIST_LABEL,
   PRESET_EDIT_SAVE_LABEL,
-} from "../helpers";
+} from "../presetEditPresentation";
 
 interface PresetEditSectionProps {
   routines: Routine[];

@@ -1,13 +1,15 @@
 import { type WeightRecord } from "@/types/routine";
 import {
-  calculateWeightChange,
   formatWeightChange,
-  formatWeightDate,
   formatWeightHistoryNote,
   getWeightChangeClassName,
   WEIGHT_HISTORY_DELETE_ARIA_LABEL,
   WEIGHT_HISTORY_TODAY_BADGE,
-} from "../helpers";
+} from "../weightHistoryPresentation";
+import {
+  calculateWeightChange,
+  formatWeightDate,
+} from "../weightRecordQueries";
 
 type WeightTrackerHistoryItemProps = {
   record: WeightRecord;

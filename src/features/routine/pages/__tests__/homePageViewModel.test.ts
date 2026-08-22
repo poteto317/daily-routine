@@ -1,4 +1,4 @@
-import { createHomePageViewModel } from "../helpers";
+import { createHomePageViewModel } from "../homePageViewModel";
 import { type HomePageData } from "../homeTypes";
 
 describe("createHomePageViewModel", () => {

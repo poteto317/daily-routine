@@ -1,5 +1,5 @@
 import { type ViewMode } from "../types";
-import { STATISTICS_MODE_OPTIONS } from "../../helpers";
+import { STATISTICS_MODE_OPTIONS } from "../../statisticsPagePresentation";
 
 type Props = {
   viewMode: ViewMode;

@@ -1,6 +1,9 @@
 import { useEffect } from "react";
 import type { DetailData } from "./matrixComputations";
-import { saveTestMatrixCategories, saveTestMatrixDetailData } from "./storage";
+import {
+  saveTestMatrixCategories,
+  saveTestMatrixDetailData,
+} from "./testMatrixLocalStorage";
 import type { TestCategory } from "./types";
 
 type UseTestMatrixPersistenceParams = {

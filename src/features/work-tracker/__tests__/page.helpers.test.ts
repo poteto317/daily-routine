@@ -1,19 +1,27 @@
 import {
-  EMPTY_TEMPLATE_STATS,
-  formatNewWorkNameLabel,
   formatWorkSessionStatsSummary,
   formatWorkSessionTimeRange,
-  getFilteredTemplates,
-  getSessionCountLabel,
   getSessionHistoryMeta,
+} from "../page/sessionHistoryPresentation";
+import {
+  EMPTY_TEMPLATE_STATS,
   getTemplateInsightCards,
+  getTrendMessage,
+} from "../page/templateInsightsPresentation";
+import {
+  formatNewWorkNameLabel,
   getTemplateStatsSummaryLabel,
+  shouldShowTemplateDropdown,
+} from "../page/templateInputPresentation";
+import { getFilteredTemplates } from "../page/templateSearch";
+import {
+  getSessionCountLabel,
+  getTotalTimeToday,
+} from "../page/todaySummaryPresentation";
+import {
   getTimerGradientClassName,
   getTimerStatusLabel,
-  getTotalTimeToday,
-  getTrendMessage,
-  shouldShowTemplateDropdown,
-} from "../page/helpers";
+} from "../page/timerPresentation";
 import {
   findMoodOption,
   isSessionImprovement,

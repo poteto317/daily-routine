@@ -6,7 +6,7 @@ jest.mock("../storage", () => ({
   getWeightHistory: jest.fn(() => ({})),
 }));
 
-jest.mock("../page/helpers", () => ({
+jest.mock("../page/weightRecordQueries", () => ({
   getRecentWeightRecords: jest.fn((history: Record<string, WeightRecord>) =>
     Object.values(history).sort((a, b) => b.date.localeCompare(a.date)),
   ),

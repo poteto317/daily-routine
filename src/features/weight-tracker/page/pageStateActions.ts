@@ -1,5 +1,5 @@
 import type { WeightHistory, WeightRecord } from "@/types/routine";
-import { getRecentWeightRecords } from "./helpers";
+import { getRecentWeightRecords } from "./weightRecordQueries";
 
 type WeightPageData = {
   todayRecord: WeightRecord | null;

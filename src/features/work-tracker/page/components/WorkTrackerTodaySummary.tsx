@@ -1,5 +1,5 @@
 import { formatTimerLong } from "@/lib/storage";
-import { getSessionCountLabel } from "../helpers";
+import { getSessionCountLabel } from "../todaySummaryPresentation";
 import workTrackerTexts from "../../locales/ja.json";
 
 type Props = {

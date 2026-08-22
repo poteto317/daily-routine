@@ -5,7 +5,7 @@ import { ProgressBar } from "@/components";
 import { TrainDelayNotification } from "@/components/TrainDelayNotification";
 import { DaySelector } from "./DaySelector";
 import { CategoryFilter } from "./CategoryFilter";
-import { HOME_TOOLBAR_TEXT } from "./helpers";
+import { HOME_TOOLBAR_TEXT } from "./homeToolbarPresentation";
 import type { HomeToolbarProps } from "./homeTypes";
 
 /** ホーム画面のツールバー（日付・追加ボタン・遅延通知・フィルター・進捗） */

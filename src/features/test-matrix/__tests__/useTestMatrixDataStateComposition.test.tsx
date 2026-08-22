@@ -12,7 +12,7 @@ jest.mock("../useTestMatrixPersistence", () => ({
   useTestMatrixPersistence: jest.fn(),
 }));
 
-jest.mock("../storage", () => ({
+jest.mock("../testMatrixLocalStorage", () => ({
   getStoredTestMatrixCategories: jest.fn(),
   getStoredTestMatrixDetailData: jest.fn(),
 }));
@@ -21,7 +21,7 @@ import { createTestMatrixDataStateResult } from "../testMatrixDataStateResult";
 import {
   getStoredTestMatrixCategories,
   getStoredTestMatrixDetailData,
-} from "../storage";
+} from "../testMatrixLocalStorage";
 import { useTestMatrixDataActions } from "../useTestMatrixDataActions";
 import { useTestMatrixDataState } from "../useTestMatrixDataState";
 import { useTestMatrixPersistence } from "../useTestMatrixPersistence";

@@ -6,7 +6,7 @@ import {
   getDayButtonClassName,
   isApplyButtonDisabled,
   PRESET_APPLY_LABEL,
-} from "../helpers";
+} from "../presetCardPresentation";
 
 type Props = {
   preset: RoutinePreset;

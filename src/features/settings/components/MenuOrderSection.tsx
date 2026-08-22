@@ -3,10 +3,8 @@
 import { useState } from "react";
 import { menuConfig } from "@/config";
 import { getTodoLists } from "@/features/todo-lists/storage";
-import {
-  sortByMenuOrder,
-  toTodoListMenuItemId,
-} from "@/hooks/headerMenuItemHelpers";
+import { toTodoListMenuItemId } from "@/hooks/dynamicTodoMenuItems";
+import { sortByMenuOrder } from "@/hooks/headerMenuOrder";
 import texts from "../locales/ja.json";
 
 /** ハンバーガーメニューで並び替え可能な機能項目の ID セット */

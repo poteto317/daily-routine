@@ -5,7 +5,7 @@ import {
   createPresetStartEditHandler,
 } from "../presetEditActions";
 
-jest.mock("../presetManagerStateActions", () => ({
+jest.mock("../presetEditStateActions", () => ({
   cancelPresetEdit: jest.fn(),
   savePresetEditAndReload: jest.fn(),
   startPresetEdit: jest.fn(),
@@ -15,7 +15,7 @@ import {
   cancelPresetEdit,
   savePresetEditAndReload,
   startPresetEdit,
-} from "../presetManagerStateActions";
+} from "../presetEditStateActions";
 
 const currentRoutines = [
   {

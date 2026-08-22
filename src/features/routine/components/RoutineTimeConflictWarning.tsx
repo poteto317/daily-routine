@@ -2,7 +2,7 @@ import type { RoutineConflictInfo } from "./routineFormViewTypes";
 import {
   formatConflictRoutineLabel,
   ROUTINE_FORM_CONFLICT_TITLE,
-} from "./helpers";
+} from "./routineFormTimePresentation";
 
 type RoutineTimeConflictWarningProps = {
   conflictInfo: RoutineConflictInfo;

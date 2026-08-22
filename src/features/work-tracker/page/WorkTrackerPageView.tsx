@@ -6,7 +6,7 @@ import { WorkTrackerSessionForm } from "./components/WorkTrackerSessionForm";
 import { WorkTrackerSessionHistory } from "./components/WorkTrackerSessionHistory";
 import { WorkTrackerTimerPanel } from "./components/WorkTrackerTimerPanel";
 import { WorkTrackerTodaySummary } from "./components/WorkTrackerTodaySummary";
-import { getTotalTimeToday } from "./helpers";
+import { getTotalTimeToday } from "./todaySummaryPresentation";
 import { useWorkTrackerPageState } from "./useWorkTrackerPageState";
 
 export const WorkTrackerPage = () => {

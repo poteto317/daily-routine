@@ -5,7 +5,7 @@ import {
   DAYS,
   DAY_SELECTOR_TEXT,
   getDaySelectorButtonClassName,
-} from "./helpers";
+} from "./daySelectorPresentation";
 
 /**
  * 曜日切り替えコンポーネント

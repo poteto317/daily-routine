@@ -1,6 +1,6 @@
 import { ROUTINE_CATEGORIES } from "@/types/routine";
 import { type CategoryStats } from "../../statistics/types";
-import { formatCategoryCompletionLabel } from "../../helpers";
+import { formatCategoryCompletionLabel } from "../../statisticsChartPresentation";
 
 type Props = { categoryStats: CategoryStats[] };
 

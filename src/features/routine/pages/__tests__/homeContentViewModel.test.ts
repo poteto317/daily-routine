@@ -1,5 +1,5 @@
 import { HOLIDAY_DAY_VALUE } from "@/types/routine";
-import { createHomeContentViewModel } from "../helpers";
+import { createHomeContentViewModel } from "../homeContentViewModel";
 import { createData } from "./homeContentViewModel.test.setup";
 
 describe("createHomeContentViewModel", () => {

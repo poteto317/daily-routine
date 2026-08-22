@@ -1,4 +1,4 @@
-import { ROUTINE_ITEM_ACTION_BUTTONS_TEXT } from "./helpers";
+import { ROUTINE_ITEM_ACTION_BUTTONS_TEXT } from "./routineItemPresentation";
 
 type RoutineItemActionButtonsProps = {
   onEditAction: () => void;

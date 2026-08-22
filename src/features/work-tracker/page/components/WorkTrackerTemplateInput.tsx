@@ -1,11 +1,11 @@
 import { type WorkTemplate } from "@/types/routine";
 import { formatTimerLong, getTemplateStats } from "@/lib/storage";
 import {
-  getFilteredTemplates,
   formatNewWorkNameLabel,
   getTemplateStatsSummaryLabel,
   shouldShowTemplateDropdown,
-} from "../helpers";
+} from "../templateInputPresentation";
+import { getFilteredTemplates } from "../templateSearch";
 import workTrackerTexts from "../../locales/ja.json";
 
 type Props = {

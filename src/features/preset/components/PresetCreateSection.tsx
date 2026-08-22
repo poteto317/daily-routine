@@ -3,8 +3,8 @@ import { DAY_LABELS } from "@/features/preset/presetConstants";
 import { groupRoutinesForSelection } from "../presetRoutineGrouping";
 import { PresetNameDescriptionFields } from "./PresetNameDescriptionFields";
 import { RoutineSelectionList } from "./RoutineSelectionList";
+import { getDayButtonClassName } from "../presetCardPresentation";
 import {
-  getDayButtonClassName,
   getPresetCreateToggleLabel,
   isPresetCreateDisabled,
   PRESET_CREATE_DESCRIPTION_PLACEHOLDER,
@@ -12,7 +12,7 @@ import {
   PRESET_CREATE_FILTER_DAYS_LABEL,
   PRESET_CREATE_NAME_PLACEHOLDER,
   PRESET_CREATE_SUBMIT_LABEL,
-} from "../helpers";
+} from "../presetCreatePresentation";
 
 interface PresetCreateSectionProps {
   currentRoutines: Routine[];

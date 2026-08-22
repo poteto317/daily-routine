@@ -1,8 +1,8 @@
-import type { HeaderMenuItem } from "@/hooks/headerMenuItemHelpers";
+import type { HeaderMenuItem } from "@/hooks/headerMenuItemTypes";
 import { getHeaderMenuItemData } from "@/hooks/headerMenuItemData";
 import { createHeaderMenuItems } from "@/hooks/headerMenuItemsBuilder";
 
-export type { HeaderMenuItem } from "@/hooks/headerMenuItemHelpers";
+export type { HeaderMenuItem } from "@/hooks/headerMenuItemTypes";
 
 export type UseHeaderMenuItemsResult = HeaderMenuItem[];
 

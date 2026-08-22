@@ -1,6 +1,6 @@
 import type { Dispatch, SetStateAction } from "react";
 import type { RoutinePreset } from "@/types/routine";
-import { duplicatePresetAndReload } from "./presetManagerStateActions";
+import { duplicatePresetAndReload } from "./presetCrudStateActions";
 
 type DuplicatePresetHandlerArgs = {
   presets: RoutinePreset[];

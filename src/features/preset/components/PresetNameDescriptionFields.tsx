@@ -1,7 +1,7 @@
 import {
   PRESET_FIELD_DESCRIPTION_LABEL,
   PRESET_FIELD_NAME_LABEL,
-} from "../helpers";
+} from "../presetFieldPresentation";
 
 type PresetNameDescriptionFieldsProps = {
   name: string;

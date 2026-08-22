@@ -1,6 +1,6 @@
 import { act, renderHook } from "@testing-library/react";
 
-jest.mock("../storage", () => ({
+jest.mock("../testMatrixLocalStorage", () => ({
   getStoredTestMatrixCategories: jest.fn(),
   getStoredTestMatrixDetailData: jest.fn(),
   saveTestMatrixCategories: jest.fn(),
@@ -30,7 +30,7 @@ import {
   getStoredTestMatrixDetailData,
   saveTestMatrixCategories,
   saveTestMatrixDetailData,
-} from "../storage";
+} from "../testMatrixLocalStorage";
 import { useTestMatrixDataState } from "../useTestMatrixDataState";
 
 const mockGetStoredTestMatrixCategories =

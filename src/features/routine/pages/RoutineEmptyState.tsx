@@ -4,7 +4,7 @@ import {
   ROUTINE_EMPTY_STATE_TEXT,
   getAddButtonLabel,
   getEmptyMessage,
-} from "./helpers";
+} from "./routineEmptyStatePresentation";
 
 interface RoutineEmptyStateProps {
   allRoutinesCount: number;

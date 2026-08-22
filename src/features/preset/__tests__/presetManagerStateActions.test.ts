@@ -20,17 +20,22 @@ import {
   updatePreset,
 } from "@/features/preset/storage";
 import {
-  applyPresetSelection,
-  cancelPresetEdit,
   createPresetAndReload,
   deletePresetAndReload,
   duplicatePresetAndReload,
   loadPresetList,
-  resolveCreateFilterSelection,
+} from "../presetCrudStateActions";
+import { applyPresetSelection } from "../presetApplyStateActions";
+import {
+  cancelPresetEdit,
   savePresetEditAndReload,
   startPresetEdit,
+} from "../presetEditStateActions";
+import {
+  resolveCreateFilterSelection,
   togglePresetSelection,
-} from "../presetManagerStateActions";
+} from "../presetSelectionStateActions";
+import * as legacyStateActions from "../presetManagerStateActions";
 
 const currentRoutines: Routine[] = [
   {
@@ -73,6 +78,23 @@ describe("presetManagerStateActions", () => {
         isCompleted: false,
       },
     ]);
+  });
+
+  it("旧moduleから分割後のaction APIを再公開する", () => {
+    expect(Object.keys(legacyStateActions).sort()).toEqual(
+      [
+        "applyPresetSelection",
+        "cancelPresetEdit",
+        "createPresetAndReload",
+        "deletePresetAndReload",
+        "duplicatePresetAndReload",
+        "loadPresetList",
+        "resolveCreateFilterSelection",
+        "savePresetEditAndReload",
+        "startPresetEdit",
+        "togglePresetSelection",
+      ].sort(),
+    );
   });
 
   it("一覧読み込みと選択切替を行う", () => {
@@ -307,7 +329,12 @@ describe("presetManagerStateActions", () => {
       ...preset,
       routineTemplates: [
         { title: "朝食", startTime: "07:00", duration: 30, category: "life" },
-        { title: "英語学習", startTime: "08:00", duration: 30, category: "life" },
+        {
+          title: "英語学習",
+          startTime: "08:00",
+          duration: 30,
+          category: "life",
+        },
       ],
     };
 
@@ -399,8 +426,7 @@ describe("presetManagerStateActions", () => {
       alertFn: jest.fn(),
     });
 
-    const saved = (updatePreset as jest.Mock).mock
-      .calls[0][0] as RoutinePreset;
+    const saved = (updatePreset as jest.Mock).mock.calls[0][0] as RoutinePreset;
     expect(saved.routineTemplates).toHaveLength(1);
     expect(saved.routineTemplates[0]).toMatchObject({
       title: "朝食",

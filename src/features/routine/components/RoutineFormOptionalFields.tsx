@@ -12,7 +12,7 @@ import {
   ROUTINE_FORM_WEEKLY_GOAL_HINT,
   ROUTINE_FORM_WEEKLY_GOAL_LABEL,
   ROUTINE_FORM_WEEKLY_GOAL_PLACEHOLDER,
-} from "./helpers";
+} from "./routineFormOptionalPresentation";
 
 type RoutineFormOptionalFieldsProps = {
   description: string;

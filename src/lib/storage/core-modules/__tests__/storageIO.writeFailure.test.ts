@@ -2,14 +2,35 @@ import {
   getStorageItem,
   removeStorageItem,
   removeUnscopedStorageItem,
-  setLocalDataUpdatedAt,
   setStorageItem,
   setUnscopedStorageItem,
-} from "../storageIO";
+} from "../storageItems";
+import { setLocalDataUpdatedAt } from "../localDataUpdatedAt";
 import {
   STORAGE_WRITE_FAILED_EVENT,
   type StorageWriteFailureDetail,
 } from "../storageWriteFailureEvent";
+import * as storageIO from "../storageIO";
+
+describe("storageIO compatibility", () => {
+  it("分割後の公開APIを旧moduleから再公開する", () => {
+    expect(Object.keys(storageIO).sort()).toEqual(
+      [
+        "LOCAL_DATA_UPDATED_AT_EVENT",
+        "getLocalDataUpdatedAt",
+        "getRawUnscopedStorageItem",
+        "getStorageItem",
+        "getUnscopedStorageItem",
+        "removeStorageItem",
+        "removeUnscopedStorageItem",
+        "setLocalDataUpdatedAt",
+        "setStorageItem",
+        "setUnscopedStorageItem",
+        "withSyncBatch",
+      ].sort(),
+    );
+  });
+});
 
 /** 発火された detail を集めるリスナーを張る */
 const listenFailures = () => {

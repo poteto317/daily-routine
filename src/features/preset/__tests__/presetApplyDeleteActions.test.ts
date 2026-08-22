@@ -3,15 +3,15 @@ import {
   createPresetDeleteHandler,
 } from "../presetApplyDeleteActions";
 
-jest.mock("../presetManagerStateActions", () => ({
+jest.mock("../presetApplyStateActions", () => ({
   applyPresetSelection: jest.fn(),
+}));
+jest.mock("../presetCrudStateActions", () => ({
   deletePresetAndReload: jest.fn(),
 }));
 
-import {
-  applyPresetSelection,
-  deletePresetAndReload,
-} from "../presetManagerStateActions";
+import { applyPresetSelection } from "../presetApplyStateActions";
+import { deletePresetAndReload } from "../presetCrudStateActions";
 
 const preset = {
   id: "p1",

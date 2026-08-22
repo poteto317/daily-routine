@@ -2,7 +2,7 @@ import {
   ROUTINE_FORM_HEADER_TEXT,
   ROUTINE_FORM_TITLE_ID,
   getRoutineFormHeaderTitle,
-} from "./helpers";
+} from "./routineFormHeaderPresentation";
 
 type RoutineFormHeaderProps = {
   isEditMode: boolean;

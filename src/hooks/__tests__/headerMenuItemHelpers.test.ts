@@ -1,10 +1,7 @@
-import {
-  buildDynamicTodoMenuItems,
-  filterStaticHeaderMenuItems,
-  orderHeaderMenuItems,
-  sortByMenuOrder,
-  type HeaderMenuItem,
-} from "@/hooks/headerMenuItemHelpers";
+import { buildDynamicTodoMenuItems } from "@/hooks/dynamicTodoMenuItems";
+import { orderHeaderMenuItems, sortByMenuOrder } from "@/hooks/headerMenuOrder";
+import type { HeaderMenuItem } from "@/hooks/headerMenuItemTypes";
+import { filterStaticHeaderMenuItems } from "@/hooks/staticHeaderMenuItems";
 
 const baseVisibleFeatures = {
   journal: true,

@@ -9,7 +9,7 @@ import {
   createRoutineItemHandlers,
   getRoutineItemCardClassName,
 } from "./routineItemModel";
-import { shouldUseSwipeOnlyRoutineItem } from "./helpers";
+import { shouldUseSwipeOnlyRoutineItem } from "./routineItemPresentation";
 
 interface SortableRoutineItemProps {
   routine: Routine;

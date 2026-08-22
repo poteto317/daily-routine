@@ -8,7 +8,7 @@ import {
   EMPTY_TEMPLATE_STATS,
   getTemplateInsightCards,
   getTrendMessage,
-} from "../helpers";
+} from "../templateInsightsPresentation";
 import workTrackerTexts from "../../locales/ja.json";
 
 type Props = {

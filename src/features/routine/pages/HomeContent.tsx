@@ -3,7 +3,7 @@
 import { RoutineForm } from "@/features/routine";
 import { RoutineList } from "./RoutineList";
 import { HomeToolbar } from "./HomeToolbar";
-import type { HomeContentViewModel as HomeContentProps } from "./helpers";
+import type { HomeContentViewModel as HomeContentProps } from "./homeContentViewModel";
 
 /** ホーム画面のメインコンテンツ */
 export const HomeContent = ({

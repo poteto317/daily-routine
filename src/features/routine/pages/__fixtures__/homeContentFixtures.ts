@@ -1,4 +1,4 @@
-import type { HomeContentViewModel } from "../helpers";
+import type { HomeContentViewModel } from "../homeContentViewModel";
 import { fn } from "storybook/test";
 import { baseDisplay, createBaseView } from "./homeStoryFixtures";
 import { sampleRoutines } from "./routineFixtures";

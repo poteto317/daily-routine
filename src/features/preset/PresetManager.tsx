@@ -9,7 +9,7 @@ import { type Routine } from "@/types/routine";
 import { PresetCreateSection } from "./components/PresetCreateSection";
 import { PresetListSection } from "./components/PresetListSection";
 import { usePresetManagerState } from "./usePresetManagerState";
-import { PRESET_MANAGER_TEXT } from "./helpers";
+import { PRESET_MANAGER_TEXT } from "./presetManagerPresentation";
 
 interface PresetManagerProps {
   currentRoutines: Routine[];

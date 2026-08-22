@@ -8,7 +8,7 @@ import {
   getNotificationLabel,
   getRoutineTitleClassName,
   getWeeklyGoalLabel,
-} from "./helpers";
+} from "./routineCardPresentation";
 
 interface RoutineCardContentProps {
   routine: Routine;

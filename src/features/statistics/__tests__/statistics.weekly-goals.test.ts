@@ -11,10 +11,7 @@ const goal = (
   startedAt = "2026-08-03T00:00:00+09:00",
 ): WeeklyGoal => ({ targetPerWeek, startedAt });
 
-const routine = (
-  id: string,
-  weeklyGoal: WeeklyGoal = goal(2),
-): Routine => ({
+const routine = (id: string, weeklyGoal: WeeklyGoal = goal(2)): Routine => ({
   id,
   groupId: "exercise",
   weeklyGoal,
@@ -321,5 +318,74 @@ describe("calculateWeeklyGoalProgress", () => {
       longestStreak: 2,
     });
     expect(traversalCount).toBe(1);
+  });
+
+  it("将来週を選んでもストリークは今日の週までで計算する", () => {
+    const result = calculateWeeklyGoalProgress({
+      selectedDate: new Date("2026-09-07T12:00:00+09:00"),
+      today: new Date("2026-08-19T12:00:00+09:00"),
+      routines,
+      history: history(
+        historyEntry("2026-08-03", ["exercise-mon"]),
+        historyEntry("2026-08-05", ["exercise-wed"]),
+        historyEntry("2026-08-10", ["exercise-mon"]),
+        historyEntry("2026-08-12", ["exercise-wed"]),
+        historyEntry("2026-08-17", ["exercise-mon"]),
+        historyEntry("2026-08-19", ["exercise-wed"]),
+      ),
+    });
+
+    expect(result[0]).toMatchObject({
+      completedCount: 0,
+      currentStreak: 3,
+      longestStreak: 3,
+    });
+  });
+
+  it("同名の目標はgoalIdで安定して並べる", () => {
+    const sameTitleRoutines = [
+      { ...routine("z-item"), groupId: "z-goal", title: "同名" },
+      { ...routine("a-item"), groupId: "a-goal", title: "同名" },
+    ];
+
+    const result = calculateWeeklyGoalProgress({
+      selectedDate: new Date("2026-08-19T12:00:00+09:00"),
+      today: new Date("2026-08-19T12:00:00+09:00"),
+      routines: sameTitleRoutines,
+      history: {},
+    });
+
+    expect(result.map(({ goalId }) => goalId)).toEqual(["a-goal", "z-goal"]);
+  });
+
+  it("過去週の同一目標は週内で最後のsnapshot定義を使う", () => {
+    const firstDefinition = {
+      ...routine("exercise-mon", goal(1)),
+      title: "変更前",
+    };
+    const lastDefinition = {
+      ...routine("exercise-wed", goal(3)),
+      title: "変更後",
+    };
+
+    const result = calculateWeeklyGoalProgress({
+      selectedDate: new Date("2026-08-05T12:00:00+09:00"),
+      today: new Date("2026-08-24T12:00:00+09:00"),
+      routines: [],
+      history: history(
+        historyEntry("2026-08-03", [], {
+          sourceRoutines: [firstDefinition],
+        }),
+        historyEntry("2026-08-05", [], {
+          sourceRoutines: [lastDefinition],
+        }),
+      ),
+    });
+
+    expect(result[0]).toMatchObject({
+      goalId: "exercise",
+      title: "変更後",
+      targetPerWeek: 3,
+    });
   });
 });

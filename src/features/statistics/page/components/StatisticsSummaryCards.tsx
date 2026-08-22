@@ -9,7 +9,7 @@ import {
   getCategorySummaryLabel,
   getMonthlySummaryCards,
   getWeeklySummaryCards,
-} from "../../helpers";
+} from "../../statisticsSummaryPresentation";
 
 type Props = {
   viewMode: ViewMode;

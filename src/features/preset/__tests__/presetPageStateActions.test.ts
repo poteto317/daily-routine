@@ -11,27 +11,37 @@ import {
   createPresetStartEditHandler,
 } from "../presetPageStateActions";
 
-jest.mock("../presetManagerStateActions", () => ({
+jest.mock("../presetApplyStateActions", () => ({
   applyPresetSelection: jest.fn(),
-  cancelPresetEdit: jest.fn(),
+}));
+jest.mock("../presetCrudStateActions", () => ({
   createPresetAndReload: jest.fn(),
   deletePresetAndReload: jest.fn(),
-  resolveCreateFilterSelection: jest.fn(),
+}));
+jest.mock("../presetEditStateActions", () => ({
+  cancelPresetEdit: jest.fn(),
   savePresetEditAndReload: jest.fn(),
   startPresetEdit: jest.fn(),
+}));
+jest.mock("../presetSelectionStateActions", () => ({
+  resolveCreateFilterSelection: jest.fn(),
   togglePresetSelection: jest.fn(),
 }));
 
+import { applyPresetSelection } from "../presetApplyStateActions";
 import {
-  applyPresetSelection,
-  cancelPresetEdit,
   createPresetAndReload,
   deletePresetAndReload,
-  resolveCreateFilterSelection,
+} from "../presetCrudStateActions";
+import {
+  cancelPresetEdit,
   savePresetEditAndReload,
   startPresetEdit,
+} from "../presetEditStateActions";
+import {
+  resolveCreateFilterSelection,
   togglePresetSelection,
-} from "../presetManagerStateActions";
+} from "../presetSelectionStateActions";
 
 const currentRoutines = [
   {

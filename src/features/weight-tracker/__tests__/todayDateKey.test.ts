@@ -1,4 +1,4 @@
-import { getTodayDateKey } from "../page/helpers";
+import { getTodayDateKey } from "../page/weightRecordQueries";
 import {
   getTodayWeightRecord,
   getWeightHistory,

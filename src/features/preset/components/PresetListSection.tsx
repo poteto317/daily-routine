@@ -1,6 +1,6 @@
 import { type Routine, type RoutinePreset } from "@/types/routine";
 import { PresetCard } from "./PresetCard";
-import { PRESET_LIST_SECTION_TEXT } from "../helpers";
+import { PRESET_LIST_SECTION_TEXT } from "../presetListPresentation";
 
 interface PresetListSectionProps {
   presets: RoutinePreset[];

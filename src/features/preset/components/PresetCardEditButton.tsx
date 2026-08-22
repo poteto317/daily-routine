@@ -1,4 +1,4 @@
-import { PRESET_EDIT_LABEL } from "../helpers";
+import { PRESET_EDIT_LABEL } from "../presetCardPresentation";
 
 type Props = {
   onClick: () => void;

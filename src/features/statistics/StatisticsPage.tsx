@@ -8,11 +8,11 @@ import { StatisticsModeSelector } from "./page/components/StatisticsModeSelector
 import { StatisticsPeriodControls } from "./page/components/StatisticsPeriodControls";
 import { StatisticsSummaryCards } from "./page/components/StatisticsSummaryCards";
 import { WeeklyGoalsPanel } from "./page/components/WeeklyGoalsPanel";
+import { getStatisticsPeriodLabel } from "./statisticsPeriodPresentation";
 import {
-  getStatisticsPeriodLabel,
   STATISTICS_PAGE_DESCRIPTION,
   STATISTICS_PAGE_TITLE,
-} from "./helpers";
+} from "./statisticsPagePresentation";
 import { useStatisticsChartData } from "./page/useStatisticsChartData";
 import { useStatisticsPageState } from "./page/useStatisticsPageState";
 

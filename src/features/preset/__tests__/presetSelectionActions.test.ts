@@ -4,7 +4,7 @@ import {
   createPresetSelectionToggleHandler,
 } from "../presetSelectionActions";
 
-jest.mock("../presetManagerStateActions", () => ({
+jest.mock("../presetSelectionStateActions", () => ({
   resolveCreateFilterSelection: jest.fn(),
   togglePresetSelection: jest.fn(),
 }));
@@ -12,7 +12,7 @@ jest.mock("../presetManagerStateActions", () => ({
 import {
   resolveCreateFilterSelection,
   togglePresetSelection,
-} from "../presetManagerStateActions";
+} from "../presetSelectionStateActions";
 
 const currentRoutines = [
   {

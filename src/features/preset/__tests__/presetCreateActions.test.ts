@@ -1,10 +1,10 @@
 import { createPresetCreateHandler } from "../presetCreateActions";
 
-jest.mock("../presetManagerStateActions", () => ({
+jest.mock("../presetCrudStateActions", () => ({
   createPresetAndReload: jest.fn(),
 }));
 
-import { createPresetAndReload } from "../presetManagerStateActions";
+import { createPresetAndReload } from "../presetCrudStateActions";
 
 const currentRoutines = [
   {

@@ -1,9 +1,7 @@
 import type { Dispatch, SetStateAction } from "react";
 import type { Routine, RoutinePreset } from "@/types/routine";
-import {
-  applyPresetSelection,
-  deletePresetAndReload,
-} from "./presetManagerStateActions";
+import { applyPresetSelection } from "./presetApplyStateActions";
+import { deletePresetAndReload } from "./presetCrudStateActions";
 
 type UsePresetManagerStateParams = {
   onApplyPreset: (

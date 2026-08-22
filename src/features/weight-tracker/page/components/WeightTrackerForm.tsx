@@ -5,7 +5,7 @@ import {
   WEIGHT_FORM_SAVE_LABEL,
   WEIGHT_FORM_WEIGHT_LABEL,
   WEIGHT_FORM_WEIGHT_PLACEHOLDER,
-} from "../helpers";
+} from "../weightFormPresentation";
 
 type WeightTrackerFormProps = {
   weightInput: string;

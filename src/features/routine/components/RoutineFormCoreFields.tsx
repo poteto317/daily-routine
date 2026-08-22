@@ -11,7 +11,7 @@ import {
   ROUTINE_FORM_DAYS_WARNING_LABEL,
   ROUTINE_FORM_TITLE_LABEL,
   ROUTINE_FORM_TITLE_PLACEHOLDER,
-} from "./helpers";
+} from "./routineFormCorePresentation";
 
 const DAYS = uiTextConfig.days;
 

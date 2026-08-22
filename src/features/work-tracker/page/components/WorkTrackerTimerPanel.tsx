@@ -1,5 +1,8 @@
 import { formatTimerLong } from "@/lib/storage";
-import { getTimerGradientClassName, getTimerStatusLabel } from "../helpers";
+import {
+  getTimerGradientClassName,
+  getTimerStatusLabel,
+} from "../timerPresentation";
 import workTrackerTexts from "../../locales/ja.json";
 
 type Props = {

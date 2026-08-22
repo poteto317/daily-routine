@@ -3,7 +3,7 @@ import type { Routine } from "@/types/routine";
 import {
   resolveCreateFilterSelection,
   togglePresetSelection,
-} from "./presetManagerStateActions";
+} from "./presetSelectionStateActions";
 
 type CreateFilterHandlerArgs = {
   currentRoutines: Routine[];

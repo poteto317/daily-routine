@@ -4,7 +4,7 @@ import { ROUTINE_CATEGORIES } from "@/types/routine";
 import {
   CATEGORY_FILTER_TEXT,
   getCategoryFilterButtonClassName,
-} from "./helpers";
+} from "./categoryFilterPresentation";
 import type { HomeCategoryFilterProps as CategoryFilterProps } from "./homeTypes";
 
 /**

@@ -8,7 +8,10 @@ import {
   createRoutineItemHandlers,
   getRoutineItemCardClassName,
 } from "./routineItemModel";
-import { ROUTINE_ITEM_DELETE_LABEL, ROUTINE_ITEM_EDIT_LABEL } from "./helpers";
+import {
+  ROUTINE_ITEM_DELETE_LABEL,
+  ROUTINE_ITEM_EDIT_LABEL,
+} from "./routineItemPresentation";
 
 interface RoutineItemProps {
   routine: Routine;

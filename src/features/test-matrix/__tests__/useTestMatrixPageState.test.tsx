@@ -1,12 +1,5 @@
 import { act, renderHook } from "@testing-library/react";
 
-jest.mock("../storage", () => ({
-  getStoredTestMatrixCategories: jest.fn(),
-  getStoredTestMatrixDetailData: jest.fn(),
-  saveTestMatrixCategories: jest.fn(),
-  saveTestMatrixDetailData: jest.fn(),
-}));
-
 jest.mock("../testMatrixViewActions", () => ({
   createCollapseAllState: jest.fn(),
   toggleCollapsedCategoryId: jest.fn(),

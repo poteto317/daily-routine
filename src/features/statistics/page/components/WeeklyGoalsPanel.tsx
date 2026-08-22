@@ -1,4 +1,4 @@
-import { STATISTICS_WEEKLY_GOALS_TEXT } from "../../helpers";
+import { STATISTICS_WEEKLY_GOALS_TEXT } from "../../weeklyGoalsPresentation";
 import type { WeeklyGoalProgress } from "../../statistics/types";
 
 type WeeklyGoalsPanelProps = {
@@ -10,8 +10,7 @@ const formatTemplate = (
   values: Record<string, string | number>,
 ): string =>
   Object.entries(values).reduce(
-    (result, [key, value]) =>
-      result.replace(`{${key}}`, String(value)),
+    (result, [key, value]) => result.replace(`{${key}}`, String(value)),
     template,
   );
 

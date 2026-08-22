@@ -3,7 +3,7 @@ import type { DetailData } from "./matrixComputations";
 import {
   getStoredTestMatrixCategories,
   getStoredTestMatrixDetailData,
-} from "./storage";
+} from "./testMatrixLocalStorage";
 import type { TestCategory } from "./types";
 import { createTestMatrixDataStateResult } from "./testMatrixDataStateResult";
 import { useTestMatrixDataActions } from "./useTestMatrixDataActions";
