@@ -1,0 +1,53 @@
+import type { ComponentType } from "react";
+import type { PageType } from "./types";
+import {
+  AccountAdminPage,
+  AchievementCalendar,
+  BudgetAllowanceSettingsPage,
+  BudgetCategoryManagementPage,
+  BudgetPage,
+  BudgetSummaryPage,
+  BugReportPage,
+  JournalPage,
+  MealPage,
+  PomodoroPage,
+  PresetPage,
+  SettingsPage,
+  StatisticsPage,
+  SyncManagementPage,
+  TestMatrixPage,
+  TodoCategoryManagementPage,
+  TodoListManagementPage,
+  TodoListsPage,
+  WeatherPage,
+  WeightTrackerPage,
+  WorkoutTrackerPage,
+  WorkTrackerPage,
+} from "./lazyPageComponents";
+
+type FeaturePageType = Exclude<PageType, "home">;
+
+export const PAGE_COMPONENTS = {
+  settings: SettingsPage,
+  calendar: AchievementCalendar,
+  statistics: StatisticsPage,
+  pomodoro: PomodoroPage,
+  worktracker: WorkTrackerPage,
+  journal: JournalPage,
+  "weight-tracker": WeightTrackerPage,
+  "workout-tracker": WorkoutTrackerPage,
+  meal: MealPage,
+  budget: BudgetPage,
+  "budget-category-management": BudgetCategoryManagementPage,
+  "budget-allowance-settings": BudgetAllowanceSettingsPage,
+  "budget-summary": BudgetSummaryPage,
+  weather: WeatherPage,
+  preset: PresetPage,
+  "todo-lists": TodoListsPage,
+  "todo-list-management": TodoListManagementPage,
+  "todo-category-management": TodoCategoryManagementPage,
+  "sync-management": SyncManagementPage,
+  "test-matrix": TestMatrixPage,
+  "account-admin": AccountAdminPage,
+  "bug-report": BugReportPage,
+} satisfies Record<FeaturePageType, ComponentType>;

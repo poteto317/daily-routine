@@ -7,9 +7,9 @@ import type { AuthContextType } from "@/features/auth/context/types";
 
 // PageLayout は内部の Header が useAuth() を呼び出すため AuthContext.Provider が必要。
 //
-// currentPage が PAGE_COMPONENTS に含まれない "home" を指定した場合は
-// children がそのまま描画される（ページコンポーネントの複雑な hooks を避けられる）。
-// currentPage が PAGE_COMPONENTS に含まれる場合はそのページコンポーネントが描画される。
+// currentPage に "home" を指定した場合は children がそのまま描画される
+//（ページコンポーネントの複雑な hooks を避けられる）。
+// 機能ページを指定した場合は resolver が解決したページ内容が描画される。
 
 const mockUser = {
   isAnonymous: false,

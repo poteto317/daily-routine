@@ -2,8 +2,9 @@
 
 import { Header } from "@/layouts";
 import { type PageType } from "./types";
-import { PAGE_COMPONENTS } from "./pageComponentResolver";
+import { resolvePageContent } from "./pageComponentResolver";
 import { NavigationContextProvider } from "./NavigationContext";
+import { PageLoadErrorBoundary } from "./PageLoadErrorBoundary";
 
 export interface PageLayoutProps {
   currentPage: PageType;
@@ -24,7 +25,7 @@ export const PageLayout = ({
   onToggleEditModeAction,
   children,
 }: PageLayoutProps) => {
-  const PageComponent = PAGE_COMPONENTS[currentPage];
+  const pageContent = resolvePageContent(currentPage);
 
   return (
     <>
@@ -34,10 +35,15 @@ export const PageLayout = ({
         isEditMode={isEditMode}
         onToggleEditModeAction={onToggleEditModeAction}
       />
-      {PageComponent ? (
-        <NavigationContextProvider value={onNavigateAction}>
-          <PageComponent />
-        </NavigationContextProvider>
+      {pageContent ? (
+        <PageLoadErrorBoundary
+          key={currentPage}
+          onNavigateHomeAction={() => onNavigateAction("home")}
+        >
+          <NavigationContextProvider value={onNavigateAction}>
+            {pageContent}
+          </NavigationContextProvider>
+        </PageLoadErrorBoundary>
       ) : (
         children
       )}
