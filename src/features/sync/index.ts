@@ -12,7 +12,6 @@ export {
   refreshSyncStatusFromStoredRemote,
   syncLatestData,
 } from "./sync";
-export { SyncManagementPage } from "./SyncManagementPage";
 export type {
   SyncData,
   SyncStatus,
