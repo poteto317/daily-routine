@@ -18,10 +18,7 @@ const createRoutine = (overrides: Partial<Routine> = {}): Routine => ({
   ...overrides,
 });
 
-const template = (
-  title: string,
-  startTime: string,
-): RoutineTemplate => ({
+const template = (title: string, startTime: string): RoutineTemplate => ({
   title,
   startTime,
   duration: 30,

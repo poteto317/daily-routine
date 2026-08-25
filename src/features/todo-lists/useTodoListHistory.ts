@@ -29,17 +29,25 @@ export const useTodoListHistory = ({
   // render 中は current を読み書きせず、persist/undo/redo callbacks 内でのみ更新する。
   const historyRef = useRef(history);
 
-  const persist = useCallback((next: TodoList[]) => {
-    if (isNoOpPersist(historyRef.current.present, next)) return;
-    historyRef.current = todoListHistoryReducer(historyRef.current, { type: "PERSIST", payload: next });
-    dispatch({ type: "PERSIST", payload: next });
-    saveLists(next);
-  }, [saveLists]);
+  const persist = useCallback(
+    (next: TodoList[]) => {
+      if (isNoOpPersist(historyRef.current.present, next)) return;
+      historyRef.current = todoListHistoryReducer(historyRef.current, {
+        type: "PERSIST",
+        payload: next,
+      });
+      dispatch({ type: "PERSIST", payload: next });
+      saveLists(next);
+    },
+    [saveLists],
+  );
 
   const undo = useCallback(() => {
     const prev = getPrevState(historyRef.current);
     if (!prev) return;
-    historyRef.current = todoListHistoryReducer(historyRef.current, { type: "UNDO" });
+    historyRef.current = todoListHistoryReducer(historyRef.current, {
+      type: "UNDO",
+    });
     dispatch({ type: "UNDO" });
     saveLists(prev);
   }, [saveLists]);
@@ -47,7 +55,9 @@ export const useTodoListHistory = ({
   const redo = useCallback(() => {
     const next = getNextState(historyRef.current);
     if (!next) return;
-    historyRef.current = todoListHistoryReducer(historyRef.current, { type: "REDO" });
+    historyRef.current = todoListHistoryReducer(historyRef.current, {
+      type: "REDO",
+    });
     dispatch({ type: "REDO" });
     saveLists(next);
   }, [saveLists]);

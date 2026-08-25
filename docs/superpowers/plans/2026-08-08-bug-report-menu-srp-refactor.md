@@ -20,21 +20,21 @@
 
 main ブランチとの差分ファイル一覧と、SRP観点での判定:
 
-| ファイル | 種別 | 判定 |
-| --- | --- | --- |
-| `src/config/locales/ja.json` | 設定データ | 対象外（メニュー項目1件追加のみ） |
-| `src/features/bug-report/components/BugReportPage.tsx` | 新規ページ | 対象外（CardPanel+タイトル+フォームの単純な構成。状態管理は`useBugReportForm`に分離済み） |
-| `src/features/bug-report/components/BugReportSection.tsx` | 削除 | 対象外 |
-| `src/features/bug-report/index.ts` | export定義 | 対象外 |
-| `src/features/bug-report/__tests__/BugReportPage.test.tsx` | テスト | 対象外 |
-| `src/features/routine/pages/types.ts` | 型定義 | 対象外 |
-| `src/features/routine/pages/pageComponentResolver.ts` | ページ解決 | 対象外（1エントリ追加のみ、単一責任のマッピングを維持） |
-| `src/features/routine/pages/__tests__/pageComponentResolver.test.tsx` | テスト | 対象外 |
-| `src/features/settings/SettingsPage.tsx` | 設定画面 | 対象外（BugReportSectionの参照削除のみ、コーディネーターとしての単一責任は維持） |
-| `src/features/settings/__tests__/SettingsPage.features.test.tsx` | テスト | 対象外 |
-| `src/features/settings/components/MenuOrderSection.tsx` | 並び替えUI | 対象外（`REORDERABLE_MENU_IDS`への1件追加のみ。ファイル自体が複数責務を持つ既存の設計だが、今回の変更で新たに生じた問題ではないためスコープ外） |
-| `src/hooks/headerMenuItemHelpers.ts` | メニューヘルパー | **対象**（下記参照） |
-| `src/hooks/__tests__/headerMenuItemHelpers.test.ts` | テスト | 対象外（対象ファイルのテストとして拡充する） |
+| ファイル                                                              | 種別             | 判定                                                                                                                                            |
+| --------------------------------------------------------------------- | ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/config/locales/ja.json`                                          | 設定データ       | 対象外（メニュー項目1件追加のみ）                                                                                                               |
+| `src/features/bug-report/components/BugReportPage.tsx`                | 新規ページ       | 対象外（CardPanel+タイトル+フォームの単純な構成。状態管理は`useBugReportForm`に分離済み）                                                       |
+| `src/features/bug-report/components/BugReportSection.tsx`             | 削除             | 対象外                                                                                                                                          |
+| `src/features/bug-report/index.ts`                                    | export定義       | 対象外                                                                                                                                          |
+| `src/features/bug-report/__tests__/BugReportPage.test.tsx`            | テスト           | 対象外                                                                                                                                          |
+| `src/features/routine/pages/types.ts`                                 | 型定義           | 対象外                                                                                                                                          |
+| `src/features/routine/pages/pageComponentResolver.ts`                 | ページ解決       | 対象外（1エントリ追加のみ、単一責任のマッピングを維持）                                                                                         |
+| `src/features/routine/pages/__tests__/pageComponentResolver.test.tsx` | テスト           | 対象外                                                                                                                                          |
+| `src/features/settings/SettingsPage.tsx`                              | 設定画面         | 対象外（BugReportSectionの参照削除のみ、コーディネーターとしての単一責任は維持）                                                                |
+| `src/features/settings/__tests__/SettingsPage.features.test.tsx`      | テスト           | 対象外                                                                                                                                          |
+| `src/features/settings/components/MenuOrderSection.tsx`               | 並び替えUI       | 対象外（`REORDERABLE_MENU_IDS`への1件追加のみ。ファイル自体が複数責務を持つ既存の設計だが、今回の変更で新たに生じた問題ではないためスコープ外） |
+| `src/hooks/headerMenuItemHelpers.ts`                                  | メニューヘルパー | **対象**（下記参照）                                                                                                                            |
+| `src/hooks/__tests__/headerMenuItemHelpers.test.ts`                   | テスト           | 対象外（対象ファイルのテストとして拡充する）                                                                                                    |
 
 ### `headerMenuItemHelpers.ts` のSRP観点の課題
 
@@ -59,10 +59,12 @@ const PINNED_LAST = new Set(["settings", "account-admin"]);
 ### Task 1: 常時表示メニューID判定を名前付きSetに抽出する
 
 **Files:**
+
 - Modify: `src/hooks/headerMenuItemHelpers.ts`
 - Modify: `src/hooks/__tests__/headerMenuItemHelpers.test.ts`
 
 **Interfaces:**
+
 - 新規に追加する定数はモジュール内部専用（export不要）。`filterStaticHeaderMenuItems`の公開シグネチャは変更しない。
 
 - [x] **Step 1: `ALWAYS_VISIBLE_MENU_IDS` 定数を追加する**
@@ -77,14 +79,14 @@ const ALWAYS_VISIBLE_MENU_IDS = new Set(["home", "settings", "bug-report"]);
 - [x] **Step 2: `filterStaticHeaderMenuItems` 内の条件式を置き換える**
 
 ```ts
-    if (item.id === "home" || item.id === "settings" || item.id === "bug-report")
-      return true;
+if (item.id === "home" || item.id === "settings" || item.id === "bug-report")
+  return true;
 ```
 
 を以下に置き換える:
 
 ```ts
-    if (ALWAYS_VISIBLE_MENU_IDS.has(item.id)) return true;
+if (ALWAYS_VISIBLE_MENU_IDS.has(item.id)) return true;
 ```
 
 - [x] **Step 3: 既存テストが全件通過することを確認する**
@@ -97,20 +99,20 @@ Expected: 既存の全ケース（「不具合報告は feature 設定に関わ�
 `headerMenuItemHelpers.test.ts` の「不具合報告は feature 設定に関わらず常に表示される」テストの後ろに、home/settings/bug-report の3つが同じ扱いであることを一括で検証するテストを追加する:
 
 ```ts
-  it("常時表示対象（home/settings/bug-report）はvisibleFeaturesの内容に関わらずすべて表示される", () => {
-    const isPageType = (route: string): route is HeaderMenuItem["route"] =>
-      route !== "invalid";
+it("常時表示対象（home/settings/bug-report）はvisibleFeaturesの内容に関わらずすべて表示される", () => {
+  const isPageType = (route: string): route is HeaderMenuItem["route"] =>
+    route !== "invalid";
 
-    const items = filterStaticHeaderMenuItems({
-      visibleFeatures: baseVisibleFeatures,
-      isAdmin: false,
-      isPageType,
-    });
-
-    expect(items.some((item) => item.id === "home")).toBe(true);
-    expect(items.some((item) => item.id === "settings")).toBe(true);
-    expect(items.some((item) => item.id === "bug-report")).toBe(true);
+  const items = filterStaticHeaderMenuItems({
+    visibleFeatures: baseVisibleFeatures,
+    isAdmin: false,
+    isPageType,
   });
+
+  expect(items.some((item) => item.id === "home")).toBe(true);
+  expect(items.some((item) => item.id === "settings")).toBe(true);
+  expect(items.some((item) => item.id === "bug-report")).toBe(true);
+});
 ```
 
 - [x] **Step 5: 追加したテストが失敗せず通ることを確認する**
@@ -121,21 +123,25 @@ Expected: 既存ケース + 新規ケースすべてPASS
 - [x] **Step 6: hooks全体・lint・型チェックを実行する**
 
 Run:
+
 ```bash
 npx jest src/hooks --no-coverage
 npx eslint src/hooks/ --quiet
 npx tsc --noEmit -p tsconfig.json
 npx tsc --noEmit -p tsconfig.test.json
 ```
+
 Expected: すべてエラーなし
 
 - [x] **Step 7: 全体テストスイート・E2Eを実行する**
 
 Run:
+
 ```bash
 npm test -- --runInBand
 npx playwright test
 ```
+
 Expected: すべてPASS（既存機能への影響がないことを確認）
 
 - [ ] **Step 8: コミット（ユーザーに確認の上で実行）**

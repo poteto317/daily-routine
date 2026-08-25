@@ -9,10 +9,18 @@ describe("createBaseViewModel", () => {
   it("呼び出しごとに独立した fn() インスタンスを返す", () => {
     const vm1 = createBaseViewModel();
     const vm2 = createBaseViewModel();
-    expect(vm1.toolbarProps.onAddRoutineAction).not.toBe(vm2.toolbarProps.onAddRoutineAction);
-    expect(vm1.toolbarProps.view.toggleEditModeAction).not.toBe(vm2.toolbarProps.view.toggleEditModeAction);
-    expect(vm1.routineListProps.onToggleAction).not.toBe(vm2.routineListProps.onToggleAction);
-    expect(vm1.routineFormProps.onSubmitAction).not.toBe(vm2.routineFormProps.onSubmitAction);
+    expect(vm1.toolbarProps.onAddRoutineAction).not.toBe(
+      vm2.toolbarProps.onAddRoutineAction,
+    );
+    expect(vm1.toolbarProps.view.toggleEditModeAction).not.toBe(
+      vm2.toolbarProps.view.toggleEditModeAction,
+    );
+    expect(vm1.routineListProps.onToggleAction).not.toBe(
+      vm2.routineListProps.onToggleAction,
+    );
+    expect(vm1.routineFormProps.onSubmitAction).not.toBe(
+      vm2.routineFormProps.onSubmitAction,
+    );
   });
 
   it("HomeContentViewModel の必須プロパティを全て持つ", () => {

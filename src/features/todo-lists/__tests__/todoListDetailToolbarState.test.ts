@@ -10,7 +10,9 @@ const makeList = (overrides: Partial<TodoList> = {}): TodoList => ({
   ...overrides,
 });
 
-const makeParams = (overrides: Partial<Parameters<typeof createToolbarState>[0]> = {}) => ({
+const makeParams = (
+  overrides: Partial<Parameters<typeof createToolbarState>[0]> = {},
+) => ({
   list: makeList(),
   onUpdateAllItemsBgColor: jest.fn(),
   onUpdateListAddItemPosition: jest.fn(),
@@ -68,7 +70,10 @@ describe("createToolbarState", () => {
 
       handleUpdateAllItemsBgColor("bg-red-50");
 
-      expect(onUpdateAllItemsBgColor).toHaveBeenCalledWith("list-42", "bg-red-50");
+      expect(onUpdateAllItemsBgColor).toHaveBeenCalledWith(
+        "list-42",
+        "bg-red-50",
+      );
     });
 
     it("undefined を渡すと list.id とともに undefined を呼ぶ", () => {
@@ -90,7 +95,10 @@ describe("createToolbarState", () => {
 
       handleUpdateAllItemsBgColor("bg-blue-50");
 
-      expect(onUpdateAllItemsBgColor).toHaveBeenCalledWith("list-1", "bg-blue-50");
+      expect(onUpdateAllItemsBgColor).toHaveBeenCalledWith(
+        "list-1",
+        "bg-blue-50",
+      );
     });
 
     it("onUpdateAllItemsBgColor は 1 度しか呼ばれない", () => {
@@ -115,7 +123,10 @@ describe("createToolbarState", () => {
 
       handleToggleAddItemPosition("first");
 
-      expect(onUpdateListAddItemPosition).toHaveBeenCalledWith("list-99", "first");
+      expect(onUpdateListAddItemPosition).toHaveBeenCalledWith(
+        "list-99",
+        "first",
+      );
     });
 
     it("'last' を渡すと list.id とともに 'last' を呼ぶ", () => {
@@ -126,7 +137,10 @@ describe("createToolbarState", () => {
 
       handleToggleAddItemPosition("last");
 
-      expect(onUpdateListAddItemPosition).toHaveBeenCalledWith("list-1", "last");
+      expect(onUpdateListAddItemPosition).toHaveBeenCalledWith(
+        "list-1",
+        "last",
+      );
     });
 
     it("onUpdateListAddItemPosition は 1 度しか呼ばれない", () => {
@@ -163,13 +177,23 @@ describe("createToolbarState", () => {
       const list = makeList({ id: "list-xyz" });
 
       const { handleUpdateAllItemsBgColor, handleToggleAddItemPosition } =
-        createToolbarState({ list, onUpdateAllItemsBgColor, onUpdateListAddItemPosition });
+        createToolbarState({
+          list,
+          onUpdateAllItemsBgColor,
+          onUpdateListAddItemPosition,
+        });
 
       handleUpdateAllItemsBgColor("bg-green-50");
       handleToggleAddItemPosition("last");
 
-      expect(onUpdateAllItemsBgColor).toHaveBeenCalledWith("list-xyz", "bg-green-50");
-      expect(onUpdateListAddItemPosition).toHaveBeenCalledWith("list-xyz", "last");
+      expect(onUpdateAllItemsBgColor).toHaveBeenCalledWith(
+        "list-xyz",
+        "bg-green-50",
+      );
+      expect(onUpdateListAddItemPosition).toHaveBeenCalledWith(
+        "list-xyz",
+        "last",
+      );
     });
   });
 });

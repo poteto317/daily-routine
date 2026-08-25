@@ -18,5 +18,7 @@ export const buildTodoItemTitleButtonAriaLabel = ({
   const baseLabel = isCompleted
     ? `「${title}」を未完了に戻す`
     : `「${title}」を完了にする`;
-  return isSelected ? `${baseLabel}${texts.list.itemSelectedSuffix}` : baseLabel;
+  return isSelected
+    ? `${baseLabel}${texts.list.itemSelectedSuffix}`
+    : baseLabel;
 };

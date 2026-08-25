@@ -22,7 +22,9 @@ describe("BugReportForm", () => {
   it("全フィールドとラベルを表示する", () => {
     render(<BugReportForm {...defaultProps} />);
     expect(screen.getByLabelText(texts.form.titleLabel)).toBeInTheDocument();
-    expect(screen.getByLabelText(texts.form.descriptionLabel)).toBeInTheDocument();
+    expect(
+      screen.getByLabelText(texts.form.descriptionLabel),
+    ).toBeInTheDocument();
     expect(screen.getByLabelText(texts.form.stepsLabel)).toBeInTheDocument();
   });
 
@@ -35,8 +37,12 @@ describe("BugReportForm", () => {
         stepsToReproduce="手順1"
       />,
     );
-    expect(screen.getByLabelText(texts.form.titleLabel)).toHaveValue("タイトル");
-    expect(screen.getByLabelText(texts.form.descriptionLabel)).toHaveValue("説明文");
+    expect(screen.getByLabelText(texts.form.titleLabel)).toHaveValue(
+      "タイトル",
+    );
+    expect(screen.getByLabelText(texts.form.descriptionLabel)).toHaveValue(
+      "説明文",
+    );
     expect(screen.getByLabelText(texts.form.stepsLabel)).toHaveValue("手順1");
   });
 
@@ -60,7 +66,12 @@ describe("BugReportForm", () => {
 
   it("再現手順入力時に setStepsToReproduce を呼ぶ", () => {
     const setStepsToReproduce = jest.fn();
-    render(<BugReportForm {...defaultProps} setStepsToReproduce={setStepsToReproduce} />);
+    render(
+      <BugReportForm
+        {...defaultProps}
+        setStepsToReproduce={setStepsToReproduce}
+      />,
+    );
     fireEvent.change(screen.getByLabelText(texts.form.stepsLabel), {
       target: { value: "1. 画面を開く" },
     });
@@ -70,13 +81,17 @@ describe("BugReportForm", () => {
   it("ボタンクリックで handleSubmit を呼ぶ", () => {
     const handleSubmit = jest.fn().mockResolvedValue(undefined);
     render(<BugReportForm {...defaultProps} handleSubmit={handleSubmit} />);
-    fireEvent.click(screen.getByRole("button", { name: texts.form.submitLabel }));
+    fireEvent.click(
+      screen.getByRole("button", { name: texts.form.submitLabel }),
+    );
     expect(handleSubmit).toHaveBeenCalledTimes(1);
   });
 
   it("form 要素として描画され aria-label が付与されている（アクセシビリティ・セマンティクス）", () => {
     render(<BugReportForm {...defaultProps} />);
-    expect(screen.getByRole("form", { name: texts.form.formAriaLabel })).toBeInTheDocument();
+    expect(
+      screen.getByRole("form", { name: texts.form.formAriaLabel }),
+    ).toBeInTheDocument();
   });
 
   it("送信ボタンは type='submit' 属性を持つ", () => {
@@ -88,7 +103,9 @@ describe("BugReportForm", () => {
   it("form の submit イベントで handleSubmit を呼ぶ（Enter キー送信相当）", () => {
     const handleSubmit = jest.fn().mockResolvedValue(undefined);
     render(<BugReportForm {...defaultProps} handleSubmit={handleSubmit} />);
-    fireEvent.submit(screen.getByRole("form", { name: texts.form.formAriaLabel }));
+    fireEvent.submit(
+      screen.getByRole("form", { name: texts.form.formAriaLabel }),
+    );
     expect(handleSubmit).toHaveBeenCalledTimes(1);
   });
 
@@ -100,7 +117,9 @@ describe("BugReportForm", () => {
 
   it("status が submitting のときボタンは disabled で送信中ラベルを表示する", () => {
     render(<BugReportForm {...defaultProps} status="submitting" />);
-    const button = screen.getByRole("button", { name: texts.form.submittingLabel });
+    const button = screen.getByRole("button", {
+      name: texts.form.submittingLabel,
+    });
     expect(button).toBeDisabled();
   });
 
@@ -111,8 +130,12 @@ describe("BugReportForm", () => {
 
   it("各入力フィールドにプレースホルダーを表示する", () => {
     render(<BugReportForm {...defaultProps} />);
-    expect(screen.getByPlaceholderText(texts.form.titlePlaceholder)).toBeInTheDocument();
-    expect(screen.getByPlaceholderText(texts.form.descriptionPlaceholder)).toBeInTheDocument();
+    expect(
+      screen.getByPlaceholderText(texts.form.titlePlaceholder),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByPlaceholderText(texts.form.descriptionPlaceholder),
+    ).toBeInTheDocument();
     // stepsPlaceholder は \n を含むため getByPlaceholderText が使えない — 属性で検証する
     expect(screen.getByLabelText(texts.form.stepsLabel)).toHaveAttribute(
       "placeholder",
@@ -122,8 +145,14 @@ describe("BugReportForm", () => {
 
   it("各入力要素は htmlFor/id で対応するラベルと関連付けられている", () => {
     render(<BugReportForm {...defaultProps} />);
-    expect(screen.getByRole("textbox", { name: texts.form.titleLabel })).toHaveAttribute("id", "bug-title");
-    expect(screen.getByRole("textbox", { name: texts.form.descriptionLabel })).toHaveAttribute("id", "bug-description");
-    expect(screen.getByRole("textbox", { name: texts.form.stepsLabel })).toHaveAttribute("id", "bug-steps");
+    expect(
+      screen.getByRole("textbox", { name: texts.form.titleLabel }),
+    ).toHaveAttribute("id", "bug-title");
+    expect(
+      screen.getByRole("textbox", { name: texts.form.descriptionLabel }),
+    ).toHaveAttribute("id", "bug-description");
+    expect(
+      screen.getByRole("textbox", { name: texts.form.stepsLabel }),
+    ).toHaveAttribute("id", "bug-steps");
   });
 });

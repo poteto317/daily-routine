@@ -31,7 +31,12 @@ describe("preset storage data/factory", () => {
         routineTemplates: [
           { title: "朝食", startTime: "07:00", duration: 30, category: "life" },
           { title: "朝食", startTime: "07:00", duration: 30, category: "life" },
-          { title: "運動", startTime: "07:30", duration: 20, category: "health" },
+          {
+            title: "運動",
+            startTime: "07:30",
+            duration: 20,
+            category: "health",
+          },
         ],
       }),
     ];
@@ -79,7 +84,12 @@ describe("preset storage data/factory", () => {
           name: "壊れたテンプレート入り",
           routineTemplates: [
             null,
-            { title: "朝食", startTime: "07:00", duration: 30, category: "life" },
+            {
+              title: "朝食",
+              startTime: "07:00",
+              duration: 30,
+              category: "life",
+            },
           ],
         },
       ]),
@@ -103,7 +113,12 @@ describe("preset storage data/factory", () => {
             { title: 123, startTime: "07:00", duration: 30, category: "life" },
             { title: "朝食", startTime: null, duration: 30, category: "life" },
             { startTime: "07:00", duration: 30, category: "life" },
-            { title: "運動", startTime: "07:30", duration: 20, category: "health" },
+            {
+              title: "運動",
+              startTime: "07:30",
+              duration: 20,
+              category: "health",
+            },
           ],
         },
       ]),

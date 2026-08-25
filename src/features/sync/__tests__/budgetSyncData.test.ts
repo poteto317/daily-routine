@@ -92,8 +92,12 @@ describe("budgetSyncData", () => {
 
   it("欠損した予算データは既存のローカル値を保持する（本フィールド追加前のクラウドデータによる意図しない削除を防止）", () => {
     const localCategories = [{ id: "c1", name: "食費" }];
-    (budgetStorage.getBudgetData as jest.Mock).mockReturnValue(budgetDataFixture);
-    (budgetStorage.getBudgetCategories as jest.Mock).mockReturnValue(localCategories);
+    (budgetStorage.getBudgetData as jest.Mock).mockReturnValue(
+      budgetDataFixture,
+    );
+    (budgetStorage.getBudgetCategories as jest.Mock).mockReturnValue(
+      localCategories,
+    );
 
     expect(normalizeBudgetSyncData({})).toEqual({
       budgetData: budgetDataFixture,
@@ -104,8 +108,12 @@ describe("budgetSyncData", () => {
   });
 
   it("明示的に空の予算データはそのまま正規化する（ユーザーが全削除した結果を尊重する）", () => {
-    (budgetStorage.getBudgetData as jest.Mock).mockReturnValue(budgetDataFixture);
-    (budgetStorage.getBudgetCategories as jest.Mock).mockReturnValue([{ id: "c1" }]);
+    (budgetStorage.getBudgetData as jest.Mock).mockReturnValue(
+      budgetDataFixture,
+    );
+    (budgetStorage.getBudgetCategories as jest.Mock).mockReturnValue([
+      { id: "c1" },
+    ]);
 
     expect(
       normalizeBudgetSyncData({

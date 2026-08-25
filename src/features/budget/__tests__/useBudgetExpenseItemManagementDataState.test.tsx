@@ -69,7 +69,10 @@ describe("useBudgetExpenseItemManagementDataState", () => {
 
   it("有効な金額の場合はhandleCreateが成功しstateを更新しcloseFormを呼ぶ", () => {
     const closeForm = jest.fn();
-    const nextItems = [item, { ...item, id: "expense-2", kind: "variable" as const }];
+    const nextItems = [
+      item,
+      { ...item, id: "expense-2", kind: "variable" as const },
+    ];
     mockCreateBudgetExpenseItemAndPersist.mockImplementation(({ persist }) => {
       persist(nextItems);
       return nextItems;
@@ -189,7 +192,11 @@ describe("useBudgetExpenseItemManagementDataState", () => {
   });
 
   it("toggleItemKindはvariableの項目をfixedへ切り替える", () => {
-    const variableItem = { ...item, id: "expense-2", kind: "variable" as const };
+    const variableItem = {
+      ...item,
+      id: "expense-2",
+      kind: "variable" as const,
+    };
     mockGetBudgetExpenseItems.mockReturnValue([variableItem]);
 
     const { result } = renderHook(() =>
@@ -255,7 +262,10 @@ describe("useBudgetExpenseItemManagementDataState", () => {
   });
 
   it("persistはstateの更新とsaveBudgetExpenseItemsの両方を行う", () => {
-    const nextItems = [item, { ...item, id: "expense-2", kind: "variable" as const }];
+    const nextItems = [
+      item,
+      { ...item, id: "expense-2", kind: "variable" as const },
+    ];
     mockCreateBudgetExpenseItemAndPersist.mockImplementation(({ persist }) => {
       persist(nextItems);
       return nextItems;

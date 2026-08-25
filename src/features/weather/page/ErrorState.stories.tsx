@@ -17,7 +17,10 @@ export const Default: Story = {
 };
 
 export const NetworkError: Story = {
-  args: { error: "ネットワークに接続できません。インターネット接続を確認してください。" },
+  args: {
+    error:
+      "ネットワークに接続できません。インターネット接続を確認してください。",
+  },
 };
 
 /** 「再読み込み」ボタンをクリック → onRetry が呼ばれる */

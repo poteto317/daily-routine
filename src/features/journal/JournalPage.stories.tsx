@@ -23,7 +23,8 @@ const sampleHistory: JournalHistory = {
       id: "j-1",
       date: "2026-05-29",
       title: "今日の振り返り",
-      content: "Storybookのストーリーを整備した。UI カバレッジが増えてよかった。",
+      content:
+        "Storybookのストーリーを整備した。UI カバレッジが増えてよかった。",
       createdAt: "2026-05-29T22:00:00+09:00",
       updatedAt: "2026-05-29T22:00:00+09:00",
     },

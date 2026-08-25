@@ -35,13 +35,10 @@ export const normalizeTodoListSyncData = (
   todoCategories: data.todoCategories ?? getTodoCategories(),
 });
 
-export const saveTodoListSyncData = (
-  data: TodoListSyncData,
-): void => {
+export const saveTodoListSyncData = (data: TodoListSyncData): void => {
   saveTodoLists(data.todoLists);
   saveTodoCategories(data.todoCategories);
 };
 
-export const hasTodoListSyncData = (
-  data: TodoListSyncDataSummary,
-): boolean => data.todoLists.length > 0 || data.todoCategories.length > 0;
+export const hasTodoListSyncData = (data: TodoListSyncDataSummary): boolean =>
+  data.todoLists.length > 0 || data.todoCategories.length > 0;

@@ -27,5 +27,7 @@ export const sortExpensesByDateDesc = (expenses: Expense[]): Expense[] =>
       expense,
       sortKey: `${expense.date}T${resolveExpenseUsedTime(expense)}`,
     }))
-    .sort((a, b) => (a.sortKey < b.sortKey ? 1 : a.sortKey > b.sortKey ? -1 : 0))
+    .sort((a, b) =>
+      a.sortKey < b.sortKey ? 1 : a.sortKey > b.sortKey ? -1 : 0,
+    )
     .map(({ expense }) => expense);

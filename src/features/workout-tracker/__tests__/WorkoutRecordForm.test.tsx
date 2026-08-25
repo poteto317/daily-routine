@@ -36,7 +36,9 @@ describe("WorkoutRecordForm", () => {
     expect(screen.getByText(texts.form.weightLabel)).toBeInTheDocument();
     expect(screen.getByText(texts.form.repsLabel)).toBeInTheDocument();
     expect(screen.getByText(texts.form.setsLabel)).toBeInTheDocument();
-    expect(screen.queryByText(texts.form.caloriesLabel)).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(texts.form.caloriesLabel),
+    ).not.toBeInTheDocument();
   });
 
   it("label=runningのとき消費カロリーの入力欄のみ表示する", () => {
@@ -72,7 +74,9 @@ describe("WorkoutRecordForm", () => {
       />,
     );
 
-    fireEvent.click(screen.getByRole("radio", { name: texts.form.labelRunning }));
+    fireEvent.click(
+      screen.getByRole("radio", { name: texts.form.labelRunning }),
+    );
 
     expect(onChangeLabelAction).toHaveBeenCalledWith("running");
   });
@@ -108,7 +112,9 @@ describe("WorkoutRecordForm", () => {
 
   it("追加ボタンをクリックするとonSubmitActionが呼ばれる", () => {
     const onSubmitAction = jest.fn();
-    render(<WorkoutRecordForm {...defaultProps} onSubmitAction={onSubmitAction} />);
+    render(
+      <WorkoutRecordForm {...defaultProps} onSubmitAction={onSubmitAction} />,
+    );
 
     fireEvent.click(screen.getByRole("button", { name: texts.form.addButton }));
 

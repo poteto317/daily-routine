@@ -45,11 +45,7 @@ export const renameTodoCategoryAndPersist = (params: {
     return null;
   }
 
-  const nextCategories = renameTodoCategory(
-    categories,
-    categoryId,
-    normalized,
-  );
+  const nextCategories = renameTodoCategory(categories, categoryId, normalized);
   persist(nextCategories);
   return nextCategories;
 };

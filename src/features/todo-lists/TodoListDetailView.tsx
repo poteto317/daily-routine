@@ -20,13 +20,25 @@ export type TodoListDetailViewProps = {
   list: TodoList;
   categories: TodoCategory[];
   clipboardItems: TodoListItem[];
-  onAddItemAction: (listId: string, title: string, insertAfterIndex?: number) => void;
+  onAddItemAction: (
+    listId: string,
+    title: string,
+    insertAfterIndex?: number,
+  ) => void;
   onToggleItemAction: (listId: string, itemId: string) => void;
   onDeleteItemAction: (listId: string, itemId: string, title: string) => void;
   onIndentItemAction: (listId: string, itemId: string) => void;
   onOutdentItemAction: (listId: string, itemId: string) => void;
-  onReorderItemsAction: (listId: string, fromIndex: number, toIndex: number) => void;
-  onUpdateItemTitleAction: (listId: string, itemId: string, title: string) => void;
+  onReorderItemsAction: (
+    listId: string,
+    fromIndex: number,
+    toIndex: number,
+  ) => void;
+  onUpdateItemTitleAction: (
+    listId: string,
+    itemId: string,
+    title: string,
+  ) => void;
   onUpdateListTitleAction: (listId: string, title: string) => void;
   onUpdateItemBgColorAction: (
     listId: string,
@@ -37,12 +49,21 @@ export type TodoListDetailViewProps = {
     listId: string,
     bgColor: TodoItemBgColorValue | undefined,
   ) => void;
-  onCutItemsAction: (listId: string, itemIds: ReadonlySet<string>) => TodoListItem[];
+  onCutItemsAction: (
+    listId: string,
+    itemIds: ReadonlySet<string>,
+  ) => TodoListItem[];
   onPasteItemsAction: (listId: string, items: TodoListItem[]) => void;
   onSetClipboardAction: (items: TodoListItem[]) => void;
   onClearClipboardAction: () => void;
-  onUpdateListAddItemPositionAction: (listId: string, position: "last" | "first") => void;
-  onUpdateListHideCompletedAction: (listId: string, hideCompleted: boolean) => void;
+  onUpdateListAddItemPositionAction: (
+    listId: string,
+    position: "last" | "first",
+  ) => void;
+  onUpdateListHideCompletedAction: (
+    listId: string,
+    hideCompleted: boolean,
+  ) => void;
   onUpdateItemCategoryAction: (
     listId: string,
     itemId: string,
@@ -74,23 +95,29 @@ export const TodoListDetailView = ({
   onUpdateItemCategoryAction,
   historyControls,
 }: TodoListDetailViewProps) => {
-  const { selection, hasClipboard, viewState, uiControllers, interactionMode, toolbar } =
-    useTodoListDetailViewComposition({
-      list,
-      categories,
-      clipboardItems,
-      onAddItem: onAddItemAction,
-      onUpdateItemTitle: onUpdateItemTitleAction,
-      onUpdateListTitle: onUpdateListTitleAction,
-      onCutItems: onCutItemsAction,
-      onPasteItems: onPasteItemsAction,
-      onSetClipboard: onSetClipboardAction,
-      onClearClipboard: onClearClipboardAction,
-      onReorderItems: onReorderItemsAction,
-      onUpdateAllItemsBgColor: onUpdateAllItemsBgColorAction,
-      onUpdateListAddItemPosition: onUpdateListAddItemPositionAction,
-      onUpdateListHideCompleted: onUpdateListHideCompletedAction,
-    });
+  const {
+    selection,
+    hasClipboard,
+    viewState,
+    uiControllers,
+    interactionMode,
+    toolbar,
+  } = useTodoListDetailViewComposition({
+    list,
+    categories,
+    clipboardItems,
+    onAddItem: onAddItemAction,
+    onUpdateItemTitle: onUpdateItemTitleAction,
+    onUpdateListTitle: onUpdateListTitleAction,
+    onCutItems: onCutItemsAction,
+    onPasteItems: onPasteItemsAction,
+    onSetClipboard: onSetClipboardAction,
+    onClearClipboard: onClearClipboardAction,
+    onReorderItems: onReorderItemsAction,
+    onUpdateAllItemsBgColor: onUpdateAllItemsBgColorAction,
+    onUpdateListAddItemPosition: onUpdateListAddItemPositionAction,
+    onUpdateListHideCompleted: onUpdateListHideCompletedAction,
+  });
 
   const {
     hasSelection,
@@ -129,7 +156,11 @@ export const TodoListDetailView = ({
   } = viewState;
 
   const {
-    colorPicker: { showBulkColorPicker, toggleBulkColorPicker, closeBulkColorPicker },
+    colorPicker: {
+      showBulkColorPicker,
+      toggleBulkColorPicker,
+      closeBulkColorPicker,
+    },
     itemMenu: {
       itemMenuItemId,
       toggleItemMenu: toggleItemMenuAction,
@@ -146,13 +177,22 @@ export const TodoListDetailView = ({
       closeInlineInsert,
       handleInlineAdd,
     },
-    dnd: { activeId, sensors, handleDragStart, handleDragEnd, handleDragCancel },
+    dnd: {
+      activeId,
+      sensors,
+      handleDragStart,
+      handleDragEnd,
+      handleDragCancel,
+    },
     activeItem,
     sortModeActive,
   } = interactionMode;
 
-  const { hasCompletedItems, handleUpdateAllItemsBgColor, handleToggleAddItemPosition } =
-    toolbar;
+  const {
+    hasCompletedItems,
+    handleUpdateAllItemsBgColor,
+    handleToggleAddItemPosition,
+  } = toolbar;
 
   return (
     <div className="min-h-screen bg-linear-to-br from-teal-50 to-cyan-100 dark:from-slate-400 dark:to-slate-300">

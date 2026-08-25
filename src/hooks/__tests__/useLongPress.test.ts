@@ -33,7 +33,9 @@ describe("useLongPress", () => {
   it("閾値未満でpointerUpするとonClickが呼ばれ、onLongPressは呼ばれない", () => {
     const onLongPress = jest.fn();
     const onClick = jest.fn();
-    const { result } = renderHook(() => useLongPress({ onLongPress, onClick, delay: 500 }));
+    const { result } = renderHook(() =>
+      useLongPress({ onLongPress, onClick, delay: 500 }),
+    );
 
     act(() => {
       result.current.onPointerDown(pointerEvent() as never);
@@ -55,7 +57,9 @@ describe("useLongPress", () => {
   it("閾値経過するとonLongPressが呼ばれ、その後のclickは無視される", () => {
     const onLongPress = jest.fn();
     const onClick = jest.fn();
-    const { result } = renderHook(() => useLongPress({ onLongPress, onClick, delay: 500 }));
+    const { result } = renderHook(() =>
+      useLongPress({ onLongPress, onClick, delay: 500 }),
+    );
 
     act(() => {
       result.current.onPointerDown(pointerEvent() as never);
@@ -107,7 +111,9 @@ describe("useLongPress", () => {
 
   it("moveTolerance以内の移動ではキャンセルされない", () => {
     const onLongPress = jest.fn();
-    const { result } = renderHook(() => useLongPress({ onLongPress, delay: 500, moveTolerance: 10 }));
+    const { result } = renderHook(() =>
+      useLongPress({ onLongPress, delay: 500, moveTolerance: 10 }),
+    );
 
     act(() => {
       result.current.onPointerDown(pointerEvent(0, 0) as never);
@@ -124,7 +130,9 @@ describe("useLongPress", () => {
 
   it("onPointerLeaveでタイマーがクリアされ、onLongPressは発火しない", () => {
     const onLongPress = jest.fn();
-    const { result } = renderHook(() => useLongPress({ onLongPress, delay: 500 }));
+    const { result } = renderHook(() =>
+      useLongPress({ onLongPress, delay: 500 }),
+    );
 
     act(() => {
       result.current.onPointerDown(pointerEvent() as never);
@@ -141,7 +149,9 @@ describe("useLongPress", () => {
 
   it("onPointerCancelでタイマーがクリアされ、onLongPressは発火しない", () => {
     const onLongPress = jest.fn();
-    const { result } = renderHook(() => useLongPress({ onLongPress, delay: 500 }));
+    const { result } = renderHook(() =>
+      useLongPress({ onLongPress, delay: 500 }),
+    );
 
     act(() => {
       result.current.onPointerDown(pointerEvent() as never);
@@ -158,7 +168,9 @@ describe("useLongPress", () => {
 
   it("touch由来の押下後のonContextMenuはデフォルトの挙動を抑止する（モバイルのコールアウトメニュー抑止）", () => {
     const onLongPress = jest.fn();
-    const { result } = renderHook(() => useLongPress({ onLongPress, delay: 500 }));
+    const { result } = renderHook(() =>
+      useLongPress({ onLongPress, delay: 500 }),
+    );
     const preventDefault = jest.fn();
 
     act(() => {
@@ -176,7 +188,9 @@ describe("useLongPress", () => {
 
   it("pen由来の押下後のonContextMenuも抑止する", () => {
     const onLongPress = jest.fn();
-    const { result } = renderHook(() => useLongPress({ onLongPress, delay: 500 }));
+    const { result } = renderHook(() =>
+      useLongPress({ onLongPress, delay: 500 }),
+    );
     const preventDefault = jest.fn();
 
     act(() => {
@@ -191,7 +205,9 @@ describe("useLongPress", () => {
 
   it("mouse由来の押下後のonContextMenuは抑止しない（デスクトップの右クリックメニューを妨げない）", () => {
     const onLongPress = jest.fn();
-    const { result } = renderHook(() => useLongPress({ onLongPress, delay: 500 }));
+    const { result } = renderHook(() =>
+      useLongPress({ onLongPress, delay: 500 }),
+    );
     const preventDefault = jest.fn();
 
     act(() => {
@@ -209,7 +225,9 @@ describe("useLongPress", () => {
 
   it("一度もpointerDownしていない状態のonContextMenuは抑止しない（安全なデフォルト）", () => {
     const onLongPress = jest.fn();
-    const { result } = renderHook(() => useLongPress({ onLongPress, delay: 500 }));
+    const { result } = renderHook(() =>
+      useLongPress({ onLongPress, delay: 500 }),
+    );
     const preventDefault = jest.fn();
 
     act(() => {
@@ -221,7 +239,9 @@ describe("useLongPress", () => {
 
   it("onClickが渡されていなくてもエラーにならない", () => {
     const onLongPress = jest.fn();
-    const { result } = renderHook(() => useLongPress({ onLongPress, delay: 500 }));
+    const { result } = renderHook(() =>
+      useLongPress({ onLongPress, delay: 500 }),
+    );
 
     act(() => {
       result.current.onPointerDown(pointerEvent() as never);
@@ -240,7 +260,9 @@ describe("useLongPress", () => {
   describe("マウスの非primaryボタン", () => {
     it("マウスの右クリック（button=2）では長押しタイマーが開始されず、onLongPressは発火しない", () => {
       const onLongPress = jest.fn();
-      const { result } = renderHook(() => useLongPress({ onLongPress, delay: 500 }));
+      const { result } = renderHook(() =>
+        useLongPress({ onLongPress, delay: 500 }),
+      );
 
       act(() => {
         result.current.onPointerDown(pointerEvent(0, 0, "mouse", 2) as never);
@@ -254,7 +276,9 @@ describe("useLongPress", () => {
 
     it("マウスの中クリック（button=1）でも長押しタイマーが開始されない", () => {
       const onLongPress = jest.fn();
-      const { result } = renderHook(() => useLongPress({ onLongPress, delay: 500 }));
+      const { result } = renderHook(() =>
+        useLongPress({ onLongPress, delay: 500 }),
+      );
 
       act(() => {
         result.current.onPointerDown(pointerEvent(0, 0, "mouse", 1) as never);
@@ -268,7 +292,9 @@ describe("useLongPress", () => {
 
     it("マウスの左クリック（button=0、primary）では通常どおり長押しが機能する", () => {
       const onLongPress = jest.fn();
-      const { result } = renderHook(() => useLongPress({ onLongPress, delay: 500 }));
+      const { result } = renderHook(() =>
+        useLongPress({ onLongPress, delay: 500 }),
+      );
 
       act(() => {
         result.current.onPointerDown(pointerEvent(0, 0, "mouse", 0) as never);
@@ -282,7 +308,9 @@ describe("useLongPress", () => {
 
     it("touch由来の押下はbuttonの値に関わらず長押しが機能する", () => {
       const onLongPress = jest.fn();
-      const { result } = renderHook(() => useLongPress({ onLongPress, delay: 500 }));
+      const { result } = renderHook(() =>
+        useLongPress({ onLongPress, delay: 500 }),
+      );
 
       act(() => {
         result.current.onPointerDown(pointerEvent(0, 0, "touch", 0) as never);
@@ -299,7 +327,8 @@ describe("useLongPress", () => {
     it("押下中にdisabledになると保留中のタイマーがキャンセルされ、onLongPressは発火しない", () => {
       const onLongPress = jest.fn();
       const { result, rerender } = renderHook(
-        ({ disabled }: { disabled: boolean }) => useLongPress({ onLongPress, delay: 500, disabled }),
+        ({ disabled }: { disabled: boolean }) =>
+          useLongPress({ onLongPress, delay: 500, disabled }),
         { initialProps: { disabled: false } },
       );
 
@@ -338,7 +367,8 @@ describe("useLongPress", () => {
     it("disabledがfalseに戻れば通常どおり長押しが機能する", () => {
       const onLongPress = jest.fn();
       const { result, rerender } = renderHook(
-        ({ disabled }: { disabled: boolean }) => useLongPress({ onLongPress, delay: 500, disabled }),
+        ({ disabled }: { disabled: boolean }) =>
+          useLongPress({ onLongPress, delay: 500, disabled }),
         { initialProps: { disabled: true } },
       );
 
@@ -358,7 +388,9 @@ describe("useLongPress", () => {
   describe("アンマウント", () => {
     it("押下中にアンマウントされるとタイマーがクリアされ、onLongPressは発火しない", () => {
       const onLongPress = jest.fn();
-      const { result, unmount } = renderHook(() => useLongPress({ onLongPress, delay: 500 }));
+      const { result, unmount } = renderHook(() =>
+        useLongPress({ onLongPress, delay: 500 }),
+      );
 
       act(() => {
         result.current.onPointerDown(pointerEvent() as never);

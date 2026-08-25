@@ -67,9 +67,7 @@ describe("createAddWorkoutRecordHandler", () => {
     const resetForm = jest.fn();
     const setError = jest.fn();
 
-    createAddWorkoutRecordHandler({ resetForm, reload, setError })(
-      formValues,
-    );
+    createAddWorkoutRecordHandler({ resetForm, reload, setError })(formValues);
 
     expect(mockAddWorkoutRecord).toHaveBeenCalledWith({
       label: "strength",
@@ -89,9 +87,7 @@ describe("createAddWorkoutRecordHandler", () => {
     const resetForm = jest.fn();
     const setError = jest.fn();
 
-    createAddWorkoutRecordHandler({ resetForm, reload, setError })(
-      formValues,
-    );
+    createAddWorkoutRecordHandler({ resetForm, reload, setError })(formValues);
 
     expect(mockAddWorkoutRecord).not.toHaveBeenCalled();
     expect(resetForm).not.toHaveBeenCalled();

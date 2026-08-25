@@ -54,12 +54,12 @@ npm run test:e2e:ui
 
 **カバーしているフロー**
 
-| ファイル | 内容 |
-| --- | --- |
-| `e2e/routine-creation.spec.ts` | 匿名ログイン → ルーティン作成 → 一覧表示 |
-| `e2e/todo-list.spec.ts` | Todoリスト作成 → Todo追加 → 完了操作と進捗更新 |
-| `e2e/settings-persistence.spec.ts` | 設定変更 → リロード後も値が保持される |
-| `e2e/menu-navigation.spec.ts` | ハンバーガーメニューからの各ページ遷移 |
+| ファイル                           | 内容                                           |
+| ---------------------------------- | ---------------------------------------------- |
+| `e2e/routine-creation.spec.ts`     | 匿名ログイン → ルーティン作成 → 一覧表示       |
+| `e2e/todo-list.spec.ts`            | Todoリスト作成 → Todo追加 → 完了操作と進捗更新 |
+| `e2e/settings-persistence.spec.ts` | 設定変更 → リロード後も値が保持される          |
+| `e2e/menu-navigation.spec.ts`      | ハンバーガーメニューからの各ページ遷移         |
 
 ログインやメニュー遷移など共通の操作は `e2e/helpers.ts` にまとめています。
 

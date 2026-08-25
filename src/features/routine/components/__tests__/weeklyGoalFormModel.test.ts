@@ -8,12 +8,9 @@ describe("isWeeklyGoalTargetInputValid", () => {
     expect(isWeeklyGoalTargetInputValid(value)).toBe(true);
   });
 
-  it.each(["0", "8", "1.5", "abc", " 3 "])(
-    "%s を無効とする",
-    (value) => {
-      expect(isWeeklyGoalTargetInputValid(value)).toBe(false);
-    },
-  );
+  it.each(["0", "8", "1.5", "abc", " 3 "])("%s を無効とする", (value) => {
+    expect(isWeeklyGoalTargetInputValid(value)).toBe(false);
+  });
 });
 
 describe("buildWeeklyGoal", () => {

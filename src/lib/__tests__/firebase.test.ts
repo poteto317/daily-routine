@@ -216,7 +216,8 @@ describe("initializeFirebaseIfConfigured の分岐", () => {
     const mockApp = { name: "[DEFAULT]" };
     const mockInitializeApp = jest.fn(() => mockApp);
     const mockGetApp = jest.fn(() => mockApp);
-    const mockGetApps = jest.fn()
+    const mockGetApps = jest
+      .fn()
       .mockReturnValueOnce([])
       .mockReturnValue([mockApp]);
 
@@ -237,9 +238,8 @@ describe("initializeFirebaseIfConfigured の分岐", () => {
       signInAnonymously: jest.fn(),
     }));
 
-    const { initializeFirebaseIfConfigured } = await import(
-      "../firebase-modules/initialize"
-    );
+    const { initializeFirebaseIfConfigured } =
+      await import("../firebase-modules/initialize");
 
     // 1回目: app未登録 → initializeApp が呼ばれる
     expect(() => initializeFirebaseIfConfigured()).not.toThrow();

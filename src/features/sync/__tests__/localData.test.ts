@@ -151,7 +151,9 @@ describe("localData", () => {
       expect(result.dailyHistory).toEqual(
         collectLocalSyncDataStorageFixture.dailyHistory,
       );
-      expect(result.settings).toEqual(collectLocalSyncDataStorageFixture.settings);
+      expect(result.settings).toEqual(
+        collectLocalSyncDataStorageFixture.settings,
+      );
       expect(result.presets).toEqual([{ id: "p1" }]);
       expect(result.budgetCategories).toEqual([budgetCategoryFixture]);
       expect(result.budgetIncomeItems).toEqual([budgetIncomeItemFixture]);
@@ -176,7 +178,9 @@ describe("localData", () => {
         dailyHistory: payload.dailyHistory,
       });
 
-      expect(routineStorage.saveRoutines).toHaveBeenCalledWith(payload.routines);
+      expect(routineStorage.saveRoutines).toHaveBeenCalledWith(
+        payload.routines,
+      );
       expect(routineStorage.saveMonthlyHistory).toHaveBeenCalledWith(
         payload.dailyHistory,
       );
@@ -243,15 +247,15 @@ describe("localData", () => {
       });
 
       expect(budgetStorage.saveBudgetData).toHaveBeenCalledWith(budgetData);
-      expect(budgetStorage.saveBudgetCategories).toHaveBeenCalledWith(
-        [budgetCategoryFixture],
-      );
-      expect(budgetStorage.saveBudgetIncomeItems).toHaveBeenCalledWith(
-        [budgetIncomeItemFixture],
-      );
-      expect(budgetStorage.saveBudgetExpenseItems).toHaveBeenCalledWith(
-        [budgetExpenseItemFixture],
-      );
+      expect(budgetStorage.saveBudgetCategories).toHaveBeenCalledWith([
+        budgetCategoryFixture,
+      ]);
+      expect(budgetStorage.saveBudgetIncomeItems).toHaveBeenCalledWith([
+        budgetIncomeItemFixture,
+      ]);
+      expect(budgetStorage.saveBudgetExpenseItems).toHaveBeenCalledWith([
+        budgetExpenseItemFixture,
+      ]);
     });
 
     it("予算データが未指定の場合はデフォルト値で保存する", () => {

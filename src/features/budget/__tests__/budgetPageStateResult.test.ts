@@ -12,7 +12,11 @@ describe("budgetPageStateResult", () => {
       },
     ];
     const categories = [
-      { id: "category-books", name: "書籍", createdAt: "2026-03-01T00:00:00.000Z" },
+      {
+        id: "category-books",
+        name: "書籍",
+        createdAt: "2026-03-01T00:00:00.000Z",
+      },
     ];
     const closeExpenseForm = jest.fn();
     const goToCurrentMonth = jest.fn();

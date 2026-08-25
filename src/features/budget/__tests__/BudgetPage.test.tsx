@@ -223,9 +223,7 @@ describe("BudgetPage", () => {
 
     render(<BudgetPage />);
 
-    fireEvent.click(
-      screen.getByRole("button", { name: "3月6日の支出を編集" }),
-    );
+    fireEvent.click(screen.getByRole("button", { name: "3月6日の支出を編集" }));
 
     expect(state.startEditExpense).toHaveBeenCalledWith(state.expenses[0]);
   });

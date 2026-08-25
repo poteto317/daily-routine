@@ -27,6 +27,7 @@
 ### Task 1: 週間目標データモデルと履歴スナップショット
 
 **Files:**
+
 - Modify: `src/types/routine/core.ts`
 - Modify: `src/types/routine/history.ts`
 - Modify: `src/types/routine/index.ts`
@@ -34,6 +35,7 @@
 - Modify: `src/features/routine/__tests__/storageDailyHistory.test.ts`
 
 **Interfaces:**
+
 - Produces: `WeeklyGoal { targetPerWeek: number; startedAt: string }`
 - Produces: `Routine.weeklyGoal?: WeeklyGoal`
 - Produces: `DailyHistory.routineSnapshots[].groupId?: string`
@@ -98,7 +100,9 @@ export interface Routine {
 `DailyHistory` のsnapshotにも同じオプショナルフィールドを加え、`createRoutineSnapshots` で値がある場合だけコピーする。
 
 ```ts
-export const createRoutineSnapshots = (routines: Routine[]): RoutineSnapshot[] =>
+export const createRoutineSnapshots = (
+  routines: Routine[],
+): RoutineSnapshot[] =>
   routines.map((routine) => ({
     id: routine.id,
     title: routine.title,
@@ -127,6 +131,7 @@ git commit -m "feat(routine): 週間目標を履歴へ保存する"
 ### Task 2: フォーム入力、検証、目標開始時刻
 
 **Files:**
+
 - Create: `src/features/routine/components/weeklyGoalFormModel.ts`
 - Create: `src/features/routine/components/__tests__/weeklyGoalFormModel.test.ts`
 - Modify: `src/features/routine/components/routineFormInitialModel.ts`
@@ -145,6 +150,7 @@ git commit -m "feat(routine): 週間目標を履歴へ保存する"
 - Create: `src/features/routine/components/__tests__/RoutineFormOptionalFields.test.tsx`
 
 **Interfaces:**
+
 - Consumes: `WeeklyGoal`
 - Produces: `isWeeklyGoalTargetInputValid(input: string): boolean`
 - Produces: `buildWeeklyGoal(input: string, current: WeeklyGoal | undefined, now: string): WeeklyGoal | undefined`
@@ -165,7 +171,9 @@ describe("isWeeklyGoalTargetInputValid", () => {
 
 it("同じ目標値ならstartedAtを保持する", () => {
   const current = { targetPerWeek: 3, startedAt: "2026-08-01T00:00:00.000Z" };
-  expect(buildWeeklyGoal("3", current, "2026-08-22T00:00:00.000Z")).toEqual(current);
+  expect(buildWeeklyGoal("3", current, "2026-08-22T00:00:00.000Z")).toEqual(
+    current,
+  );
 });
 
 it("目標値を変えるとstartedAtを更新する", () => {
@@ -250,7 +258,10 @@ expect(routineData.weeklyGoal).toEqual({
         className="w-full px-3 py-2 border border-gray-300 dark:border-gray-400 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-white dark:text-gray-900"
         placeholder="例: 3"
       />
-      <p id={`${inputId}-hint`} className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+      <p
+        id={`${inputId}-hint`}
+        className="text-xs text-gray-500 dark:text-gray-400 mt-1"
+      >
         1週間に達成したい回数（1〜7回、空欄なら設定なし）
       </p>
     </>
@@ -276,6 +287,7 @@ git commit -m "feat(routine): 週間目標を設定できるようにする"
 ### Task 3: 同一グループへの目標伝播とホーム画面バッジ
 
 **Files:**
+
 - Modify: `src/features/routine/hooks/routineCrudActions.ts`
 - Modify: `src/features/routine/hooks/__tests__/routineCrudActions.test.ts`
 - Modify: `src/features/routine/components/helpers.ts`
@@ -286,6 +298,7 @@ git commit -m "feat(routine): 週間目標を設定できるようにする"
 - Modify: `src/features/routine/locales/ja.json`
 
 **Interfaces:**
+
 - Consumes: `Routine.weeklyGoal`
 - Produces: `getWeeklyGoalLabel(targetPerWeek: number): string`
 - Preserves: `updateRoutineInState(routines, id, updates, now): Routine[]`
@@ -299,7 +312,10 @@ it("週間目標だけを同一groupIdの全メンバーへ伝播する", () => 
     makeRoutine({ id: "wed", groupId: "exercise", title: "水曜" }),
     makeRoutine({ id: "other", groupId: "reading", title: "読書" }),
   ];
-  const weeklyGoal = { targetPerWeek: 2, startedAt: "2026-08-22T00:00:00.000Z" };
+  const weeklyGoal = {
+    targetPerWeek: 2,
+    startedAt: "2026-08-22T00:00:00.000Z",
+  };
 
   const result = updateRoutineInState(
     routines,
@@ -308,8 +324,14 @@ it("週間目標だけを同一groupIdの全メンバーへ伝播する", () => 
     "2026-08-22T00:00:00.000Z",
   );
 
-  expect(result.find(({ id }) => id === "mon")).toMatchObject({ title: "運動", weeklyGoal });
-  expect(result.find(({ id }) => id === "wed")).toMatchObject({ title: "水曜", weeklyGoal });
+  expect(result.find(({ id }) => id === "mon")).toMatchObject({
+    title: "運動",
+    weeklyGoal,
+  });
+  expect(result.find(({ id }) => id === "wed")).toMatchObject({
+    title: "水曜",
+    weeklyGoal,
+  });
   expect(result.find(({ id }) => id === "other")?.weeklyGoal).toBeUndefined();
 });
 ```
@@ -327,13 +349,24 @@ Expected: siblingの `weeklyGoal` が未更新でFAIL。
 `updates` が `weeklyGoal` を自身のpropertyとして持つ場合だけ伝播する。対象メンバーには全更新を、兄弟には `weeklyGoal` と `updatedAt` だけを適用する。
 
 ```ts
-const hasWeeklyGoalUpdate = Object.prototype.hasOwnProperty.call(updates, "weeklyGoal");
+const hasWeeklyGoalUpdate = Object.prototype.hasOwnProperty.call(
+  updates,
+  "weeklyGoal",
+);
 const target = routines.find((routine) => routine.id === id);
 
 return routines.map((routine) => {
   if (routine.id === id) return buildUpdatedRoutine(routine, updates, now);
-  if (hasWeeklyGoalUpdate && target?.groupId && routine.groupId === target.groupId) {
-    return buildUpdatedRoutine(routine, { weeklyGoal: updates.weeklyGoal }, now);
+  if (
+    hasWeeklyGoalUpdate &&
+    target?.groupId &&
+    routine.groupId === target.groupId
+  ) {
+    return buildUpdatedRoutine(
+      routine,
+      { weeklyGoal: updates.weeklyGoal },
+      now,
+    );
   }
   return routine;
 });
@@ -353,11 +386,13 @@ export const getWeeklyGoalLabel = (targetPerWeek: number): string =>
 カテゴリバッジと同じ行に、青系の小さなバッジを追加する。
 
 ```tsx
-{routine.weeklyGoal && (
-  <span className="text-xs px-2 py-0.5 rounded-full shrink-0 bg-blue-100 text-blue-700 dark:bg-blue-200 dark:text-blue-800">
-    {getWeeklyGoalLabel(routine.weeklyGoal.targetPerWeek)}
-  </span>
-)}
+{
+  routine.weeklyGoal && (
+    <span className="text-xs px-2 py-0.5 rounded-full shrink-0 bg-blue-100 text-blue-700 dark:bg-blue-200 dark:text-blue-800">
+      {getWeeklyGoalLabel(routine.weeklyGoal.targetPerWeek)}
+    </span>
+  );
+}
 ```
 
 - [ ] **Step 6: mutationと表示テストを通す**
@@ -378,12 +413,14 @@ git commit -m "feat(routine): 週間目標をグループとカードへ反映�
 ### Task 4: 週次進捗とストリークの純粋集計
 
 **Files:**
+
 - Create: `src/features/statistics/statistics/weeklyGoals.ts`
 - Create: `src/features/statistics/__tests__/statistics.weekly-goals.test.ts`
 - Modify: `src/features/statistics/statistics/types.ts`
 - Modify: `src/features/statistics/statistics.ts`
 
 **Interfaces:**
+
 - Produces: `WeeklyGoalProgress`
 - Produces: `calculateWeeklyGoalProgress(params): WeeklyGoalProgress[]`
 
@@ -528,6 +565,7 @@ git commit -m "feat(statistics): 週間目標とストリークを集計する"
 ### Task 5: 統計ページの週間目標パネル
 
 **Files:**
+
 - Create: `src/features/statistics/page/useWeeklyGoalProgress.ts`
 - Create: `src/features/statistics/page/components/WeeklyGoalsPanel.tsx`
 - Create: `src/features/statistics/page/components/WeeklyGoalsPanel.stories.tsx`
@@ -542,6 +580,7 @@ git commit -m "feat(statistics): 週間目標とストリークを集計する"
 - Modify: `src/features/statistics/__tests__/StatisticsPage.testUtils.tsx`
 
 **Interfaces:**
+
 - Consumes: `calculateWeeklyGoalProgress`
 - Produces: `useWeeklyGoalProgress(selectedDate: Date): WeeklyGoalProgress[]`
 - Produces: `WeeklyGoalsPanel({ goals }: { goals: WeeklyGoalProgress[] })`
@@ -557,7 +596,10 @@ const { result } = renderHook(() =>
   }),
 );
 
-expect(result.current[0]).toMatchObject({ goalId: "exercise", completedCount: 2 });
+expect(result.current[0]).toMatchObject({
+  goalId: "exercise",
+  completedCount: 2,
+});
 ```
 
 - [ ] **Step 2: パネルの失敗テストを書く**
@@ -566,16 +608,18 @@ expect(result.current[0]).toMatchObject({ goalId: "exercise", completedCount: 2 
 it("進捗、残り回数、現在と最長ストリークを表示する", () => {
   render(
     <WeeklyGoalsPanel
-      goals={[{
-        goalId: "exercise",
-        title: "運動",
-        targetPerWeek: 3,
-        completedCount: 2,
-        remainingCount: 1,
-        isAchieved: false,
-        currentStreak: 4,
-        longestStreak: 7,
-      }]}
+      goals={[
+        {
+          goalId: "exercise",
+          title: "運動",
+          targetPerWeek: 3,
+          completedCount: 2,
+          remainingCount: 1,
+          isAchieved: false,
+          currentStreak: 4,
+          longestStreak: 7,
+        },
+      ]}
     />,
   );
 
@@ -614,7 +658,9 @@ export const useWeeklyGoalProgress = (
 `useStatisticsComputedStats` で `currentDate` を `useWeeklyGoalProgress` へ渡し、`weeklyGoalProgress` をresultへ追加する。`StatisticsPage` は `viewMode === "week"` のときだけsummary cardsの後にパネルを描画する。
 
 ```tsx
-{viewMode === "week" && <WeeklyGoalsPanel goals={weeklyGoalProgress} />}
+{
+  viewMode === "week" && <WeeklyGoalsPanel goals={weeklyGoalProgress} />;
+}
 ```
 
 - [ ] **Step 5: 日本語テキストをlocaleへ追加する**
@@ -655,6 +701,7 @@ git commit -m "feat(statistics): 週間目標の進捗を表示する"
 ### Task 6: 同期・JSON転送・壊れたデータの互換性
 
 **Files:**
+
 - Modify: `src/features/sync/__tests__/localData.test.ts`
 - Modify: `src/features/sync/__tests__/sync.upload.test.ts`
 - Modify: `src/features/sync/__tests__/sync.download.test.ts`
@@ -664,6 +711,7 @@ git commit -m "feat(statistics): 週間目標の進捗を表示する"
 - Create: `src/features/settings/__tests__/routineShapeValidation.test.ts`
 
 **Interfaces:**
+
 - Preserves: `SyncPayload.routines` と `SyncPayload.dailyHistory` の入れ子フィールド
 - Preserves: JSON transferの `routines` と `history` グループ
 
@@ -678,14 +726,16 @@ const history = {
   "2026-08-18": {
     date: "2026-08-18",
     completedRoutineIds: [routine.id],
-    routineSnapshots: [{
-      id: routine.id,
-      title: routine.title,
-      category: routine.category,
-      startTime: routine.startTime,
-      groupId: "exercise",
-      weeklyGoal,
-    }],
+    routineSnapshots: [
+      {
+        id: routine.id,
+        title: routine.title,
+        category: routine.category,
+        startTime: routine.startTime,
+        groupId: "exercise",
+        weeklyGoal,
+      },
+    ],
   },
 };
 ```
@@ -716,11 +766,13 @@ git commit -m "test(sync): 週間目標の同期と転送を保証する"
 ### Task 7: E2E、機能文書、全体検証
 
 **Files:**
+
 - Modify: `e2e/routine-creation.spec.ts`
 - Modify: `docs/04-reference/features.md`
 - Modify: `README.md`
 
 **Interfaces:**
+
 - Verifies: 作成フォーム → ホームバッジ → 統計ページ進捗のユーザーフロー
 
 - [ ] **Step 1: E2Eシナリオを追加する**

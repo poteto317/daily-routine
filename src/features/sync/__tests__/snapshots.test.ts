@@ -113,9 +113,7 @@ describe("sync snapshots", () => {
 
     await applySyncSnapshot("snapshot-1");
 
-    expect(routineStorage.saveRoutines).toHaveBeenCalledWith([
-      routineFixture,
-    ]);
+    expect(routineStorage.saveRoutines).toHaveBeenCalledWith([routineFixture]);
     expect(todoListsStorage.saveTodoLists).toHaveBeenCalledWith([
       todoListFixture,
     ]);
@@ -149,9 +147,9 @@ describe("sync snapshots", () => {
     await applySyncSnapshot("snapshot-1");
 
     expect(routineStorage.saveRoutines).toHaveBeenCalledWith([routineFixture]);
-    expect(
-      workoutTrackerStorage.saveWorkoutRecordHistory,
-    ).toHaveBeenCalledWith(localWorkouts);
+    expect(workoutTrackerStorage.saveWorkoutRecordHistory).toHaveBeenCalledWith(
+      localWorkouts,
+    );
     expect(presetStorage.savePresets).toHaveBeenCalledWith(localPresets);
   });
 

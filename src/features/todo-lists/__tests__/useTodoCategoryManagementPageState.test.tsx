@@ -26,18 +26,22 @@ jest.mock("../useColorPickerController", () => ({
   useColorPickerController: jest.fn(),
 }));
 
-const mockUseFormState = useTodoCategoryManagementFormState as jest.MockedFunction<
-  typeof useTodoCategoryManagementFormState
->;
-const mockUseFormFocus = useTodoCategoryManagementFormFocus as jest.MockedFunction<
-  typeof useTodoCategoryManagementFormFocus
->;
-const mockUseDataState = useTodoCategoryManagementDataState as jest.MockedFunction<
-  typeof useTodoCategoryManagementDataState
->;
-const mockUseNameEditing = useTodoCategoryManagementNameEditing as jest.MockedFunction<
-  typeof useTodoCategoryManagementNameEditing
->;
+const mockUseFormState =
+  useTodoCategoryManagementFormState as jest.MockedFunction<
+    typeof useTodoCategoryManagementFormState
+  >;
+const mockUseFormFocus =
+  useTodoCategoryManagementFormFocus as jest.MockedFunction<
+    typeof useTodoCategoryManagementFormFocus
+  >;
+const mockUseDataState =
+  useTodoCategoryManagementDataState as jest.MockedFunction<
+    typeof useTodoCategoryManagementDataState
+  >;
+const mockUseNameEditing =
+  useTodoCategoryManagementNameEditing as jest.MockedFunction<
+    typeof useTodoCategoryManagementNameEditing
+  >;
 const mockUseDragAndDrop = useTodoCategoryDragAndDrop as jest.MockedFunction<
   typeof useTodoCategoryDragAndDrop
 >;
@@ -97,9 +101,7 @@ describe("useTodoCategoryManagementPageState composition", () => {
   });
 
   it("各フックを正しい引数で合成し、値をまとめて返す", () => {
-    const { result } = renderHook(() =>
-      useTodoCategoryManagementPageState(),
-    );
+    const { result } = renderHook(() => useTodoCategoryManagementPageState());
 
     expect(mockUseDataState).toHaveBeenCalledWith({
       nameInput: "プライベート",

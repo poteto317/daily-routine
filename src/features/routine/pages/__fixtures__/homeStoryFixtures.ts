@@ -2,16 +2,17 @@ import type { TrainDelayInfo } from "@/types/routine";
 import type { HomeDisplaySummary, HomeToolbarProps } from "../homeTypes";
 import { fn } from "storybook/test";
 
-export const sortedDaysAndHoliday: HomeToolbarProps["view"]["sortedDaysAndHoliday"] = [
-  { value: 1, label: "月曜日" },
-  { value: 2, label: "火曜日" },
-  { value: 3, label: "水曜日" },
-  { value: 4, label: "木曜日" },
-  { value: 5, label: "金曜日" },
-  { value: 6, label: "土曜日" },
-  { value: 0, label: "日曜日" },
-  "holiday",
-];
+export const sortedDaysAndHoliday: HomeToolbarProps["view"]["sortedDaysAndHoliday"] =
+  [
+    { value: 1, label: "月曜日" },
+    { value: 2, label: "火曜日" },
+    { value: 3, label: "水曜日" },
+    { value: 4, label: "木曜日" },
+    { value: 5, label: "金曜日" },
+    { value: 6, label: "土曜日" },
+    { value: 0, label: "日曜日" },
+    "holiday",
+  ];
 
 export const sampleTrainDelay: TrainDelayInfo = {
   lineId: "jr-chuo",

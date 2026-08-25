@@ -34,7 +34,11 @@ export const TodoCategorySwatches = ({
     !categories.some((category) => category.id === selectedCategoryId);
 
   return (
-    <div role="radiogroup" aria-label={texts.list.categoryPickerLabel} className={className}>
+    <div
+      role="radiogroup"
+      aria-label={texts.list.categoryPickerLabel}
+      className={className}
+    >
       <button
         role="radio"
         aria-checked={isUncategorized}

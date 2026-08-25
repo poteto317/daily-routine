@@ -39,6 +39,7 @@ export const sampleRoutines: Routine[] = [
   },
 ];
 
-export const sampleCompletedRoutines: Routine[] = sampleRoutines.map(
-  (r) => ({ ...r, isCompleted: true }),
-);
+export const sampleCompletedRoutines: Routine[] = sampleRoutines.map((r) => ({
+  ...r,
+  isCompleted: true,
+}));

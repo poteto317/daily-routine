@@ -30,9 +30,7 @@ describe("budget storageExpenses", () => {
     // toISOString だけでなく getHours/getMinutes（usedTime算出に使う）も
     // 決定的にするため、日付だけでなく実際の時刻をfakeTimersで固定する。
     // "2026-05-01T00:00:00.000Z" はTZ=Asia/Tokyo環境ではローカル9:00になる。
-    jest
-      .useFakeTimers()
-      .setSystemTime(new Date("2026-05-01T00:00:00.000Z"));
+    jest.useFakeTimers().setSystemTime(new Date("2026-05-01T00:00:00.000Z"));
   });
 
   afterEach(() => {
@@ -68,9 +66,7 @@ describe("budget storageExpenses", () => {
 
     expect(mockSaveBudgetData).toHaveBeenCalledWith({
       expenses: {
-        "2026-05": [
-          expect.objectContaining({ categoryId: undefined }),
-        ],
+        "2026-05": [expect.objectContaining({ categoryId: undefined })],
       },
     });
   });

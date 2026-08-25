@@ -36,7 +36,12 @@ describe("TodoListManagementItem", () => {
 
   it("タイトルをクリックすると onOpenListAction が呼ばれる", () => {
     const onOpenListAction = jest.fn();
-    render(<TodoListManagementItem {...defaultProps} onOpenListAction={onOpenListAction} />);
+    render(
+      <TodoListManagementItem
+        {...defaultProps}
+        onOpenListAction={onOpenListAction}
+      />,
+    );
     fireEvent.click(screen.getByLabelText("Inbox を開く"));
     expect(onOpenListAction).toHaveBeenCalledWith("list-1");
   });
@@ -55,14 +60,24 @@ describe("TodoListManagementItem", () => {
 
   it("編集ボタンをクリックすると onStartEditAction が呼ばれる", () => {
     const onStartEditAction = jest.fn();
-    render(<TodoListManagementItem {...defaultProps} onStartEditAction={onStartEditAction} />);
+    render(
+      <TodoListManagementItem
+        {...defaultProps}
+        onStartEditAction={onStartEditAction}
+      />,
+    );
     fireEvent.click(screen.getByLabelText("Inbox を編集"));
     expect(onStartEditAction).toHaveBeenCalledWith("list-1", "Inbox");
   });
 
   it("削除ボタンをクリックすると onDeleteAction が呼ばれる", () => {
     const onDeleteAction = jest.fn();
-    render(<TodoListManagementItem {...defaultProps} onDeleteAction={onDeleteAction} />);
+    render(
+      <TodoListManagementItem
+        {...defaultProps}
+        onDeleteAction={onDeleteAction}
+      />,
+    );
     fireEvent.click(screen.getByLabelText("Inbox を削除"));
     expect(onDeleteAction).toHaveBeenCalledWith(defaultProps.list);
   });

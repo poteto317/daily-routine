@@ -12,10 +12,7 @@ import type { SyncPayload } from "./types";
 
 export type BudgetSyncData = Pick<
   SyncPayload,
-  | "budgetData"
-  | "budgetCategories"
-  | "budgetIncomeItems"
-  | "budgetExpenseItems"
+  "budgetData" | "budgetCategories" | "budgetIncomeItems" | "budgetExpenseItems"
 >;
 
 export type BudgetSyncDataSummary = {

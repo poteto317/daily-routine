@@ -55,7 +55,9 @@ export const ClickUpload: Story = {
   args: { mode: "upload", syncStatus: idleStatus },
   play: async ({ canvasElement, args }) => {
     const canvas = within(canvasElement);
-    const button = canvas.getByRole("button", { name: "クラウドへアップロード" });
+    const button = canvas.getByRole("button", {
+      name: "クラウドへアップロード",
+    });
     await userEvent.click(button);
     expect(args.onSyncAction).toHaveBeenCalledOnce();
   },
@@ -66,7 +68,9 @@ export const ClickDownload: Story = {
   args: { mode: "download", syncStatus: idleStatus },
   play: async ({ canvasElement, args }) => {
     const canvas = within(canvasElement);
-    const button = canvas.getByRole("button", { name: "クラウドからダウンロード" });
+    const button = canvas.getByRole("button", {
+      name: "クラウドからダウンロード",
+    });
     await userEvent.click(button);
     expect(args.onSyncAction).toHaveBeenCalledOnce();
   },

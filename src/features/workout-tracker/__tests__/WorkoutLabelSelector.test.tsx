@@ -53,7 +53,9 @@ describe("WorkoutLabelSelector", () => {
       />,
     );
 
-    fireEvent.click(screen.getByRole("radio", { name: texts.form.labelStrength }));
+    fireEvent.click(
+      screen.getByRole("radio", { name: texts.form.labelStrength }),
+    );
 
     expect(onChangeLabelAction).toHaveBeenCalledWith("strength");
   });
@@ -67,7 +69,9 @@ describe("WorkoutLabelSelector", () => {
       />,
     );
 
-    fireEvent.click(screen.getByRole("radio", { name: texts.form.labelRunning }));
+    fireEvent.click(
+      screen.getByRole("radio", { name: texts.form.labelRunning }),
+    );
 
     expect(onChangeLabelAction).toHaveBeenCalledWith("running");
   });

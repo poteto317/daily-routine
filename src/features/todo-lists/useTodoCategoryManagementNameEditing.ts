@@ -11,8 +11,7 @@ export const useTodoCategoryManagementNameEditing = ({
   const [editingCategoryId, setEditingCategoryId] = useState<string | null>(
     null,
   );
-  const [editingCategoryNameValue, setEditingCategoryNameValue] =
-    useState("");
+  const [editingCategoryNameValue, setEditingCategoryNameValue] = useState("");
 
   const startEditCategoryName = useCallback(
     (categoryId: string, currentName: string) => {

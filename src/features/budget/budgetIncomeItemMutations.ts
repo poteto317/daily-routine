@@ -25,9 +25,7 @@ export const updateBudgetIncomeItem = (
   name: string,
   amount: number,
 ): BudgetIncomeItem[] =>
-  items.map((item) =>
-    item.id === itemId ? { ...item, name, amount } : item,
-  );
+  items.map((item) => (item.id === itemId ? { ...item, name, amount } : item));
 
 /**
  * 収入項目を削除する。

@@ -22,5 +22,4 @@ export const isImeComposingNativeKeyDown = (
 /** React の keydown イベントが IME 変換中かどうかを判定する */
 export const isImeComposingKeyDown = (
   event: ReactKeyboardEvent<HTMLInputElement | HTMLTextAreaElement>,
-) =>
-  isImeComposingNativeKeyDown(event.nativeEvent as NativeKeyboardEventLike);
+) => isImeComposingNativeKeyDown(event.nativeEvent as NativeKeyboardEventLike);

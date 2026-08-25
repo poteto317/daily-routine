@@ -44,7 +44,10 @@ describe("TodoCategoryManagementItem", () => {
   it("編集ボタンをクリックすると onStartEditAction が呼ばれる", () => {
     const onStartEditAction = jest.fn();
     render(
-      <TodoCategoryManagementItem {...defaultProps} onStartEditAction={onStartEditAction} />,
+      <TodoCategoryManagementItem
+        {...defaultProps}
+        onStartEditAction={onStartEditAction}
+      />,
     );
     fireEvent.click(screen.getByLabelText("仕事 を編集"));
     expect(onStartEditAction).toHaveBeenCalledWith("cat-1", "仕事");
@@ -52,7 +55,12 @@ describe("TodoCategoryManagementItem", () => {
 
   it("削除ボタンをクリックすると onDeleteAction が呼ばれる", () => {
     const onDeleteAction = jest.fn();
-    render(<TodoCategoryManagementItem {...defaultProps} onDeleteAction={onDeleteAction} />);
+    render(
+      <TodoCategoryManagementItem
+        {...defaultProps}
+        onDeleteAction={onDeleteAction}
+      />,
+    );
     fireEvent.click(screen.getByLabelText("仕事 を削除"));
     expect(onDeleteAction).toHaveBeenCalledWith(defaultProps.category);
   });

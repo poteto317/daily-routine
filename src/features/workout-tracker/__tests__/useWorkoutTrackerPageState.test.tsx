@@ -8,15 +8,17 @@ jest.mock("../storage", () => ({
   deleteWorkoutRecord: jest.fn(),
 }));
 
-const mockGetAllWorkoutRecords = storage.getAllWorkoutRecords as jest.MockedFunction<
-  typeof storage.getAllWorkoutRecords
->;
+const mockGetAllWorkoutRecords =
+  storage.getAllWorkoutRecords as jest.MockedFunction<
+    typeof storage.getAllWorkoutRecords
+  >;
 const mockAddWorkoutRecord = storage.addWorkoutRecord as jest.MockedFunction<
   typeof storage.addWorkoutRecord
 >;
-const mockDeleteWorkoutRecord = storage.deleteWorkoutRecord as jest.MockedFunction<
-  typeof storage.deleteWorkoutRecord
->;
+const mockDeleteWorkoutRecord =
+  storage.deleteWorkoutRecord as jest.MockedFunction<
+    typeof storage.deleteWorkoutRecord
+  >;
 
 describe("useWorkoutTrackerPageState", () => {
   beforeEach(() => {

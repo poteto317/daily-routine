@@ -35,9 +35,7 @@ describe("TodoItemTitleArea", () => {
 
     it("入力フィールドは表示されない", () => {
       render(<TodoItemTitleArea {...defaultProps} isEditing={false} />);
-      expect(
-        screen.queryByRole("textbox"),
-      ).not.toBeInTheDocument();
+      expect(screen.queryByRole("textbox")).not.toBeInTheDocument();
     });
 
     it("タイトルボタンに isDragActive と isCompleted が渡される", () => {
@@ -59,7 +57,11 @@ describe("TodoItemTitleArea", () => {
     it("タイトルボタンをクリックすると onToggleAction が呼ばれる", () => {
       const onToggleAction = jest.fn();
       render(
-        <TodoItemTitleArea {...defaultProps} isEditing={false} onToggleAction={onToggleAction} />,
+        <TodoItemTitleArea
+          {...defaultProps}
+          isEditing={false}
+          onToggleAction={onToggleAction}
+        />,
       );
       fireEvent.click(
         screen.getByRole("button", { name: "「テストタスク」を完了にする" }),
@@ -68,9 +70,17 @@ describe("TodoItemTitleArea", () => {
     });
 
     it("isSelected=true のとき aria-label に（選択中）が反映される", () => {
-      render(<TodoItemTitleArea {...defaultProps} isEditing={false} isSelected={true} />);
+      render(
+        <TodoItemTitleArea
+          {...defaultProps}
+          isEditing={false}
+          isSelected={true}
+        />,
+      );
       expect(
-        screen.getByRole("button", { name: "「テストタスク」を完了にする（選択中）" }),
+        screen.getByRole("button", {
+          name: "「テストタスク」を完了にする（選択中）",
+        }),
       ).toBeInTheDocument();
     });
   });
@@ -90,11 +100,13 @@ describe("TodoItemTitleArea", () => {
 
     it("タイトルボタンは表示されない", () => {
       render(
-        <TodoItemTitleArea {...defaultProps} isEditing={true} editingTitle="X" />,
+        <TodoItemTitleArea
+          {...defaultProps}
+          isEditing={true}
+          editingTitle="X"
+        />,
       );
-      expect(
-        screen.queryByRole("button"),
-      ).not.toBeInTheDocument();
+      expect(screen.queryByRole("button")).not.toBeInTheDocument();
     });
 
     it("aria-label に「のタイトルを編集」が含まれる", () => {
@@ -106,7 +118,9 @@ describe("TodoItemTitleArea", () => {
         />,
       );
       expect(
-        screen.getByRole("textbox", { name: "「テストタスク」のタイトルを編集" }),
+        screen.getByRole("textbox", {
+          name: "「テストタスク」のタイトルを編集",
+        }),
       ).toBeInTheDocument();
     });
 

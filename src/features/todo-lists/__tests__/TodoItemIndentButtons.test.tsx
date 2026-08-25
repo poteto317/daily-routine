@@ -29,21 +29,37 @@ describe("TodoItemIndentButtons", () => {
   });
 
   it("currentIndent >= maxIndent のとき「上げる」ボタンが disabled になる", () => {
-    render(<TodoItemIndentButtons {...defaultProps} currentIndent={3} maxIndent={3} />);
+    render(
+      <TodoItemIndentButtons
+        {...defaultProps}
+        currentIndent={3}
+        maxIndent={3}
+      />,
+    );
     expect(screen.getByLabelText("インデントを上げる")).toBeDisabled();
     expect(screen.getByLabelText("インデントを下げる")).not.toBeDisabled();
   });
 
   it("「下げる」クリックで onOutdentAction が呼ばれる", () => {
     const onOutdentAction = jest.fn();
-    render(<TodoItemIndentButtons {...defaultProps} onOutdentAction={onOutdentAction} />);
+    render(
+      <TodoItemIndentButtons
+        {...defaultProps}
+        onOutdentAction={onOutdentAction}
+      />,
+    );
     fireEvent.click(screen.getByLabelText("インデントを下げる"));
     expect(onOutdentAction).toHaveBeenCalledWith("list-1", "item-1");
   });
 
   it("「上げる」クリックで onIndentAction が呼ばれる", () => {
     const onIndentAction = jest.fn();
-    render(<TodoItemIndentButtons {...defaultProps} onIndentAction={onIndentAction} />);
+    render(
+      <TodoItemIndentButtons
+        {...defaultProps}
+        onIndentAction={onIndentAction}
+      />,
+    );
     fireEvent.click(screen.getByLabelText("インデントを上げる"));
     expect(onIndentAction).toHaveBeenCalledWith("list-1", "item-1");
   });

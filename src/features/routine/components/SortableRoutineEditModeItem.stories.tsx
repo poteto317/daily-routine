@@ -2,7 +2,10 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import type { Decorator } from "@storybook/nextjs-vite";
 import { expect, fn, userEvent, within } from "storybook/test";
 import { DndContext } from "@dnd-kit/core";
-import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 import type { Routine } from "@/types/routine";
 import { SortableRoutineEditModeItem } from "./SortableRoutineEditModeItem";
 
@@ -48,7 +51,10 @@ export const Default: Story = {
 };
 
 export const Completed: Story = {
-  args: { routine: { ...routine, isCompleted: true }, swipeActionType: "delete" },
+  args: {
+    routine: { ...routine, isCompleted: true },
+    swipeActionType: "delete",
+  },
 };
 
 export const SwipeEdit: Story = {

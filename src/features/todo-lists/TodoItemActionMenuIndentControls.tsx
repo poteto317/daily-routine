@@ -39,7 +39,11 @@ export const TodoItemActionMenuIndentControls = ({
     <button
       type="button"
       onClick={onIndent}
-      disabled={isIndentButtonDisabled(currentIndent, maxIndent, sortModeActive)}
+      disabled={isIndentButtonDisabled(
+        currentIndent,
+        maxIndent,
+        sortModeActive,
+      )}
       className={ACTION_MENU_DISABLED_BUTTON_CLASS}
     >
       → {texts.list.indentLabel}

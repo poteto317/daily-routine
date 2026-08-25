@@ -30,7 +30,10 @@ describe("TodoItemCollapseButton", () => {
   it("折りたたみ状態のとき ▶ が表示される", () => {
     render(<TodoItemCollapseButton {...defaultProps} isCollapsed={true} />);
     expect(screen.getByRole("button")).toHaveTextContent("▶");
-    expect(screen.getByRole("button")).toHaveAttribute("aria-expanded", "false");
+    expect(screen.getByRole("button")).toHaveAttribute(
+      "aria-expanded",
+      "false",
+    );
   });
 
   it("クリックで onToggleCollapseAction が呼ばれる", async () => {

@@ -8,8 +8,7 @@ import { getFirebaseState, setFirebaseState } from "./state";
 export const initializeFirebaseIfConfigured = () => {
   if (!isFirebaseConfigured) return;
 
-  const app =
-    getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
+  const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
   setFirebaseState({ app });
 
   if (typeof window === "undefined") return;

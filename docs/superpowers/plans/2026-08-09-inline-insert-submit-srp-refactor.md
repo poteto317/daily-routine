@@ -21,15 +21,15 @@
 
 main ブランチとの差分ファイル一覧と、SRP観点での判定:
 
-| ファイル | 種別 | 判定 |
-| --- | --- | --- |
-| `docs/superpowers/plans/2026-08-09-todo-add-blur-keyboard.md` | ドキュメント | 対象外 |
-| `src/features/todo-lists/todoListPageViewActions.ts` | ロジック | 対象外（`focusInput` → `blurInput` のリネームのみ。関数は「入力から追加を実行する」という単一の責務を維持） |
-| `src/features/todo-lists/useTodoListDetailAddAction.ts` | フック | 対象外（`.focus()` → `.blur()` の変更のみ。「追加アクションを組み立てる」という単一の責務を維持） |
-| `src/features/todo-lists/__tests__/todoListPageViewActions.test.ts` | テスト | 対象外（リネーム追従のみ） |
-| `src/features/todo-lists/__tests__/useTodoListDetailAddAction.test.tsx` | テスト | 対象外（リネーム追従のみ） |
-| `src/features/todo-lists/__tests__/InlineInsertForm.test.tsx` | テスト | 対象外（テストケース追加のみ。モックインフラの混在なし） |
-| `src/features/todo-lists/InlineInsertForm.tsx` | コンポーネント | **対象**（下記参照） |
+| ファイル                                                                | 種別           | 判定                                                                                                        |
+| ----------------------------------------------------------------------- | -------------- | ----------------------------------------------------------------------------------------------------------- |
+| `docs/superpowers/plans/2026-08-09-todo-add-blur-keyboard.md`           | ドキュメント   | 対象外                                                                                                      |
+| `src/features/todo-lists/todoListPageViewActions.ts`                    | ロジック       | 対象外（`focusInput` → `blurInput` のリネームのみ。関数は「入力から追加を実行する」という単一の責務を維持） |
+| `src/features/todo-lists/useTodoListDetailAddAction.ts`                 | フック         | 対象外（`.focus()` → `.blur()` の変更のみ。「追加アクションを組み立てる」という単一の責務を維持）           |
+| `src/features/todo-lists/__tests__/todoListPageViewActions.test.ts`     | テスト         | 対象外（リネーム追従のみ）                                                                                  |
+| `src/features/todo-lists/__tests__/useTodoListDetailAddAction.test.tsx` | テスト         | 対象外（リネーム追従のみ）                                                                                  |
+| `src/features/todo-lists/__tests__/InlineInsertForm.test.tsx`           | テスト         | 対象外（テストケース追加のみ。モックインフラの混在なし）                                                    |
+| `src/features/todo-lists/InlineInsertForm.tsx`                          | コンポーネント | **対象**（下記参照）                                                                                        |
 
 ### `InlineInsertForm.tsx` のSRP違反
 
@@ -60,11 +60,13 @@ main ブランチとの差分ファイル一覧と、SRP観点での判定:
 ### Task 1: 送信処理を useInlineInsertSubmit フックへ切り出す
 
 **Files:**
+
 - Create: `src/features/todo-lists/useInlineInsertSubmit.ts`
 - Create: `src/features/todo-lists/__tests__/useInlineInsertSubmit.test.tsx`
 - Modify: `src/features/todo-lists/InlineInsertForm.tsx`
 
 **Interfaces:**
+
 - `useInlineInsertSubmit({ inputText, onAddAction })` が返すもの:
   - `inputRef: RefObject<HTMLInputElement | null>` — input要素へ渡すref
   - `canSubmit: boolean` — 送信可能か（追加ボタンの `disabled` 判定に使う）
@@ -286,6 +288,7 @@ export const InlineInsertForm = ({
 ```
 
 変更点は以下の3つのみで、マークアップ・クラス名・`onCancelAction` の配線は一切変えない:
+
 - `useRef` の直接利用と `handleAdd` の定義（および12行のコメント）を削除し、`useInlineInsertSubmit` の呼び出しに置き換え
 - `disabled={!inputText.trim()}` → `disabled={!canSubmit}`
 - 説明コメントをフック側へ移動
@@ -300,30 +303,36 @@ Expected: PASS（既存15件すべて。振る舞いは変えていないため�
 `useInlineInsertSubmit.ts` の `if (!canSubmit) return;` を一時的にコメントアウトし、テストが落ちることを確認してから元に戻す。
 
 Run:
+
 ```bash
 npx jest src/features/todo-lists/__tests__/useInlineInsertSubmit.test.tsx src/features/todo-lists/__tests__/InlineInsertForm.test.tsx --no-coverage
 ```
+
 Expected: ガードを外すと、フック側2件（空欄・空白）とコンポーネント側2件（空欄Enter・空白Enter）が失敗する。確認後、必ず元に戻す。
 
 - [x] **Step 6: todo-lists全体・lint・型チェックを実行する**
 
 Run:
+
 ```bash
 npx jest src/features/todo-lists --no-coverage
 npx eslint src/features/todo-lists/ --quiet
 npx tsc --noEmit -p tsconfig.test.json
 ```
+
 Expected: すべてエラーなし
 
 - [x] **Step 7: 全体テストスイート・E2Eを実行する**
 
 Run:
+
 ```bash
 npm test -- --runInBand
 npm run lint
 npm run typecheck
 npm run test:e2e
 ```
+
 Expected: すべてPASS（既存機能への影響がないことを確認）
 
 - [ ] **Step 8: コミット（ユーザーに確認の上で実行）**

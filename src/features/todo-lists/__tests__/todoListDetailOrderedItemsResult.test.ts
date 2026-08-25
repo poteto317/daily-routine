@@ -5,9 +5,9 @@ describe("createTodoListDetailOrderedItemsResult", () => {
   it("visibleItems の公開 shape を返す", () => {
     const visibleItems: TodoListItem[] = [];
 
-    expect(
-      createTodoListDetailOrderedItemsResult({ visibleItems }),
-    ).toEqual({ visibleItems });
+    expect(createTodoListDetailOrderedItemsResult({ visibleItems })).toEqual({
+      visibleItems,
+    });
   });
 
   it("複数アイテムでも shape をそのまま返す", () => {
@@ -16,9 +16,9 @@ describe("createTodoListDetailOrderedItemsResult", () => {
       { id: "item-2", title: "B", isCompleted: true, createdAt: "" },
     ] as TodoListItem[];
 
-    expect(
-      createTodoListDetailOrderedItemsResult({ visibleItems }),
-    ).toEqual({ visibleItems });
+    expect(createTodoListDetailOrderedItemsResult({ visibleItems })).toEqual({
+      visibleItems,
+    });
   });
 
   it("visibleItems の参照をそのまま伝播する（参照同一性）", () => {

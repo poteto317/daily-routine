@@ -375,7 +375,9 @@ describe("TodoListsPage", () => {
 
     render(<TodoListsPage />);
 
-    expect(screen.getByRole("button", { name: "末尾に追加" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "末尾に追加" }),
+    ).toBeInTheDocument();
   });
 
   it("末尾に追加ボタンをクリックすると先頭に追加に切り替わりlocalStorageに保存される", async () => {
@@ -394,7 +396,9 @@ describe("TodoListsPage", () => {
         }),
       ]);
     });
-    expect(screen.getByRole("button", { name: "先頭に追加" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "先頭に追加" }),
+    ).toBeInTheDocument();
   });
 
   it("先頭に追加が設定されているとき末尾に追加ボタンをクリックすると末尾に戻りlocalStorageに保存される", async () => {
@@ -405,7 +409,9 @@ describe("TodoListsPage", () => {
 
     render(<TodoListsPage />);
 
-    expect(screen.getByRole("button", { name: "先頭に追加" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "先頭に追加" }),
+    ).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "先頭に追加" }));
 
@@ -417,7 +423,9 @@ describe("TodoListsPage", () => {
         }),
       ]);
     });
-    expect(screen.getByRole("button", { name: "末尾に追加" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "末尾に追加" }),
+    ).toBeInTheDocument();
   });
 
   it("先頭に追加が設定されているときTodoを追加すると先頭に追加される", async () => {
@@ -1322,7 +1330,9 @@ describe("TodoListsPage", () => {
         expect(screen.getByText("Undo Target")).toBeInTheDocument();
       });
 
-      expect(screen.getByRole("button", { name: "元に戻す" })).not.toBeDisabled();
+      expect(
+        screen.getByRole("button", { name: "元に戻す" }),
+      ).not.toBeDisabled();
       expect(screen.getByRole("button", { name: "やり直す" })).toBeDisabled();
     });
 
@@ -1347,7 +1357,9 @@ describe("TodoListsPage", () => {
         expect(screen.queryByText("Undo Target")).toBeNull();
       });
       expect(screen.getByRole("button", { name: "元に戻す" })).toBeDisabled();
-      expect(screen.getByRole("button", { name: "やり直す" })).not.toBeDisabled();
+      expect(
+        screen.getByRole("button", { name: "やり直す" }),
+      ).not.toBeDisabled();
     });
 
     it("「やり直す」ボタンクリックで取り消した操作を再実行できる", async () => {
@@ -1361,15 +1373,21 @@ describe("TodoListsPage", () => {
       });
       fireEvent.click(screen.getByText("追加"));
 
-      await waitFor(() => expect(screen.getByText("Redo Target")).toBeInTheDocument());
+      await waitFor(() =>
+        expect(screen.getByText("Redo Target")).toBeInTheDocument(),
+      );
 
       fireEvent.click(screen.getByRole("button", { name: "元に戻す" }));
       await waitFor(() => expect(screen.queryByText("Redo Target")).toBeNull());
 
       fireEvent.click(screen.getByRole("button", { name: "やり直す" }));
 
-      await waitFor(() => expect(screen.getByText("Redo Target")).toBeInTheDocument());
-      expect(screen.getByRole("button", { name: "元に戻す" })).not.toBeDisabled();
+      await waitFor(() =>
+        expect(screen.getByText("Redo Target")).toBeInTheDocument(),
+      );
+      expect(
+        screen.getByRole("button", { name: "元に戻す" }),
+      ).not.toBeDisabled();
       expect(screen.getByRole("button", { name: "やり直す" })).toBeDisabled();
     });
 
@@ -1411,7 +1429,9 @@ describe("TodoListsPage", () => {
       );
 
       fireEvent.keyDown(window, { key: "z", metaKey: true });
-      await waitFor(() => expect(screen.queryByText("Keyboard Redo")).toBeNull());
+      await waitFor(() =>
+        expect(screen.queryByText("Keyboard Redo")).toBeNull(),
+      );
 
       fireEvent.keyDown(window, { key: "z", metaKey: true, shiftKey: true });
 

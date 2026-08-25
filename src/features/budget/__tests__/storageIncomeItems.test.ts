@@ -17,7 +17,12 @@ describe("budget income item storage", () => {
 
   it("getBudgetIncomeItemsは保存済みの収入項目一覧を取得する", () => {
     const items = [
-      { id: "income-1", name: "給与", amount: 300000, createdAt: "2026-05-01T00:00:00.000Z" },
+      {
+        id: "income-1",
+        name: "給与",
+        amount: 300000,
+        createdAt: "2026-05-01T00:00:00.000Z",
+      },
     ];
     mockGetStorageItem.mockReturnValue(items);
 
@@ -29,7 +34,12 @@ describe("budget income item storage", () => {
 
   it("saveBudgetIncomeItemsは収入項目一覧を保存する", () => {
     const items = [
-      { id: "income-1", name: "給与", amount: 300000, createdAt: "2026-05-01T00:00:00.000Z" },
+      {
+        id: "income-1",
+        name: "給与",
+        amount: 300000,
+        createdAt: "2026-05-01T00:00:00.000Z",
+      },
     ];
 
     saveBudgetIncomeItems(items);

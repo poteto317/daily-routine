@@ -81,9 +81,9 @@ describe("sync download", () => {
     const localPresets = [{ id: "p1", name: "朝ルーティン" }];
     const localJournal = { "2026-02-12": [{ id: "j1", content: "メモ" }] };
 
-    (workoutTrackerStorage.getWorkoutRecordHistory as jest.Mock).mockReturnValue(
-      localWorkouts,
-    );
+    (
+      workoutTrackerStorage.getWorkoutRecordHistory as jest.Mock
+    ).mockReturnValue(localWorkouts);
     (presetStorage.getPresets as jest.Mock).mockReturnValue(localPresets);
     (journalStorage.getJournalHistory as jest.Mock).mockReturnValue(
       localJournal,
@@ -106,11 +106,13 @@ describe("sync download", () => {
     await downloadFromFirestore({ reload: false });
 
     expect(routineStorage.saveDailyProgressForSync).not.toHaveBeenCalled();
-    expect(
-      workoutTrackerStorage.saveWorkoutRecordHistory,
-    ).toHaveBeenCalledWith(localWorkouts);
+    expect(workoutTrackerStorage.saveWorkoutRecordHistory).toHaveBeenCalledWith(
+      localWorkouts,
+    );
     expect(presetStorage.savePresets).toHaveBeenCalledWith(localPresets);
-    expect(journalStorage.saveJournalHistory).toHaveBeenCalledWith(localJournal);
+    expect(journalStorage.saveJournalHistory).toHaveBeenCalledWith(
+      localJournal,
+    );
   });
 
   it("dailyProgressがnullでもローカルの当日の完了状況を消さない", async () => {
@@ -132,9 +134,9 @@ describe("sync download", () => {
 
   it("downloadFromFirestoreはリモートが明示的に空の項目はそのまま反映する", async () => {
     // ユーザーが全削除した結果としての空配列/空オブジェクトは尊重する。
-    (workoutTrackerStorage.getWorkoutRecordHistory as jest.Mock).mockReturnValue(
-      { "2026-02-12": [{ id: "w1" }] },
-    );
+    (
+      workoutTrackerStorage.getWorkoutRecordHistory as jest.Mock
+    ).mockReturnValue({ "2026-02-12": [{ id: "w1" }] });
     (presetStorage.getPresets as jest.Mock).mockReturnValue([{ id: "p1" }]);
 
     mockExistingSyncDocument({
@@ -147,9 +149,9 @@ describe("sync download", () => {
 
     await downloadFromFirestore({ reload: false });
 
-    expect(
-      workoutTrackerStorage.saveWorkoutRecordHistory,
-    ).toHaveBeenCalledWith({});
+    expect(workoutTrackerStorage.saveWorkoutRecordHistory).toHaveBeenCalledWith(
+      {},
+    );
     expect(presetStorage.savePresets).toHaveBeenCalledWith([]);
   });
 
@@ -256,7 +258,9 @@ describe("sync download", () => {
 
     // setLocalDataUpdatedAt が extractTimestamp 済みの number で呼ばれることを
     // localStorage への書き込み副作用で確認（文字列のまま渡ると NaN になる）
-    const stored = localStorage.getItem(storageCore.getUserScopedKey("local-data-updated-at"));
+    const stored = localStorage.getItem(
+      storageCore.getUserScopedKey("local-data-updated-at"),
+    );
     expect(stored).toBe(String(expectedMs));
   });
 

@@ -44,7 +44,9 @@ export const ClickGoToCurrent: Story = {
   args: { currentDate: new Date(2026, 2, 1), isCurrentMonth: false },
   play: async ({ canvasElement, args }) => {
     const canvas = within(canvasElement);
-    const todayButton = canvas.getByRole("button", { name: /今月|今|current/i });
+    const todayButton = canvas.getByRole("button", {
+      name: /今月|今|current/i,
+    });
     await userEvent.click(todayButton);
     expect(args.onGoToCurrentMonth).toHaveBeenCalledOnce();
   },

@@ -24,35 +24,35 @@
 
 main ブランチとの差分ファイル一覧と、SRP観点での判定:
 
-| ファイル | 種別 | 判定 |
-| --- | --- | --- |
-| `docs/superpowers/plans/2026-08-10-dismiss-keyboard-on-create-forms.md` | ドキュメント | 対象外 |
-| `e2e/todo-list.spec.ts` | E2Eテスト | 対象外（テストケース追加のみ） |
-| `src/hooks/useDismissKeyboardOnSubmit.ts` | フック | 対象外（「送信時にキーボードを閉じる」という単一の責務。**統合先**として残す） |
-| `src/hooks/__tests__/useDismissKeyboardOnSubmit.test.ts` | テスト | 対象外 |
-| `src/features/budget/__tests__/BudgetAllowanceItemForm.test.tsx` | テスト | 対象外（ケース追加のみ） |
-| `src/features/budget/__tests__/BudgetCategoryCreateForm.test.tsx` | テスト | 対象外（ケース追加のみ） |
-| `src/features/todo-lists/__tests__/TodoListCreateForm.test.tsx` | テスト | 対象外（ケース追加のみ） |
-| `src/features/todo-lists/__tests__/TodoCategoryCreateForm.test.tsx` | テスト | 対象外（ケース追加のみ） |
-| `src/features/todo-lists/TodoListCreateForm.tsx` | コンポーネント | **対象**（判定式の重複） |
-| `src/features/todo-lists/TodoCategoryCreateForm.tsx` | コンポーネント | **対象**（判定式の重複） |
-| `src/features/budget/components/BudgetCategoryCreateForm.tsx` | コンポーネント | **対象**（判定式の重複） |
-| `src/features/budget/components/BudgetAllowanceItemForm.tsx` | コンポーネント | **対象**（判定式の重複） |
+| ファイル                                                                | 種別           | 判定                                                                           |
+| ----------------------------------------------------------------------- | -------------- | ------------------------------------------------------------------------------ |
+| `docs/superpowers/plans/2026-08-10-dismiss-keyboard-on-create-forms.md` | ドキュメント   | 対象外                                                                         |
+| `e2e/todo-list.spec.ts`                                                 | E2Eテスト      | 対象外（テストケース追加のみ）                                                 |
+| `src/hooks/useDismissKeyboardOnSubmit.ts`                               | フック         | 対象外（「送信時にキーボードを閉じる」という単一の責務。**統合先**として残す） |
+| `src/hooks/__tests__/useDismissKeyboardOnSubmit.test.ts`                | テスト         | 対象外                                                                         |
+| `src/features/budget/__tests__/BudgetAllowanceItemForm.test.tsx`        | テスト         | 対象外（ケース追加のみ）                                                       |
+| `src/features/budget/__tests__/BudgetCategoryCreateForm.test.tsx`       | テスト         | 対象外（ケース追加のみ）                                                       |
+| `src/features/todo-lists/__tests__/TodoListCreateForm.test.tsx`         | テスト         | 対象外（ケース追加のみ）                                                       |
+| `src/features/todo-lists/__tests__/TodoCategoryCreateForm.test.tsx`     | テスト         | 対象外（ケース追加のみ）                                                       |
+| `src/features/todo-lists/TodoListCreateForm.tsx`                        | コンポーネント | **対象**（判定式の重複）                                                       |
+| `src/features/todo-lists/TodoCategoryCreateForm.tsx`                    | コンポーネント | **対象**（判定式の重複）                                                       |
+| `src/features/budget/components/BudgetCategoryCreateForm.tsx`           | コンポーネント | **対象**（判定式の重複）                                                       |
+| `src/features/budget/components/BudgetAllowanceItemForm.tsx`            | コンポーネント | **対象**（判定式の重複）                                                       |
 
 上記に加え、今回の変更によって既存ファイルとの重複が生じたため、以下も対象に含める。
 
-| ファイル | 判定 |
-| --- | --- |
+| ファイル                                           | 判定                                                      |
+| -------------------------------------------------- | --------------------------------------------------------- |
 | `src/features/todo-lists/useInlineInsertSubmit.ts` | **対象**（`useDismissKeyboardOnSubmit` とロジックが重複） |
-| `src/features/todo-lists/InlineInsertForm.tsx` | **対象**（上記に伴い不要になる ref の受け渡しを削除） |
+| `src/features/todo-lists/InlineInsertForm.tsx`     | **対象**（上記に伴い不要になる ref の受け渡しを削除）     |
 
 ### 課題1: 同じ責務のフックが2つある
 
-| | `useInlineInsertSubmit` | `useDismissKeyboardOnSubmit` |
-| --- | --- | --- |
-| バリデーションガード | `if (!canSubmit) return;` | `if (!canSubmit) return;` |
-| blur 対象 | 自前で持つ `inputRef` のみ | フォーカス中の input / textarea |
-| 送信 | `onAddAction()` | `onSubmit()` |
+|                      | `useInlineInsertSubmit`    | `useDismissKeyboardOnSubmit`    |
+| -------------------- | -------------------------- | ------------------------------- |
+| バリデーションガード | `if (!canSubmit) return;`  | `if (!canSubmit) return;`       |
+| blur 対象            | 自前で持つ `inputRef` のみ | フォーカス中の input / textarea |
+| 送信                 | `onAddAction()`            | `onSubmit()`                    |
 
 手続きが完全に同一で、blur 対象の広さだけが異なる。`useInlineInsertSubmit` を `useDismissKeyboardOnSubmit` に委譲させれば、手続きの実装は1箇所に集約され、`useInlineInsertSubmit` は「インライン挿入フォームにおける有効なタイトルとは何か（`normalizeTitle`）」という自身の関心事だけを持つようになる。
 
@@ -83,11 +83,13 @@ main ブランチとの差分ファイル一覧と、SRP観点での判定:
 ### Task 1: useInlineInsertSubmit を useDismissKeyboardOnSubmit に委譲させる
 
 **Files:**
+
 - Modify: `src/features/todo-lists/useInlineInsertSubmit.ts`
 - Modify: `src/features/todo-lists/__tests__/useInlineInsertSubmit.test.tsx`
 - Modify: `src/features/todo-lists/InlineInsertForm.tsx`
 
 **Interfaces:**
+
 - `useInlineInsertSubmit({ inputText, onAddAction })` の戻り値から `inputRef` を削除する。`canSubmit` と `handleAdd` は据え置き。
 
 - [x] **Step 1: テストを「フォーカス中の入力欄が blur される」形に書き換える（RED）**
@@ -250,10 +252,10 @@ Expected: PASS（8件すべて）
 `useInlineInsertSubmit` の分割代入から `inputRef` を外し、`<input>` の `ref={inputRef}` の行を削除する。それ以外（`autoFocus`・クラス名・`onKeyDown`・各ボタンの配線）は変更しない。
 
 ```tsx
-  const { canSubmit, handleAdd } = useInlineInsertSubmit({
-    inputText,
-    onAddAction,
-  });
+const { canSubmit, handleAdd } = useInlineInsertSubmit({
+  inputText,
+  onAddAction,
+});
 ```
 
 Run: `npx jest src/features/todo-lists/__tests__/InlineInsertForm.test.tsx --no-coverage`
@@ -264,6 +266,7 @@ Expected: PASS（既存15件すべて。振る舞いは変えていないため�
 ### Task 2: 4フォームの判定式の重複を解消する
 
 **Files:**
+
 - Modify: `src/features/todo-lists/TodoListCreateForm.tsx`
 - Modify: `src/features/todo-lists/TodoCategoryCreateForm.tsx`
 - Modify: `src/features/budget/components/BudgetCategoryCreateForm.tsx`
@@ -296,11 +299,11 @@ Expected: この時点では PASS する（現状の実装でも判定は一致�
 各ファイルで以下の形にする（例は `TodoListCreateForm.tsx`）。
 
 ```tsx
-  const canSubmit = Boolean(titleInput.trim());
-  const { handleSubmit } = useDismissKeyboardOnSubmit({
-    canSubmit,
-    onSubmit: onCreateAction,
-  });
+const canSubmit = Boolean(titleInput.trim());
+const { handleSubmit } = useDismissKeyboardOnSubmit({
+  canSubmit,
+  onSubmit: onCreateAction,
+});
 ```
 
 そして作成ボタンを `disabled={!canSubmit}` に変更する。他のフォームも同様（`nameInput` 等、各ファイルの変数名に合わせる）。
@@ -311,10 +314,12 @@ Expected: 全件PASS
 - [x] **Step 3: lint・型チェックを実行する**
 
 Run:
+
 ```bash
 npx eslint src/hooks/ src/features/todo-lists/ src/features/budget/ --quiet
 npx tsc --noEmit -p tsconfig.test.json
 ```
+
 Expected: エラーなし
 
 ---
@@ -324,12 +329,14 @@ Expected: エラーなし
 - [x] **Step 1: 全体テストスイート・lint・型チェック・E2Eを実行する**
 
 Run:
+
 ```bash
 npm test -- --runInBand
 npm run lint
 npm run typecheck
 npm run test:e2e
 ```
+
 Expected: すべてPASS
 
 - [x] **Step 2: 実装を壊してテストがREDになることを確認する**

@@ -5,15 +5,19 @@ jest.mock("../todoListActionStatusBarMode", () => ({
 }));
 
 jest.mock("../TodoListSelectionBar", () => ({
-  TodoListSelectionBar: jest.fn(({ selectedCount }: { selectedCount: number }) => (
-    <div data-testid="selection-bar" data-count={selectedCount} />
-  )),
+  TodoListSelectionBar: jest.fn(
+    ({ selectedCount }: { selectedCount: number }) => (
+      <div data-testid="selection-bar" data-count={selectedCount} />
+    ),
+  ),
 }));
 
 jest.mock("../TodoListClipboardBar", () => ({
-  TodoListClipboardBar: jest.fn(({ clipboardCount }: { clipboardCount: number }) => (
-    <div data-testid="clipboard-bar" data-count={clipboardCount} />
-  )),
+  TodoListClipboardBar: jest.fn(
+    ({ clipboardCount }: { clipboardCount: number }) => (
+      <div data-testid="clipboard-bar" data-count={clipboardCount} />
+    ),
+  ),
 }));
 
 import { getActionBarMode } from "../todoListActionStatusBarMode";
@@ -57,13 +61,17 @@ describe("TodoListActionStatusBar", () => {
     beforeEach(() => (getActionBarMode as jest.Mock).mockReturnValue("none"));
 
     it("何も表示しない", () => {
-      const { container } = render(<TodoListActionStatusBar {...defaultProps} />);
+      const { container } = render(
+        <TodoListActionStatusBar {...defaultProps} />,
+      );
       expect(container).toBeEmptyDOMElement();
     });
   });
 
   describe("mode='selection' のとき", () => {
-    beforeEach(() => (getActionBarMode as jest.Mock).mockReturnValue("selection"));
+    beforeEach(() =>
+      (getActionBarMode as jest.Mock).mockReturnValue("selection"),
+    );
 
     it("TodoListSelectionBar を表示する", () => {
       render(<TodoListActionStatusBar {...defaultProps} />);
@@ -72,9 +80,7 @@ describe("TodoListActionStatusBar", () => {
     });
 
     it("selectedCount を TodoListSelectionBar に渡す", () => {
-      render(
-        <TodoListActionStatusBar {...defaultProps} selectedCount={5} />,
-      );
+      render(<TodoListActionStatusBar {...defaultProps} selectedCount={5} />);
       expect(TodoListSelectionBar).toHaveBeenCalledWith(
         expect.objectContaining({ selectedCount: 5 }),
         undefined,
@@ -99,7 +105,9 @@ describe("TodoListActionStatusBar", () => {
   });
 
   describe("mode='clipboard' のとき", () => {
-    beforeEach(() => (getActionBarMode as jest.Mock).mockReturnValue("clipboard"));
+    beforeEach(() =>
+      (getActionBarMode as jest.Mock).mockReturnValue("clipboard"),
+    );
 
     it("TodoListClipboardBar を表示する", () => {
       render(<TodoListActionStatusBar {...defaultProps} />);
@@ -108,9 +116,7 @@ describe("TodoListActionStatusBar", () => {
     });
 
     it("clipboardCount を TodoListClipboardBar に渡す", () => {
-      render(
-        <TodoListActionStatusBar {...defaultProps} clipboardCount={4} />,
-      );
+      render(<TodoListActionStatusBar {...defaultProps} clipboardCount={4} />);
       expect(TodoListClipboardBar).toHaveBeenCalledWith(
         expect.objectContaining({ clipboardCount: 4 }),
         undefined,

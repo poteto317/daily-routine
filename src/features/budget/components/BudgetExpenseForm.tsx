@@ -35,7 +35,10 @@ export const BudgetExpenseForm = ({
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-900 mb-1">
             {budgetTexts.expenseForm.dateLabel}
           </label>
-          <BudgetExpenseDateSelect value={expenseDate} onChange={onDateChange} />
+          <BudgetExpenseDateSelect
+            value={expenseDate}
+            onChange={onDateChange}
+          />
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-900 mb-1">

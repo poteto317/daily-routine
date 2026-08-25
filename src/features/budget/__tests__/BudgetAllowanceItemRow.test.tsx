@@ -90,14 +90,22 @@ describe("BudgetAllowanceItemRow", () => {
   });
 
   it("編集中は名前・金額の入力欄を表示する", () => {
-    setup({ isEditing: true, editingName: "マンション家賃", editingAmount: "85000" });
+    setup({
+      isEditing: true,
+      editingName: "マンション家賃",
+      editingAmount: "85000",
+    });
 
     expect(screen.getByDisplayValue("マンション家賃")).toBeInTheDocument();
     expect(screen.getByDisplayValue("85000")).toBeInTheDocument();
   });
 
   it("編集中の項目名入力欄にaria-labelが付与されている（スクリーンリーダー対応）", () => {
-    setup({ isEditing: true, editingName: "マンション家賃", editingAmount: "85000" });
+    setup({
+      isEditing: true,
+      editingName: "マンション家賃",
+      editingAmount: "85000",
+    });
 
     expect(screen.getByLabelText("項目名")).toHaveValue("マンション家賃");
   });

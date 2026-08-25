@@ -63,7 +63,9 @@ describe("sync upload", () => {
     expectSnapshotDocumentUploaded();
 
     expect(
-      localStorage.getItem(storageCore.getUserScopedKey("local-data-updated-at")),
+      localStorage.getItem(
+        storageCore.getUserScopedKey("local-data-updated-at"),
+      ),
     ).not.toBeNull();
     expect(getSyncStatus()).toMatchObject({
       isSyncing: false,

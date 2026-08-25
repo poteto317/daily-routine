@@ -2,7 +2,10 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import type { Decorator } from "@storybook/nextjs-vite";
 import { expect, fn, userEvent, within } from "storybook/test";
 import { DndContext } from "@dnd-kit/core";
-import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 import type { Routine } from "@/types/routine";
 import { DEFAULT_SETTINGS, saveSettings } from "@/features/settings/storage";
 import { SortableRoutineItem } from "./SortableRoutineItem";

@@ -18,9 +18,7 @@ describe("TodoListNoSelectionView", () => {
   it("ヒントメッセージを表示する", () => {
     render(<TodoListNoSelectionView />);
     expect(
-      screen.getByText(
-        "ハンバーガーメニューからTodoリストを選択してください",
-      ),
+      screen.getByText("ハンバーガーメニューからTodoリストを選択してください"),
     ).toBeInTheDocument();
   });
 

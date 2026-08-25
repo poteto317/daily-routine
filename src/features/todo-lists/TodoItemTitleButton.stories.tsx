@@ -53,7 +53,8 @@ export const DragActive: Story = {
 
 export const LongTitle: Story = {
   args: {
-    title: "とても長いタスクのタイトルが入った場合にどのように表示されるかを確認するためのサンプルテキストです",
+    title:
+      "とても長いタスクのタイトルが入った場合にどのように表示されるかを確認するためのサンプルテキストです",
     isCompleted: false,
     isDragActive: false,
   },
@@ -61,7 +62,8 @@ export const LongTitle: Story = {
 
 export const CompletedLongTitle: Story = {
   args: {
-    title: "完了済みのとても長いタスクのタイトルが入った場合にどのように表示されるかを確認するためのサンプルテキストです",
+    title:
+      "完了済みのとても長いタスクのタイトルが入った場合にどのように表示されるかを確認するためのサンプルテキストです",
     isCompleted: true,
     isDragActive: false,
   },

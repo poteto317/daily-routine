@@ -44,7 +44,9 @@ export const reorderTodoItemsIfSameSection = (params: {
     return;
   }
 
-  if (!isSameTodoItemSection(items[fromIndex], items[toIndex], categoryLookup)) {
+  if (
+    !isSameTodoItemSection(items[fromIndex], items[toIndex], categoryLookup)
+  ) {
     return;
   }
 

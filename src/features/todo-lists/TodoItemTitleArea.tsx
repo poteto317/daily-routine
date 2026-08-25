@@ -45,7 +45,8 @@ export const TodoItemTitleArea = ({
         onChange={(e) => onChangeTitleAction(e.target.value)}
         onBlur={onCommitEditAction}
         onKeyDown={(e) => {
-          if (e.key === "Enter" && !isImeComposingKeyDown(e)) onCommitEditAction();
+          if (e.key === "Enter" && !isImeComposingKeyDown(e))
+            onCommitEditAction();
           if (e.key === "Escape") onCancelEditAction();
         }}
         aria-label={`「${title}」のタイトルを編集`}

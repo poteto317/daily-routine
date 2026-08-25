@@ -86,9 +86,7 @@ describe("manifest.json のアイコン定義", () => {
       const filePath = join(publicDir, icon.src.replace(/^\//, ""));
       expect(existsSync(filePath)).toBe(true);
 
-      const [declaredWidth, declaredHeight] = icon.sizes
-        .split("x")
-        .map(Number);
+      const [declaredWidth, declaredHeight] = icon.sizes.split("x").map(Number);
       const actual = await sharp(readFileSync(filePath)).metadata();
       expect(actual.width).toBe(declaredWidth);
       expect(actual.height).toBe(declaredHeight);

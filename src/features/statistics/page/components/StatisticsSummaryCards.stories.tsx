@@ -28,18 +28,51 @@ const weeklyStats: WeeklyStats = {
   weekStart: "2026-05-18",
   weekEnd: "2026-05-24",
   days: [
-    { ...dailyBase, date: "2026-05-18", completedCount: 4, totalCount: 5, achievementRate: 80 },
-    { ...dailyBase, date: "2026-05-19", completedCount: 5, totalCount: 5, achievementRate: 100 },
-    { ...dailyBase, date: "2026-05-20", completedCount: 3, totalCount: 5, achievementRate: 60 },
-    { ...dailyBase, date: "2026-05-21", completedCount: 5, totalCount: 5, achievementRate: 100 },
-    { ...dailyBase, date: "2026-05-22", completedCount: 0, totalCount: 5, achievementRate: 0 },
+    {
+      ...dailyBase,
+      date: "2026-05-18",
+      completedCount: 4,
+      totalCount: 5,
+      achievementRate: 80,
+    },
+    {
+      ...dailyBase,
+      date: "2026-05-19",
+      completedCount: 5,
+      totalCount: 5,
+      achievementRate: 100,
+    },
+    {
+      ...dailyBase,
+      date: "2026-05-20",
+      completedCount: 3,
+      totalCount: 5,
+      achievementRate: 60,
+    },
+    {
+      ...dailyBase,
+      date: "2026-05-21",
+      completedCount: 5,
+      totalCount: 5,
+      achievementRate: 100,
+    },
+    {
+      ...dailyBase,
+      date: "2026-05-22",
+      completedCount: 0,
+      totalCount: 5,
+      achievementRate: 0,
+    },
   ],
   averageAchievementRate: 68,
   totalCompleted: 17,
   totalRoutines: 25,
 };
 
-const monthlyDayRates = [80, 100, 60, 100, 40, 80, 100, 20, 60, 0, 100, 80, 60, 100, 40, 80, 100, 60, 100, 80, 60];
+const monthlyDayRates = [
+  80, 100, 60, 100, 40, 80, 100, 20, 60, 0, 100, 80, 60, 100, 40, 80, 100, 60,
+  100, 80, 60,
+];
 
 const monthlyStats: MonthlyStats = {
   year: 2026,
@@ -54,8 +87,18 @@ const monthlyStats: MonthlyStats = {
   averageAchievementRate: 72,
   totalCompleted: 68,
   totalRoutines: 105,
-  bestDay: { date: "2026-05-19", completedCount: 5, totalCount: 5, achievementRate: 100 },
-  worstDay: { date: "2026-05-10", completedCount: 0, totalCount: 5, achievementRate: 0 },
+  bestDay: {
+    date: "2026-05-19",
+    completedCount: 5,
+    totalCount: 5,
+    achievementRate: 100,
+  },
+  worstDay: {
+    date: "2026-05-10",
+    completedCount: 0,
+    totalCount: 5,
+    achievementRate: 0,
+  },
 };
 
 const categoryStats: CategoryStats[] = [

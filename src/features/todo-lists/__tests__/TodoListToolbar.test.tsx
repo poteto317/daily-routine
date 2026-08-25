@@ -49,7 +49,9 @@ describe("TodoListToolbar", () => {
     it("一括背景色ボタンクリックで onToggleBulkColorPickerAction が呼ばれる", () => {
       render(<TodoListToolbar {...defaultProps} />);
       fireEvent.click(screen.getByRole("button", { name: "一括背景色変更" }));
-      expect(defaultProps.onToggleBulkColorPickerAction).toHaveBeenCalledTimes(1);
+      expect(defaultProps.onToggleBulkColorPickerAction).toHaveBeenCalledTimes(
+        1,
+      );
     });
 
     it("showBulkColorPicker=false のときカラーピッカーを非表示にする", () => {
@@ -67,8 +69,12 @@ describe("TodoListToolbar", () => {
     it("カラースウォッチ選択で onUpdateAllItemsBgColorAction と onCloseBulkColorPickerAction が呼ばれる", () => {
       render(<TodoListToolbar {...defaultProps} showBulkColorPicker />);
       fireEvent.click(screen.getByRole("radio", { name: "赤" }));
-      expect(defaultProps.onUpdateAllItemsBgColorAction).toHaveBeenCalledWith("bg-red-50");
-      expect(defaultProps.onCloseBulkColorPickerAction).toHaveBeenCalledTimes(1);
+      expect(defaultProps.onUpdateAllItemsBgColorAction).toHaveBeenCalledWith(
+        "bg-red-50",
+      );
+      expect(defaultProps.onCloseBulkColorPickerAction).toHaveBeenCalledTimes(
+        1,
+      );
     });
   });
 

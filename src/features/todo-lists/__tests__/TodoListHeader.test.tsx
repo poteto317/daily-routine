@@ -30,12 +30,16 @@ beforeEach(() => {
 describe("TodoListHeader", () => {
   it("通常時にリストタイトルを表示する", () => {
     render(<TodoListHeader {...defaultProps} />);
-    expect(screen.getByRole("heading", { name: "テストリスト" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "テストリスト" }),
+    ).toBeInTheDocument();
   });
 
   it("通常時に編集ボタンを表示する", () => {
     render(<TodoListHeader {...defaultProps} />);
-    expect(screen.getByRole("button", { name: "リスト名を編集" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "リスト名を編集" }),
+    ).toBeInTheDocument();
   });
 
   it("編集ボタンクリックで onStartEditListTitleAction が呼ばれる", () => {
@@ -66,7 +70,9 @@ describe("TodoListHeader", () => {
     fireEvent.change(screen.getByRole("textbox"), {
       target: { value: "新タイトル" },
     });
-    expect(defaultProps.onChangeListTitleValueAction).toHaveBeenCalledWith("新タイトル");
+    expect(defaultProps.onChangeListTitleValueAction).toHaveBeenCalledWith(
+      "新タイトル",
+    );
   });
 
   it("Enter キーで onCommitEditListTitleAction が呼ばれる", () => {

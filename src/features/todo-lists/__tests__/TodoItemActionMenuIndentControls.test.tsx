@@ -16,8 +16,12 @@ describe("TodoItemActionMenuIndentControls", () => {
 
   it("インデントを下げる/上げるボタンを表示する", () => {
     render(<TodoItemActionMenuIndentControls {...defaultProps} />);
-    expect(screen.getByRole("button", { name: /インデントを下げる/ })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /インデントを上げる/ })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /インデントを下げる/ }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /インデントを上げる/ }),
+    ).toBeInTheDocument();
   });
 
   it("下げるボタンクリックで onOutdent が呼ばれる", () => {
@@ -33,21 +37,40 @@ describe("TodoItemActionMenuIndentControls", () => {
   });
 
   it("currentIndent が 0 のとき下げるボタンは disabled", () => {
-    render(<TodoItemActionMenuIndentControls {...defaultProps} currentIndent={0} />);
-    expect(screen.getByRole("button", { name: /インデントを下げる/ })).toBeDisabled();
+    render(
+      <TodoItemActionMenuIndentControls {...defaultProps} currentIndent={0} />,
+    );
+    expect(
+      screen.getByRole("button", { name: /インデントを下げる/ }),
+    ).toBeDisabled();
   });
 
   it("currentIndent が maxIndent 以上のとき上げるボタンは disabled", () => {
     render(
-      <TodoItemActionMenuIndentControls {...defaultProps} currentIndent={3} maxIndent={3} />,
+      <TodoItemActionMenuIndentControls
+        {...defaultProps}
+        currentIndent={3}
+        maxIndent={3}
+      />,
     );
-    expect(screen.getByRole("button", { name: /インデントを上げる/ })).toBeDisabled();
+    expect(
+      screen.getByRole("button", { name: /インデントを上げる/ }),
+    ).toBeDisabled();
   });
 
   it("sortModeActive のとき両方 disabled になり、クリックしても呼ばれない", () => {
-    render(<TodoItemActionMenuIndentControls {...defaultProps} sortModeActive={true} />);
-    const outdentButton = screen.getByRole("button", { name: /インデントを下げる/ });
-    const indentButton = screen.getByRole("button", { name: /インデントを上げる/ });
+    render(
+      <TodoItemActionMenuIndentControls
+        {...defaultProps}
+        sortModeActive={true}
+      />,
+    );
+    const outdentButton = screen.getByRole("button", {
+      name: /インデントを下げる/,
+    });
+    const indentButton = screen.getByRole("button", {
+      name: /インデントを上げる/,
+    });
     expect(outdentButton).toBeDisabled();
     expect(indentButton).toBeDisabled();
 

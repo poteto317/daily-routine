@@ -40,7 +40,9 @@ describe("getActionBarMode", () => {
         [false, false],
       ];
       for (const [hasSelection, hasClipboard] of cases) {
-        expect(validModes).toContain(getActionBarMode(hasSelection, hasClipboard));
+        expect(validModes).toContain(
+          getActionBarMode(hasSelection, hasClipboard),
+        );
       }
     });
   });

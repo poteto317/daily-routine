@@ -52,9 +52,9 @@ const mockLocalStorageValues = (): void => {
   (weightTrackerStorage.getWeightHistory as jest.Mock).mockReturnValue(
     LOCAL.weightHistory,
   );
-  (
-    workoutTrackerStorage.getWorkoutRecordHistory as jest.Mock
-  ).mockReturnValue(LOCAL.workoutRecordHistory);
+  (workoutTrackerStorage.getWorkoutRecordHistory as jest.Mock).mockReturnValue(
+    LOCAL.workoutRecordHistory,
+  );
   (journalStorage.getJournalHistory as jest.Mock).mockReturnValue(
     LOCAL.journalHistory,
   );

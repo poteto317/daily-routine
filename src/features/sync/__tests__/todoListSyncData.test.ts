@@ -4,10 +4,7 @@ import {
   normalizeTodoListSyncData,
   saveTodoListSyncData,
 } from "../sync/todoListSyncData";
-import {
-  todoCategoryFixture,
-  todoListFixture,
-} from "./sync.test.fixtures";
+import { todoCategoryFixture, todoListFixture } from "./sync.test.fixtures";
 import * as todoListsStorage from "@/features/todo-lists/storage";
 
 jest.mock("@/features/todo-lists/storage", () => ({
@@ -57,12 +54,12 @@ describe("todoListSyncData", () => {
       todoCategoryFixture,
     ]);
 
-    expect(
-      normalizeTodoListSyncData({ todoLists: [todoListFixture] }),
-    ).toEqual({
-      todoLists: [todoListFixture],
-      todoCategories: [todoCategoryFixture],
-    });
+    expect(normalizeTodoListSyncData({ todoLists: [todoListFixture] })).toEqual(
+      {
+        todoLists: [todoListFixture],
+        todoCategories: [todoCategoryFixture],
+      },
+    );
   });
 
   it("カテゴリが明示的に空配列の場合はそのまま空配列として正規化する（ユーザーが全カテゴリを削除した結果を尊重する）", () => {
@@ -82,7 +79,9 @@ describe("todoListSyncData", () => {
   });
 
   it("Todoリストが欠損（undefined）している場合は既存のローカルリストを保持する（本フィールド追加前のクラウドデータによる意図しない削除を防止）", () => {
-    (todoListsStorage.getTodoLists as jest.Mock).mockReturnValue([todoListFixture]);
+    (todoListsStorage.getTodoLists as jest.Mock).mockReturnValue([
+      todoListFixture,
+    ]);
 
     expect(
       normalizeTodoListSyncData({ todoCategories: [todoCategoryFixture] }),
@@ -93,7 +92,9 @@ describe("todoListSyncData", () => {
   });
 
   it("Todoリストが明示的に空配列の場合はそのまま空配列として正規化する（ユーザーが全リストを削除した結果を尊重する）", () => {
-    (todoListsStorage.getTodoLists as jest.Mock).mockReturnValue([todoListFixture]);
+    (todoListsStorage.getTodoLists as jest.Mock).mockReturnValue([
+      todoListFixture,
+    ]);
 
     expect(
       normalizeTodoListSyncData({

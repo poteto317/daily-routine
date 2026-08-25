@@ -43,9 +43,7 @@ describe("TodoListManagementHeader", () => {
 
   it("追加ボタンクリックで onOpenFormAction が呼ばれる", () => {
     render(<TodoListManagementHeader {...defaultProps} showForm={false} />);
-    fireEvent.click(
-      screen.getByRole("button", { name: /新しいリストを追加/ }),
-    );
+    fireEvent.click(screen.getByRole("button", { name: /新しいリストを追加/ }));
     expect(defaultProps.onOpenFormAction).toHaveBeenCalledTimes(1);
   });
 });

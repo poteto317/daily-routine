@@ -5,6 +5,7 @@
 **Goal:** `main` ブランチから変更されたファイル群（`TodoItemActionMenu.tsx` / `useItemActionMenuController.ts` / `useColorPickerController.ts` / `TodoListSortableItems.tsx`）に残る単一責任原則（SRP）違反を解消し、各ユニットにテストを追加する。
 
 **Architecture:** 3つの独立したグループに分割する。
+
 - グループA: `useItemActionMenuController` と `useColorPickerController` に重複している「外側クリック/Escキーで閉じる」ロジックを `useCloseOnOutsideInteraction` 共通フックへ抽出する。
 - グループB: `TodoListSortableItems` に埋め込まれた空状態表示ロジックを `TodoListEmptyState` コンポーネントへ抽出する。
 - グループC: `TodoItemActionMenuDropdown` に同居する6つの独立アクション（編集・下に追加・インデント上げ下げ・背景色・カテゴリ・削除）を、それぞれ単一責任のサブコンポーネントへ分割する。
@@ -29,10 +30,12 @@
 ### Task 1: `useCloseOnOutsideInteraction` 共通フックを新規作成
 
 **Files:**
+
 - Create: `src/features/todo-lists/useCloseOnOutsideInteraction.ts`
 - Test: `src/features/todo-lists/__tests__/useCloseOnOutsideInteraction.test.ts`
 
 **Interfaces:**
+
 - Produces: `useCloseOnOutsideInteraction(options: { isActive: boolean; selector: string; onClose: () => void; includeTouch?: boolean }): void`
   - `isActive`: リスナーを登録するかどうか
   - `selector`: この `closest()` セレクタの外側でのポインタ操作なら閉じる
@@ -174,7 +177,9 @@ describe("useCloseOnOutsideInteraction", () => {
       }),
     );
 
-    const touchStartCall = addSpy.mock.calls.find(([event]) => event === "touchstart");
+    const touchStartCall = addSpy.mock.calls.find(
+      ([event]) => event === "touchstart",
+    );
     expect(touchStartCall).toBeDefined();
     expect(touchStartCall?.[2]).toEqual({ passive: true });
 
@@ -186,14 +191,20 @@ describe("useCloseOnOutsideInteraction", () => {
     const onClose = jest.fn();
     const { rerender } = renderHook(
       ({ isActive }) =>
-        useCloseOnOutsideInteraction({ isActive, selector: "[data-test-menu]", onClose }),
+        useCloseOnOutsideInteraction({
+          isActive,
+          selector: "[data-test-menu]",
+          onClose,
+        }),
       { initialProps: { isActive: true } },
     );
 
     rerender({ isActive: false });
 
     const removedEvents = removeSpy.mock.calls.map(([event]) => event);
-    expect(removedEvents).toEqual(expect.arrayContaining(["mousedown", "keydown"]));
+    expect(removedEvents).toEqual(
+      expect.arrayContaining(["mousedown", "keydown"]),
+    );
     removeSpy.mockRestore();
   });
 
@@ -201,13 +212,19 @@ describe("useCloseOnOutsideInteraction", () => {
     const removeSpy = jest.spyOn(document, "removeEventListener");
     const onClose = jest.fn();
     const { unmount } = renderHook(() =>
-      useCloseOnOutsideInteraction({ isActive: true, selector: "[data-test-menu]", onClose }),
+      useCloseOnOutsideInteraction({
+        isActive: true,
+        selector: "[data-test-menu]",
+        onClose,
+      }),
     );
 
     unmount();
 
     const removedEvents = removeSpy.mock.calls.map(([event]) => event);
-    expect(removedEvents).toEqual(expect.arrayContaining(["mousedown", "keydown"]));
+    expect(removedEvents).toEqual(
+      expect.arrayContaining(["mousedown", "keydown"]),
+    );
     removeSpy.mockRestore();
   });
 });
@@ -261,7 +278,9 @@ export const useCloseOnOutsideInteraction = ({
 
     document.addEventListener("mousedown", handlePointerDown);
     if (includeTouch) {
-      document.addEventListener("touchstart", handlePointerDown, { passive: true });
+      document.addEventListener("touchstart", handlePointerDown, {
+        passive: true,
+      });
     }
     document.addEventListener("keydown", handleKeyDown);
 
@@ -293,10 +312,12 @@ git commit -m "feat(todo-lists): add useCloseOnOutsideInteraction shared hook"
 ### Task 2: `useItemActionMenuController` を共通フック利用に書き換える
 
 **Files:**
+
 - Modify: `src/features/todo-lists/useItemActionMenuController.ts`
 - Test: `src/features/todo-lists/__tests__/useItemActionMenuController.test.ts`（既存、変更なしで通ることを確認するのみ）
 
 **Interfaces:**
+
 - Consumes: `useCloseOnOutsideInteraction` （Task 1で作成）
 - Produces: 既存と同じ `{ itemMenuItemId, toggleItemMenu, closeItemMenu }`（シグネチャ変更なし）
 
@@ -366,10 +387,12 @@ git commit -m "refactor(todo-lists): useItemActionMenuController に useCloseOnO
 ### Task 3: `useColorPickerController` を共通フック利用に書き換える
 
 **Files:**
+
 - Modify: `src/features/todo-lists/useColorPickerController.ts`
 - Test: `src/features/todo-lists/__tests__/useColorPickerController.test.ts`（既存、変更なしで通ることを確認するのみ）
 
 **Interfaces:**
+
 - Consumes: `useCloseOnOutsideInteraction` （Task 1で作成）
 - Produces: 既存と同じ `{ colorPickerItemId, showBulkColorPicker, toggleItemColorPicker, closeItemColorPicker, toggleBulkColorPicker, closeBulkColorPicker }`（シグネチャ変更なし）
 
@@ -485,10 +508,12 @@ git commit -m "refactor(todo-lists): useColorPickerController に useCloseOnOuts
 ### Task 4: `TodoListEmptyState` コンポーネントを新規作成
 
 **Files:**
+
 - Create: `src/features/todo-lists/TodoListEmptyState.tsx`
 - Test: `src/features/todo-lists/__tests__/TodoListEmptyState.test.tsx`
 
 **Interfaces:**
+
 - Produces: `TodoListEmptyState({ hasAnyItems: boolean }): JSX.Element`
   - `hasAnyItems === false`: 「まだTodoがありません」+ 説明文
   - `hasAnyItems === true`（＝全アイテムが完了済みで非表示）: 「完了済みのみです」のみ
@@ -575,10 +600,12 @@ git commit -m "feat(todo-lists): add TodoListEmptyState component"
 ### Task 5: `TodoListSortableItems` を `TodoListEmptyState` 利用に書き換える
 
 **Files:**
+
 - Modify: `src/features/todo-lists/TodoListSortableItems.tsx`
 - Test: `src/features/todo-lists/__tests__/TodoListSortableItems.test.tsx`（既存、変更なしで通ることを確認するのみ）
 
 **Interfaces:**
+
 - Consumes: `TodoListEmptyState`（Task 4で作成）
 
 - [ ] **Step 1: 既存テストが現状のまま通ることを確認する（リファクタ前の基準線）**
@@ -597,9 +624,9 @@ import { TodoListEmptyState } from "./TodoListEmptyState";
 `texts` の import と空状態の JSX ブロックを以下に置き換える（`texts` は他で使わなくなるため import ごと削除）:
 
 ```tsx
-  if (visibleItems.length === 0) {
-    return <TodoListEmptyState hasAnyItems={list.items.length > 0} />;
-  }
+if (visibleItems.length === 0) {
+  return <TodoListEmptyState hasAnyItems={list.items.length > 0} />;
+}
 ```
 
 - [ ] **Step 3: 未使用になった `texts` import を削除する**
@@ -634,10 +661,12 @@ git commit -m "refactor(todo-lists): TodoListSortableItems の空状態表示を
 ### Task 6: `TodoItemActionMenuEditButton` を新規作成
 
 **Files:**
+
 - Create: `src/features/todo-lists/TodoItemActionMenuEditButton.tsx`
 - Test: `src/features/todo-lists/__tests__/TodoItemActionMenuEditButton.test.tsx`
 
 **Interfaces:**
+
 - Produces: `TodoItemActionMenuEditButton({ onClick: () => void }): JSX.Element`
 
 - [ ] **Step 1: 失敗するテストを書く**
@@ -710,10 +739,12 @@ git commit -m "feat(todo-lists): add TodoItemActionMenuEditButton"
 ### Task 7: `TodoItemActionMenuInsertButton` を新規作成
 
 **Files:**
+
 - Create: `src/features/todo-lists/TodoItemActionMenuInsertButton.tsx`
 - Test: `src/features/todo-lists/__tests__/TodoItemActionMenuInsertButton.test.tsx`
 
 **Interfaces:**
+
 - Produces: `TodoItemActionMenuInsertButton({ onClick: () => void }): JSX.Element`
 
 - [ ] **Step 1: 失敗するテストを書く**
@@ -727,7 +758,9 @@ import { TodoItemActionMenuInsertButton } from "../TodoItemActionMenuInsertButto
 describe("TodoItemActionMenuInsertButton", () => {
   it("下に追加ボタンを表示する", () => {
     render(<TodoItemActionMenuInsertButton onClick={jest.fn()} />);
-    expect(screen.getByRole("button", { name: /下に追加/ })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /下に追加/ }),
+    ).toBeInTheDocument();
   });
 
   it("クリックで onClick が呼ばれる", () => {
@@ -786,10 +819,12 @@ git commit -m "feat(todo-lists): add TodoItemActionMenuInsertButton"
 ### Task 8: `TodoItemActionMenuIndentControls` を新規作成
 
 **Files:**
+
 - Create: `src/features/todo-lists/TodoItemActionMenuIndentControls.tsx`
 - Test: `src/features/todo-lists/__tests__/TodoItemActionMenuIndentControls.test.tsx`
 
 **Interfaces:**
+
 - Produces: `TodoItemActionMenuIndentControls({ currentIndent: number; maxIndent: number; sortModeActive: boolean; onOutdent: () => void; onIndent: () => void }): JSX.Element`
   - 「インデントを下げる」は `currentIndent === 0 || sortModeActive` で disabled
   - 「インデントを上げる」は `currentIndent >= maxIndent || sortModeActive` で disabled
@@ -817,8 +852,12 @@ describe("TodoItemActionMenuIndentControls", () => {
 
   it("インデントを下げる/上げるボタンを表示する", () => {
     render(<TodoItemActionMenuIndentControls {...defaultProps} />);
-    expect(screen.getByRole("button", { name: /インデントを下げる/ })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /インデントを上げる/ })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /インデントを下げる/ }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /インデントを上げる/ }),
+    ).toBeInTheDocument();
   });
 
   it("下げるボタンクリックで onOutdent が呼ばれる", () => {
@@ -834,21 +873,40 @@ describe("TodoItemActionMenuIndentControls", () => {
   });
 
   it("currentIndent が 0 のとき下げるボタンは disabled", () => {
-    render(<TodoItemActionMenuIndentControls {...defaultProps} currentIndent={0} />);
-    expect(screen.getByRole("button", { name: /インデントを下げる/ })).toBeDisabled();
+    render(
+      <TodoItemActionMenuIndentControls {...defaultProps} currentIndent={0} />,
+    );
+    expect(
+      screen.getByRole("button", { name: /インデントを下げる/ }),
+    ).toBeDisabled();
   });
 
   it("currentIndent が maxIndent 以上のとき上げるボタンは disabled", () => {
     render(
-      <TodoItemActionMenuIndentControls {...defaultProps} currentIndent={3} maxIndent={3} />,
+      <TodoItemActionMenuIndentControls
+        {...defaultProps}
+        currentIndent={3}
+        maxIndent={3}
+      />,
     );
-    expect(screen.getByRole("button", { name: /インデントを上げる/ })).toBeDisabled();
+    expect(
+      screen.getByRole("button", { name: /インデントを上げる/ }),
+    ).toBeDisabled();
   });
 
   it("sortModeActive のとき両方 disabled になり、クリックしても呼ばれない", () => {
-    render(<TodoItemActionMenuIndentControls {...defaultProps} sortModeActive={true} />);
-    const outdentButton = screen.getByRole("button", { name: /インデントを下げる/ });
-    const indentButton = screen.getByRole("button", { name: /インデントを上げる/ });
+    render(
+      <TodoItemActionMenuIndentControls
+        {...defaultProps}
+        sortModeActive={true}
+      />,
+    );
+    const outdentButton = screen.getByRole("button", {
+      name: /インデントを下げる/,
+    });
+    const indentButton = screen.getByRole("button", {
+      name: /インデントを上げる/,
+    });
     expect(outdentButton).toBeDisabled();
     expect(indentButton).toBeDisabled();
 
@@ -930,10 +988,12 @@ git commit -m "feat(todo-lists): add TodoItemActionMenuIndentControls"
 ### Task 9: `TodoItemActionMenuColorSection` を新規作成
 
 **Files:**
+
 - Create: `src/features/todo-lists/TodoItemActionMenuColorSection.tsx`
 - Test: `src/features/todo-lists/__tests__/TodoItemActionMenuColorSection.test.tsx`
 
 **Interfaces:**
+
 - Consumes: `TodoItemColorSwatches`（既存、`{ selectedColor, className, onSelectAction }`）
 - Produces: `TodoItemActionMenuColorSection({ selectedColor: TodoItemBgColorValue | undefined; onSelect: (color: TodoItemBgColorValue | undefined) => void }): JSX.Element`
 
@@ -947,13 +1007,25 @@ import { TodoItemActionMenuColorSection } from "../TodoItemActionMenuColorSectio
 
 describe("TodoItemActionMenuColorSection", () => {
   it("背景色の radiogroup を表示する", () => {
-    render(<TodoItemActionMenuColorSection selectedColor={undefined} onSelect={jest.fn()} />);
-    expect(screen.getByRole("radiogroup", { name: "背景色" })).toBeInTheDocument();
+    render(
+      <TodoItemActionMenuColorSection
+        selectedColor={undefined}
+        onSelect={jest.fn()}
+      />,
+    );
+    expect(
+      screen.getByRole("radiogroup", { name: "背景色" }),
+    ).toBeInTheDocument();
   });
 
   it("スウォッチ選択で onSelect が選択値で呼ばれる", () => {
     const onSelect = jest.fn();
-    render(<TodoItemActionMenuColorSection selectedColor={undefined} onSelect={onSelect} />);
+    render(
+      <TodoItemActionMenuColorSection
+        selectedColor={undefined}
+        onSelect={onSelect}
+      />,
+    );
     const radiogroup = screen.getByRole("radiogroup", { name: "背景色" });
     // index=1（赤: "bg-red-50"）を選択してデフォルト undefined を避ける
     const redSwatch = within(radiogroup).getAllByRole("radio")[1];
@@ -984,7 +1056,10 @@ type Props = {
 };
 
 /** アクションメニュー内の背景色セクション（ラベル + スウォッチ） */
-export const TodoItemActionMenuColorSection = ({ selectedColor, onSelect }: Props) => (
+export const TodoItemActionMenuColorSection = ({
+  selectedColor,
+  onSelect,
+}: Props) => (
   <div
     className="px-3 py-1.5 border-t border-gray-100 dark:border-gray-600"
     data-color-picker
@@ -1016,10 +1091,12 @@ git commit -m "feat(todo-lists): add TodoItemActionMenuColorSection"
 ### Task 10: `TodoItemActionMenuCategorySection` を新規作成
 
 **Files:**
+
 - Create: `src/features/todo-lists/TodoItemActionMenuCategorySection.tsx`
 - Test: `src/features/todo-lists/__tests__/TodoItemActionMenuCategorySection.test.tsx`
 
 **Interfaces:**
+
 - Consumes: `TodoCategorySwatches`（既存、`{ categories, selectedCategoryId, className, onSelectAction }`）
 - Produces: `TodoItemActionMenuCategorySection({ categories: TodoCategory[]; selectedCategoryId: string | undefined; onSelect: (categoryId: string | undefined) => void }): JSX.Element`
 
@@ -1032,7 +1109,9 @@ import { fireEvent, render, screen, within } from "@testing-library/react";
 import { TodoItemActionMenuCategorySection } from "../TodoItemActionMenuCategorySection";
 import type { TodoCategory } from "../types";
 
-const categories: TodoCategory[] = [{ id: "cat-work", name: "仕事", createdAt: "" }];
+const categories: TodoCategory[] = [
+  { id: "cat-work", name: "仕事", createdAt: "" },
+];
 
 describe("TodoItemActionMenuCategorySection", () => {
   it("カテゴリの radiogroup を表示する", () => {
@@ -1043,7 +1122,9 @@ describe("TodoItemActionMenuCategorySection", () => {
         onSelect={jest.fn()}
       />,
     );
-    expect(screen.getByRole("radiogroup", { name: "カテゴリ" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("radiogroup", { name: "カテゴリ" }),
+    ).toBeInTheDocument();
   });
 
   it("カテゴリ選択で onSelect が選択IDで呼ばれる", () => {
@@ -1121,10 +1202,12 @@ git commit -m "feat(todo-lists): add TodoItemActionMenuCategorySection"
 ### Task 11: `TodoItemActionMenuDeleteButton` を新規作成
 
 **Files:**
+
 - Create: `src/features/todo-lists/TodoItemActionMenuDeleteButton.tsx`
 - Test: `src/features/todo-lists/__tests__/TodoItemActionMenuDeleteButton.test.tsx`
 
 **Interfaces:**
+
 - Produces: `TodoItemActionMenuDeleteButton({ onClick: () => void }): JSX.Element`
 
 - [ ] **Step 1: 失敗するテストを書く**
@@ -1195,10 +1278,12 @@ git commit -m "feat(todo-lists): add TodoItemActionMenuDeleteButton"
 ### Task 12: `TodoItemActionMenuDropdown` をサブコンポーネント合成に書き換える
 
 **Files:**
+
 - Modify: `src/features/todo-lists/TodoItemActionMenu.tsx`
 - Test: `src/features/todo-lists/__tests__/TodoItemActionMenu.test.tsx`（既存、変更なしで通ることを確認するのみ）
 
 **Interfaces:**
+
 - Consumes: Task 6〜11で作成した6コンポーネント
 - Produces: `TodoItemActionMenuDropdown` の公開シグネチャ（`TodoItemActionMenuProps` から `toggleItemMenuAction` を除いた型）は変更しない
 
@@ -1260,7 +1345,10 @@ export const TodoItemActionMenuTrigger = ({
   item,
   itemMenuItemId,
   toggleItemMenuAction,
-}: Pick<TodoItemActionMenuProps, "item" | "itemMenuItemId" | "toggleItemMenuAction">) => (
+}: Pick<
+  TodoItemActionMenuProps,
+  "item" | "itemMenuItemId" | "toggleItemMenuAction"
+>) => (
   <div
     data-item-menu
     onTouchStartCapture={(e) => e.stopPropagation()}

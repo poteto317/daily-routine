@@ -17,9 +17,8 @@ const createInitialValues = (): WorkoutRecordFormValues => ({
  * 運動記録フォームの入力値のstateを管理する。
  */
 export const useWorkoutRecordFormValuesState = () => {
-  const [values, setValues] = useState<WorkoutRecordFormValues>(
-    createInitialValues,
-  );
+  const [values, setValues] =
+    useState<WorkoutRecordFormValues>(createInitialValues);
 
   const setField = <K extends keyof WorkoutRecordFormValues>(
     key: K,

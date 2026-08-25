@@ -31,7 +31,9 @@ describe("TodoListBulkColorPicker", () => {
   });
 
   it("showBulkColorPicker=false のときピッカーが表示されない", () => {
-    render(<TodoListBulkColorPicker {...baseProps} showBulkColorPicker={false} />);
+    render(
+      <TodoListBulkColorPicker {...baseProps} showBulkColorPicker={false} />,
+    );
     expect(screen.queryByRole("radiogroup")).not.toBeInTheDocument();
   });
 
@@ -55,12 +57,14 @@ describe("TodoListBulkColorPicker", () => {
       />,
     );
     fireEvent.click(screen.getByRole("radio", { name: "赤" }));
-    expect(baseProps.onUpdateAllItemsBgColorAction).toHaveBeenCalledWith("bg-red-50");
+    expect(baseProps.onUpdateAllItemsBgColorAction).toHaveBeenCalledWith(
+      "bg-red-50",
+    );
     expect(baseProps.onCloseAction).toHaveBeenCalledTimes(1);
   });
 
   describe("bulkSelected 計算", () => {
-    it("全アイテムが同一色の場合そのスウォッチが aria-checked=\"true\"", () => {
+    it('全アイテムが同一色の場合そのスウォッチが aria-checked="true"', () => {
       render(
         <TodoListBulkColorPicker
           {...baseProps}
@@ -74,7 +78,7 @@ describe("TodoListBulkColorPicker", () => {
       );
     });
 
-    it("全アイテムがデフォルト色の場合デフォルトスウォッチが aria-checked=\"true\"", () => {
+    it('全アイテムがデフォルト色の場合デフォルトスウォッチが aria-checked="true"', () => {
       render(
         <TodoListBulkColorPicker
           {...baseProps}
@@ -82,12 +86,13 @@ describe("TodoListBulkColorPicker", () => {
           items={[makeItem("1"), makeItem("2")]}
         />,
       );
-      expect(
-        screen.getByRole("radio", { name: "デフォルト" }),
-      ).toHaveAttribute("aria-checked", "true");
+      expect(screen.getByRole("radio", { name: "デフォルト" })).toHaveAttribute(
+        "aria-checked",
+        "true",
+      );
     });
 
-    it("色が混在する場合どのスウォッチも aria-checked=\"true\" にならない", () => {
+    it('色が混在する場合どのスウォッチも aria-checked="true" にならない', () => {
       render(
         <TodoListBulkColorPicker
           {...baseProps}
@@ -101,7 +106,7 @@ describe("TodoListBulkColorPicker", () => {
       );
     });
 
-    it("アイテムが 0 件の場合どのスウォッチも aria-checked=\"true\" にならない", () => {
+    it('アイテムが 0 件の場合どのスウォッチも aria-checked="true" にならない', () => {
       render(
         <TodoListBulkColorPicker
           {...baseProps}

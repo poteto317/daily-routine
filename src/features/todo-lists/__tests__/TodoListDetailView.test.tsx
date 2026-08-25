@@ -5,7 +5,9 @@ jest.mock("../useTodoListDetailViewComposition", () => ({
 }));
 
 jest.mock("@/components", () => ({
-  CardPanel: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  CardPanel: ({ children }: { children: React.ReactNode }) => (
+    <div>{children}</div>
+  ),
 }));
 
 jest.mock("../TodoListHeader", () => ({
@@ -17,13 +19,17 @@ jest.mock("../TodoListProgressBar", () => ({
 }));
 
 jest.mock("../TodoListToolbar", () => ({
-  TodoListToolbar: jest.fn(({ historyControls }: { historyControls?: React.ReactNode }) => (
-    <div data-testid="toolbar">{historyControls}</div>
-  )),
+  TodoListToolbar: jest.fn(
+    ({ historyControls }: { historyControls?: React.ReactNode }) => (
+      <div data-testid="toolbar">{historyControls}</div>
+    ),
+  ),
 }));
 
 jest.mock("../TodoListActionStatusBar", () => ({
-  TodoListActionStatusBar: jest.fn(() => <div data-testid="action-status-bar" />),
+  TodoListActionStatusBar: jest.fn(() => (
+    <div data-testid="action-status-bar" />
+  )),
 }));
 
 jest.mock("../TodoListSortableItems", () => ({
@@ -150,7 +156,9 @@ const defaultCompositionMock = {
 describe("TodoListDetailView", () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    (useTodoListDetailViewComposition as jest.Mock).mockReturnValue(defaultCompositionMock);
+    (useTodoListDetailViewComposition as jest.Mock).mockReturnValue(
+      defaultCompositionMock,
+    );
   });
 
   it("useTodoListDetailViewComposition を view 操作に必要なパラメータで呼ぶ", () => {
@@ -169,7 +177,8 @@ describe("TodoListDetailView", () => {
       onClearClipboard: defaultProps.onClearClipboardAction,
       onReorderItems: defaultProps.onReorderItemsAction,
       onUpdateAllItemsBgColor: defaultProps.onUpdateAllItemsBgColorAction,
-      onUpdateListAddItemPosition: defaultProps.onUpdateListAddItemPositionAction,
+      onUpdateListAddItemPosition:
+        defaultProps.onUpdateListAddItemPositionAction,
       onUpdateListHideCompleted: defaultProps.onUpdateListHideCompletedAction,
     });
   });
@@ -186,7 +195,12 @@ describe("TodoListDetailView", () => {
 
   it("historyControls を TodoListToolbar に渡す", () => {
     const historyControls = <span data-testid="history-slot">↩↪</span>;
-    render(<TodoListDetailView {...defaultProps} historyControls={historyControls} />);
+    render(
+      <TodoListDetailView
+        {...defaultProps}
+        historyControls={historyControls}
+      />,
+    );
 
     expect(screen.getByTestId("history-slot")).toBeInTheDocument();
     expect(TodoListToolbar).toHaveBeenCalledWith(
@@ -213,7 +227,9 @@ describe("TodoListDetailView", () => {
           hideCompleted: true,
         },
       };
-      (useTodoListDetailViewComposition as jest.Mock).mockReturnValue(composition);
+      (useTodoListDetailViewComposition as jest.Mock).mockReturnValue(
+        composition,
+      );
 
       render(<TodoListDetailView {...defaultProps} />);
 
@@ -253,7 +269,8 @@ describe("TodoListDetailView", () => {
 
       expect(TodoListToolbar).toHaveBeenCalledWith(
         expect.objectContaining({
-          onUpdateAllItemsBgColorAction: defaultCompositionMock.toolbar.handleUpdateAllItemsBgColor,
+          onUpdateAllItemsBgColorAction:
+            defaultCompositionMock.toolbar.handleUpdateAllItemsBgColor,
         }),
         undefined,
       );
@@ -264,7 +281,8 @@ describe("TodoListDetailView", () => {
 
       expect(TodoListToolbar).toHaveBeenCalledWith(
         expect.objectContaining({
-          onToggleListAddItemPositionAction: defaultCompositionMock.toolbar.handleToggleAddItemPosition,
+          onToggleListAddItemPositionAction:
+            defaultCompositionMock.toolbar.handleToggleAddItemPosition,
         }),
         undefined,
       );
@@ -281,7 +299,9 @@ describe("TodoListDetailView", () => {
           },
         },
       };
-      (useTodoListDetailViewComposition as jest.Mock).mockReturnValue(composition);
+      (useTodoListDetailViewComposition as jest.Mock).mockReturnValue(
+        composition,
+      );
 
       render(<TodoListDetailView {...defaultProps} />);
 
@@ -315,9 +335,14 @@ describe("TodoListDetailView", () => {
           handlePaste,
         },
       };
-      (useTodoListDetailViewComposition as jest.Mock).mockReturnValue(composition);
+      (useTodoListDetailViewComposition as jest.Mock).mockReturnValue(
+        composition,
+      );
 
-      const props = { ...defaultProps, clipboardItems: [{ id: "c-1" }] as never };
+      const props = {
+        ...defaultProps,
+        clipboardItems: [{ id: "c-1" }] as never,
+      };
       render(<TodoListDetailView {...props} />);
 
       expect(TodoListActionStatusBar).toHaveBeenCalledWith(

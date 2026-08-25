@@ -1,4 +1,7 @@
-import { getWorkoutRecordHistory, saveWorkoutRecordHistory } from "../storageData";
+import {
+  getWorkoutRecordHistory,
+  saveWorkoutRecordHistory,
+} from "../storageData";
 import * as coreStorage from "@/lib/storage/core";
 
 jest.mock("@/lib/storage/core");

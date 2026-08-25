@@ -29,7 +29,7 @@ describe("TodoCategorySwatches", () => {
     expect(screen.getByRole("radiogroup")).toBeInTheDocument();
   });
 
-  it("selectedCategoryId と一致するスウォッチが aria-checked=\"true\" になる", () => {
+  it('selectedCategoryId と一致するスウォッチが aria-checked="true" になる', () => {
     render(
       <TodoCategorySwatches {...defaultProps} selectedCategoryId="cat-work" />,
     );
@@ -37,7 +37,7 @@ describe("TodoCategorySwatches", () => {
     expect(checked).toHaveAttribute("aria-checked", "true");
   });
 
-  it("selectedCategoryId が undefined のとき未分類が aria-checked=\"true\" になる", () => {
+  it('selectedCategoryId が undefined のとき未分類が aria-checked="true" になる', () => {
     render(
       <TodoCategorySwatches {...defaultProps} selectedCategoryId={undefined} />,
     );
@@ -59,31 +59,34 @@ describe("TodoCategorySwatches", () => {
     expect(defaultProps.onSelectAction).toHaveBeenCalledWith(undefined);
   });
 
-  it("selectedCategoryId が categories に存在しない（削除済みなど）とき未分類が aria-checked=\"true\" になる（レビュー指摘対応）", () => {
+  it('selectedCategoryId が categories に存在しない（削除済みなど）とき未分類が aria-checked="true" になる（レビュー指摘対応）', () => {
     render(
       <TodoCategorySwatches
         {...defaultProps}
         selectedCategoryId="cat-deleted"
       />,
     );
-    expect(
-      screen.getByRole("radio", { name: "未分類" }),
-    ).toHaveAttribute("aria-checked", "true");
+    expect(screen.getByRole("radio", { name: "未分類" })).toHaveAttribute(
+      "aria-checked",
+      "true",
+    );
   });
 
-  it("selectedCategoryId が categories に存在しないとき、実在するカテゴリのスウォッチは aria-checked=\"false\" のままになる", () => {
+  it('selectedCategoryId が categories に存在しないとき、実在するカテゴリのスウォッチは aria-checked="false" のままになる', () => {
     render(
       <TodoCategorySwatches
         {...defaultProps}
         selectedCategoryId="cat-deleted"
       />,
     );
-    expect(
-      screen.getByRole("radio", { name: "仕事" }),
-    ).toHaveAttribute("aria-checked", "false");
-    expect(
-      screen.getByRole("radio", { name: "プライベート" }),
-    ).toHaveAttribute("aria-checked", "false");
+    expect(screen.getByRole("radio", { name: "仕事" })).toHaveAttribute(
+      "aria-checked",
+      "false",
+    );
+    expect(screen.getByRole("radio", { name: "プライベート" })).toHaveAttribute(
+      "aria-checked",
+      "false",
+    );
   });
 
   it("categoriesが空でも未分類スウォッチは表示される", () => {
@@ -94,7 +97,10 @@ describe("TodoCategorySwatches", () => {
 
   it("className prop が radiogroup に適用される", () => {
     render(
-      <TodoCategorySwatches {...defaultProps} className="flex flex-wrap gap-1.5" />,
+      <TodoCategorySwatches
+        {...defaultProps}
+        className="flex flex-wrap gap-1.5"
+      />,
     );
     expect(screen.getByRole("radiogroup")).toHaveClass("flex");
   });

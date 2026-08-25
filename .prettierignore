@@ -3,6 +3,10 @@
 out/
 build/
 coverage/
+storybook-static/
+test-results/
+playwright-report/
+.worktrees/
 
 # 依存関係
 node_modules/

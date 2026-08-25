@@ -27,7 +27,10 @@ const makeHistory = (
     const dateStr = `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
     result[dateStr] = {
       date: dateStr,
-      completedRoutineIds: Array.from({ length: completed }, (_, i) => `r-${i}`),
+      completedRoutineIds: Array.from(
+        { length: completed },
+        (_, i) => `r-${i}`,
+      ),
       routineSnapshots: Array.from({ length: total }, (_, i) => ({
         id: `r-${i}`,
         title: `ルーティン${i + 1}`,
@@ -135,7 +138,9 @@ export const ClickDate: Story = {
     const canvas = within(canvasElement);
     // 「1」の日付ボタンをクリック（過去の日付）
     const dayButtons = canvas.getAllByRole("button");
-    const firstDay = dayButtons.find((b) => b.textContent?.trim().startsWith("1"));
+    const firstDay = dayButtons.find((b) =>
+      b.textContent?.trim().startsWith("1"),
+    );
     if (firstDay) {
       await userEvent.click(firstDay);
       expect(args.onDateClick).toHaveBeenCalled();

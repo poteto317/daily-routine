@@ -38,7 +38,9 @@ export const ClickSelectAll: Story = {
   args: { options: EMPTY_TRANSFER_OPTIONS },
   play: async ({ canvasElement, args }) => {
     const canvas = within(canvasElement);
-    const selectAllButton = canvas.getByRole("button", { name: /すべて選択|全選択/ });
+    const selectAllButton = canvas.getByRole("button", {
+      name: /すべて選択|全選択/,
+    });
     await userEvent.click(selectAllButton);
     expect(args.setOptions).toHaveBeenCalledWith(ALL_TRANSFER_OPTIONS);
   },
@@ -48,7 +50,9 @@ export const ClickDeselectAll: Story = {
   args: { options: ALL_TRANSFER_OPTIONS },
   play: async ({ canvasElement, args }) => {
     const canvas = within(canvasElement);
-    const deselectButton = canvas.getByRole("button", { name: /すべて解除|全解除/ });
+    const deselectButton = canvas.getByRole("button", {
+      name: /すべて解除|全解除/,
+    });
     await userEvent.click(deselectButton);
     expect(args.setOptions).toHaveBeenCalledWith(EMPTY_TRANSFER_OPTIONS);
   },

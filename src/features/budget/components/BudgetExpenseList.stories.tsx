@@ -33,7 +33,11 @@ type Story = StoryObj<typeof meta>;
 const categories: BudgetCategory[] = [
   { id: "cat-lunch", name: "ランチ", createdAt: "2026-05-01T00:00:00+09:00" },
   { id: "cat-grocery", name: "食料品", createdAt: "2026-05-01T00:00:00+09:00" },
-  { id: "cat-transport", name: "交通費", createdAt: "2026-05-01T00:00:00+09:00" },
+  {
+    id: "cat-transport",
+    name: "交通費",
+    createdAt: "2026-05-01T00:00:00+09:00",
+  },
 ];
 
 const expenses: Expense[] = [

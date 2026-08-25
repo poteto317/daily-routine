@@ -29,7 +29,9 @@ export const AddItemPositionToggleButton = ({
           : "text-gray-500 dark:text-gray-600 hover:text-teal-600 dark:hover:text-teal-700"
       }`}
     >
-      {isFirst ? texts.list.addItemPositionFirst : texts.list.addItemPositionLast}
+      {isFirst
+        ? texts.list.addItemPositionFirst
+        : texts.list.addItemPositionLast}
     </button>
   );
 };

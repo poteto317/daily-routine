@@ -40,7 +40,9 @@ describe("todoListCrudPersistActions", () => {
       });
 
       expect(nextLists).toEqual(
-        expect.arrayContaining([expect.objectContaining({ title: "新しいリスト" })]),
+        expect.arrayContaining([
+          expect.objectContaining({ title: "新しいリスト" }),
+        ]),
       );
       expect(persist).toHaveBeenCalledWith(nextLists);
     });

@@ -43,9 +43,9 @@ const storageReadMocks: StorageReadMockMap = {
   weightHistory: (value) =>
     (weightTrackerStorage.getWeightHistory as jest.Mock).mockReturnValue(value),
   workoutRecordHistory: (value) =>
-    (workoutTrackerStorage.getWorkoutRecordHistory as jest.Mock).mockReturnValue(
-      value,
-    ),
+    (
+      workoutTrackerStorage.getWorkoutRecordHistory as jest.Mock
+    ).mockReturnValue(value),
   journalHistory: (value) =>
     (journalStorage.getJournalHistory as jest.Mock).mockReturnValue(value),
   budgetData: (value) =>
@@ -84,7 +84,9 @@ const storageSaveAssertions: StorageSaveAssertionMap = {
   pomodoroHistory: (value) =>
     expect(pomodoroStorage.savePomodoroHistory).toHaveBeenCalledWith(value),
   workSessionHistory: (value) =>
-    expect(workTrackerStorage.saveWorkSessionHistory).toHaveBeenCalledWith(value),
+    expect(workTrackerStorage.saveWorkSessionHistory).toHaveBeenCalledWith(
+      value,
+    ),
   workTemplates: (value) =>
     expect(workTrackerStorage.saveWorkTemplates).toHaveBeenCalledWith(value),
   weightHistory: (value) =>
@@ -153,13 +155,17 @@ export const seedSyncStorageReadMocks = (data: SyncPayload): void => {
 };
 
 export const expectSyncStorageReadMocksCalled = (): void => {
-  for (const key of Object.keys(storageReadAssertions) as (keyof SyncPayload)[]) {
+  for (const key of Object.keys(
+    storageReadAssertions,
+  ) as (keyof SyncPayload)[]) {
     storageReadAssertions[key]();
   }
 };
 
 export const expectSyncPayloadSavedToLocal = (data: SyncPayload): void => {
-  for (const key of Object.keys(storageSaveAssertions) as (keyof SyncPayload)[]) {
+  for (const key of Object.keys(
+    storageSaveAssertions,
+  ) as (keyof SyncPayload)[]) {
     expectSyncPayloadFieldSaved(key, data);
   }
 };

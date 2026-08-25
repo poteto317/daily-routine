@@ -4,7 +4,11 @@ import {
   getFirestoreInstance,
   getOrCreateUser,
 } from "@/lib/firebase";
-import { setCurrentUserId, setLocalDataUpdatedAt, migrateToUserStorage } from "@/lib/storage/core";
+import {
+  setCurrentUserId,
+  setLocalDataUpdatedAt,
+  migrateToUserStorage,
+} from "@/lib/storage/core";
 import { getSyncErrorMessage } from "./errorMessage";
 import { saveSyncDataToLocal, collectLocalSyncData } from "./localData";
 import { setSyncStatus } from "./statusStore";

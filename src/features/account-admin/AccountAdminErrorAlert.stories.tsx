@@ -17,7 +17,10 @@ export const Default: Story = {
 };
 
 export const LongError: Story = {
-  args: { error: "Firebase の権限エラー: このアカウントを削除する権限がありません。管理者にお問い合わせください。" },
+  args: {
+    error:
+      "Firebase の権限エラー: このアカウントを削除する権限がありません。管理者にお問い合わせください。",
+  },
 };
 
 /** 「閉じる」ボタンをクリック → onClose が呼ばれる */

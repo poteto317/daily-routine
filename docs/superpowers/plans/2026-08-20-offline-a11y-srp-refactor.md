@@ -12,21 +12,21 @@
 
 main からの差分（docs 除く）と、それぞれの SRP 上の問題:
 
-| ファイル | 変更 | 問題 |
-| --- | --- | --- |
-| `src/hooks/pwaInstallerActions.ts` | SW 登録を委譲、環境判定を追加 | **問題1**: 「SW 登録」と「通知スケジュール」の 2 つを抱える。**問題2**: `registerMessagingServiceWorkerOnce` が FCM 以外も登録するようになり名前が実態と合わない。**問題3**: `resetServiceWorkerRegisterPromiseForTest` が利用者ゼロの素通し |
-| `src/hooks/serviceWorkerRegistration.ts` | 新規 | **問題4**: 「登録」と「FCM 登録の取得」が同居。後者の利用者は `messaging.ts` のみ |
-| `src/features/routine/components/RoutineFormOptionalFields.tsx` | `LabeledField` 導入 + `useId` 直書き | **問題5**: 同じファイル内でラベル紐付けの書き方が 2 通りに分かれた。`LabeledField` が「ラベル横に BETA バッジ」を表現できないため |
-| `src/features/routine/components/RoutineFormTimeFields.tsx` | `LabeledField` 導入 | **問題6**: 「開始時間」「所要時間」に加えて「重複警告リスト」の描画を抱えている |
-| `src/components/LabeledField.tsx` | 新規 | 問題5 の裏返し。飾り付きラベルを受け取れない |
-| `src/features/routine/components/RoutineFormCoreFields.tsx` | タイトル欄を `LabeledField` 化 | **問題7**: 同じファイルに、何も指していない `<label>` が 2 つ残った（曜日選択・カテゴリ選択）。入力欄ではなくボタン群の見出しのため `LabeledField` の対象外だが、`<label>` のまま放置すると「紐付いていない label」が再び増える |
-| `src/features/statistics/helpers.ts` | 定数 2 件追加 | 既存の置き場所の慣例どおり。問題なし |
-| `src/features/settings/state/transferPayloadRestore.ts` | `arrayField` に要素検証を追加 | 問題なし（任意オプションで既定の振る舞いは不変） |
-| `src/features/settings/state/routineShapeValidation.ts` | 新規 | 問題なし |
-| `src/features/settings/components/NumberInputField.tsx` | `useId` + `htmlFor` | 問題なし |
-| `src/features/preset/presetRoutineGrouping.ts` | `toDaysOfWeek` 追加 | 問題なし |
-| `src/service-worker/custom-sw.js` | `warmDocumentCache` 追加 | 問題なし（責務は外出し済み） |
-| `src/lib/firebase-modules/messaging.ts` | 登録取得を差し替え | 問題なし |
+| ファイル                                                        | 変更                                 | 問題                                                                                                                                                                                                                                         |
+| --------------------------------------------------------------- | ------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/hooks/pwaInstallerActions.ts`                              | SW 登録を委譲、環境判定を追加        | **問題1**: 「SW 登録」と「通知スケジュール」の 2 つを抱える。**問題2**: `registerMessagingServiceWorkerOnce` が FCM 以外も登録するようになり名前が実態と合わない。**問題3**: `resetServiceWorkerRegisterPromiseForTest` が利用者ゼロの素通し |
+| `src/hooks/serviceWorkerRegistration.ts`                        | 新規                                 | **問題4**: 「登録」と「FCM 登録の取得」が同居。後者の利用者は `messaging.ts` のみ                                                                                                                                                            |
+| `src/features/routine/components/RoutineFormOptionalFields.tsx` | `LabeledField` 導入 + `useId` 直書き | **問題5**: 同じファイル内でラベル紐付けの書き方が 2 通りに分かれた。`LabeledField` が「ラベル横に BETA バッジ」を表現できないため                                                                                                            |
+| `src/features/routine/components/RoutineFormTimeFields.tsx`     | `LabeledField` 導入                  | **問題6**: 「開始時間」「所要時間」に加えて「重複警告リスト」の描画を抱えている                                                                                                                                                              |
+| `src/components/LabeledField.tsx`                               | 新規                                 | 問題5 の裏返し。飾り付きラベルを受け取れない                                                                                                                                                                                                 |
+| `src/features/routine/components/RoutineFormCoreFields.tsx`     | タイトル欄を `LabeledField` 化       | **問題7**: 同じファイルに、何も指していない `<label>` が 2 つ残った（曜日選択・カテゴリ選択）。入力欄ではなくボタン群の見出しのため `LabeledField` の対象外だが、`<label>` のまま放置すると「紐付いていない label」が再び増える              |
+| `src/features/statistics/helpers.ts`                            | 定数 2 件追加                        | 既存の置き場所の慣例どおり。問題なし                                                                                                                                                                                                         |
+| `src/features/settings/state/transferPayloadRestore.ts`         | `arrayField` に要素検証を追加        | 問題なし（任意オプションで既定の振る舞いは不変）                                                                                                                                                                                             |
+| `src/features/settings/state/routineShapeValidation.ts`         | 新規                                 | 問題なし                                                                                                                                                                                                                                     |
+| `src/features/settings/components/NumberInputField.tsx`         | `useId` + `htmlFor`                  | 問題なし                                                                                                                                                                                                                                     |
+| `src/features/preset/presetRoutineGrouping.ts`                  | `toDaysOfWeek` 追加                  | 問題なし                                                                                                                                                                                                                                     |
+| `src/service-worker/custom-sw.js`                               | `warmDocumentCache` 追加             | 問題なし（責務は外出し済み）                                                                                                                                                                                                                 |
+| `src/lib/firebase-modules/messaging.ts`                         | 登録取得を差し替え                   | 問題なし                                                                                                                                                                                                                                     |
 
 ### 対応しない
 
@@ -50,11 +50,13 @@ main からの差分（docs 除く）と、それぞれの SRP 上の問題:
 **方針:** ラベルの右に任意のノードを置ける口を開ける。呼び出し側は `LabeledField` だけを使えばよくなる。
 
 **Files:**
+
 - Modify: `src/components/LabeledField.tsx`
 - Modify: `src/components/__tests__/LabeledField.test.tsx`
 - Modify: `src/features/routine/components/RoutineFormOptionalFields.tsx`
 
 **Interfaces:**
+
 - Produces: `LabeledField` に `labelAdornment?: ReactNode` を追加（既存の呼び出しはそのまま動く）
 
 - [ ] **Step 1: 失敗するテストを書く**
@@ -156,6 +158,7 @@ Expected: 全件 PASS
 **問題:** `pwaInstallerActions.ts` が「Service Worker の登録」と「ルーティン通知のスケジュール」という無関係な 2 つを持っている。2 つの export はそれぞれ別のフックからしか使われておらず、同居する理由がない。さらに `registerMessagingServiceWorkerOnce` は FCM 以外（アプリ本体の SW）も登録するようになったため名前が実態と合っておらず、`resetServiceWorkerRegisterPromiseForTest` は利用者ゼロの素通しになっている。
 
 **Files:**
+
 - Create: `src/hooks/routineNotificationScheduling.ts`
 - Create: `src/hooks/__tests__/routineNotificationScheduling.test.ts`
 - Delete: `src/hooks/pwaInstallerActions.ts`
@@ -166,6 +169,7 @@ Expected: 全件 PASS
 - Modify: `src/hooks/__tests__/useRoutineNotificationScheduling.test.tsx`
 
 **Interfaces:**
+
 - Produces: `registerAppServiceWorkers(): Promise<void>`（`serviceWorkerRegistration.ts` に置く。環境判定を内側に閉じる）
 - Produces: `scheduleRoutineNotificationsIfPermitted(): Promise<void>`（`routineNotificationScheduling.ts` へ移設。名前と中身は変えない）
 - 削除: `registerMessagingServiceWorkerOnce` / `resetServiceWorkerRegisterPromiseForTest`
@@ -307,11 +311,13 @@ Run: `npx next start -p 3100`（`NEXT_PUBLIC_ENABLE_LOCAL_AUTH=true`）
 **問題:** `RoutineFormTimeFields.tsx` が「開始時間の入力」「所要時間の入力」に加えて「重複しているルーティンの一覧表示」まで抱えている。警告の見せ方を変えたいときと、入力欄の並びを変えたいときで、同じファイルを触ることになる。
 
 **Files:**
+
 - Create: `src/features/routine/components/RoutineTimeConflictWarning.tsx`
 - Create: `src/features/routine/components/__tests__/RoutineTimeConflictWarning.test.tsx`
 - Modify: `src/features/routine/components/RoutineFormTimeFields.tsx`
 
 **Interfaces:**
+
 - Consumes: `conflictInfo`（`RoutineFormTimeFields` の props と同じ型）、`formatConflictRoutineLabel`
 - Produces: `RoutineTimeConflictWarning` コンポーネント
 
@@ -459,12 +465,14 @@ Expected: 全件 PASS（振る舞いは変わらない）
 **方針:** 見出しは `<label>` をやめて `<p>` にし、`role="group"` の `aria-labelledby` でその見出しを指す。文言は 1 か所に置き、`aria-label` との二重掲載をやめる。
 
 **Files:**
+
 - Create: `src/components/FieldGroup.tsx`
 - Create: `src/components/__tests__/FieldGroup.test.tsx`
 - Modify: `src/components/index.ts`
 - Modify: `src/features/routine/components/RoutineFormCoreFields.tsx`
 
 **Interfaces:**
+
 - Produces: `FieldGroup`（見出し付きのボタン群。`useId` で見出しと `role="group"` を `aria-labelledby` で結ぶ）
 
 - [ ] **Step 1: 失敗するテストを書く**

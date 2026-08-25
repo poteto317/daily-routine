@@ -52,7 +52,12 @@ export const useTodoCategoryManagementDataState = ({
     categoryId: string,
     color: TodoItemBgColorValue | undefined,
   ) => {
-    updateTodoCategoryColorAndPersist({ categories, categoryId, color, persist });
+    updateTodoCategoryColorAndPersist({
+      categories,
+      categoryId,
+      color,
+      persist,
+    });
   };
 
   const handleDelete = (category: TodoCategory) => {

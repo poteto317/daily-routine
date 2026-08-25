@@ -37,7 +37,9 @@ describe("sampleWorkSessions", () => {
 
   it("notes が定義されている場合は空でない文字列である", () => {
     sampleWorkSessions
-      .filter((s): s is WorkSession & { notes: string } => s.notes !== undefined)
+      .filter(
+        (s): s is WorkSession & { notes: string } => s.notes !== undefined,
+      )
       .forEach((s) => {
         expect(typeof s.notes).toBe("string");
         expect(s.notes.length).toBeGreaterThan(0);
@@ -63,7 +65,9 @@ describe("sampleWorkSessions", () => {
 
   it("endTime が存在する場合は ISO 8601 形式である", () => {
     sampleWorkSessions
-      .filter((s): s is WorkSession & { endTime: string } => s.endTime !== undefined)
+      .filter(
+        (s): s is WorkSession & { endTime: string } => s.endTime !== undefined,
+      )
       .forEach((s) => {
         expect(s.endTime).toMatch(ISO_8601_PATTERN);
       });
@@ -71,7 +75,10 @@ describe("sampleWorkSessions", () => {
 
   it("duration が存在する場合は正の数である", () => {
     sampleWorkSessions
-      .filter((s): s is WorkSession & { duration: number } => s.duration !== undefined)
+      .filter(
+        (s): s is WorkSession & { duration: number } =>
+          s.duration !== undefined,
+      )
       .forEach((s) => {
         expect(s.duration).toBeGreaterThan(0);
       });
@@ -85,7 +92,8 @@ describe("sampleWorkSessions", () => {
       )
       .forEach((s) => {
         const durationSeconds =
-          (new Date(s.endTime).getTime() - new Date(s.startTime).getTime()) / 1000;
+          (new Date(s.endTime).getTime() - new Date(s.startTime).getTime()) /
+          1000;
         expect(s.duration).toBe(durationSeconds);
       });
   });
@@ -103,7 +111,10 @@ describe("sampleSessionHistory", () => {
   });
 
   it("全セッション件数が sampleWorkSessions と一致する", () => {
-    const total = Object.values(sampleSessionHistory).reduce((acc, sessions) => acc + sessions.length, 0);
+    const total = Object.values(sampleSessionHistory).reduce(
+      (acc, sessions) => acc + sessions.length,
+      0,
+    );
     expect(total).toBe(sampleWorkSessions.length);
   });
 

@@ -14,7 +14,10 @@ const listA = makeList("a");
 const listB = makeList("b");
 const listC = makeList("c");
 
-const renderHistory = (initialLists: TodoList[] = [listA], saveLists = jest.fn()) =>
+const renderHistory = (
+  initialLists: TodoList[] = [listA],
+  saveLists = jest.fn(),
+) =>
   renderHook(() =>
     useTodoListHistory({ getInitialLists: () => initialLists, saveLists }),
   );
@@ -32,7 +35,9 @@ describe("useTodoListHistory", () => {
   describe("persist", () => {
     it("lists が更新され canUndo=true, canRedo=false になる", () => {
       const { result } = renderHistory();
-      act(() => { result.current.persist([listA, listB]); });
+      act(() => {
+        result.current.persist([listA, listB]);
+      });
       expect(result.current.lists).toEqual([listA, listB]);
       expect(result.current.canUndo).toBe(true);
       expect(result.current.canRedo).toBe(false);
@@ -41,7 +46,9 @@ describe("useTodoListHistory", () => {
     it("saveLists が新しいリストで呼ばれる", () => {
       const saveLists = jest.fn();
       const { result } = renderHistory([listA], saveLists);
-      act(() => { result.current.persist([listA, listB]); });
+      act(() => {
+        result.current.persist([listA, listB]);
+      });
       expect(saveLists).toHaveBeenCalledWith([listA, listB]);
     });
 
@@ -49,13 +56,17 @@ describe("useTodoListHistory", () => {
       it("全要素参照が同一の配列を persist しても saveLists が呼ばれない", () => {
         const saveLists = jest.fn();
         const { result } = renderHistory([listA], saveLists);
-        act(() => { result.current.persist([listA]); });
+        act(() => {
+          result.current.persist([listA]);
+        });
         expect(saveLists).not.toHaveBeenCalled();
       });
 
       it("全要素参照が同一の配列を persist しても canUndo が true にならない", () => {
         const { result } = renderHistory([listA]);
-        act(() => { result.current.persist([listA]); });
+        act(() => {
+          result.current.persist([listA]);
+        });
         expect(result.current.canUndo).toBe(false);
       });
 
@@ -63,7 +74,9 @@ describe("useTodoListHistory", () => {
         const saveLists = jest.fn();
         const { result } = renderHistory([listA, listB], saveLists);
         const mappedSame = [listA, listB].map((l) => l);
-        act(() => { result.current.persist(mappedSame); });
+        act(() => {
+          result.current.persist(mappedSame);
+        });
         expect(saveLists).not.toHaveBeenCalled();
       });
 
@@ -71,7 +84,9 @@ describe("useTodoListHistory", () => {
         const saveLists = jest.fn();
         const { result } = renderHistory([listA], saveLists);
         const updatedListA = { ...listA, title: "Updated" };
-        act(() => { result.current.persist([updatedListA]); });
+        act(() => {
+          result.current.persist([updatedListA]);
+        });
         expect(saveLists).toHaveBeenCalledWith([updatedListA]);
       });
 
@@ -84,7 +99,9 @@ describe("useTodoListHistory", () => {
         const { result } = renderHook(() =>
           useTodoListHistory({ getInitialLists, saveLists }),
         );
-        act(() => { result.current.persist(result.current.lists); });
+        act(() => {
+          result.current.persist(result.current.lists);
+        });
         expect(saveLists).not.toHaveBeenCalled();
         expect(result.current.canUndo).toBe(false);
       });
@@ -94,8 +111,12 @@ describe("useTodoListHistory", () => {
   describe("undo", () => {
     it("lists が元に戻り canUndo=false, canRedo=true になる", () => {
       const { result } = renderHistory();
-      act(() => { result.current.persist([listA, listB]); });
-      act(() => { result.current.undo(); });
+      act(() => {
+        result.current.persist([listA, listB]);
+      });
+      act(() => {
+        result.current.undo();
+      });
       expect(result.current.lists).toEqual([listA]);
       expect(result.current.canUndo).toBe(false);
       expect(result.current.canRedo).toBe(true);
@@ -104,16 +125,22 @@ describe("useTodoListHistory", () => {
     it("saveLists が undo 前の状態で呼ばれる", () => {
       const saveLists = jest.fn();
       const { result } = renderHistory([listA], saveLists);
-      act(() => { result.current.persist([listA, listB]); });
+      act(() => {
+        result.current.persist([listA, listB]);
+      });
       saveLists.mockClear();
-      act(() => { result.current.undo(); });
+      act(() => {
+        result.current.undo();
+      });
       expect(saveLists).toHaveBeenCalledWith([listA]);
     });
 
     it("canUndo=false 時に undo を呼んでも状態変化なし・saveLists も呼ばれない", () => {
       const saveLists = jest.fn();
       const { result } = renderHistory([listA], saveLists);
-      act(() => { result.current.undo(); });
+      act(() => {
+        result.current.undo();
+      });
       expect(result.current.lists).toEqual([listA]);
       expect(saveLists).not.toHaveBeenCalled();
     });
@@ -122,9 +149,15 @@ describe("useTodoListHistory", () => {
   describe("redo", () => {
     it("lists がやり直し後の値になり canUndo=true, canRedo=false になる", () => {
       const { result } = renderHistory();
-      act(() => { result.current.persist([listA, listB]); });
-      act(() => { result.current.undo(); });
-      act(() => { result.current.redo(); });
+      act(() => {
+        result.current.persist([listA, listB]);
+      });
+      act(() => {
+        result.current.undo();
+      });
+      act(() => {
+        result.current.redo();
+      });
       expect(result.current.lists).toEqual([listA, listB]);
       expect(result.current.canUndo).toBe(true);
       expect(result.current.canRedo).toBe(false);
@@ -133,19 +166,29 @@ describe("useTodoListHistory", () => {
     it("saveLists が redo 後の状態で呼ばれる", () => {
       const saveLists = jest.fn();
       const { result } = renderHistory([listA], saveLists);
-      act(() => { result.current.persist([listA, listB]); });
-      act(() => { result.current.undo(); });
+      act(() => {
+        result.current.persist([listA, listB]);
+      });
+      act(() => {
+        result.current.undo();
+      });
       saveLists.mockClear();
-      act(() => { result.current.redo(); });
+      act(() => {
+        result.current.redo();
+      });
       expect(saveLists).toHaveBeenCalledWith([listA, listB]);
     });
 
     it("canRedo=false 時に redo を呼んでも状態変化なし・saveLists も呼ばれない", () => {
       const saveLists = jest.fn();
       const { result } = renderHistory([listA], saveLists);
-      act(() => { result.current.persist([listA, listB]); });
+      act(() => {
+        result.current.persist([listA, listB]);
+      });
       saveLists.mockClear();
-      act(() => { result.current.redo(); });
+      act(() => {
+        result.current.redo();
+      });
       expect(result.current.lists).toEqual([listA, listB]);
       expect(saveLists).not.toHaveBeenCalled();
     });
@@ -156,16 +199,22 @@ describe("useTodoListHistory", () => {
       const saveLists = jest.fn();
       const { result } = renderHistory([listA], saveLists);
       const nextLists = [listA, listB];
-      act(() => { result.current.persist(nextLists); });
+      act(() => {
+        result.current.persist(nextLists);
+      });
       expect(saveLists).toHaveBeenCalledWith(nextLists);
     });
 
     it("undo 後の saveLists には undo 前の lists が渡る (内容一致)", () => {
       const saveLists = jest.fn();
       const { result } = renderHistory([listA], saveLists);
-      act(() => { result.current.persist([listA, listB]); });
+      act(() => {
+        result.current.persist([listA, listB]);
+      });
       saveLists.mockClear();
-      act(() => { result.current.undo(); });
+      act(() => {
+        result.current.undo();
+      });
       const savedArg = saveLists.mock.calls[0][0];
       expect(savedArg).toEqual([listA]);
     });
@@ -173,10 +222,16 @@ describe("useTodoListHistory", () => {
     it("redo 後の saveLists には redo 後の lists が渡る (内容一致)", () => {
       const saveLists = jest.fn();
       const { result } = renderHistory([listA], saveLists);
-      act(() => { result.current.persist([listA, listB]); });
-      act(() => { result.current.undo(); });
+      act(() => {
+        result.current.persist([listA, listB]);
+      });
+      act(() => {
+        result.current.undo();
+      });
       saveLists.mockClear();
-      act(() => { result.current.redo(); });
+      act(() => {
+        result.current.redo();
+      });
       const savedArg = saveLists.mock.calls[0][0];
       expect(savedArg).toEqual([listA, listB]);
     });
@@ -209,7 +264,9 @@ describe("useTodoListHistory", () => {
         useTodoListHistory({ getInitialLists: () => [listA], saveLists }),
       );
       const undo1 = result.current.undo;
-      act(() => { result.current.persist([listA, listB]); });
+      act(() => {
+        result.current.persist([listA, listB]);
+      });
       expect(result.current.undo).toBe(undo1);
     });
   });
@@ -220,8 +277,12 @@ describe("useTodoListHistory", () => {
       const { result } = renderHook(() =>
         useTodoListHistory({ getInitialLists: () => [listA], saveLists }),
       );
-      act(() => { result.current.persist([listA, listB]); });
-      act(() => { result.current.persist([listA, listB, listC]); });
+      act(() => {
+        result.current.persist([listA, listB]);
+      });
+      act(() => {
+        result.current.persist([listA, listB, listC]);
+      });
       saveLists.mockClear();
 
       act(() => {
@@ -255,10 +316,18 @@ describe("useTodoListHistory", () => {
       const { result } = renderHook(() =>
         useTodoListHistory({ getInitialLists: () => [listA], saveLists }),
       );
-      act(() => { result.current.persist([listA, listB]); });
-      act(() => { result.current.persist([listA, listB, listC]); });
-      act(() => { result.current.undo(); });
-      act(() => { result.current.undo(); });
+      act(() => {
+        result.current.persist([listA, listB]);
+      });
+      act(() => {
+        result.current.persist([listA, listB, listC]);
+      });
+      act(() => {
+        result.current.undo();
+      });
+      act(() => {
+        result.current.undo();
+      });
       saveLists.mockClear();
 
       act(() => {
@@ -275,33 +344,51 @@ describe("useTodoListHistory", () => {
   describe("複合操作", () => {
     it("undo 後に新たな persist で future がクリアされる", () => {
       const { result } = renderHistory();
-      act(() => { result.current.persist([listA, listB]); });
-      act(() => { result.current.undo(); });
-      act(() => { result.current.persist([listC]); });
+      act(() => {
+        result.current.persist([listA, listB]);
+      });
+      act(() => {
+        result.current.undo();
+      });
+      act(() => {
+        result.current.persist([listC]);
+      });
       expect(result.current.lists).toEqual([listC]);
       expect(result.current.canRedo).toBe(false);
     });
 
     it("複数回 persist → 複数回 undo で順番に元に戻る", () => {
       const { result } = renderHistory();
-      act(() => { result.current.persist([listA, listB]); });
-      act(() => { result.current.persist([listA, listB, listC]); });
+      act(() => {
+        result.current.persist([listA, listB]);
+      });
+      act(() => {
+        result.current.persist([listA, listB, listC]);
+      });
 
-      act(() => { result.current.undo(); });
+      act(() => {
+        result.current.undo();
+      });
       expect(result.current.lists).toEqual([listA, listB]);
 
-      act(() => { result.current.undo(); });
+      act(() => {
+        result.current.undo();
+      });
       expect(result.current.lists).toEqual([listA]);
     });
 
     it("履歴上限 50 件: 51 回 persist しても undo 回数は 50 以下", () => {
       const { result } = renderHistory();
       for (let i = 0; i < 51; i++) {
-        act(() => { result.current.persist([makeList(`list-${i}`)]); });
+        act(() => {
+          result.current.persist([makeList(`list-${i}`)]);
+        });
       }
       let undoCount = 0;
       while (result.current.canUndo) {
-        act(() => { result.current.undo(); });
+        act(() => {
+          result.current.undo();
+        });
         undoCount++;
         if (undoCount > 55) break;
       }

@@ -1,5 +1,8 @@
 import { ROUTINE_CATEGORIES } from "@/types/routine";
-import { sampleCalendarPomodoroHistory, sampleMonthlyHistory } from "../__fixtures__/calendarFixtures";
+import {
+  sampleCalendarPomodoroHistory,
+  sampleMonthlyHistory,
+} from "../__fixtures__/calendarFixtures";
 
 const DATE_KEY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 const TIME_PATTERN = /^\d{2}:\d{2}$/;
@@ -81,7 +84,9 @@ describe("sampleMonthlyHistory", () => {
   });
 
   it("全エントリが同一年月に属する", () => {
-    const yearMonths = Object.keys(sampleMonthlyHistory).map((key) => key.slice(0, 7));
+    const yearMonths = Object.keys(sampleMonthlyHistory).map((key) =>
+      key.slice(0, 7),
+    );
     expect(new Set(yearMonths).size).toBe(1);
   });
 });

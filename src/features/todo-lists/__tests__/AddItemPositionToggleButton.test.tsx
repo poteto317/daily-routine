@@ -99,7 +99,10 @@ describe("AddItemPositionToggleButton", () => {
           onToggleAction={jest.fn()}
         />,
       );
-      expect(screen.getByRole("button")).toHaveAttribute("aria-pressed", "false");
+      expect(screen.getByRole("button")).toHaveAttribute(
+        "aria-pressed",
+        "false",
+      );
     });
 
     it("addItemPosition が 'last' のとき aria-pressed が false である", () => {
@@ -109,7 +112,10 @@ describe("AddItemPositionToggleButton", () => {
           onToggleAction={jest.fn()}
         />,
       );
-      expect(screen.getByRole("button")).toHaveAttribute("aria-pressed", "false");
+      expect(screen.getByRole("button")).toHaveAttribute(
+        "aria-pressed",
+        "false",
+      );
     });
 
     it("addItemPosition が 'first' のとき aria-pressed が true である", () => {
@@ -119,7 +125,10 @@ describe("AddItemPositionToggleButton", () => {
           onToggleAction={jest.fn()}
         />,
       );
-      expect(screen.getByRole("button")).toHaveAttribute("aria-pressed", "true");
+      expect(screen.getByRole("button")).toHaveAttribute(
+        "aria-pressed",
+        "true",
+      );
     });
   });
 

@@ -11,7 +11,9 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 const NormalChild = () => (
-  <p className="text-gray-700 dark:text-gray-200">正常に描画されたコンテンツです。</p>
+  <p className="text-gray-700 dark:text-gray-200">
+    正常に描画されたコンテンツです。
+  </p>
 );
 
 const ThrowingChild = () => {

@@ -50,10 +50,7 @@ describe("todoCategoryMutations", () => {
 
       addTodoCategory(categories, "仕事", "bg-blue-50");
 
-      expect(mockCreateTodoCategory).toHaveBeenCalledWith(
-        "仕事",
-        "bg-blue-50",
-      );
+      expect(mockCreateTodoCategory).toHaveBeenCalledWith("仕事", "bg-blue-50");
     });
 
     it("空白のみの名前では追加せず同じ配列を返す", () => {

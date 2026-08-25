@@ -1,6 +1,12 @@
-import { type NewWorkoutRecordInput, type WorkoutRecord } from "@/types/routine";
+import {
+  type NewWorkoutRecordInput,
+  type WorkoutRecord,
+} from "@/types/routine";
 import { generateId } from "@/lib/storage/core";
-import { getWorkoutRecordHistory, saveWorkoutRecordHistory } from "./storageData";
+import {
+  getWorkoutRecordHistory,
+  saveWorkoutRecordHistory,
+} from "./storageData";
 
 export const addWorkoutRecord = (
   input: NewWorkoutRecordInput,
@@ -38,6 +44,7 @@ export const getAllWorkoutRecords = (): WorkoutRecord[] => {
   return Object.values(getWorkoutRecordHistory())
     .flat()
     .sort(
-      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
     );
 };

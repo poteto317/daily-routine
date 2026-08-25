@@ -71,7 +71,12 @@ describe("budgetExpenseItemMutations", () => {
     it("指定したidの名前と金額を同時に変更する", () => {
       const items = [
         item({ id: "expense-1", name: "家賃", amount: 80000 }),
-        item({ id: "expense-2", name: "食費", amount: 30000, kind: "variable" }),
+        item({
+          id: "expense-2",
+          name: "食費",
+          amount: 30000,
+          kind: "variable",
+        }),
       ];
 
       const result = updateBudgetExpenseItem(
@@ -83,14 +88,17 @@ describe("budgetExpenseItemMutations", () => {
 
       expect(result).toEqual([
         item({ id: "expense-1", name: "マンション家賃", amount: 85000 }),
-        item({ id: "expense-2", name: "食費", amount: 30000, kind: "variable" }),
+        item({
+          id: "expense-2",
+          name: "食費",
+          amount: 30000,
+          kind: "variable",
+        }),
       ]);
     });
 
     it("該当するidがなければ変更されない", () => {
-      const items = [
-        item({ id: "expense-1", name: "家賃", amount: 80000 }),
-      ];
+      const items = [item({ id: "expense-1", name: "家賃", amount: 80000 })];
 
       const result = updateBudgetExpenseItem(
         items,
@@ -107,7 +115,11 @@ describe("budgetExpenseItemMutations", () => {
     it("指定したidの分類（固定費/変動費）だけを変更する", () => {
       const items = [item({ id: "expense-1", kind: "fixed" })];
 
-      const result = updateBudgetExpenseItemKind(items, "expense-1", "variable");
+      const result = updateBudgetExpenseItemKind(
+        items,
+        "expense-1",
+        "variable",
+      );
 
       expect(result).toEqual([item({ id: "expense-1", kind: "variable" })]);
     });

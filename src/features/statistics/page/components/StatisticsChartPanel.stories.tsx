@@ -24,7 +24,11 @@ const weeklyChartData = {
       label: "達成率",
       data: weeklyData,
       backgroundColor: weeklyData.map((v) =>
-        v >= 80 ? "rgba(34, 197, 94, 0.8)" : v >= 50 ? "rgba(59, 130, 246, 0.8)" : "rgba(156, 163, 175, 0.6)",
+        v >= 80
+          ? "rgba(34, 197, 94, 0.8)"
+          : v >= 50
+            ? "rgba(59, 130, 246, 0.8)"
+            : "rgba(156, 163, 175, 0.6)",
       ),
       borderRadius: 4,
     },
@@ -36,7 +40,10 @@ const monthlyChartData = {
   datasets: [
     {
       label: "達成率",
-      data: [80, 100, 0, 60, 80, 100, 40, 100, 80, 60, 100, 80, 0, 60, 100, 80, 60, 100, 80, 100, 60],
+      data: [
+        80, 100, 0, 60, 80, 100, 40, 100, 80, 60, 100, 80, 0, 60, 100, 80, 60,
+        100, 80, 100, 60,
+      ],
       borderColor: "rgb(59, 130, 246)",
       backgroundColor: "rgba(59, 130, 246, 0.1)",
       tension: 0.3,

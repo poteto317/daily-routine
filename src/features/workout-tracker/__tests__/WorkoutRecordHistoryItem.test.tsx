@@ -28,7 +28,10 @@ const runningRecord: WorkoutRecord = {
 describe("WorkoutRecordHistoryItem", () => {
   it("strengthの記録は種目名・重量・回数・セット数を表示する", () => {
     render(
-      <WorkoutRecordHistoryItem record={strengthRecord} onDeleteAction={jest.fn()} />,
+      <WorkoutRecordHistoryItem
+        record={strengthRecord}
+        onDeleteAction={jest.fn()}
+      />,
     );
 
     expect(screen.getByText(/ベンチプレス/)).toBeInTheDocument();
@@ -37,7 +40,10 @@ describe("WorkoutRecordHistoryItem", () => {
 
   it("runningの記録は種目名・消費カロリーを表示する", () => {
     render(
-      <WorkoutRecordHistoryItem record={runningRecord} onDeleteAction={jest.fn()} />,
+      <WorkoutRecordHistoryItem
+        record={runningRecord}
+        onDeleteAction={jest.fn()}
+      />,
     );
 
     expect(screen.getByText(/朝のジョグ/)).toBeInTheDocument();
@@ -47,10 +53,15 @@ describe("WorkoutRecordHistoryItem", () => {
   it("削除ボタンをクリックするとonDeleteActionにレコードが渡される", () => {
     const onDeleteAction = jest.fn();
     render(
-      <WorkoutRecordHistoryItem record={strengthRecord} onDeleteAction={onDeleteAction} />,
+      <WorkoutRecordHistoryItem
+        record={strengthRecord}
+        onDeleteAction={onDeleteAction}
+      />,
     );
 
-    fireEvent.click(screen.getByRole("button", { name: texts.historyItem.deleteAriaLabel }));
+    fireEvent.click(
+      screen.getByRole("button", { name: texts.historyItem.deleteAriaLabel }),
+    );
 
     expect(onDeleteAction).toHaveBeenCalledWith(strengthRecord);
   });

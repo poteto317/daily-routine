@@ -74,7 +74,10 @@ describe("TodoCategorySortableList", () => {
   it("編集ボタンをクリックするとonStartEditActionが呼ばれる", () => {
     const onStartEditAction = jest.fn();
     render(
-      <TodoCategorySortableList {...defaultProps} onStartEditAction={onStartEditAction} />,
+      <TodoCategorySortableList
+        {...defaultProps}
+        onStartEditAction={onStartEditAction}
+      />,
     );
     fireEvent.click(screen.getByLabelText("仕事 を編集"));
     expect(onStartEditAction).toHaveBeenCalledWith("cat-1", "仕事");
@@ -82,7 +85,12 @@ describe("TodoCategorySortableList", () => {
 
   it("削除ボタンをクリックするとonDeleteActionが呼ばれる", () => {
     const onDeleteAction = jest.fn();
-    render(<TodoCategorySortableList {...defaultProps} onDeleteAction={onDeleteAction} />);
+    render(
+      <TodoCategorySortableList
+        {...defaultProps}
+        onDeleteAction={onDeleteAction}
+      />,
+    );
     fireEvent.click(screen.getByLabelText("プライベート を削除"));
     expect(onDeleteAction).toHaveBeenCalledWith(defaultProps.categories[1]);
   });
@@ -106,7 +114,9 @@ describe("TodoCategorySortableList", () => {
         colorEditingCategoryId="cat-2"
       />,
     );
-    expect(screen.getByRole("radiogroup", { name: "背景色" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("radiogroup", { name: "背景色" }),
+    ).toBeInTheDocument();
   });
 
   it("カテゴリが1件でも表示できる", () => {

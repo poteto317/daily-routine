@@ -1,4 +1,9 @@
-import type { TodoCategory, TodoItemBgColorValue, TodoList, TodoListItem } from "./types";
+import type {
+  TodoCategory,
+  TodoItemBgColorValue,
+  TodoList,
+  TodoListItem,
+} from "./types";
 import { createToolbarState } from "./todoListDetailToolbarState";
 import { useTodoListDetailSelection } from "./useTodoListDetailSelection";
 import { useTodoListDetailViewState } from "./useTodoListDetailViewState";
@@ -21,7 +26,10 @@ export type UseTodoListDetailViewCompositionParams = {
     listId: string,
     bgColor: TodoItemBgColorValue | undefined,
   ) => void;
-  onUpdateListAddItemPosition: (listId: string, position: "last" | "first") => void;
+  onUpdateListAddItemPosition: (
+    listId: string,
+    position: "last" | "first",
+  ) => void;
   onUpdateListHideCompleted: (listId: string, hideCompleted: boolean) => void;
 };
 
@@ -69,7 +77,11 @@ export const useTodoListDetailViewComposition = ({
     onReorderItems,
   });
 
-  const toolbar = createToolbarState({ list, onUpdateAllItemsBgColor, onUpdateListAddItemPosition });
+  const toolbar = createToolbarState({
+    list,
+    onUpdateAllItemsBgColor,
+    onUpdateListAddItemPosition,
+  });
 
   return {
     selection,

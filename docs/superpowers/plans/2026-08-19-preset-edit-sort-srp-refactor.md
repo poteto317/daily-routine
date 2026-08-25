@@ -12,13 +12,13 @@
 
 main からの差分は以下（docs 除く）:
 
-| ファイル | 変更内容 | SRP上の問題 |
-| --- | --- | --- |
-| `src/features/preset/presetRoutineGrouping.ts` | `sortRoutineSelectionGroupsByStartTime` を追加 | **問題1**: ファイル名は「グルーピング」だが、並べ替えも持つようになった |
-| `src/features/preset/components/PresetEditSection.tsx` | ソート呼び出しを追加 | **問題2**: レイアウト・選択行の描画・表示順の決定を1つで抱える。**問題3**: 選択行の描画が `PresetCreateSection.tsx` と重複 |
-| `e2e/preset-edit-sort.spec.ts` | 新規 | **問題4**: ルーティン作成のE2Eヘルパーがこのファイル内に閉じており、他3つのE2Eと同じ操作が重複 |
-| `src/features/preset/__tests__/presetRoutineGrouping.test.ts` | テスト追加 | 問題なし |
-| `src/features/preset/__tests__/PresetEditSection.test.tsx` | テスト追加 | 問題なし（`createRoutine`フィクスチャの重複はブランチ以前からの既存事情のため対象外） |
+| ファイル                                                      | 変更内容                                       | SRP上の問題                                                                                                                |
+| ------------------------------------------------------------- | ---------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `src/features/preset/presetRoutineGrouping.ts`                | `sortRoutineSelectionGroupsByStartTime` を追加 | **問題1**: ファイル名は「グルーピング」だが、並べ替えも持つようになった                                                    |
+| `src/features/preset/components/PresetEditSection.tsx`        | ソート呼び出しを追加                           | **問題2**: レイアウト・選択行の描画・表示順の決定を1つで抱える。**問題3**: 選択行の描画が `PresetCreateSection.tsx` と重複 |
+| `e2e/preset-edit-sort.spec.ts`                                | 新規                                           | **問題4**: ルーティン作成のE2Eヘルパーがこのファイル内に閉じており、他3つのE2Eと同じ操作が重複                             |
+| `src/features/preset/__tests__/presetRoutineGrouping.test.ts` | テスト追加                                     | 問題なし                                                                                                                   |
+| `src/features/preset/__tests__/PresetEditSection.test.tsx`    | テスト追加                                     | 問題なし（`createRoutine`フィクスチャの重複はブランチ以前からの既存事情のため対象外）                                      |
 
 ### 対応する問題と、しない問題
 
@@ -47,6 +47,7 @@ main からの差分は以下（docs 除く）:
 **問題:** ファイル名と JSDoc は「選択リスト用にルーティンをグループへ統合する」ことを述べているが、`sortRoutineSelectionGroupsByStartTime` を足したことで「並べ替え」という別の関心事が同居した。グルーピングは全画面共通の前処理、並べ替えは画面ごとの表示都合であり、変更理由が異なる。
 
 **Files:**
+
 - Create: `src/features/preset/presetRoutineSelectionOrder.ts`
 - Create: `src/features/preset/__tests__/presetRoutineSelectionOrder.test.ts`
 - Modify: `src/features/preset/presetRoutineGrouping.ts`（`sortRoutineSelectionGroupsByStartTime` を削除）
@@ -54,6 +55,7 @@ main からの差分は以下（docs 除く）:
 - Modify: `src/features/preset/components/PresetEditSection.tsx`（import 元の変更）
 
 **Interfaces:**
+
 - Consumes: `RoutineSelectionGroup` 型（`presetRoutineGrouping.ts` が引き続き export する）
 - Produces: `sortRoutineSelectionGroupsByStartTime(groups: RoutineSelectionGroup[]): RoutineSelectionGroup[]` — Task 2 で使う
 
@@ -149,12 +151,14 @@ Expected: 新テストファイルが落ちる（＝移設後もテストが実�
 **方針:** 選択行のリストを描く `RoutineSelectionList` を切り出す。このコンポーネントは「渡された `RoutineSelectionGroup[]` を、渡された順に描く」だけを責務とし、並び順は呼び出し側が決める。これにより編集画面は時刻順、新規作成画面は現状維持という違いを、描画側を分岐させずに表現できる。
 
 **Files:**
+
 - Create: `src/features/preset/components/RoutineSelectionList.tsx`
 - Create: `src/features/preset/__tests__/RoutineSelectionList.test.tsx`
 - Modify: `src/features/preset/components/PresetEditSection.tsx`
 - Modify: `src/features/preset/components/PresetCreateSection.tsx`
 
 **Interfaces:**
+
 - Consumes: `RoutineSelectionGroup`（`presetRoutineGrouping.ts`）、`sortRoutineSelectionGroupsByStartTime`（Task 1 で作った `presetRoutineSelectionOrder.ts`）
 - Produces: `RoutineSelectionList` コンポーネント
 
@@ -287,7 +291,9 @@ export const RoutineSelectionList = ({
   emptyLabel,
 }: RoutineSelectionListProps) => {
   if (groups.length === 0) {
-    return <p className="text-gray-500 dark:text-gray-400 text-sm">{emptyLabel}</p>;
+    return (
+      <p className="text-gray-500 dark:text-gray-400 text-sm">{emptyLabel}</p>
+    );
   }
 
   return (

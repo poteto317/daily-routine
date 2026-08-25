@@ -25,7 +25,11 @@ const mockRenameBudgetCategory = renameBudgetCategory as jest.MockedFunction<
   typeof renameBudgetCategory
 >;
 
-const category = { id: "cat-1", name: "食料品", createdAt: "2026-05-01T00:00:00.000Z" };
+const category = {
+  id: "cat-1",
+  name: "食料品",
+  createdAt: "2026-05-01T00:00:00.000Z",
+};
 
 describe("budgetCategoryCrudPersistActions", () => {
   beforeEach(() => {
@@ -186,9 +190,7 @@ describe("budgetCategoryCrudPersistActions", () => {
       const nextCategories: typeof categories = [];
       mockRemoveBudgetCategory.mockReturnValue(nextCategories);
       const persist = jest.fn();
-      const confirmSpy = jest
-        .spyOn(window, "confirm")
-        .mockReturnValue(true);
+      const confirmSpy = jest.spyOn(window, "confirm").mockReturnValue(true);
 
       const result = deleteBudgetCategoryAndPersist({
         categories,

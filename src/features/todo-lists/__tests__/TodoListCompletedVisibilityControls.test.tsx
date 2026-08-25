@@ -35,10 +35,7 @@ describe("TodoListCompletedVisibilityControls", () => {
 
     it("hideCompleted=true のとき現在の状態を表す「完了済みを非表示」ボタンを表示する", () => {
       render(
-        <TodoListCompletedVisibilityControls
-          {...defaultProps}
-          hideCompleted
-        />,
+        <TodoListCompletedVisibilityControls {...defaultProps} hideCompleted />,
       );
       expect(
         screen.getByRole("button", { name: "完了済みを非表示" }),
@@ -65,10 +62,7 @@ describe("TodoListCompletedVisibilityControls", () => {
 
     it("hideCompleted=true のとき aria-pressed が true", () => {
       render(
-        <TodoListCompletedVisibilityControls
-          {...defaultProps}
-          hideCompleted
-        />,
+        <TodoListCompletedVisibilityControls {...defaultProps} hideCompleted />,
       );
       expect(
         screen.getByRole("button", { name: "完了済みを非表示" }),

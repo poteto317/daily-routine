@@ -1,4 +1,7 @@
-import { getBlockAnchorIndices, splitIntoItemBlocks } from "../todoListItemBlocks";
+import {
+  getBlockAnchorIndices,
+  splitIntoItemBlocks,
+} from "../todoListItemBlocks";
 import type { TodoListItem } from "../types";
 
 const item = (id: string, indent: number): TodoListItem => ({

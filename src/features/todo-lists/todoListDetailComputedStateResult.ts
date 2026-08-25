@@ -5,9 +5,15 @@ import type { useTodoListDetailProgress } from "./useTodoListDetailProgress";
 import type { TodoCategory } from "./types";
 
 type TodoListDetailProgress = ReturnType<typeof useTodoListDetailProgress>;
-type TodoListDetailOrderedItems = ReturnType<typeof useTodoListDetailOrderedItems>;
-type TodoListDetailHideCompleted = ReturnType<typeof useTodoListDetailHideCompleted>;
-type TodoListDetailCollapsedItems = ReturnType<typeof useTodoListDetailCollapsedItems>;
+type TodoListDetailOrderedItems = ReturnType<
+  typeof useTodoListDetailOrderedItems
+>;
+type TodoListDetailHideCompleted = ReturnType<
+  typeof useTodoListDetailHideCompleted
+>;
+type TodoListDetailCollapsedItems = ReturnType<
+  typeof useTodoListDetailCollapsedItems
+>;
 
 type CreateTodoListDetailComputedStateResultParams = {
   detailProgress: TodoListDetailProgress;

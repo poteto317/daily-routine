@@ -6,6 +6,8 @@ export const getWorkoutRecordHistory = (): WorkoutRecordHistory => {
   return getStorageItem<WorkoutRecordHistory>(STORAGE_KEY_WORKOUT_RECORDS, {});
 };
 
-export const saveWorkoutRecordHistory = (history: WorkoutRecordHistory): void => {
+export const saveWorkoutRecordHistory = (
+  history: WorkoutRecordHistory,
+): void => {
   setStorageItem(STORAGE_KEY_WORKOUT_RECORDS, history);
 };

@@ -50,7 +50,8 @@ export const LongTitle: Story = {
   args: {
     routine: {
       ...routine,
-      title: "とても長いタイトルのルーティンがドラッグ中に表示される場合の確認用",
+      title:
+        "とても長いタイトルのルーティンがドラッグ中に表示される場合の確認用",
     },
   },
 };

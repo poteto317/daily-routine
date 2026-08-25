@@ -26,7 +26,9 @@ export const WithBeta: Story = {
     title: "電車遅延モニター",
     beta: true,
     children: (
-      <div className="text-sm text-gray-600">ベータ機能の設定項目がここに入ります</div>
+      <div className="text-sm text-gray-600">
+        ベータ機能の設定項目がここに入ります
+      </div>
     ),
   },
 };
@@ -34,7 +36,8 @@ export const WithBeta: Story = {
 export const WithDescription: Story = {
   args: {
     title: "同期設定",
-    description: "デバイス間でデータを同期します。変更はリアルタイムで反映されます。",
+    description:
+      "デバイス間でデータを同期します。変更はリアルタイムで反映されます。",
     children: (
       <div className="text-sm text-gray-600">設定項目がここに入ります</div>
     ),
@@ -66,7 +69,9 @@ export const WithCustomClass: Story = {
     title: "カスタムスタイル",
     className: "bg-gray-50 dark:bg-gray-800 p-4 rounded-xl",
     children: (
-      <div className="text-sm text-gray-600">外部からクラスを追加した例です</div>
+      <div className="text-sm text-gray-600">
+        外部からクラスを追加した例です
+      </div>
     ),
   },
 };

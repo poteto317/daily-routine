@@ -34,7 +34,7 @@ describe("createBudgetExpenseItem", () => {
     expect(mockGenerateId).toHaveBeenCalledWith("budget-expense-item");
   });
 
-  it("kind=\"variable\"を指定すると変動費として作られる", () => {
+  it('kind="variable"を指定すると変動費として作られる', () => {
     expect(createBudgetExpenseItem("食費", 30000, "variable")).toEqual({
       id: "budget-expense-item-1",
       name: "食費",

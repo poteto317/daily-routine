@@ -33,10 +33,9 @@ describe("todoListHistoryReducer", () => {
   describe("default（未知アクション）", () => {
     it("未知のアクションが来ても状態をそのまま返す（ランタイム安全）", () => {
       const state = initialState();
-      const next = todoListHistoryReducer(
-        state,
-        { type: "UNKNOWN" } as unknown as Parameters<typeof todoListHistoryReducer>[1],
-      );
+      const next = todoListHistoryReducer(state, {
+        type: "UNKNOWN",
+      } as unknown as Parameters<typeof todoListHistoryReducer>[1]);
       expect(next).toBe(state);
     });
   });
@@ -47,7 +46,10 @@ describe("todoListHistoryReducer", () => {
         const state = initialState();
         // lists.map() が new array を返しても要素参照が同じ場合は no-op
         const sameElements = [...state.present];
-        const next = todoListHistoryReducer(state, { type: "PERSIST", payload: sameElements });
+        const next = todoListHistoryReducer(state, {
+          type: "PERSIST",
+          payload: sameElements,
+        });
         expect(next).toBe(state);
       });
 
@@ -121,9 +123,9 @@ describe("todoListHistoryReducer", () => {
     });
 
     it(`past が MAX_HISTORY(${MAX_HISTORY}) 件に達したとき、最古エントリが切り捨てられる`, () => {
-      const lists = Array.from({ length: MAX_HISTORY }, (_, i) =>
-        [makeList(`list-${i}`)],
-      );
+      const lists = Array.from({ length: MAX_HISTORY }, (_, i) => [
+        makeList(`list-${i}`),
+      ]);
       const state: HistoryState = {
         past: lists,
         present: [listA],
@@ -263,7 +265,11 @@ describe("isUndoable", () => {
   });
 
   it("past に 1 件以上あるとき true を返す", () => {
-    const state: HistoryState = { past: [[listA]], present: [listB], future: [] };
+    const state: HistoryState = {
+      past: [[listA]],
+      present: [listB],
+      future: [],
+    };
     expect(isUndoable(state)).toBe(true);
   });
 });
@@ -275,7 +281,11 @@ describe("isRedoable", () => {
   });
 
   it("future に 1 件以上あるとき true を返す", () => {
-    const state: HistoryState = { past: [], present: [listA], future: [[listB]] };
+    const state: HistoryState = {
+      past: [],
+      present: [listA],
+      future: [[listB]],
+    };
     expect(isRedoable(state)).toBe(true);
   });
 });

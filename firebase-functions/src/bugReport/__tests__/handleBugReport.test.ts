@@ -60,7 +60,12 @@ describe("handleBugReport", () => {
 
   it("最新ドキュメントの status が issued の場合、processBugReport は skipped を返す", async () => {
     (processBugReport as jest.Mock).mockResolvedValue("skipped");
-    const db = makeDb({ uid: "u1", description: "d", status: "issued", issueNumber: 7 });
+    const db = makeDb({
+      uid: "u1",
+      description: "d",
+      status: "issued",
+      issueNumber: 7,
+    });
     await handleBugReport("report-1", db, makeDeps());
     expect(processBugReport).toHaveBeenCalledWith(
       expect.objectContaining({ status: "issued" }),
@@ -69,7 +74,9 @@ describe("handleBugReport", () => {
   });
 
   it("processBugReport が例外を throw した場合は例外が伝播する", async () => {
-    (processBugReport as jest.Mock).mockRejectedValue(new Error("processing failed"));
+    (processBugReport as jest.Mock).mockRejectedValue(
+      new Error("processing failed"),
+    );
     const db = makeDb({ uid: "u1", description: "d", status: "pending" });
     await expect(handleBugReport("report-1", db, makeDeps())).rejects.toThrow(
       "processing failed",

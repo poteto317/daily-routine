@@ -1,4 +1,10 @@
-import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { BugReportPage } from "../components/BugReportPage";
 import { submitBugReport } from "../api";
 import texts from "../locales/ja.json";
@@ -40,10 +46,9 @@ describe("BugReportPage", () => {
     mockedSubmit.mockResolvedValue("report-1");
     render(<BugReportPage />);
 
-    fireEvent.change(
-      screen.getByLabelText(texts.form.descriptionLabel),
-      { target: { value: "通知が表示されない" } },
-    );
+    fireEvent.change(screen.getByLabelText(texts.form.descriptionLabel), {
+      target: { value: "通知が表示されない" },
+    });
     fireEvent.click(
       screen.getByRole("button", { name: texts.form.submitLabel }),
     );
@@ -55,22 +60,22 @@ describe("BugReportPage", () => {
         stepsToReproduce: "",
       });
     });
-    expect(
-      await screen.findByText(texts.status.success),
-    ).toBeInTheDocument();
+    expect(await screen.findByText(texts.status.success)).toBeInTheDocument();
   });
 
   it("送信中はボタンが disabled になり送信中ラベルを表示する", async () => {
     let resolveSubmit!: (id: string) => void;
     mockedSubmit.mockImplementation(
-      () => new Promise<string>((resolve) => { resolveSubmit = resolve; }),
+      () =>
+        new Promise<string>((resolve) => {
+          resolveSubmit = resolve;
+        }),
     );
     render(<BugReportPage />);
 
-    fireEvent.change(
-      screen.getByLabelText(texts.form.descriptionLabel),
-      { target: { value: "不具合内容" } },
-    );
+    fireEvent.change(screen.getByLabelText(texts.form.descriptionLabel), {
+      target: { value: "不具合内容" },
+    });
     fireEvent.click(
       screen.getByRole("button", { name: texts.form.submitLabel }),
     );
@@ -79,17 +84,18 @@ describe("BugReportPage", () => {
       screen.getByRole("button", { name: texts.form.submittingLabel }),
     ).toBeDisabled();
 
-    await act(async () => { resolveSubmit("id"); });
+    await act(async () => {
+      resolveSubmit("id");
+    });
   });
 
   it("submitBugReport が失敗した場合、エラーメッセージを表示する", async () => {
     mockedSubmit.mockRejectedValue(new Error("network error"));
     render(<BugReportPage />);
 
-    fireEvent.change(
-      screen.getByLabelText(texts.form.descriptionLabel),
-      { target: { value: "不具合の内容" } },
-    );
+    fireEvent.change(screen.getByLabelText(texts.form.descriptionLabel), {
+      target: { value: "不具合の内容" },
+    });
     fireEvent.click(
       screen.getByRole("button", { name: texts.form.submitLabel }),
     );
@@ -104,25 +110,24 @@ describe("BugReportPage", () => {
     mockedSubmit.mockResolvedValue("report-clear");
     render(<BugReportPage />);
 
-    fireEvent.change(
-      screen.getByLabelText(texts.form.titleLabel),
-      { target: { value: "件名" } },
-    );
-    fireEvent.change(
-      screen.getByLabelText(texts.form.descriptionLabel),
-      { target: { value: "不具合の内容" } },
-    );
-    fireEvent.change(
-      screen.getByLabelText(texts.form.stepsLabel),
-      { target: { value: "1. 操作する" } },
-    );
+    fireEvent.change(screen.getByLabelText(texts.form.titleLabel), {
+      target: { value: "件名" },
+    });
+    fireEvent.change(screen.getByLabelText(texts.form.descriptionLabel), {
+      target: { value: "不具合の内容" },
+    });
+    fireEvent.change(screen.getByLabelText(texts.form.stepsLabel), {
+      target: { value: "1. 操作する" },
+    });
     fireEvent.click(
       screen.getByRole("button", { name: texts.form.submitLabel }),
     );
 
     await waitFor(() => {
       expect(screen.getByLabelText(texts.form.titleLabel)).toHaveValue("");
-      expect(screen.getByLabelText(texts.form.descriptionLabel)).toHaveValue("");
+      expect(screen.getByLabelText(texts.form.descriptionLabel)).toHaveValue(
+        "",
+      );
       expect(screen.getByLabelText(texts.form.stepsLabel)).toHaveValue("");
     });
   });
@@ -131,18 +136,15 @@ describe("BugReportPage", () => {
     mockedSubmit.mockResolvedValue("report-2");
     render(<BugReportPage />);
 
-    fireEvent.change(
-      screen.getByLabelText(texts.form.titleLabel),
-      { target: { value: "件名テスト" } },
-    );
-    fireEvent.change(
-      screen.getByLabelText(texts.form.descriptionLabel),
-      { target: { value: "不具合の内容" } },
-    );
-    fireEvent.change(
-      screen.getByLabelText(texts.form.stepsLabel),
-      { target: { value: "1. 操作する" } },
-    );
+    fireEvent.change(screen.getByLabelText(texts.form.titleLabel), {
+      target: { value: "件名テスト" },
+    });
+    fireEvent.change(screen.getByLabelText(texts.form.descriptionLabel), {
+      target: { value: "不具合の内容" },
+    });
+    fireEvent.change(screen.getByLabelText(texts.form.stepsLabel), {
+      target: { value: "1. 操作する" },
+    });
     fireEvent.click(
       screen.getByRole("button", { name: texts.form.submitLabel }),
     );

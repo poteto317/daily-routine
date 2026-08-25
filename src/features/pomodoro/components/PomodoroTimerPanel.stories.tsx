@@ -95,7 +95,9 @@ export const ClickPause: Story = {
   },
   play: async ({ canvasElement, args }) => {
     const canvas = within(canvasElement);
-    const pauseButton = canvas.getByRole("button", { name: /一時停止|ポーズ|停止/ });
+    const pauseButton = canvas.getByRole("button", {
+      name: /一時停止|ポーズ|停止/,
+    });
     await userEvent.click(pauseButton);
     expect(args.onPause).toHaveBeenCalledOnce();
   },

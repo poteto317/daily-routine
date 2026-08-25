@@ -24,7 +24,11 @@ export const updateListAddItemPosition = (
 ): TodoList[] =>
   lists.map((list) =>
     list.id === listId
-      ? { ...list, addItemPosition: position, updatedAt: new Date().toISOString() }
+      ? {
+          ...list,
+          addItemPosition: position,
+          updatedAt: new Date().toISOString(),
+        }
       : list,
   );
 

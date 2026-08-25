@@ -115,7 +115,11 @@ describe("BudgetAllowanceSettingsPage", () => {
       createIncomeState({ items: [] }) as never,
     );
     mockUseExpenseState.mockReturnValue(
-      createExpenseState({ items: [], fixedItems: [], variableItems: [] }) as never,
+      createExpenseState({
+        items: [],
+        fixedItems: [],
+        variableItems: [],
+      }) as never,
     );
 
     render(<BudgetAllowanceSettingsPage />);
@@ -128,7 +132,11 @@ describe("BudgetAllowanceSettingsPage", () => {
       createIncomeState({ items: [], showForm: true }) as never,
     );
     mockUseExpenseState.mockReturnValue(
-      createExpenseState({ items: [], fixedItems: [], variableItems: [] }) as never,
+      createExpenseState({
+        items: [],
+        fixedItems: [],
+        variableItems: [],
+      }) as never,
     );
 
     render(<BudgetAllowanceSettingsPage />);
@@ -167,7 +175,7 @@ describe("BudgetAllowanceSettingsPage", () => {
     expect(incomeState.openForm).toHaveBeenCalled();
   });
 
-  it("支出セクションの追加ボタンでexpense.openForm(\"fixed\")が呼ばれる", () => {
+  it('支出セクションの追加ボタンでexpense.openForm("fixed")が呼ばれる', () => {
     const expenseState = createExpenseState();
     mockUseExpenseState.mockReturnValue(expenseState as never);
 
@@ -179,7 +187,10 @@ describe("BudgetAllowanceSettingsPage", () => {
   });
 
   it("収入フォーム表示時に作成/キャンセルを委譲する", () => {
-    const incomeState = createIncomeState({ showForm: true, nameInput: "副業" });
+    const incomeState = createIncomeState({
+      showForm: true,
+      nameInput: "副業",
+    });
     mockUseIncomeState.mockReturnValue(incomeState as never);
 
     render(<BudgetAllowanceSettingsPage />);

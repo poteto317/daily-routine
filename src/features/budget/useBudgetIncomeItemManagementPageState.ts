@@ -18,7 +18,11 @@ export const useBudgetIncomeItemManagementPageState = () => {
   } = useBudgetIncomeItemManagementFormState();
 
   const { items, handleCreate, handleUpdateItem, handleDelete } =
-    useBudgetIncomeItemManagementDataState({ nameInput, amountInput, closeForm });
+    useBudgetIncomeItemManagementDataState({
+      nameInput,
+      amountInput,
+      closeForm,
+    });
 
   const {
     editingItemId,

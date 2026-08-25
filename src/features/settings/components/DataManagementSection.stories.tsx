@@ -2,7 +2,10 @@ import { useRef } from "react";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { expect, fn, userEvent, within } from "storybook/test";
 import { DataManagementSection } from "./DataManagementSection";
-import { ALL_TRANSFER_OPTIONS, EMPTY_TRANSFER_OPTIONS } from "../state/constants";
+import {
+  ALL_TRANSFER_OPTIONS,
+  EMPTY_TRANSFER_OPTIONS,
+} from "../state/constants";
 
 type Props = React.ComponentProps<typeof DataManagementSection>;
 

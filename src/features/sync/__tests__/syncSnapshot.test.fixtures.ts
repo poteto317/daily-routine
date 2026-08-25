@@ -13,7 +13,9 @@ type SyncSnapshotDocFixture = {
 
 export const createTodoSyncSnapshotFixture = (
   overrides: Partial<SyncSnapshot> = {},
-  todoOverrides: Partial<Pick<SyncPayload, "todoLists" | "todoCategories">> = {},
+  todoOverrides: Partial<
+    Pick<SyncPayload, "todoLists" | "todoCategories">
+  > = {},
 ): SyncSnapshot =>
   createSyncSnapshotFixture({
     data: createSyncPayloadFixture({

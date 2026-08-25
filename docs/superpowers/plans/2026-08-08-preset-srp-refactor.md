@@ -5,6 +5,7 @@
 **Goal:** `main` ブランチから変更されたファイル群のうち、単一責任原則（SRP）違反が明確な2箇所を解消し、各新規ユニットにテストを追加する。
 
 **Architecture:**
+
 - グループA〜C: `PresetCard.tsx` が抱える「カードヘッダー表示・編集/コピー/削除の3アクションボタン・編集モード委譲・適用モードUI（ルーティン概要+曜日選択+適用ボタン）」という複数の関心事を、単一責任のサブコンポーネントへ分割する
 - グループD: `usePresetApplyDeleteActions.ts` / `presetApplyDeleteActionsResult.ts` の名前を実態（適用・削除・複製の3ハンドラーを合成する層）に合わせてリネームする
 
@@ -39,10 +40,12 @@
 ### Task 1: `PresetCardEditButton` を新規作成
 
 **Files:**
+
 - Create: `src/features/preset/components/PresetCardEditButton.tsx`
 - Test: `src/features/preset/__tests__/PresetCardEditButton.test.tsx`
 
 **Interfaces:**
+
 - Produces: `PresetCardEditButton({ onClick: () => void }): JSX.Element`
 
 - [ ] **Step 1: 失敗するテストを書く**
@@ -133,10 +136,12 @@ git commit -m "feat(preset): add PresetCardEditButton"
 ### Task 2: `PresetCardDuplicateButton` を新規作成
 
 **Files:**
+
 - Create: `src/features/preset/components/PresetCardDuplicateButton.tsx`
 - Test: `src/features/preset/__tests__/PresetCardDuplicateButton.test.tsx`
 
 **Interfaces:**
+
 - Produces: `PresetCardDuplicateButton({ onClick: () => void }): JSX.Element`
 
 - [ ] **Step 1: 失敗するテストを書く**
@@ -158,9 +163,7 @@ describe("PresetCardDuplicateButton", () => {
   it("クリックで onClick が呼ばれる", () => {
     const onClick = jest.fn();
     render(<PresetCardDuplicateButton onClick={onClick} />);
-    fireEvent.click(
-      screen.getByRole("button", { name: "プリセットをコピー" }),
-    );
+    fireEvent.click(screen.getByRole("button", { name: "プリセットをコピー" }));
     expect(onClick).toHaveBeenCalledTimes(1);
   });
 
@@ -172,9 +175,7 @@ describe("PresetCardDuplicateButton", () => {
         <PresetCardDuplicateButton onClick={onClick} />
       </div>,
     );
-    fireEvent.click(
-      screen.getByRole("button", { name: "プリセットをコピー" }),
-    );
+    fireEvent.click(screen.getByRole("button", { name: "プリセットをコピー" }));
     expect(onClick).toHaveBeenCalledTimes(1);
     expect(onParentClick).not.toHaveBeenCalled();
   });
@@ -231,10 +232,12 @@ git commit -m "feat(preset): add PresetCardDuplicateButton"
 ### Task 3: `PresetCardDeleteButton` を新規作成
 
 **Files:**
+
 - Create: `src/features/preset/components/PresetCardDeleteButton.tsx`
 - Test: `src/features/preset/__tests__/PresetCardDeleteButton.test.tsx`
 
 **Interfaces:**
+
 - Produces: `PresetCardDeleteButton({ onClick: () => void }): JSX.Element`
 
 - [ ] **Step 1: 失敗するテストを書く**
@@ -325,10 +328,12 @@ git commit -m "feat(preset): add PresetCardDeleteButton"
 ### Task 4: `PresetApplySection` を新規作成
 
 **Files:**
+
 - Create: `src/features/preset/components/PresetApplySection.tsx`
 - Test: `src/features/preset/__tests__/PresetApplySection.test.tsx`
 
 **Interfaces:**
+
 - Consumes: `formatRoutineTemplateSummary` / `getDayButtonClassName` / `isApplyButtonDisabled` / `PRESET_APPLY_LABEL`（既存、`helpers.ts`）、`DAY_LABELS`（既存、`presetConstants.ts`）、`ROUTINE_CATEGORIES`（既存、`@/types/routine`）
 - Produces: `PresetApplySection({ preset: RoutinePreset; selectedDays: Set<number>; onToggleDay: (day: number) => void; onApply: () => void }): JSX.Element`
 
@@ -468,10 +473,7 @@ export const PresetApplySection = ({
           (item) => item.value === template.category,
         );
         return (
-          <div
-            key={index}
-            className="text-sm text-gray-600 dark:text-gray-300"
-          >
+          <div key={index} className="text-sm text-gray-600 dark:text-gray-300">
             {formatRoutineTemplateSummary({
               categoryEmoji: categoryInfo?.emoji ?? "",
               title: template.title,
@@ -529,11 +531,13 @@ git commit -m "feat(preset): add PresetApplySection"
 ### Task 5: `PresetCard.tsx` をサブコンポーネント合成に書き換える
 
 **Files:**
+
 - Modify: `src/features/preset/components/PresetCard.tsx`
 - Test: `src/features/preset/__tests__/PresetCard.test.tsx`（既存、変更なしで通ることを確認するのみ）
 - Test: `src/features/preset/components/PresetCard.stories.tsx`（既存、変更なしで通ることを確認するのみ）
 
 **Interfaces:**
+
 - Consumes: Task 1〜4で作成した4コンポーネント
 - Produces: `PresetCardProps` は変更しない（既存の呼び出し元 `PresetListSection.tsx` への影響なし）
 
@@ -547,10 +551,7 @@ Expected: 全件 PASS（8件）
 `src/features/preset/components/PresetCard.tsx` 全体:
 
 ```tsx
-import {
-  type Routine,
-  type RoutinePreset,
-} from "@/types/routine";
+import { type Routine, type RoutinePreset } from "@/types/routine";
 import {
   getPresetCardClassName,
   PRESET_ROUTINE_COUNT_SUFFIX,
@@ -690,6 +691,7 @@ git commit -m "refactor(preset): PresetCard をサブコンポーネント合成
 ### Task 6: `usePresetApplyDeleteActions` / `presetApplyDeleteActionsResult` を `usePresetItemActions` / `presetItemActionsResult` にリネーム
 
 **Files:**
+
 - Rename+Modify: `src/features/preset/usePresetApplyDeleteActions.ts` → `src/features/preset/usePresetItemActions.ts`
 - Rename+Modify: `src/features/preset/presetApplyDeleteActionsResult.ts` → `src/features/preset/presetItemActionsResult.ts`
 - Rename+Modify: `src/features/preset/__tests__/usePresetApplyDeleteActions.test.tsx` → `src/features/preset/__tests__/usePresetItemActions.test.tsx`
@@ -698,6 +700,7 @@ git commit -m "refactor(preset): PresetCard をサブコンポーネント合成
 - Modify: `src/features/preset/__tests__/usePresetManagerActionHandlers.test.tsx`（importパス変更のみ）
 
 **Interfaces:**
+
 - Produces: `usePresetItemActions(...)` — シグネチャ・戻り値の形は変更しない（`handleApplyPreset` / `handleDeletePreset` / `handleDuplicatePreset`）
 - Produces: `createPresetItemActionsResult(...)` — シグネチャ・戻り値の形は変更しない
 
@@ -873,9 +876,7 @@ describe("usePresetItemActions", () => {
     (createPresetDuplicateHandler as jest.Mock).mockReturnValue(
       handleDuplicatePreset,
     );
-    (createPresetItemActionsResult as jest.Mock).mockReturnValue(
-      resultShape,
-    );
+    (createPresetItemActionsResult as jest.Mock).mockReturnValue(resultShape);
 
     const params = {
       presets: [
@@ -905,8 +906,8 @@ describe("usePresetItemActions", () => {
       handleDuplicatePreset: expect.any(Function),
     });
 
-    const builtHandlers = (createPresetItemActionsResult as jest.Mock)
-      .mock.calls[0][0] as {
+    const builtHandlers = (createPresetItemActionsResult as jest.Mock).mock
+      .calls[0][0] as {
       handleDeletePreset: (presetId: string) => void;
       handleApplyPreset: () => void;
       handleDuplicatePreset: (presetId: string) => void;

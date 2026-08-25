@@ -75,7 +75,10 @@ describe("sampleTodoLists / ドメイン制約", () => {
   });
 
   it("少なくとも1件のリストにアイテムが存在する", () => {
-    const totalItems = sampleTodoLists.reduce((sum, l) => sum + l.items.length, 0);
+    const totalItems = sampleTodoLists.reduce(
+      (sum, l) => sum + l.items.length,
+      0,
+    );
     expect(totalItems).toBeGreaterThan(0);
   });
 

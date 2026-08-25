@@ -32,7 +32,12 @@ export const createUpdateListAddItemPositionHandler = ({
   persist,
 }: TodoListsHandlerArgs) => {
   return (listId: string, position: "last" | "first") => {
-    updateTodoListAddItemPositionAndPersist({ lists, listId, position, persist });
+    updateTodoListAddItemPositionAndPersist({
+      lists,
+      listId,
+      position,
+      persist,
+    });
   };
 };
 
@@ -49,4 +54,3 @@ export const createUpdateListHideCompletedHandler = ({
     });
   };
 };
-

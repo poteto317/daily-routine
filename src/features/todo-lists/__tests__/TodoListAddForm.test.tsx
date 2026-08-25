@@ -15,9 +15,7 @@ beforeEach(() => {
 describe("TodoListAddForm", () => {
   it("テキスト入力フィールドを表示する", () => {
     render(<TodoListAddForm {...defaultProps} />);
-    expect(
-      screen.getByPlaceholderText("Todoを追加..."),
-    ).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("Todoを追加...")).toBeInTheDocument();
   });
 
   it("入力変更で onChangeTextAction が呼ばれる", () => {

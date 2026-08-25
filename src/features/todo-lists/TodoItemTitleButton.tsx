@@ -31,7 +31,11 @@ export const TodoItemTitleButton = ({
     disabled: isDragActive,
   });
 
-  const ariaLabel = buildTodoItemTitleButtonAriaLabel({ title, isCompleted, isSelected });
+  const ariaLabel = buildTodoItemTitleButtonAriaLabel({
+    title,
+    isCompleted,
+    isSelected,
+  });
 
   return (
     <button

@@ -11,5 +11,11 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-  args: { children: <p className="text-gray-700">天気パネルのコンテンツがここに表示されます。</p> },
+  args: {
+    children: (
+      <p className="text-gray-700">
+        天気パネルのコンテンツがここに表示されます。
+      </p>
+    ),
+  },
 };

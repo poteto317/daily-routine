@@ -24,8 +24,20 @@ const category: TestCategory = {
   title: "認証機能",
   items: [
     { id: "item-1", label: "ログイン", pc: "ok", sp: "ok", note: "" },
-    { id: "item-2", label: "ログアウト", pc: "ok", sp: "ng", note: "スマホで失敗する" },
-    { id: "item-3", label: "パスワードリセット", pc: "unchecked", sp: "unchecked", note: "" },
+    {
+      id: "item-2",
+      label: "ログアウト",
+      pc: "ok",
+      sp: "ng",
+      note: "スマホで失敗する",
+    },
+    {
+      id: "item-3",
+      label: "パスワードリセット",
+      pc: "unchecked",
+      sp: "unchecked",
+      note: "",
+    },
   ],
 };
 

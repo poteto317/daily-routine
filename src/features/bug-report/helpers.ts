@@ -3,7 +3,11 @@ import {
   BUG_REPORT_MAX_STEPS_LENGTH,
   BUG_REPORT_MAX_TITLE_LENGTH,
 } from "./constants";
-import type { BugReportInput, BugReportMeta, BugReportCreatePayload } from "./types";
+import type {
+  BugReportInput,
+  BugReportMeta,
+  BugReportCreatePayload,
+} from "./types";
 
 /** バリデーションエラーの種別（locales のキーと対応） */
 export type BugReportValidationError =
@@ -29,7 +33,9 @@ export const validateBugReportInput = (
   if ((input.title ?? "").trim().length > BUG_REPORT_MAX_TITLE_LENGTH) {
     return "titleTooLong";
   }
-  if ((input.stepsToReproduce ?? "").trim().length > BUG_REPORT_MAX_STEPS_LENGTH) {
+  if (
+    (input.stepsToReproduce ?? "").trim().length > BUG_REPORT_MAX_STEPS_LENGTH
+  ) {
     return "stepsTooLong";
   }
   return null;

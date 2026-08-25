@@ -16,7 +16,9 @@ describe("createBaseView", () => {
     const view2 = createBaseView();
     expect(view1.toggleEditModeAction).not.toBe(view2.toggleEditModeAction);
     expect(view1.setViewModeAction).not.toBe(view2.setViewModeAction);
-    expect(view1.setFilterCategoryAction).not.toBe(view2.setFilterCategoryAction);
+    expect(view1.setFilterCategoryAction).not.toBe(
+      view2.setFilterCategoryAction,
+    );
   });
 
   it("HomeToolbarProps['view'] の必須プロパティを全て持つ", () => {
@@ -90,17 +92,23 @@ describe("sampleTrainDelay", () => {
   });
 
   it("lastUpdated が ISO 8601 形式である", () => {
-    expect(sampleTrainDelay.lastUpdated).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/);
+    expect(sampleTrainDelay.lastUpdated).toMatch(
+      /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/,
+    );
   });
 });
 
 describe("baseDisplay", () => {
   it("progressPercentage が completedMinutes / totalMinutes と一致する", () => {
-    const expected = Math.round((baseDisplay.completedMinutes / baseDisplay.totalMinutes) * 100);
+    const expected = Math.round(
+      (baseDisplay.completedMinutes / baseDisplay.totalMinutes) * 100,
+    );
     expect(baseDisplay.progressPercentage).toBe(expected);
   });
 
   it("completedMinutes が totalMinutes 以下である", () => {
-    expect(baseDisplay.completedMinutes).toBeLessThanOrEqual(baseDisplay.totalMinutes);
+    expect(baseDisplay.completedMinutes).toBeLessThanOrEqual(
+      baseDisplay.totalMinutes,
+    );
   });
 });

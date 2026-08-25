@@ -32,7 +32,11 @@ describe("TodoItemTitleButton", () => {
 
     it("タイトルが変わると aria-label も変わる", () => {
       render(
-        <TodoItemTitleButton {...defaultProps} title="別のタスク" isCompleted={false} />,
+        <TodoItemTitleButton
+          {...defaultProps}
+          title="別のタスク"
+          isCompleted={false}
+        />,
       );
       expect(
         screen.getByRole("button", { name: "「別のタスク」を完了にする" }),
@@ -42,7 +46,9 @@ describe("TodoItemTitleButton", () => {
     it("isSelected=true のとき aria-label の末尾に（選択中）が付く", () => {
       render(<TodoItemTitleButton {...defaultProps} isSelected={true} />);
       expect(
-        screen.getByRole("button", { name: "「テストタスク」を完了にする（選択中）" }),
+        screen.getByRole("button", {
+          name: "「テストタスク」を完了にする（選択中）",
+        }),
       ).toBeInTheDocument();
     });
 
@@ -89,7 +95,12 @@ describe("TodoItemTitleButton", () => {
   describe("クリック動作", () => {
     it("クリックで onToggleAction が呼ばれる", () => {
       const onToggleAction = jest.fn();
-      render(<TodoItemTitleButton {...defaultProps} onToggleAction={onToggleAction} />);
+      render(
+        <TodoItemTitleButton
+          {...defaultProps}
+          onToggleAction={onToggleAction}
+        />,
+      );
       fireEvent.click(
         screen.getByRole("button", { name: "「テストタスク」を完了にする" }),
       );
@@ -99,7 +110,11 @@ describe("TodoItemTitleButton", () => {
     it("isDragActive=true のとき クリックしても onToggleAction は呼ばれない", () => {
       const onToggleAction = jest.fn();
       render(
-        <TodoItemTitleButton {...defaultProps} isDragActive={true} onToggleAction={onToggleAction} />,
+        <TodoItemTitleButton
+          {...defaultProps}
+          isDragActive={true}
+          onToggleAction={onToggleAction}
+        />,
       );
       fireEvent.click(
         screen.getByRole("button", { name: "「テストタスク」を完了にする" }),
@@ -128,7 +143,9 @@ describe("TodoItemTitleButton", () => {
           onLongPressAction={onLongPressAction}
         />,
       );
-      const btn = screen.getByRole("button", { name: "「テストタスク」を完了にする" });
+      const btn = screen.getByRole("button", {
+        name: "「テストタスク」を完了にする",
+      });
 
       fireEvent.pointerDown(btn, { clientX: 0, clientY: 0 });
       jest.advanceTimersByTime(300);
@@ -149,7 +166,9 @@ describe("TodoItemTitleButton", () => {
           onLongPressAction={onLongPressAction}
         />,
       );
-      const btn = screen.getByRole("button", { name: "「テストタスク」を完了にする" });
+      const btn = screen.getByRole("button", {
+        name: "「テストタスク」を完了にする",
+      });
 
       fireEvent.pointerDown(btn, { clientX: 0, clientY: 0 });
       jest.advanceTimersByTime(500);
@@ -169,7 +188,9 @@ describe("TodoItemTitleButton", () => {
           onLongPressAction={onLongPressAction}
         />,
       );
-      const btn = screen.getByRole("button", { name: "「テストタスク」を完了にする" });
+      const btn = screen.getByRole("button", {
+        name: "「テストタスク」を完了にする",
+      });
 
       fireEvent.pointerDown(btn, { clientX: 0, clientY: 0 });
       jest.advanceTimersByTime(200);

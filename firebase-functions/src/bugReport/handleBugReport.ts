@@ -68,10 +68,9 @@ export const handleBugReport = async (
       `Bug report ${reportId} processed: ${result} (repo=${deps.repo})`,
     );
   } catch (error) {
-    deps.logger.error(
-      `Bug report ${reportId} processing threw an exception`,
-      { error },
-    );
+    deps.logger.error(`Bug report ${reportId} processing threw an exception`, {
+      error,
+    });
     throw error;
   }
 };

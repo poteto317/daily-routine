@@ -14,10 +14,30 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 const snapshots = [
-  { id: "r-1", title: "朝のストレッチ", category: "health" as const, startTime: "07:00" },
-  { id: "r-2", title: "メール確認", category: "work" as const, startTime: "09:00" },
-  { id: "r-3", title: "英語学習", category: "study" as const, startTime: "06:30" },
-  { id: "r-4", title: "ランニング", category: "health" as const, startTime: "06:00" },
+  {
+    id: "r-1",
+    title: "朝のストレッチ",
+    category: "health" as const,
+    startTime: "07:00",
+  },
+  {
+    id: "r-2",
+    title: "メール確認",
+    category: "work" as const,
+    startTime: "09:00",
+  },
+  {
+    id: "r-3",
+    title: "英語学習",
+    category: "study" as const,
+    startTime: "06:30",
+  },
+  {
+    id: "r-4",
+    title: "ランニング",
+    category: "health" as const,
+    startTime: "06:00",
+  },
   { id: "r-5", title: "読書", category: "hobby" as const, startTime: "22:00" },
 ];
 

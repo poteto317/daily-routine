@@ -1,8 +1,5 @@
 import { useMemo } from "react";
-import {
-  getMonthlyHistory,
-  getRoutines,
-} from "@/features/routine/storage";
+import { getMonthlyHistory, getRoutines } from "@/features/routine/storage";
 import { calculateWeeklyGoalProgress } from "../statistics";
 import type { WeeklyGoalProgress } from "../statistics/types";
 

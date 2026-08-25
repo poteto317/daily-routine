@@ -41,9 +41,7 @@ describe("BugReportFeedback", () => {
   });
 
   it("エラーメッセージは role=alert を持つ", () => {
-    render(
-      <BugReportFeedback status="error" errorMessage="エラーが発生" />,
-    );
+    render(<BugReportFeedback status="error" errorMessage="エラーが発生" />);
     expect(screen.getByRole("alert")).toBeInTheDocument();
   });
 

@@ -28,11 +28,11 @@ TODOリストのアイテム編集UIは、画面幅で挙動が分かれてい�
 
 ### 検討した代替案
 
-| 案 | 内容 | 不採用理由 |
-|---|---|---|
-| B: 配置修正のみ | デスクトップアイコン列は残し、ポップオーバーを`overflow-hidden`の外へ移設して見切れを解消 | アイコンの意味が分かりにくいというUX課題が未解決のまま残る |
-| C: 部分統一 | ✏️編集のみ残し、🎨🏷️のみ⋮へ寄せる | UIが2系統混在し、実装・利用者双方にとって複雑 |
-| **A: 完全統一（採用）** | ⋮メニューに一本化 | バグとUX課題を同時に解消。実装もシンプルになる |
+| 案                      | 内容                                                                                      | 不採用理由                                                 |
+| ----------------------- | ----------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
+| B: 配置修正のみ         | デスクトップアイコン列は残し、ポップオーバーを`overflow-hidden`の外へ移設して見切れを解消 | アイコンの意味が分かりにくいというUX課題が未解決のまま残る |
+| C: 部分統一             | ✏️編集のみ残し、🎨🏷️のみ⋮へ寄せる                                                         | UIが2系統混在し、実装・利用者双方にとって複雑              |
+| **A: 完全統一（採用）** | ⋮メニューに一本化                                                                         | バグとUX課題を同時に解消。実装もシンプルになる             |
 
 ## 変更内容
 
@@ -48,11 +48,11 @@ TODOリストのアイテム編集UIは、画面幅で挙動が分かれてい�
 
 「Mobile」を冠する名前は、常時使用の唯一のUIになることで実態と乖離するため、中立的な名前へ変更する。
 
-| 変更前 | 変更後 |
-|---|---|
-| `TodoItemMobileMenu.tsx` | `TodoItemActionMenu.tsx` |
-| `TodoItemMobileTrigger` | `TodoItemActionMenuTrigger` |
-| `TodoItemMobileDropdown` | `TodoItemActionMenuDropdown` |
+| 変更前                        | 変更後                        |
+| ----------------------------- | ----------------------------- |
+| `TodoItemMobileMenu.tsx`      | `TodoItemActionMenu.tsx`      |
+| `TodoItemMobileTrigger`       | `TodoItemActionMenuTrigger`   |
+| `TodoItemMobileDropdown`      | `TodoItemActionMenuDropdown`  |
 | `TodoItemMobileMenu.test.tsx` | `TodoItemActionMenu.test.tsx` |
 
 `aria-label="アクションメニュー"`は既に中立的な文言のため変更不要。

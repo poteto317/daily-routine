@@ -50,7 +50,10 @@ describe("budgetExpenseItemCrudPersistActions", () => {
   describe("createBudgetExpenseItemAndPersist", () => {
     it("追加が成功した場合はpersistして新しい配列を返す", () => {
       const items = [item];
-      const nextItems = [item, { ...item, id: "expense-2", kind: "variable" as const }];
+      const nextItems = [
+        item,
+        { ...item, id: "expense-2", kind: "variable" as const },
+      ];
       mockAddBudgetExpenseItem.mockReturnValue(nextItems);
       const persist = jest.fn();
 

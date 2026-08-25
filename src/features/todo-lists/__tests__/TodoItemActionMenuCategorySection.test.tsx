@@ -2,7 +2,9 @@ import { fireEvent, render, screen, within } from "@testing-library/react";
 import { TodoItemActionMenuCategorySection } from "../TodoItemActionMenuCategorySection";
 import type { TodoCategory } from "../types";
 
-const categories: TodoCategory[] = [{ id: "cat-work", name: "仕事", createdAt: "" }];
+const categories: TodoCategory[] = [
+  { id: "cat-work", name: "仕事", createdAt: "" },
+];
 
 describe("TodoItemActionMenuCategorySection", () => {
   it("カテゴリの radiogroup を表示する", () => {
@@ -13,7 +15,9 @@ describe("TodoItemActionMenuCategorySection", () => {
         onSelect={jest.fn()}
       />,
     );
-    expect(screen.getByRole("radiogroup", { name: "カテゴリ" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("radiogroup", { name: "カテゴリ" }),
+    ).toBeInTheDocument();
   });
 
   it("カテゴリ選択で onSelect が選択IDで呼ばれる", () => {
@@ -54,6 +58,8 @@ describe("TodoItemActionMenuCategorySection", () => {
     );
     const radiogroup = screen.getByRole("radiogroup", { name: "カテゴリ" });
     expect(within(radiogroup).getAllByRole("radio")).toHaveLength(1);
-    expect(within(radiogroup).getByRole("radio", { name: "未分類" })).toBeInTheDocument();
+    expect(
+      within(radiogroup).getByRole("radio", { name: "未分類" }),
+    ).toBeInTheDocument();
   });
 });

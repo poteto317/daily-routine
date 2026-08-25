@@ -48,7 +48,9 @@ export const ClickAddList: Story = {
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const addButton = canvas.getByRole("button", { name: /新しいリストを追加/ });
+    const addButton = canvas.getByRole("button", {
+      name: /新しいリストを追加/,
+    });
     await userEvent.click(addButton);
     // フォームが開き、タイトル入力欄が表示される
     expect(canvas.getByPlaceholderText("リストのタイトル")).toBeTruthy();

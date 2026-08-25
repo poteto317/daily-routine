@@ -14,16 +14,16 @@
 
 main からの差分（docs 除く）:
 
-| ファイル | 状態 | SRP上の問題 |
-| --- | --- | --- |
-| `src/features/preset/components/RoutineSelectionList.tsx` | 新規（第1巡） | **問題1**: カテゴリ絵文字の解決を内製しており、既存の `getCategoryInfo` の再実装。しかもフォールバックが無く挙動が食い違う |
-| `src/features/preset/components/PresetEditSection.tsx` | 変更 | **問題2**: 名前・説明の入力欄が `PresetCreateSection` と重複。**問題3**: 表示順の決定（group→sort）が JSX 内にインラインで置かれている |
-| `src/features/preset/components/PresetCreateSection.tsx` | 変更 | **問題2**（同上） |
-| `src/features/preset/presetRoutineSelectionOrder.ts` | 新規（第1巡） | 問題なし |
-| `src/features/preset/__tests__/RoutineSelectionList.test.tsx` | 新規（第1巡） | **問題4**: `createRoutine` フィクスチャを新規に自前定義し、既存の重複を1件増やしている |
-| `src/features/preset/__tests__/presetRoutineSelectionOrder.test.ts` | 新規（第1巡） | **問題4**（同上） |
-| `src/features/preset/__tests__/PresetEditSection.test.tsx` | 変更 | 問題なし |
-| `e2e/preset-edit-sort.spec.ts` | 新規 | 後述の理由によりスコープ外 |
+| ファイル                                                            | 状態          | SRP上の問題                                                                                                                            |
+| ------------------------------------------------------------------- | ------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/features/preset/components/RoutineSelectionList.tsx`           | 新規（第1巡） | **問題1**: カテゴリ絵文字の解決を内製しており、既存の `getCategoryInfo` の再実装。しかもフォールバックが無く挙動が食い違う             |
+| `src/features/preset/components/PresetEditSection.tsx`              | 変更          | **問題2**: 名前・説明の入力欄が `PresetCreateSection` と重複。**問題3**: 表示順の決定（group→sort）が JSX 内にインラインで置かれている |
+| `src/features/preset/components/PresetCreateSection.tsx`            | 変更          | **問題2**（同上）                                                                                                                      |
+| `src/features/preset/presetRoutineSelectionOrder.ts`                | 新規（第1巡） | 問題なし                                                                                                                               |
+| `src/features/preset/__tests__/RoutineSelectionList.test.tsx`       | 新規（第1巡） | **問題4**: `createRoutine` フィクスチャを新規に自前定義し、既存の重複を1件増やしている                                                 |
+| `src/features/preset/__tests__/presetRoutineSelectionOrder.test.ts` | 新規（第1巡） | **問題4**（同上）                                                                                                                      |
+| `src/features/preset/__tests__/PresetEditSection.test.tsx`          | 変更          | 問題なし                                                                                                                               |
+| `e2e/preset-edit-sort.spec.ts`                                      | 新規          | 後述の理由によりスコープ外                                                                                                             |
 
 ### 問題1の詳細（挙動の食い違い）
 
@@ -74,11 +74,13 @@ export const getCategoryInfo = (routine: Pick<Routine, "category">) => {
 第1巡で追加した2つのテストファイルが、それぞれ `createRoutine` を自前定義している。これから Task 2〜4 でテストを足すため、先に土台を整える。既存の `storageTestFixtures.ts` に置き、**今回追加した2ファイルからのみ**使う（既存8ファイルには手を触れない）。
 
 **Files:**
+
 - Modify: `src/features/preset/__tests__/storageTestFixtures.ts`
 - Modify: `src/features/preset/__tests__/RoutineSelectionList.test.tsx`
 - Modify: `src/features/preset/__tests__/presetRoutineSelectionOrder.test.ts`
 
 **Interfaces:**
+
 - Produces: `createRoutineFixture(overrides?: Partial<Routine>): Routine`
 
 - [ ] **Step 1: フィクスチャを追加する**
@@ -128,10 +130,12 @@ Expected: 全件 PASS（テストの中身は変えていないので件数も�
 **問題:** `RoutineSelectionList` が「リストを描く」ことに加えて「カテゴリ値から表示情報を解く」ことまで持っている。後者は既に `getCategoryInfo` が持つ責務であり、二重実装かつ挙動が食い違っている。
 
 **Files:**
+
 - Modify: `src/features/preset/components/RoutineSelectionList.tsx`
 - Modify: `src/features/preset/__tests__/RoutineSelectionList.test.tsx`
 
 **Interfaces:**
+
 - Consumes: `getCategoryInfo`（`@/features/routine/helpersPresentation`）
 
 - [ ] **Step 1: 失敗するテストを書く**
@@ -188,17 +192,19 @@ import type { RoutineSelectionGroup } from "../presetRoutineGrouping";
 `map` 内のインライン解決を置き換える:
 
 ```tsx
-{groups.map((group) => {
-  const categoryInfo = getCategoryInfo(group.routine);
+{
+  groups.map((group) => {
+    const categoryInfo = getCategoryInfo(group.routine);
 
-  return (
-    // ...
-    <span className="flex-1 text-sm text-gray-900 dark:text-white">
-      {categoryInfo.emoji} {group.routine.title}
-    </span>
-    // ...
-  );
-})}
+    return (
+      // ...
+      <span className="flex-1 text-sm text-gray-900 dark:text-white">
+        {categoryInfo.emoji} {group.routine.title}
+      </span>
+      // ...
+    );
+  });
+}
 ```
 
 `categoryInfo?.emoji` の `?.` はフォールバックがあるため不要になる。
@@ -229,11 +235,13 @@ Expected: いずれも成功。ビルド時に循環参照の警告が出てい�
 **問題:** `PresetEditSection.tsx:67-69` で「グループ化してから時刻順に並べる」という表示ポリシーが JSX 式の中に直接書かれている。この結果、このファイルは「レイアウトが変わったとき」と「並び順のポリシーが変わったとき」の2つの理由で変更されることになる。
 
 **Files:**
+
 - Modify: `src/features/preset/presetRoutineSelectionOrder.ts`
 - Modify: `src/features/preset/__tests__/presetRoutineSelectionOrder.test.ts`
 - Modify: `src/features/preset/components/PresetEditSection.tsx`
 
 **Interfaces:**
+
 - Produces: `toTimeOrderedSelectionGroups(routines: Routine[]): RoutineSelectionGroup[]`
 
 なお `PresetCreateSection` 側は `groupRoutinesForSelection(currentRoutines)` の単一呼び出しであり、合成が無い。ここに同型のラッパーを足すのは意味の無い間接化になるため**足さない**（YAGNI）。
@@ -353,6 +361,7 @@ Expected: PASS
 **あわせて対応する a11y:** これらの入力欄には `<label>` も `aria-label` も無く、`placeholder` だけが手がかりになっている。プレースホルダは入力が始まると消えるため、支援技術にとって名前の無い入力欄になる。1箇所に集約するこのタイミングで `aria-label` を与え、契約をコンポーネント側で保証する（`ToggleSwitch` と同じ考え方）。これは名前が無かったものに名前を与える追加のみで、既存の見た目・入力挙動は変えない。
 
 **Files:**
+
 - Create: `src/features/preset/components/PresetNameDescriptionFields.tsx`
 - Create: `src/features/preset/__tests__/PresetNameDescriptionFields.test.tsx`
 - Modify: `src/features/preset/components/PresetEditSection.tsx`
@@ -375,7 +384,8 @@ Expected: PASS
 
 ```typescript
 export const PRESET_FIELD_NAME_LABEL = presetTexts.fields.nameLabel;
-export const PRESET_FIELD_DESCRIPTION_LABEL = presetTexts.fields.descriptionLabel;
+export const PRESET_FIELD_DESCRIPTION_LABEL =
+  presetTexts.fields.descriptionLabel;
 ```
 
 - [ ] **Step 2: 失敗するテストを書く**
@@ -580,6 +590,7 @@ Expected: 全件 PASS。特に `e2e/preset-edit-sort.spec.ts` が `getByPlacehol
 SRP そのものではなく、コードベースの規約への追従。`preset/components` 配下のセクション系コンポーネントには軒並み `*.stories.tsx` があり、第1巡で追加した `RoutineSelectionList` にだけ無い（前回のPRで追加した `ToggleSwitch` にはストーリーを付けている）。
 
 **Files:**
+
 - Create: `src/features/preset/components/RoutineSelectionList.stories.tsx`
 
 - [ ] **Step 1: 既存のストーリーの書き方を確認する**

@@ -18,18 +18,22 @@ jest.mock("../useBudgetCategoryManagementNameEditing", () => ({
   useBudgetCategoryManagementNameEditing: jest.fn(),
 }));
 
-const mockUseFormState = useBudgetCategoryManagementFormState as jest.MockedFunction<
-  typeof useBudgetCategoryManagementFormState
->;
-const mockUseFormFocus = useBudgetCategoryManagementFormFocus as jest.MockedFunction<
-  typeof useBudgetCategoryManagementFormFocus
->;
-const mockUseDataState = useBudgetCategoryManagementDataState as jest.MockedFunction<
-  typeof useBudgetCategoryManagementDataState
->;
-const mockUseNameEditing = useBudgetCategoryManagementNameEditing as jest.MockedFunction<
-  typeof useBudgetCategoryManagementNameEditing
->;
+const mockUseFormState =
+  useBudgetCategoryManagementFormState as jest.MockedFunction<
+    typeof useBudgetCategoryManagementFormState
+  >;
+const mockUseFormFocus =
+  useBudgetCategoryManagementFormFocus as jest.MockedFunction<
+    typeof useBudgetCategoryManagementFormFocus
+  >;
+const mockUseDataState =
+  useBudgetCategoryManagementDataState as jest.MockedFunction<
+    typeof useBudgetCategoryManagementDataState
+  >;
+const mockUseNameEditing =
+  useBudgetCategoryManagementNameEditing as jest.MockedFunction<
+    typeof useBudgetCategoryManagementNameEditing
+  >;
 
 describe("useBudgetCategoryManagementPageState composition", () => {
   beforeEach(() => {
@@ -63,9 +67,7 @@ describe("useBudgetCategoryManagementPageState composition", () => {
   });
 
   it("各フックを正しい引数で合成し、値をまとめて返す", () => {
-    const { result } = renderHook(() =>
-      useBudgetCategoryManagementPageState(),
-    );
+    const { result } = renderHook(() => useBudgetCategoryManagementPageState());
 
     expect(mockUseDataState).toHaveBeenCalledWith({
       nameInput: "交通費",

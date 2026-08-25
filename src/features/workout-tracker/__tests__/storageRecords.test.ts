@@ -4,7 +4,10 @@ import {
   deleteWorkoutRecord,
   getAllWorkoutRecords,
 } from "../storageRecords";
-import { getWorkoutRecordHistory, saveWorkoutRecordHistory } from "../storageData";
+import {
+  getWorkoutRecordHistory,
+  saveWorkoutRecordHistory,
+} from "../storageData";
 import * as coreStorage from "@/lib/storage/core";
 
 jest.mock("../storageData");
@@ -13,9 +16,13 @@ jest.mock("@/lib/storage/core", () => ({
 }));
 
 const mockGetWorkoutRecordHistory =
-  getWorkoutRecordHistory as jest.MockedFunction<typeof getWorkoutRecordHistory>;
+  getWorkoutRecordHistory as jest.MockedFunction<
+    typeof getWorkoutRecordHistory
+  >;
 const mockSaveWorkoutRecordHistory =
-  saveWorkoutRecordHistory as jest.MockedFunction<typeof saveWorkoutRecordHistory>;
+  saveWorkoutRecordHistory as jest.MockedFunction<
+    typeof saveWorkoutRecordHistory
+  >;
 const mockGenerateId = coreStorage.generateId as jest.MockedFunction<
   typeof coreStorage.generateId
 >;

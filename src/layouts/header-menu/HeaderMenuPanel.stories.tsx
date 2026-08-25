@@ -21,10 +21,10 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 const menuItems: HeaderMenuItem[] = [
-  { id: "home",       label: "ホーム",    icon: "🏠", route: "home" },
-  { id: "budget",     label: "予算",      icon: "💰", route: "budget" },
-  { id: "calendar",   label: "カレンダー", icon: "📅", route: "calendar" },
-  { id: "settings",   label: "設定",      icon: "⚙️", route: "settings" },
+  { id: "home", label: "ホーム", icon: "🏠", route: "home" },
+  { id: "budget", label: "予算", icon: "💰", route: "budget" },
+  { id: "calendar", label: "カレンダー", icon: "📅", route: "calendar" },
+  { id: "settings", label: "設定", icon: "⚙️", route: "settings" },
 ];
 
 const user = { isAnonymous: false, email: "user@example.com" } as User;

@@ -42,11 +42,9 @@
 }
 
 body {
-  font-family: Arial, Helvetica, sans-serif,
-    "Apple Color Emoji",
-    "Segoe UI Emoji",
-    "Noto Color Emoji",
-    "Twemoji Mozilla";
+  font-family:
+    Arial, Helvetica, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+    "Noto Color Emoji", "Twemoji Mozilla";
 }
 
 @layer base {

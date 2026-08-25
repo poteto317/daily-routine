@@ -38,7 +38,9 @@ describe("collectBugReportMeta", () => {
     global.Intl = {
       ...originalIntl,
       DateTimeFormat: jest.fn().mockReturnValue({
-        resolvedOptions: () => { throw new Error("not supported"); },
+        resolvedOptions: () => {
+          throw new Error("not supported");
+        },
       }) as unknown as typeof Intl.DateTimeFormat,
     };
 
@@ -82,7 +84,9 @@ describe("collectBugReportMeta", () => {
     // jsdom 環境ではタイムゾーンは "UTC" または環境依存の文字列が返る
     expect(typeof meta.timezone).toBe("string");
     // Intl.DateTimeFormat が再びネイティブ実装で動くことを直接確認
-    expect(() => Intl.DateTimeFormat().resolvedOptions().timeZone).not.toThrow();
+    expect(
+      () => Intl.DateTimeFormat().resolvedOptions().timeZone,
+    ).not.toThrow();
   });
 
   it("navigator 削除テストの後 navigator が復元されているため後続テストに副作用が残らない", () => {

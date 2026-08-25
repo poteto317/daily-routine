@@ -9,8 +9,6 @@ export const BudgetCategoryManagementEmptyState = () => (
     <p className="text-sm font-medium">
       {texts.categoryManagement.emptyMessage}
     </p>
-    <p className="text-xs mt-1">
-      {texts.categoryManagement.emptyDescription}
-    </p>
+    <p className="text-xs mt-1">{texts.categoryManagement.emptyDescription}</p>
   </div>
 );

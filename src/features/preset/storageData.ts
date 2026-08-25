@@ -15,8 +15,8 @@ const isValidRoutineTemplate = (
 ): template is RoutineTemplate =>
   Boolean(
     template &&
-      typeof template.title === "string" &&
-      typeof template.startTime === "string",
+    typeof template.title === "string" &&
+    typeof template.startTime === "string",
   );
 
 const isValidRoutinePreset = (

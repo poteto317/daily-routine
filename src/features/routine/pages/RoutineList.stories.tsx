@@ -1,7 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { expect, fn, userEvent, within } from "storybook/test";
 import { RoutineList } from "./RoutineList";
-import { sampleCompletedRoutines, sampleRoutines } from "./__fixtures__/routineFixtures";
+import {
+  sampleCompletedRoutines,
+  sampleRoutines,
+} from "./__fixtures__/routineFixtures";
 
 // RoutineList は props のみ。DnD コンテキストは DraggableRoutineList が内包するため decorator 不要。
 

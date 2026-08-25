@@ -36,7 +36,9 @@ export const useCloseOnOutsideInteraction = ({
 
     document.addEventListener("mousedown", handlePointerDown);
     if (includeTouch) {
-      document.addEventListener("touchstart", handlePointerDown, { passive: true });
+      document.addEventListener("touchstart", handlePointerDown, {
+        passive: true,
+      });
     }
     document.addEventListener("keydown", handleKeyDown);
 

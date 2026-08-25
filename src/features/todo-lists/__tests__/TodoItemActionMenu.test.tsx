@@ -117,13 +117,13 @@ describe("TodoItemActionMenuDropdown", () => {
 
   it("itemMenuItemId が item.id のときドロップダウンを表示する", () => {
     render(<TodoItemActionMenuDropdown {...defaultProps} />);
-    expect(
-      screen.getByLabelText("アクションメニュー"),
-    ).toBeInTheDocument();
+    expect(screen.getByLabelText("アクションメニュー")).toBeInTheDocument();
   });
 
   it("itemMenuItemId が null のときドロップダウンを非表示にする", () => {
-    render(<TodoItemActionMenuDropdown {...defaultProps} itemMenuItemId={null} />);
+    render(
+      <TodoItemActionMenuDropdown {...defaultProps} itemMenuItemId={null} />,
+    );
     expect(
       screen.queryByLabelText("アクションメニュー"),
     ).not.toBeInTheDocument();
@@ -132,14 +132,20 @@ describe("TodoItemActionMenuDropdown", () => {
   it("編集ボタンクリックで startEditItemAction と closeItemMenuAction が呼ばれる", () => {
     render(<TodoItemActionMenuDropdown {...defaultProps} />);
     fireEvent.click(screen.getByRole("button", { name: /編集/ }));
-    expect(defaultProps.startEditItemAction).toHaveBeenCalledWith("item-1", "テストTodo");
+    expect(defaultProps.startEditItemAction).toHaveBeenCalledWith(
+      "item-1",
+      "テストTodo",
+    );
     expect(defaultProps.closeItemMenuAction).toHaveBeenCalledTimes(1);
   });
 
   it("インデントを下げるボタンクリックで onOutdentItemAction と closeItemMenuAction が呼ばれる", () => {
     render(<TodoItemActionMenuDropdown {...defaultProps} currentIndent={1} />);
     fireEvent.click(screen.getByRole("button", { name: /インデントを下げる/ }));
-    expect(defaultProps.onOutdentItemAction).toHaveBeenCalledWith("list-1", "item-1");
+    expect(defaultProps.onOutdentItemAction).toHaveBeenCalledWith(
+      "list-1",
+      "item-1",
+    );
     expect(defaultProps.closeItemMenuAction).toHaveBeenCalledTimes(1);
   });
 
@@ -153,12 +159,21 @@ describe("TodoItemActionMenuDropdown", () => {
   it("インデントを上げるボタンクリックで onIndentItemAction と closeItemMenuAction が呼ばれる", () => {
     render(<TodoItemActionMenuDropdown {...defaultProps} />);
     fireEvent.click(screen.getByRole("button", { name: /インデントを上げる/ }));
-    expect(defaultProps.onIndentItemAction).toHaveBeenCalledWith("list-1", "item-1");
+    expect(defaultProps.onIndentItemAction).toHaveBeenCalledWith(
+      "list-1",
+      "item-1",
+    );
     expect(defaultProps.closeItemMenuAction).toHaveBeenCalledTimes(1);
   });
 
   it("currentIndent が maxIndent のときインデントを上げるボタンは disabled", () => {
-    render(<TodoItemActionMenuDropdown {...defaultProps} currentIndent={3} maxIndent={3} />);
+    render(
+      <TodoItemActionMenuDropdown
+        {...defaultProps}
+        currentIndent={3}
+        maxIndent={3}
+      />,
+    );
     expect(
       screen.getByRole("button", { name: /インデントを上げる/ }),
     ).toBeDisabled();
@@ -184,7 +199,9 @@ describe("TodoItemActionMenuDropdown", () => {
 
   it("背景色の radiogroup を表示する", () => {
     render(<TodoItemActionMenuDropdown {...defaultProps} />);
-    expect(screen.getByRole("radiogroup", { name: "背景色" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("radiogroup", { name: "背景色" }),
+    ).toBeInTheDocument();
   });
 
   it("背景色スウォッチ選択で onUpdateItemBgColorAction と closeItemMenuAction が呼ばれる", () => {
@@ -222,7 +239,9 @@ describe("TodoItemActionMenuDropdown", () => {
 
   describe("sortModeActive=true のとき（表示順と生配列順の乖離による意図しない再構造化の防止）", () => {
     it("インデント可能な状態でも「上げる」「下げる」両方が disabled になる", () => {
-      render(<TodoItemActionMenuDropdown {...defaultProps} sortModeActive={true} />);
+      render(
+        <TodoItemActionMenuDropdown {...defaultProps} sortModeActive={true} />,
+      );
       expect(
         screen.getByRole("button", { name: /インデントを下げる/ }),
       ).toBeDisabled();
@@ -232,14 +251,22 @@ describe("TodoItemActionMenuDropdown", () => {
     });
 
     it("「下げる」クリックしても onOutdentItemAction は呼ばれない", () => {
-      render(<TodoItemActionMenuDropdown {...defaultProps} sortModeActive={true} />);
-      fireEvent.click(screen.getByRole("button", { name: /インデントを下げる/ }));
+      render(
+        <TodoItemActionMenuDropdown {...defaultProps} sortModeActive={true} />,
+      );
+      fireEvent.click(
+        screen.getByRole("button", { name: /インデントを下げる/ }),
+      );
       expect(defaultProps.onOutdentItemAction).not.toHaveBeenCalled();
     });
 
     it("「上げる」クリックしても onIndentItemAction は呼ばれない", () => {
-      render(<TodoItemActionMenuDropdown {...defaultProps} sortModeActive={true} />);
-      fireEvent.click(screen.getByRole("button", { name: /インデントを上げる/ }));
+      render(
+        <TodoItemActionMenuDropdown {...defaultProps} sortModeActive={true} />,
+      );
+      fireEvent.click(
+        screen.getByRole("button", { name: /インデントを上げる/ }),
+      );
       expect(defaultProps.onIndentItemAction).not.toHaveBeenCalled();
     });
   });

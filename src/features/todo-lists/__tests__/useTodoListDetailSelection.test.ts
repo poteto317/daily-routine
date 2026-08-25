@@ -33,7 +33,6 @@ describe("useTodoListDetailSelection", () => {
     });
   });
 
-
   describe("選択操作", () => {
     it("toggleSelectItem でアイテムが選択される", () => {
       const { result } = renderHook(() =>

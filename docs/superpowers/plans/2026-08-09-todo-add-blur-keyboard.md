@@ -28,14 +28,14 @@
 
 ## 対象ファイル
 
-| ファイル | 変更内容 |
-| --- | --- |
-| `src/features/todo-lists/todoListPageViewActions.ts` | `addTodoItemFromDetailInput` の `focusInput` パラメータを `blurInput` にリネーム |
-| `src/features/todo-lists/useTodoListDetailAddAction.ts` | `focusInput: () => inputRef.current?.focus()` を `blurInput: () => inputRef.current?.blur()` に変更 |
-| `src/features/todo-lists/InlineInsertForm.tsx` | 内部で `inputRef` を保持し、追加操作（ボタン／Enter）の直前に `blur()` を呼ぶ |
-| `src/features/todo-lists/__tests__/todoListPageViewActions.test.ts` | `focusInput` → `blurInput` のリネームに追従 |
-| `src/features/todo-lists/__tests__/useTodoListDetailAddAction.test.tsx` | `focus` の呼び出し検証を `blur` の呼び出し検証に変更 |
-| `src/features/todo-lists/__tests__/InlineInsertForm.test.tsx` | 追加操作でinput要素からフォーカスが外れることを検証するテストを追加 |
+| ファイル                                                                | 変更内容                                                                                            |
+| ----------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| `src/features/todo-lists/todoListPageViewActions.ts`                    | `addTodoItemFromDetailInput` の `focusInput` パラメータを `blurInput` にリネーム                    |
+| `src/features/todo-lists/useTodoListDetailAddAction.ts`                 | `focusInput: () => inputRef.current?.focus()` を `blurInput: () => inputRef.current?.blur()` に変更 |
+| `src/features/todo-lists/InlineInsertForm.tsx`                          | 内部で `inputRef` を保持し、追加操作（ボタン／Enter）の直前に `blur()` を呼ぶ                       |
+| `src/features/todo-lists/__tests__/todoListPageViewActions.test.ts`     | `focusInput` → `blurInput` のリネームに追従                                                         |
+| `src/features/todo-lists/__tests__/useTodoListDetailAddAction.test.tsx` | `focus` の呼び出し検証を `blur` の呼び出し検証に変更                                                |
+| `src/features/todo-lists/__tests__/InlineInsertForm.test.tsx`           | 追加操作でinput要素からフォーカスが外れることを検証するテストを追加                                 |
 
 `TodoListAddForm.tsx` 自体は `onAddAction` を呼ぶだけで `blur` 処理を持たない（`useTodoListDetailAddAction` が担当する）ため変更不要。`TodoListAddForm.test.tsx` も変更不要。
 
@@ -44,13 +44,16 @@
 ### Task 1: TodoListAddForm側（リスト下部の常設フォーム）を追加後にblurする
 
 **Files:**
+
 - Modify: `src/features/todo-lists/todoListPageViewActions.ts`
 - Modify: `src/features/todo-lists/useTodoListDetailAddAction.ts`
 - Modify: `src/features/todo-lists/__tests__/todoListPageViewActions.test.ts`
 - Modify: `src/features/todo-lists/__tests__/useTodoListDetailAddAction.test.tsx`
 
 **Interfaces:**
+
 - `addTodoItemFromDetailInput` のパラメータ型:
+
   ```ts
   {
     inputText: string;
@@ -194,11 +197,13 @@ Expected: PASS
 - [x] **Step 5: Task 1関連のテストとlint/型チェックを実行する**
 
 Run:
+
 ```bash
 npx jest src/features/todo-lists/__tests__/todoListPageViewActions.test.ts src/features/todo-lists/__tests__/useTodoListDetailAddAction.test.tsx --no-coverage
 npx eslint src/features/todo-lists/todoListPageViewActions.ts src/features/todo-lists/useTodoListDetailAddAction.ts --quiet
 npx tsc --noEmit -p tsconfig.test.json
 ```
+
 Expected: すべてエラーなし
 
 ---
@@ -206,10 +211,12 @@ Expected: すべてエラーなし
 ### Task 2: InlineInsertForm側（アイテム直後への挿入フォーム）を追加操作時にblurする
 
 **Files:**
+
 - Modify: `src/features/todo-lists/InlineInsertForm.tsx`
 - Modify: `src/features/todo-lists/__tests__/InlineInsertForm.test.tsx`
 
 **Interfaces:**
+
 - `InlineInsertForm` の props シグネチャは変更しない（`inputRef` はコンポーネント内部で保持し、外部には公開しない）
 
 - [x] **Step 1: 追加操作でinput要素からフォーカスが外れることを検証するテストを追加する（RED）**
@@ -377,10 +384,12 @@ Expected: PASS（既存10件 + 新規5件、計15件）
 - [x] **Step 3: Task 2関連のlint/型チェックを実行する**
 
 Run:
+
 ```bash
 npx eslint src/features/todo-lists/InlineInsertForm.tsx --quiet
 npx tsc --noEmit -p tsconfig.test.json
 ```
+
 Expected: エラーなし
 
 ---
@@ -395,17 +404,20 @@ Expected: 全件PASS（既存テストに回帰がないこと）
 - [x] **Step 2: 全体テストスイート・lint・型チェック・E2Eを実行する**
 
 Run:
+
 ```bash
 npm test -- --runInBand
 npm run lint
 npm run typecheck
 npm run test:e2e
 ```
+
 Expected: すべてPASS。特に `e2e/todo-list.spec.ts`（Todoリスト作成→追加→完了操作）が今回の変更後も通ることを確認する。
 
 - [x] **Step 3: 実ブラウザで動作確認する**
 
 `npm run dev` でdevサーバーを起動し、Playwrightまたは手動操作で以下を確認する:
+
 - リスト下部の追加フォームで、追加ボタンクリック後に入力欄のフォーカスが外れている（`document.activeElement` がinput要素でなくなる）
 - 同フォームで、Enterキーでの追加後も同様にフォーカスが外れている
 - アイテム直後への挿入フォームでも同様

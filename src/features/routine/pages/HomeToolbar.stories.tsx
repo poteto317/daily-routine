@@ -1,7 +1,11 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { expect, fn, userEvent, within } from "storybook/test";
 import { HomeToolbar } from "./HomeToolbar";
-import { baseDisplay, createBaseView, sampleTrainDelay } from "./__fixtures__/homeStoryFixtures";
+import {
+  baseDisplay,
+  createBaseView,
+  sampleTrainDelay,
+} from "./__fixtures__/homeStoryFixtures";
 
 // HomeToolbar は純粋な props コンポーネント。localStorage / API 依存なし。
 
@@ -31,7 +35,10 @@ export const Default: Story = {
 export const HolidayMode: Story = {
   args: (() => {
     const { view, ...rest } = createBaseArgs();
-    return { ...rest, view: { ...view, isTodayHoliday: true, viewMode: "holiday" } };
+    return {
+      ...rest,
+      view: { ...view, isTodayHoliday: true, viewMode: "holiday" },
+    };
   })(),
 };
 
@@ -42,7 +49,11 @@ export const WithTrainDelay: Story = {
 export const AllCompleted: Story = {
   args: {
     ...createBaseArgs(),
-    display: { completedMinutes: 90, totalMinutes: 90, progressPercentage: 100 },
+    display: {
+      completedMinutes: 90,
+      totalMinutes: 90,
+      progressPercentage: 100,
+    },
   },
 };
 
@@ -61,7 +72,9 @@ export const ClickAddButton: Story = {
   args: createBaseArgs(),
   play: async ({ args, canvasElement }) => {
     const canvas = within(canvasElement);
-    await userEvent.click(canvas.getByRole("button", { name: /ルーティンを追加/i }));
+    await userEvent.click(
+      canvas.getByRole("button", { name: /ルーティンを追加/i }),
+    );
     expect(args.onAddRoutineAction).toHaveBeenCalledTimes(1);
   },
 };

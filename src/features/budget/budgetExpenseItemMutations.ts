@@ -26,9 +26,7 @@ export const updateBudgetExpenseItem = (
   name: string,
   amount: number,
 ): BudgetExpenseItem[] =>
-  items.map((item) =>
-    item.id === itemId ? { ...item, name, amount } : item,
-  );
+  items.map((item) => (item.id === itemId ? { ...item, name, amount } : item));
 
 /**
  * 支出項目の分類（固定費/変動費）を変更する。

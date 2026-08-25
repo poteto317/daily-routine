@@ -71,7 +71,9 @@ export const ClickLogo: Story = {
   args: { currentPage: "budget", isEditMode: false },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const logoButton = canvas.getByRole("button", { name: /デイリールーティン/ });
+    const logoButton = canvas.getByRole("button", {
+      name: /デイリールーティン/,
+    });
     await userEvent.click(logoButton);
     // 内部 hook 経由のナビゲーションなので fn() の直接検証はしない
     expect(logoButton).toBeTruthy();

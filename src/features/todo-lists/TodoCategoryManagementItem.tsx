@@ -47,8 +47,14 @@ export const TodoCategoryManagementItem = ({
   const isEditing = editingCategoryId === category.id;
   const isColorEditing = colorEditingCategoryId === category.id;
   const suppressNextBlurCommitRef = useRef(false);
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
-    useSortable({ id: category.id });
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: category.id });
 
   return (
     <div

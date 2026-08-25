@@ -3,9 +3,7 @@ import type { BugReportMeta } from "../types";
 
 describe("validateBugReportInput", () => {
   it("説明が入力されていれば null を返す", () => {
-    expect(
-      validateBugReportInput({ description: "通知が出ない" }),
-    ).toBeNull();
+    expect(validateBugReportInput({ description: "通知が出ない" })).toBeNull();
   });
 
   it("説明が空なら descriptionRequired を返す", () => {
@@ -21,9 +19,9 @@ describe("validateBugReportInput", () => {
   });
 
   it("説明が2000文字を超えると descriptionTooLong を返す", () => {
-    expect(
-      validateBugReportInput({ description: "あ".repeat(2001) }),
-    ).toBe("descriptionTooLong");
+    expect(validateBugReportInput({ description: "あ".repeat(2001) })).toBe(
+      "descriptionTooLong",
+    );
   });
 
   it("タイトルが100文字を超えると titleTooLong を返す", () => {
@@ -54,9 +52,7 @@ describe("validateBugReportInput", () => {
   });
 
   it("説明の前後の空白はトリムして判定する", () => {
-    expect(
-      validateBugReportInput({ description: "  問題あり  " }),
-    ).toBeNull();
+    expect(validateBugReportInput({ description: "  問題あり  " })).toBeNull();
   });
 
   it("タイトルがちょうど100文字なら null を返す（境界値）", () => {

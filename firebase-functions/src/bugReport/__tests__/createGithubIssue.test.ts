@@ -63,9 +63,9 @@ describe("createGithubIssue", () => {
   });
 
   it("fetch 自体が例外を投げる場合はそのまま伝播する", async () => {
-    global.fetch = jest.fn().mockRejectedValue(
-      new Error("network error"),
-    ) as unknown as typeof fetch;
+    global.fetch = jest
+      .fn()
+      .mockRejectedValue(new Error("network error")) as unknown as typeof fetch;
 
     await expect(
       createGithubIssue({

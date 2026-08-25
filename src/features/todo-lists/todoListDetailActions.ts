@@ -34,4 +34,3 @@ export const updateTodoListHideCompletedInLists = (params: {
 
   return updateListHideCompleted(lists, listId, hideCompleted);
 };
-

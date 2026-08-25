@@ -1,7 +1,9 @@
 import { groupBudgetExpenseItemsByKind } from "../budgetExpenseItemKindGroups";
 import type { BudgetExpenseItem } from "@/types/routine";
 
-const fixedItem = (overrides: Partial<BudgetExpenseItem> = {}): BudgetExpenseItem => ({
+const fixedItem = (
+  overrides: Partial<BudgetExpenseItem> = {},
+): BudgetExpenseItem => ({
   id: "expense-1",
   name: "家賃",
   amount: 80000,
@@ -10,7 +12,9 @@ const fixedItem = (overrides: Partial<BudgetExpenseItem> = {}): BudgetExpenseIte
   ...overrides,
 });
 
-const variableItem = (overrides: Partial<BudgetExpenseItem> = {}): BudgetExpenseItem => ({
+const variableItem = (
+  overrides: Partial<BudgetExpenseItem> = {},
+): BudgetExpenseItem => ({
   id: "expense-2",
   name: "食費",
   amount: 30000,
@@ -37,7 +41,10 @@ describe("groupBudgetExpenseItemsByKind", () => {
   });
 
   it("変動費のみの場合、fixedItemsは空になる", () => {
-    const items = [variableItem(), variableItem({ id: "expense-4", name: "娯楽費" })];
+    const items = [
+      variableItem(),
+      variableItem({ id: "expense-4", name: "娯楽費" }),
+    ];
 
     expect(groupBudgetExpenseItemsByKind(items)).toEqual({
       fixedItems: [],

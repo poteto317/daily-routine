@@ -15,11 +15,11 @@ type Story = StoryObj<typeof meta>;
 
 const categoryStats: CategoryStats[] = [
   { category: "health", completed: 18, total: 21, achievementRate: 85.7 },
-  { category: "work",   completed: 15, total: 21, achievementRate: 71.4 },
-  { category: "study",  completed: 12, total: 21, achievementRate: 57.1 },
-  { category: "hobby",  completed: 10, total: 21, achievementRate: 47.6 },
-  { category: "life",   completed: 13, total: 21, achievementRate: 61.9 },
-  { category: "other",  completed:  5, total: 21, achievementRate: 23.8 },
+  { category: "work", completed: 15, total: 21, achievementRate: 71.4 },
+  { category: "study", completed: 12, total: 21, achievementRate: 57.1 },
+  { category: "hobby", completed: 10, total: 21, achievementRate: 47.6 },
+  { category: "life", completed: 13, total: 21, achievementRate: 61.9 },
+  { category: "other", completed: 5, total: 21, achievementRate: 23.8 },
 ];
 
 export const AllCategories: Story = {

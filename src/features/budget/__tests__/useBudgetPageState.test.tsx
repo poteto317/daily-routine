@@ -7,7 +7,12 @@ jest.mock("../storage", () => ({
   deleteExpense: jest.fn(),
   getBudgetCategories: jest.fn(() => []),
   getBudgetIncomeItems: jest.fn(() => [
-    { id: "income-1", name: "給与", amount: 300000, createdAt: "2026-01-01T00:00:00.000Z" },
+    {
+      id: "income-1",
+      name: "給与",
+      amount: 300000,
+      createdAt: "2026-01-01T00:00:00.000Z",
+    },
   ]),
   getBudgetExpenseItems: jest.fn(() => [
     {
@@ -89,7 +94,9 @@ describe("useBudgetPageState", () => {
   });
 
   it("初期状態とフォーム開閉を扱える", () => {
-    const { result } = renderHook(() => useBudgetPageState({ navigate: mockNavigate }));
+    const { result } = renderHook(() =>
+      useBudgetPageState({ navigate: mockNavigate }),
+    );
 
     expect(result.current.expenses).toHaveLength(1);
     expect(result.current.expenseDate).toBe("2026-03-07");
@@ -107,7 +114,9 @@ describe("useBudgetPageState", () => {
   });
 
   it("有効な支出を追加してフォームをリセットする", () => {
-    const { result } = renderHook(() => useBudgetPageState({ navigate: mockNavigate }));
+    const { result } = renderHook(() =>
+      useBudgetPageState({ navigate: mockNavigate }),
+    );
 
     act(() => {
       result.current.openExpenseForm();
@@ -134,7 +143,9 @@ describe("useBudgetPageState", () => {
   });
 
   it("無効な支出では追加しない", () => {
-    const { result } = renderHook(() => useBudgetPageState({ navigate: mockNavigate }));
+    const { result } = renderHook(() =>
+      useBudgetPageState({ navigate: mockNavigate }),
+    );
 
     act(() => {
       result.current.handleExpenseAmountChange("");
@@ -145,7 +156,9 @@ describe("useBudgetPageState", () => {
   });
 
   it("支出削除後に一覧を再取得する", () => {
-    const { result } = renderHook(() => useBudgetPageState({ navigate: mockNavigate }));
+    const { result } = renderHook(() =>
+      useBudgetPageState({ navigate: mockNavigate }),
+    );
 
     act(() => {
       result.current.handleDeleteExpense("e-mar");
@@ -158,7 +171,9 @@ describe("useBudgetPageState", () => {
   });
 
   it("月移動でスナップショット(支出・デフォルト日付)を同期する", () => {
-    const { result } = renderHook(() => useBudgetPageState({ navigate: mockNavigate }));
+    const { result } = renderHook(() =>
+      useBudgetPageState({ navigate: mockNavigate }),
+    );
 
     act(() => {
       result.current.goToNextMonth();

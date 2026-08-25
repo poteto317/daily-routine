@@ -35,7 +35,9 @@ export interface BugReportInput {
  * サーバ専用フィールド（issueNumber 等）は含めない。
  * createdAt / updatedAt は serverTimestamp() を渡すため FieldValue を許容する。
  */
-export interface BugReportCreatePayload extends Required<Pick<BugReportInput, "description">> {
+export interface BugReportCreatePayload extends Required<
+  Pick<BugReportInput, "description">
+> {
   uid: string;
   title: string;
   stepsToReproduce: string;

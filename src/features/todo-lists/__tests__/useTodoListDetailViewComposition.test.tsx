@@ -148,7 +148,9 @@ describe("useTodoListDetailViewComposition", () => {
       handleCut: jest.fn(),
       handlePaste: jest.fn(),
     });
-    (useTodoListDetailViewState as jest.Mock).mockReturnValue(defaultViewStateMock);
+    (useTodoListDetailViewState as jest.Mock).mockReturnValue(
+      defaultViewStateMock,
+    );
     (useTodoListDetailUIControllers as jest.Mock).mockReturnValue(
       defaultUIControllersMock,
     );
@@ -202,11 +204,13 @@ describe("useTodoListDetailViewComposition", () => {
     expect(useTodoListDetailUIControllers).toHaveBeenCalled();
   });
 
-
   describe("hasClipboard の導出", () => {
     it("clipboardItems が空のとき hasClipboard=false をトップレベルで返す", () => {
       const { result } = renderHook(() =>
-        useTodoListDetailViewComposition({ ...defaultParams, clipboardItems: [] }),
+        useTodoListDetailViewComposition({
+          ...defaultParams,
+          clipboardItems: [],
+        }),
       );
       expect(result.current.hasClipboard).toBe(false);
     });
@@ -242,18 +246,26 @@ describe("useTodoListDetailViewComposition", () => {
     // viewState グループ
     expect(result.current.viewState.hideCompleted).toBe(false);
     // uiControllers グループ: colorPicker / itemMenu の名前付きサブグループ
-    expect(result.current.uiControllers.colorPicker.showBulkColorPicker).toBe(false);
+    expect(result.current.uiControllers.colorPicker.showBulkColorPicker).toBe(
+      false,
+    );
     expect(result.current.uiControllers.itemMenu.itemMenuItemId).toBeNull();
     // interactionMode グループ: inlineInsert / dnd の名前付きサブグループ
-    expect(result.current.interactionMode.inlineInsert.insertAfterId).toBeNull();
+    expect(
+      result.current.interactionMode.inlineInsert.insertAfterId,
+    ).toBeNull();
     expect(result.current.interactionMode.dnd.activeId).toBeNull();
     expect(result.current.interactionMode.dnd.sensors).toEqual([]);
     expect(result.current.interactionMode.activeItem).toBeNull();
     // toolbar グループ
     expect(result.current.toolbar).toBeDefined();
     expect(result.current.toolbar.hasCompletedItems).toBe(false);
-    expect(typeof result.current.toolbar.handleUpdateAllItemsBgColor).toBe("function");
-    expect(typeof result.current.toolbar.handleToggleAddItemPosition).toBe("function");
+    expect(typeof result.current.toolbar.handleUpdateAllItemsBgColor).toBe(
+      "function",
+    );
+    expect(typeof result.current.toolbar.handleToggleAddItemPosition).toBe(
+      "function",
+    );
   });
 
   describe("uiControllers の構造", () => {
@@ -269,8 +281,12 @@ describe("useTodoListDetailViewComposition", () => {
       const { result } = renderHook(() =>
         useTodoListDetailViewComposition(defaultParams),
       );
-      expect(result.current.uiControllers).not.toHaveProperty("colorPickerItemId");
-      expect(result.current.uiControllers).not.toHaveProperty("showBulkColorPicker");
+      expect(result.current.uiControllers).not.toHaveProperty(
+        "colorPickerItemId",
+      );
+      expect(result.current.uiControllers).not.toHaveProperty(
+        "showBulkColorPicker",
+      );
     });
 
     it("itemMenu のプロパティが uiControllers トップレベルに漏れ出ない", () => {
@@ -289,7 +305,9 @@ describe("useTodoListDetailViewComposition", () => {
       const { result } = renderHook(() =>
         useTodoListDetailViewComposition(defaultParams),
       );
-      expect(result.current.uiControllers.colorPicker.colorPickerItemId).toBe("item-5");
+      expect(result.current.uiControllers.colorPicker.colorPickerItemId).toBe(
+        "item-5",
+      );
     });
   });
 
@@ -306,8 +324,12 @@ describe("useTodoListDetailViewComposition", () => {
       const { result } = renderHook(() =>
         useTodoListDetailViewComposition(defaultParams),
       );
-      expect(result.current.interactionMode).not.toHaveProperty("insertAfterId");
-      expect(result.current.interactionMode).not.toHaveProperty("inlineInputText");
+      expect(result.current.interactionMode).not.toHaveProperty(
+        "insertAfterId",
+      );
+      expect(result.current.interactionMode).not.toHaveProperty(
+        "inlineInputText",
+      );
     });
 
     it("dnd のプロパティが interactionMode トップレベルに漏れ出ない", () => {

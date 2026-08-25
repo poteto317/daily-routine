@@ -35,7 +35,10 @@ export const TodoListManagementPage = () => {
     <div className="min-h-screen bg-linear-to-br from-teal-50 to-cyan-100 dark:from-slate-400 dark:to-slate-300">
       <main className="max-w-2xl mx-auto px-4 py-8">
         <CardPanel>
-          <TodoListManagementHeader showForm={showForm} onOpenFormAction={openForm} />
+          <TodoListManagementHeader
+            showForm={showForm}
+            onOpenFormAction={openForm}
+          />
 
           <div className="flex justify-end mb-4">
             <button
@@ -83,4 +86,3 @@ export const TodoListManagementPage = () => {
     </div>
   );
 };
-

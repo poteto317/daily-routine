@@ -30,7 +30,10 @@ const meta = {
     isEditMode: false,
   },
   argTypes: {
-    swipeActionType: { control: { type: "select" }, options: ["delete", "edit", "indent"] },
+    swipeActionType: {
+      control: { type: "select" },
+      options: ["delete", "edit", "indent"],
+    },
   },
 } satisfies Meta<typeof SwipeableRoutineItemWrapper>;
 
@@ -58,10 +61,7 @@ export const WithButtonChild: Story = {
   render: (args) => (
     <SwipeableRoutineItem {...args}>
       <div className="p-4 bg-white rounded-lg border border-gray-200">
-        <button
-          type="button"
-          className="text-sm font-medium text-blue-600"
-        >
+        <button type="button" className="text-sm font-medium text-blue-600">
           クリックできるボタン
         </button>
       </div>

@@ -142,12 +142,7 @@ describe("TodoListSortableItems", () => {
     });
 
     it("visibleItems が空でアイテムがある場合（全完了）は「完了済みのみです」を表示する", () => {
-      render(
-        <TodoListSortableItems
-          {...defaultProps}
-          visibleItems={[]}
-        />,
-      );
+      render(<TodoListSortableItems {...defaultProps} visibleItems={[]} />);
       expect(screen.getByText("完了済みのみです")).toBeInTheDocument();
     });
   });
@@ -181,15 +176,11 @@ describe("TodoListSortableItems", () => {
         />,
       );
       // InlineInsertForm のテキストボックスが表示される
-      expect(
-        screen.getByDisplayValue("new item"),
-      ).toBeInTheDocument();
+      expect(screen.getByDisplayValue("new item")).toBeInTheDocument();
     });
 
     it("insertAfterId が null のときインライン挿入フォームを表示しない", () => {
-      render(
-        <TodoListSortableItems {...defaultProps} insertAfterId={null} />,
-      );
+      render(<TodoListSortableItems {...defaultProps} insertAfterId={null} />);
       // フォームの「追加」ボタンがないこと（インライン挿入フォームは非表示）
       expect(
         screen.queryByRole("button", { name: "追加" }),
@@ -251,7 +242,9 @@ describe("TodoListSortableItems", () => {
           sortModeActive={false}
         />,
       );
-      const editModeDivs = container.querySelectorAll('[data-edit-mode="true"]');
+      const editModeDivs = container.querySelectorAll(
+        '[data-edit-mode="true"]',
+      );
       expect(editModeDivs.length).toBeGreaterThan(0);
     });
 
@@ -264,7 +257,9 @@ describe("TodoListSortableItems", () => {
           sortModeActive={true}
         />,
       );
-      const editModeDivs = container.querySelectorAll('[data-edit-mode="true"]');
+      const editModeDivs = container.querySelectorAll(
+        '[data-edit-mode="true"]',
+      );
       expect(editModeDivs.length).toBe(0);
     });
 
@@ -289,14 +284,16 @@ describe("TodoListSortableItems", () => {
       const { rerender } = render(
         <TodoListSortableItems {...defaultProps} sortModeActive={false} />,
       );
-      expect(
-        screen.getAllByRole("button", { name: "並び替え" }).length,
-      ).toBe(baseList.items.length);
+      expect(screen.getAllByRole("button", { name: "並び替え" }).length).toBe(
+        baseList.items.length,
+      );
 
-      rerender(<TodoListSortableItems {...defaultProps} sortModeActive={true} />);
-      expect(
-        screen.getAllByRole("button", { name: "並び替え" }).length,
-      ).toBe(baseList.items.length);
+      rerender(
+        <TodoListSortableItems {...defaultProps} sortModeActive={true} />,
+      );
+      expect(screen.getAllByRole("button", { name: "並び替え" }).length).toBe(
+        baseList.items.length,
+      );
     });
 
     it("子アイテム（indent>0）はブロックのアンカーではなく並び替えの起点・着地点として常に拒否されるため、ドラッグハンドルを表示しない", () => {
@@ -315,9 +312,9 @@ describe("TodoListSortableItems", () => {
         />,
       );
       // 親アイテム（item-1）の分の1件のみ表示され、子アイテムの分は表示されない
-      expect(
-        screen.getAllByRole("button", { name: "並び替え" }).length,
-      ).toBe(1);
+      expect(screen.getAllByRole("button", { name: "並び替え" }).length).toBe(
+        1,
+      );
     });
   });
 

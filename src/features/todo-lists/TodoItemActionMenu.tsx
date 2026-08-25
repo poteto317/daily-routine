@@ -49,7 +49,10 @@ export const TodoItemActionMenuTrigger = ({
   item,
   itemMenuItemId,
   toggleItemMenuAction,
-}: Pick<TodoItemActionMenuProps, "item" | "itemMenuItemId" | "toggleItemMenuAction">) => (
+}: Pick<
+  TodoItemActionMenuProps,
+  "item" | "itemMenuItemId" | "toggleItemMenuAction"
+>) => (
   <div
     data-item-menu
     onTouchStartCapture={(e) => e.stopPropagation()}

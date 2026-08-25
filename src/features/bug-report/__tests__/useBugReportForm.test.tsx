@@ -64,7 +64,10 @@ describe("useBugReportForm", () => {
   it("送信中は status が submitting になる", async () => {
     let resolveSubmit!: (id: string) => void;
     const submit = jest.fn(
-      () => new Promise<string>((resolve) => { resolveSubmit = resolve; }),
+      () =>
+        new Promise<string>((resolve) => {
+          resolveSubmit = resolve;
+        }),
     );
     const { result } = renderHook(() => useBugReportForm({ submit }));
 
@@ -116,7 +119,9 @@ describe("useBugReportForm", () => {
 
     expect(submit).not.toHaveBeenCalled();
     expect(result.current.status).toBe("error");
-    expect(result.current.errorMessage).toBe(texts.validation.descriptionTooLong);
+    expect(result.current.errorMessage).toBe(
+      texts.validation.descriptionTooLong,
+    );
   });
 
   it("再現手順が2001文字以上ならバリデーションエラーになる", async () => {
@@ -141,13 +146,21 @@ describe("useBugReportForm", () => {
     const submit = jest.fn().mockResolvedValue("id");
     const { result } = renderHook(() => useBugReportForm({ submit }));
 
-    act(() => { result.current.setDescription("内容"); });
-    await act(async () => { await result.current.handleSubmit(); });
+    act(() => {
+      result.current.setDescription("内容");
+    });
+    await act(async () => {
+      await result.current.handleSubmit();
+    });
     expect(result.current.status).toBe("success");
     // 成功後フォームがクリアされるため、そのまま再送信するとバリデーションエラー
-    await act(async () => { await result.current.handleSubmit(); });
+    await act(async () => {
+      await result.current.handleSubmit();
+    });
     expect(result.current.status).toBe("error");
-    expect(result.current.errorMessage).toBe(texts.validation.descriptionRequired);
+    expect(result.current.errorMessage).toBe(
+      texts.validation.descriptionRequired,
+    );
     expect(submit).toHaveBeenCalledTimes(1);
   });
 
@@ -158,13 +171,19 @@ describe("useBugReportForm", () => {
       .mockResolvedValue("id");
     const { result } = renderHook(() => useBugReportForm({ submit }));
 
-    act(() => { result.current.setDescription("内容"); });
+    act(() => {
+      result.current.setDescription("内容");
+    });
 
-    await act(async () => { await result.current.handleSubmit(); });
+    await act(async () => {
+      await result.current.handleSubmit();
+    });
     expect(result.current.status).toBe("error");
     expect(result.current.errorMessage).not.toBe("");
 
-    await act(async () => { await result.current.handleSubmit(); });
+    await act(async () => {
+      await result.current.handleSubmit();
+    });
     expect(result.current.status).toBe("success");
     expect(result.current.errorMessage).toBe("");
   });

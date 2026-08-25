@@ -27,10 +27,12 @@
 ### Task 1: データ層 — `storageFactory.ts` に `duplicatePreset` を追加
 
 **Files:**
+
 - Modify: `src/features/preset/storageFactory.ts`
 - Test: `src/features/preset/__tests__/storage.data-and-factory.test.ts`
 
 **Interfaces:**
+
 - Produces: `duplicatePreset(preset: RoutinePreset): RoutinePreset`
 
 - [ ] **Step 1: 失敗するテストを書く**
@@ -38,55 +40,55 @@
 `src/features/preset/__tests__/storage.data-and-factory.test.ts` の末尾（`describe`ブロック内、最後の`it`の後）に追加:
 
 ```ts
-  it("プリセットを複製し、新しいidと「のコピー」を付けた名前を発行する", () => {
-    const preset = createPreset({
-      id: "preset1",
-      name: "朝ルーティン",
-      description: "朝の準備",
-      routineTemplates: [
-        { title: "朝食", startTime: "07:00", duration: 30, category: "life" },
-      ],
-    });
-
-    const duplicated = duplicatePreset(preset);
-
-    expect(duplicated.id).not.toBe(preset.id);
-    expect(duplicated.name).toBe("朝ルーティンのコピー");
-    expect(duplicated.description).toBe("朝の準備");
-    expect(duplicated.routineTemplates).toEqual(preset.routineTemplates);
+it("プリセットを複製し、新しいidと「のコピー」を付けた名前を発行する", () => {
+  const preset = createPreset({
+    id: "preset1",
+    name: "朝ルーティン",
+    description: "朝の準備",
+    routineTemplates: [
+      { title: "朝食", startTime: "07:00", duration: 30, category: "life" },
+    ],
   });
 
-  it("複製後にroutineTemplates配列を書き換えても元プリセットに影響しない", () => {
-    const preset = createPreset({
-      routineTemplates: [
-        { title: "朝食", startTime: "07:00", duration: 30, category: "life" },
-      ],
-    });
+  const duplicated = duplicatePreset(preset);
 
-    const duplicated = duplicatePreset(preset);
-    duplicated.routineTemplates.push({
-      title: "追加された項目",
-      startTime: "12:00",
-      duration: 10,
-      category: "life",
-    });
-    duplicated.routineTemplates[0].title = "書き換えられたタイトル";
+  expect(duplicated.id).not.toBe(preset.id);
+  expect(duplicated.name).toBe("朝ルーティンのコピー");
+  expect(duplicated.description).toBe("朝の準備");
+  expect(duplicated.routineTemplates).toEqual(preset.routineTemplates);
+});
 
-    expect(preset.routineTemplates).toHaveLength(1);
-    expect(preset.routineTemplates[0].title).toBe("朝食");
+it("複製後にroutineTemplates配列を書き換えても元プリセットに影響しない", () => {
+  const preset = createPreset({
+    routineTemplates: [
+      { title: "朝食", startTime: "07:00", duration: 30, category: "life" },
+    ],
   });
 
-  it("複製のcreatedAt/updatedAtは元プリセットの値を引き継がない", () => {
-    const preset = createPreset({
-      createdAt: "2020-01-01T00:00:00.000Z",
-      updatedAt: "2020-01-01T00:00:00.000Z",
-    });
-
-    const duplicated = duplicatePreset(preset);
-
-    expect(duplicated.createdAt).not.toBe(preset.createdAt);
-    expect(duplicated.updatedAt).not.toBe(preset.updatedAt);
+  const duplicated = duplicatePreset(preset);
+  duplicated.routineTemplates.push({
+    title: "追加された項目",
+    startTime: "12:00",
+    duration: 10,
+    category: "life",
   });
+  duplicated.routineTemplates[0].title = "書き換えられたタイトル";
+
+  expect(preset.routineTemplates).toHaveLength(1);
+  expect(preset.routineTemplates[0].title).toBe("朝食");
+});
+
+it("複製のcreatedAt/updatedAtは元プリセットの値を引き継がない", () => {
+  const preset = createPreset({
+    createdAt: "2020-01-01T00:00:00.000Z",
+    updatedAt: "2020-01-01T00:00:00.000Z",
+  });
+
+  const duplicated = duplicatePreset(preset);
+
+  expect(duplicated.createdAt).not.toBe(preset.createdAt);
+  expect(duplicated.updatedAt).not.toBe(preset.updatedAt);
+});
 ```
 
 このファイル冒頭のimportに `duplicatePreset` を追加:
@@ -155,10 +157,12 @@ git commit -m "feat(preset): storageFactoryにduplicatePresetを追加"
 ### Task 2: ロジック層 — `presetManagerStateActions.ts` に `duplicatePresetAndReload` を追加
 
 **Files:**
+
 - Modify: `src/features/preset/presetManagerStateActions.ts`
 - Test: `src/features/preset/__tests__/presetManagerStateActions.test.ts`
 
 **Interfaces:**
+
 - Consumes: `duplicatePreset`（Task 1）, `addPreset` / `getPresets`（既存 `storage.ts`）, `findPresetById`（既存 `presetStateHelpers.ts`）
 - Produces: `duplicatePresetAndReload(presets: RoutinePreset[], presetId: string): { presets: RoutinePreset[]; duplicated: boolean }`
 
@@ -203,32 +207,32 @@ import {
 `describe("presetManagerStateActions", ...)` 内、`"作成/削除を処理する"` の `it` ブロックの直後に追加:
 
 ```ts
-  it("複製を処理する", () => {
-    const duplicated: RoutinePreset = {
-      id: "p1-copy",
-      name: "朝ルーティンのコピー",
-      description: "desc",
-      routineTemplates: [
-        { title: "朝食", startTime: "07:00", duration: 30, category: "life" },
-      ],
-      createdAt: "2026-03-08T00:00:00.000Z",
-      updatedAt: "2026-03-08T00:00:00.000Z",
-    };
-    (duplicatePreset as jest.Mock).mockReturnValue(duplicated);
+it("複製を処理する", () => {
+  const duplicated: RoutinePreset = {
+    id: "p1-copy",
+    name: "朝ルーティンのコピー",
+    description: "desc",
+    routineTemplates: [
+      { title: "朝食", startTime: "07:00", duration: 30, category: "life" },
+    ],
+    createdAt: "2026-03-08T00:00:00.000Z",
+    updatedAt: "2026-03-08T00:00:00.000Z",
+  };
+  (duplicatePreset as jest.Mock).mockReturnValue(duplicated);
 
-    expect(duplicatePresetAndReload([preset], "missing")).toEqual({
-      presets: [preset],
-      duplicated: false,
-    });
-    expect(addPreset).not.toHaveBeenCalled();
-
-    expect(duplicatePresetAndReload([preset], "p1")).toEqual({
-      presets: [preset],
-      duplicated: true,
-    });
-    expect(duplicatePreset).toHaveBeenCalledWith(preset);
-    expect(addPreset).toHaveBeenCalledWith(duplicated);
+  expect(duplicatePresetAndReload([preset], "missing")).toEqual({
+    presets: [preset],
+    duplicated: false,
   });
+  expect(addPreset).not.toHaveBeenCalled();
+
+  expect(duplicatePresetAndReload([preset], "p1")).toEqual({
+    presets: [preset],
+    duplicated: true,
+  });
+  expect(duplicatePreset).toHaveBeenCalledWith(preset);
+  expect(addPreset).toHaveBeenCalledWith(duplicated);
+});
 ```
 
 - [ ] **Step 2: テストを実行し失敗を確認する**
@@ -286,10 +290,12 @@ git commit -m "feat(preset): duplicatePresetAndReloadを追加"
 ### Task 3: ハンドラー層 — 新規 `presetDuplicateActions.ts`
 
 **Files:**
+
 - Create: `src/features/preset/presetDuplicateActions.ts`
 - Test: `src/features/preset/__tests__/presetDuplicateActions.test.ts`
 
 **Interfaces:**
+
 - Consumes: `duplicatePresetAndReload`（Task 2）
 - Produces: `createPresetDuplicateHandler(args: { presets: RoutinePreset[]; setPresets: Dispatch<SetStateAction<RoutinePreset[]>> }): (presetId: string) => void`
 
@@ -394,12 +400,14 @@ git commit -m "feat(preset): createPresetDuplicateHandlerを追加"
 ### Task 4: hooks層 — `usePresetApplyDeleteActions` / `presetApplyDeleteActionsResult` に配線
 
 **Files:**
+
 - Modify: `src/features/preset/usePresetApplyDeleteActions.ts`
 - Modify: `src/features/preset/presetApplyDeleteActionsResult.ts`
 - Test: `src/features/preset/__tests__/usePresetApplyDeleteActions.test.tsx`
 - Test: `src/features/preset/__tests__/presetApplyDeleteActionsResult.test.ts`
 
 **Interfaces:**
+
 - Consumes: `createPresetDuplicateHandler`（Task 3）
 - Produces: `usePresetApplyDeleteActions(...)` の戻り値に `handleDuplicatePreset: (presetId: string) => void` を追加
 
@@ -652,12 +660,14 @@ git commit -m "feat(preset): usePresetApplyDeleteActionsにhandleDuplicatePreset
 ### Task 5: hooks層 — `usePresetManagerActionHandlers` / `presetManagerActionHandlersResult` に配線
 
 **Files:**
+
 - Modify: `src/features/preset/usePresetManagerActionHandlers.ts`
 - Modify: `src/features/preset/presetManagerActionHandlersResult.ts`
 - Test: `src/features/preset/__tests__/usePresetManagerActionHandlers.test.tsx`
 - Test: `src/features/preset/__tests__/presetManagerActionHandlersResult.test.ts`
 
 **Interfaces:**
+
 - Consumes: `usePresetApplyDeleteActions(...).handleDuplicatePreset`（Task 4）
 - Produces: `usePresetManagerActionHandlers(...)` の戻り値に `handleDuplicatePreset: (presetId: string) => void` を追加
 
@@ -914,10 +924,12 @@ git commit -m "feat(preset): usePresetManagerActionHandlersにhandleDuplicatePre
 ### Task 6: `presetManagerStateResult.ts` に `handleDuplicatePreset` を追加
 
 **Files:**
+
 - Modify: `src/features/preset/presetManagerStateResult.ts`
 - Test: `src/features/preset/__tests__/presetManagerStateResult.test.ts`
 
 **Interfaces:**
+
 - Consumes: `actionHandlers.handleDuplicatePreset`（Task 5）
 - Produces: `createPresetManagerStateResult(...)` の戻り値に `handleDuplicatePreset: (presetId: string) => void` を追加
 
@@ -1018,18 +1030,18 @@ Expected: `handleDuplicatePreset` が結果に含まれないことによる ass
 `src/features/preset/presetManagerStateResult.ts` の `return` 文に1行追加:
 
 ```ts
-  return {
-    presets: baseState.presets,
-    selectedPresetId: baseState.selectedPresetId,
-    selectedDays: baseState.selectedDays,
-    setSelectedPresetId: baseState.setSelectedPresetId,
-    handleDeletePreset: actionHandlers.handleDeletePreset,
-    handleApplyPreset: actionHandlers.handleApplyPreset,
-    handleDuplicatePreset: actionHandlers.handleDuplicatePreset,
-    toggleDaySelection: actionHandlers.toggleDaySelection,
-    ...creationState,
-    ...editState,
-  };
+return {
+  presets: baseState.presets,
+  selectedPresetId: baseState.selectedPresetId,
+  selectedDays: baseState.selectedDays,
+  setSelectedPresetId: baseState.setSelectedPresetId,
+  handleDeletePreset: actionHandlers.handleDeletePreset,
+  handleApplyPreset: actionHandlers.handleApplyPreset,
+  handleDuplicatePreset: actionHandlers.handleDuplicatePreset,
+  toggleDaySelection: actionHandlers.toggleDaySelection,
+  ...creationState,
+  ...editState,
+};
 ```
 
 - [ ] **Step 4: テストを実行し成功を確認する**
@@ -1054,11 +1066,13 @@ git commit -m "feat(preset): presetManagerStateResultにhandleDuplicatePresetを
 ### Task 7: i18n — `locales/ja.json` + `helpers.ts`
 
 **Files:**
+
 - Modify: `src/features/preset/locales/ja.json`
 - Modify: `src/features/preset/helpers.ts`
 - Test: `src/features/preset/__tests__/presetHelpers.test.ts`
 
 **Interfaces:**
+
 - Produces: `PRESET_DUPLICATE_LABEL: string`, `PRESET_DELETE_LABEL: string`（`helpers.ts`）。既存 `PRESET_EDIT_LABEL` の値が `"✏️"` → `"✏️ 編集"` に変わる
 
 - [ ] **Step 1: 失敗するテストを書く**
@@ -1088,9 +1102,9 @@ import {
 ```
 
 ```ts
-    expect(PRESET_EDIT_LABEL).toBe("✏️ 編集");
-    expect(PRESET_DELETE_LABEL).toBe("🗑️ 削除");
-    expect(PRESET_DUPLICATE_LABEL).toBe("📄 コピー");
+expect(PRESET_EDIT_LABEL).toBe("✏️ 編集");
+expect(PRESET_DELETE_LABEL).toBe("🗑️ 削除");
+expect(PRESET_DUPLICATE_LABEL).toBe("📄 コピー");
 ```
 
 （既存の `expect(PRESET_EDIT_LABEL).toBeTruthy();` はこの3行に置き換える）
@@ -1172,10 +1186,12 @@ git commit -m "feat(preset): 編集/削除/コピーボタンのラベルをi18n
 ### Task 8: UI層 — `PresetCard.tsx` にコピーボタンを追加、編集・削除ボタンをラベル表示に統一
 
 **Files:**
+
 - Modify: `src/features/preset/components/PresetCard.tsx`
 - Test: Create `src/features/preset/__tests__/PresetCard.test.tsx`
 
 **Interfaces:**
+
 - Consumes: `PRESET_EDIT_LABEL` / `PRESET_DELETE_LABEL` / `PRESET_DUPLICATE_LABEL`（Task 7）
 - Produces: `PresetCardProps` に `onDuplicate: () => void` を追加
 
@@ -1476,10 +1492,12 @@ git commit -m "feat(preset): PresetCardにコピーボタンを追加し編集/�
 ### Task 9: UI層配線 — `PresetListSection.tsx` / `PresetManager.tsx`
 
 **Files:**
+
 - Modify: `src/features/preset/components/PresetListSection.tsx`
 - Modify: `src/features/preset/PresetManager.tsx`
 
 **Interfaces:**
+
 - Consumes: `PresetCard`（`onDuplicate` prop、Task 8）、`state.handleDuplicatePreset`（Task 6）
 
 - [ ] **Step 1: 実装を書く**（配線のみのため、テストは既存の型チェックとPresetCardのテストで担保する。`PresetListSection` / `PresetManager` に専用テストが存在しない既存の慣習に合わせる）
@@ -1582,27 +1600,27 @@ export const PresetListSection = ({
 `src/features/preset/PresetManager.tsx` の `<PresetListSection>` 呼び出しに1行追加（`onDeletePreset` の直後）:
 
 ```tsx
-        <PresetListSection
-          presets={state.presets}
-          selectedPresetId={state.selectedPresetId}
-          selectedDays={state.selectedDays}
-          editingPresetId={state.editingPresetId}
-          editRoutines={currentRoutines}
-          editPresetName={state.editPresetName}
-          editPresetDescription={state.editPresetDescription}
-          editSelectedRoutines={state.editSelectedRoutines}
-          onSelectPreset={state.setSelectedPresetId}
-          onDeletePreset={state.handleDeletePreset}
-          onDuplicatePreset={state.handleDuplicatePreset}
-          onToggleDay={state.toggleDaySelection}
-          onApplyPreset={state.handleApplyPreset}
-          onStartEdit={state.handleStartEdit}
-          onCancelEdit={state.handleCancelEdit}
-          onSaveEdit={state.handleSaveEdit}
-          onChangeEditName={state.setEditPresetName}
-          onChangeEditDescription={state.setEditPresetDescription}
-          onToggleEditRoutine={state.toggleEditRoutineSelection}
-        />
+<PresetListSection
+  presets={state.presets}
+  selectedPresetId={state.selectedPresetId}
+  selectedDays={state.selectedDays}
+  editingPresetId={state.editingPresetId}
+  editRoutines={currentRoutines}
+  editPresetName={state.editPresetName}
+  editPresetDescription={state.editPresetDescription}
+  editSelectedRoutines={state.editSelectedRoutines}
+  onSelectPreset={state.setSelectedPresetId}
+  onDeletePreset={state.handleDeletePreset}
+  onDuplicatePreset={state.handleDuplicatePreset}
+  onToggleDay={state.toggleDaySelection}
+  onApplyPreset={state.handleApplyPreset}
+  onStartEdit={state.handleStartEdit}
+  onCancelEdit={state.handleCancelEdit}
+  onSaveEdit={state.handleSaveEdit}
+  onChangeEditName={state.setEditPresetName}
+  onChangeEditDescription={state.setEditPresetDescription}
+  onToggleEditRoutine={state.toggleEditRoutineSelection}
+/>
 ```
 
 - [ ] **Step 2: 型チェック**
@@ -1644,6 +1662,7 @@ Expected: 警告・エラーなし
 - [ ] **Step 5: 目視確認（任意、UIの見た目・独立性の最終確認）**
 
 Storybook（`npm run storybook`）で `PresetManager` のストーリーを開き、以下を確認する:
+
 - 各プリセットカードに「✏️ 編集」「📄 コピー」「🗑️ 削除」の3ボタンが表示されること
 - 「📄 コピー」クリックで一覧末尾に「（元の名前）のコピー」という名前のプリセットが追加されること
 - コピー後、複製元プリセットを編集・削除しても複製されたプリセットに影響しないこと（逆方向も確認）

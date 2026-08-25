@@ -86,9 +86,7 @@ describe("useBudgetSummaryPageState composition", () => {
 
     expect(result.current.goToCurrentMonth).toBe(monthState.goToCurrentMonth);
     expect(result.current.goToNextMonth).toBe(monthState.goToNextMonth);
-    expect(result.current.goToPreviousMonth).toBe(
-      monthState.goToPreviousMonth,
-    );
+    expect(result.current.goToPreviousMonth).toBe(monthState.goToPreviousMonth);
   });
 
   it("navigateToAllowanceSettingsはbudget-allowance-settingsへ遷移する", () => {

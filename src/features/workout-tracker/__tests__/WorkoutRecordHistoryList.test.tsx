@@ -16,7 +16,9 @@ const record: WorkoutRecord = {
 
 describe("WorkoutRecordHistoryList", () => {
   it("グループが空なら空メッセージを表示する", () => {
-    render(<WorkoutRecordHistoryList groups={[]} onDeleteRecordAction={jest.fn()} />);
+    render(
+      <WorkoutRecordHistoryList groups={[]} onDeleteRecordAction={jest.fn()} />,
+    );
 
     expect(screen.getByText(texts.historyList.empty)).toBeInTheDocument();
   });

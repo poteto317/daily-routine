@@ -128,7 +128,9 @@ describe("useCloseOnOutsideInteraction", () => {
       }),
     );
 
-    const touchStartCall = addSpy.mock.calls.find(([event]) => event === "touchstart");
+    const touchStartCall = addSpy.mock.calls.find(
+      ([event]) => event === "touchstart",
+    );
     expect(touchStartCall).toBeDefined();
     expect(touchStartCall?.[2]).toEqual({ passive: true });
 
@@ -139,7 +141,11 @@ describe("useCloseOnOutsideInteraction", () => {
     const onClose = jest.fn();
     const { rerender } = renderHook(
       ({ isActive }) =>
-        useCloseOnOutsideInteraction({ isActive, selector: "[data-test-menu]", onClose }),
+        useCloseOnOutsideInteraction({
+          isActive,
+          selector: "[data-test-menu]",
+          onClose,
+        }),
       { initialProps: { isActive: true } },
     );
 
@@ -174,7 +180,11 @@ describe("useCloseOnOutsideInteraction", () => {
   it("アンマウント時にリスナーが解除され、以後 mousedown/Escape で onClose が呼ばれなくなる", () => {
     const onClose = jest.fn();
     const { unmount } = renderHook(() =>
-      useCloseOnOutsideInteraction({ isActive: true, selector: "[data-test-menu]", onClose }),
+      useCloseOnOutsideInteraction({
+        isActive: true,
+        selector: "[data-test-menu]",
+        onClose,
+      }),
     );
 
     unmount();

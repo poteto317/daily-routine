@@ -63,7 +63,9 @@ export const ClickResetLocation: Story = {
   },
   play: async ({ canvasElement, args }) => {
     const canvas = within(canvasElement);
-    const resetButton = canvas.getByRole("button", { name: "現在地をリセット" });
+    const resetButton = canvas.getByRole("button", {
+      name: "現在地をリセット",
+    });
     await userEvent.click(resetButton);
     expect(args.onResetPreferredLocation).toHaveBeenCalledOnce();
   },

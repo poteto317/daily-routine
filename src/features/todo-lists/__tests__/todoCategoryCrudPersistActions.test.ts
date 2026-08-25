@@ -231,11 +231,7 @@ describe("todoCategoryCrudPersistActions", () => {
         persist,
       });
 
-      expect(mockReorderTodoCategories).toHaveBeenCalledWith(
-        categories,
-        0,
-        1,
-      );
+      expect(mockReorderTodoCategories).toHaveBeenCalledWith(categories, 0, 1);
       expect(persist).toHaveBeenCalledWith(nextCategories);
       expect(result).toBe(nextCategories);
     });

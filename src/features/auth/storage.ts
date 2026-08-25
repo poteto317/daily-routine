@@ -23,9 +23,7 @@ export type LocalAuthSnapshot = {
  * SSR（サーバーサイド）では window が存在しないため常に false を返す。
  */
 export const isLocalDevHostname = (hostname: string): boolean =>
-  hostname === "localhost" ||
-  hostname === "127.0.0.1" ||
-  hostname === "::1";
+  hostname === "localhost" || hostname === "127.0.0.1" || hostname === "::1";
 
 export const isLocalAuthEnabled =
   process.env.NEXT_PUBLIC_ENABLE_LOCAL_AUTH === "true" &&

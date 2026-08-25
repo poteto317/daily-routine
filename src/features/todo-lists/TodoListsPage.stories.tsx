@@ -58,6 +58,8 @@ export const ClickCompleteItem: Story = {
       name: /「牛乳」を完了にする/,
     });
     await userEvent.click(completeButton);
-    expect(canvas.queryByRole("button", { name: /「牛乳」を完了にする/ })).toBeNull();
+    expect(
+      canvas.queryByRole("button", { name: /「牛乳」を完了にする/ }),
+    ).toBeNull();
   },
 };

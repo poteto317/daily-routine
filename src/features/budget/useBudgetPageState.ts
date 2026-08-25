@@ -87,16 +87,13 @@ export const useBudgetPageState = ({ navigate }: UseBudgetPageStateParams) => {
     handleUpdateExpense,
     handleDeleteExpense,
     isCurrentMonth: metrics.isCurrentMonth,
-    navigateToCategoryManagement: () =>
-      navigate("budget-category-management"),
+    navigateToCategoryManagement: () => navigate("budget-category-management"),
     navigateToSummary: () => navigate("budget-summary"),
     openExpenseForm: startAddExpense,
     handleExpenseAmountChange: inputHandlers.handleExpenseAmountChange,
     handleExpenseDateChange: inputHandlers.handleExpenseDateChange,
-    handleExpenseCategoryIdChange:
-      inputHandlers.handleExpenseCategoryIdChange,
-    handleEditExpenseAmountChange:
-      inputHandlers.handleEditExpenseAmountChange,
+    handleExpenseCategoryIdChange: inputHandlers.handleExpenseCategoryIdChange,
+    handleEditExpenseAmountChange: inputHandlers.handleEditExpenseAmountChange,
     handleEditExpenseDateChange: inputHandlers.handleEditExpenseDateChange,
     handleEditExpenseCategoryIdChange:
       inputHandlers.handleEditExpenseCategoryIdChange,

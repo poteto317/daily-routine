@@ -1,5 +1,8 @@
 import { HOLIDAY_DAY_VALUE, ROUTINE_CATEGORIES } from "@/types/routine";
-import { sampleCompletedRoutines, sampleRoutines } from "../__fixtures__/routineFixtures";
+import {
+  sampleCompletedRoutines,
+  sampleRoutines,
+} from "../__fixtures__/routineFixtures";
 
 describe("routineFixtures", () => {
   it("3件のルーティンを含む", () => {

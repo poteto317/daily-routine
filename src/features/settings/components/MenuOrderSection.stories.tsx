@@ -93,7 +93,9 @@ export const ClickReset: Story = {
   args: { menuOrder: defaultOrder },
   play: async ({ canvasElement, args }) => {
     const canvas = within(canvasElement);
-    const resetButton = canvas.getByRole("button", { name: "デフォルトに戻す" });
+    const resetButton = canvas.getByRole("button", {
+      name: "デフォルトに戻す",
+    });
     await userEvent.click(resetButton);
     expect(args.setMenuOrderAction).toHaveBeenCalled();
   },

@@ -50,9 +50,7 @@ export const createDeleteWorkoutRecordHandler = ({
   confirmDelete,
 }: CreateDeleteWorkoutRecordHandlerParams) => {
   return (record: WorkoutRecord) => {
-    const message = buildWorkoutRecordDeleteConfirmMessage(
-      record.exerciseName,
-    );
+    const message = buildWorkoutRecordDeleteConfirmMessage(record.exerciseName);
     if (!confirmDelete(message)) return;
 
     deleteWorkoutRecord(record.date, record.id);

@@ -21,10 +21,12 @@
 ### Task 1: `RoutineSelectionGroup[]`を開始時刻順に並べ替える関数を追加する
 
 **Files:**
+
 - Modify: `src/features/preset/presetRoutineGrouping.ts`
 - Test: `src/features/preset/__tests__/presetRoutineGrouping.test.ts`
 
 **Interfaces:**
+
 - Consumes: `RoutineSelectionGroup`型（`src/features/preset/presetRoutineGrouping.ts`で定義済み。`{ key: string; routine: Routine; routineIds: string[]; daysOfWeek: number[] }`）。`Routine.startTime`は`string`（`HH:mm`形式、`src/types/routine/core.ts`で定義）
 - Produces: `sortRoutineSelectionGroupsByStartTime(groups: RoutineSelectionGroup[]): RoutineSelectionGroup[]` — Task 2で`PresetEditSection.tsx`から呼び出す
 
@@ -35,14 +37,30 @@
 ```typescript
 describe("sortRoutineSelectionGroupsByStartTime", () => {
   it("startTimeの昇順に並べ替える", () => {
-    const late = createRoutine({ id: "late", title: "夜食", startTime: "22:00" });
-    const early = createRoutine({ id: "early", title: "朝食", startTime: "06:00" });
-    const middle = createRoutine({ id: "middle", title: "昼食", startTime: "12:00" });
+    const late = createRoutine({
+      id: "late",
+      title: "夜食",
+      startTime: "22:00",
+    });
+    const early = createRoutine({
+      id: "early",
+      title: "朝食",
+      startTime: "06:00",
+    });
+    const middle = createRoutine({
+      id: "middle",
+      title: "昼食",
+      startTime: "12:00",
+    });
 
     const groups = groupRoutinesForSelection([late, early, middle]);
     const sorted = sortRoutineSelectionGroupsByStartTime(groups);
 
-    expect(sorted.map((g) => g.routine.id)).toEqual(["early", "middle", "late"]);
+    expect(sorted.map((g) => g.routine.id)).toEqual([
+      "early",
+      "middle",
+      "late",
+    ]);
   });
 
   it("startTimeが同じ場合は元の順序を維持する（安定ソート）", () => {
@@ -75,7 +93,10 @@ describe("sortRoutineSelectionGroupsByStartTime", () => {
 ファイル冒頭のimportを以下のように変更する（`sortRoutineSelectionGroupsByStartTime`を追加）:
 
 ```typescript
-import { groupRoutinesForSelection, sortRoutineSelectionGroupsByStartTime } from "../presetRoutineGrouping";
+import {
+  groupRoutinesForSelection,
+  sortRoutineSelectionGroupsByStartTime,
+} from "../presetRoutineGrouping";
 ```
 
 - [ ] **Step 2: テストが失敗することを確認する**
@@ -120,10 +141,12 @@ git commit -m "feat(preset): ルーティン選択グループを開始時刻順
 ### Task 2: プリセット編集画面でルーティン一覧を時間順に表示する
 
 **Files:**
+
 - Modify: `src/features/preset/components/PresetEditSection.tsx`
 - Test: `src/features/preset/__tests__/PresetEditSection.test.tsx`
 
 **Interfaces:**
+
 - Consumes: Task 1で追加した`sortRoutineSelectionGroupsByStartTime`（`src/features/preset/presetRoutineGrouping.ts`からimport）
 
 - [ ] **Step 1: 失敗するテストを書く**
@@ -197,11 +220,13 @@ git commit -m "feat(preset): プリセット編集画面のルーティン一覧
 ### Task 3: 動作確認とテスト観点表への追記
 
 **Files:**
+
 - Modify: `docs/03-testing/test-matrix.md`（プリセット関連セクションに1行追加）
 
 - [ ] **Step 1: 実機で動作確認する**
 
 `npm run dev`で起動し、以下を確認する:
+
 1. 開始時刻がバラバラな複数のルーティン（例: 22:00, 06:00, 12:00）を作成する
 2. それらを含むプリセットを新規作成する（この時点では新規作成画面の並び順は変更していないため作成順のままで問題ない）
 3. 作成したプリセットの編集を開く

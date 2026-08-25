@@ -4,17 +4,13 @@ import { TodoListManagementEmptyState } from "../TodoListManagementEmptyState";
 describe("TodoListManagementEmptyState", () => {
   it("空リストメッセージを表示する", () => {
     render(<TodoListManagementEmptyState />);
-    expect(
-      screen.getByText("Todoリストはまだありません"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("Todoリストはまだありません")).toBeInTheDocument();
   });
 
   it("説明テキストを表示する", () => {
     render(<TodoListManagementEmptyState />);
     expect(
-      screen.getByText(
-        "「＋ 新しいリストを追加」からリストを作成してください",
-      ),
+      screen.getByText("「＋ 新しいリストを追加」からリストを作成してください"),
     ).toBeInTheDocument();
   });
 

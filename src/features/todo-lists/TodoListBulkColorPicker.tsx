@@ -8,7 +8,9 @@ export type TodoListBulkColorPickerProps = {
   showBulkColorPicker: boolean;
   onToggleAction: () => void;
   onCloseAction: () => void;
-  onUpdateAllItemsBgColorAction: (bgColor: TodoItemBgColorValue | undefined) => void;
+  onUpdateAllItemsBgColorAction: (
+    bgColor: TodoItemBgColorValue | undefined,
+  ) => void;
 };
 
 /**

@@ -96,7 +96,9 @@ describe("todo detailActions", () => {
 
   it("insertAfterIndex と defaultItemBgColor が両方ある場合でも bgColor を引き継ぐ", () => {
     const itemA = createItem({ id: "a", title: "A" });
-    const lists = [createList({ items: [itemA], defaultItemBgColor: "bg-green-50" })];
+    const lists = [
+      createList({ items: [itemA], defaultItemBgColor: "bg-green-50" }),
+    ];
 
     const result = addTodoItemToLists({
       lists,

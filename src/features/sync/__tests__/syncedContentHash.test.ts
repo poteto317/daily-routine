@@ -73,7 +73,10 @@ describe("syncedContentHash", () => {
     ])(
       "不正なハッシュ値 (%s) が保存されている場合は null を返す",
       (storedValue) => {
-        localStorage.setItem(getUserScopedKey(SYNCED_CONTENT_HASH_KEY), storedValue);
+        localStorage.setItem(
+          getUserScopedKey(SYNCED_CONTENT_HASH_KEY),
+          storedValue,
+        );
         expect(getSyncedContentHash()).toBeNull();
       },
     );

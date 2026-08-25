@@ -17,7 +17,11 @@ export const updateTodoListAddItemPositionAndPersist = ({
   position,
   persist,
 }: UpdateTodoListAddItemPositionArgs): TodoList[] => {
-  const nextLists = updateTodoListAddItemPositionInLists({ lists, listId, position });
+  const nextLists = updateTodoListAddItemPositionInLists({
+    lists,
+    listId,
+    position,
+  });
   persist(nextLists);
   return nextLists;
 };

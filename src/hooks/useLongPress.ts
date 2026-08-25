@@ -1,5 +1,8 @@
 import { useCallback, useEffect, useRef } from "react";
-import type { MouseEvent as ReactMouseEvent, PointerEvent as ReactPointerEvent } from "react";
+import type {
+  MouseEvent as ReactMouseEvent,
+  PointerEvent as ReactPointerEvent,
+} from "react";
 import { hasExceededMoveTolerance } from "./longPressMoveTolerance";
 
 type UseLongPressParams = {
@@ -78,7 +81,13 @@ export const useLongPress = ({
     (e: ReactPointerEvent<HTMLElement>) => {
       const start = startPositionRef.current;
       if (!start) return;
-      if (hasExceededMoveTolerance(start, { x: e.clientX, y: e.clientY }, moveTolerance)) {
+      if (
+        hasExceededMoveTolerance(
+          start,
+          { x: e.clientX, y: e.clientY },
+          moveTolerance,
+        )
+      ) {
         clearTimer();
       }
     },

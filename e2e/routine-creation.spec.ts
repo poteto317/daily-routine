@@ -57,9 +57,7 @@ test.describe("ルーティン作成", () => {
     await expect(page.getByText("週3回", { exact: true })).toBeVisible();
 
     // 作成直後は編集モードなので、表示モードへ切り替えてから完了にする
-    await page
-      .getByRole("button", { name: "表示モードに切り替え" })
-      .click();
+    await page.getByRole("button", { name: "表示モードに切り替え" }).click();
     await page.getByText(routineTitle).click();
     await expect(page.getByText("100% 完了", { exact: true })).toBeVisible();
     await navigateViaMenu(page, "統計・レポート");

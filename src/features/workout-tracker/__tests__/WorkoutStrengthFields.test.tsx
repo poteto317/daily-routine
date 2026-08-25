@@ -41,9 +41,12 @@ describe("WorkoutStrengthFields", () => {
       />,
     );
 
-    fireEvent.change(screen.getByPlaceholderText(texts.form.weightPlaceholder), {
-      target: { value: "60" },
-    });
+    fireEvent.change(
+      screen.getByPlaceholderText(texts.form.weightPlaceholder),
+      {
+        target: { value: "60" },
+      },
+    );
 
     expect(onChangeWeightKgAction).toHaveBeenCalledWith("60");
   });

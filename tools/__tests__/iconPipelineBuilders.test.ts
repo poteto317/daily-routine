@@ -34,7 +34,9 @@ describe("buildIconPipeline", () => {
     expect(pipeline.__calls[0]).toEqual({ method: "resize", args: [154, 154] });
     expect(pipeline.__calls[1]).toEqual({
       method: "extend",
-      args: [{ top: 19, bottom: 19, left: 19, right: 19, background: "#2563eb" }],
+      args: [
+        { top: 19, bottom: 19, left: 19, right: 19, background: "#2563eb" },
+      ],
     });
     expect(pipeline.__calls[2]).toEqual({
       method: "flatten",

@@ -37,7 +37,10 @@ export const TodoCategoryManagementPage = () => {
     <div className="min-h-screen bg-linear-to-br from-teal-50 to-cyan-100 dark:from-slate-400 dark:to-slate-300">
       <main className="max-w-2xl mx-auto px-4 py-8">
         <CardPanel>
-          <TodoCategoryManagementHeader showForm={showForm} onOpenFormAction={openForm} />
+          <TodoCategoryManagementHeader
+            showForm={showForm}
+            onOpenFormAction={openForm}
+          />
 
           {showForm && (
             <TodoCategoryCreateForm

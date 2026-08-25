@@ -14,7 +14,12 @@ const template: WorkTemplate = {
   lastUsedAt: "2026-05-22T09:00:00+09:00",
 };
 
-const makeSession = (id: string, date: string, duration: number, notes?: string) => ({
+const makeSession = (
+  id: string,
+  date: string,
+  duration: number,
+  notes?: string,
+) => ({
   id,
   workTemplateId: "tmpl-1",
   workName: "コーディング",

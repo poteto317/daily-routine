@@ -10,12 +10,12 @@
 
 ## 1. 一覧
 
-| 名前 | 種別 | 用途 | 使用フェーズ |
-| --- | --- | --- | --- |
-| `GITHUB_TOKEN` | Secret | GitHub Issue 作成（fetch） | Phase 2〜 |
-| `GITHUB_REPO` | 環境変数 / パラメータ | Issue 作成先リポジトリ `owner/repo`（例: `poteto317/daily-routine`） | Phase 2〜 |
-| `AI_API_KEY` | Secret | AI による本文整形 | Phase 3〜 |
-| `AI_MODEL` | 環境変数 / パラメータ（任意） | 使用モデル名（プロバイダ確定後に指定） | Phase 3〜 |
+| 名前           | 種別                          | 用途                                                                 | 使用フェーズ |
+| -------------- | ----------------------------- | -------------------------------------------------------------------- | ------------ |
+| `GITHUB_TOKEN` | Secret                        | GitHub Issue 作成（fetch）                                           | Phase 2〜    |
+| `GITHUB_REPO`  | 環境変数 / パラメータ         | Issue 作成先リポジトリ `owner/repo`（例: `poteto317/daily-routine`） | Phase 2〜    |
+| `AI_API_KEY`   | Secret                        | AI による本文整形                                                    | Phase 3〜    |
+| `AI_MODEL`     | 環境変数 / パラメータ（任意） | 使用モデル名（プロバイダ確定後に指定）                               | Phase 3〜    |
 
 - **Secret**: 値が機密。Firebase Secret Manager（`defineSecret`）で管理。
 - **環境変数 / パラメータ**: 機密でない設定値。`defineString` などのパラメータ、

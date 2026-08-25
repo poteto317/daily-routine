@@ -17,7 +17,9 @@ describe("InlineInsertForm", () => {
     render(<InlineInsertForm {...defaultProps} />);
     expect(screen.getByRole("textbox")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "追加" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "キャンセル" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "キャンセル" }),
+    ).toBeInTheDocument();
   });
 
   it("テキスト入力で onChangeTextAction が呼ばれる", () => {
@@ -69,7 +71,9 @@ describe("InlineInsertForm", () => {
 
   it("フォームに role=form と aria-label が設定されている", () => {
     render(<InlineInsertForm {...defaultProps} />);
-    expect(screen.getByRole("form", { name: "アイテムを挿入" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("form", { name: "アイテムを挿入" }),
+    ).toBeInTheDocument();
   });
 
   it("追加ボタンクリックで入力欄からフォーカスが外れる（ソフトウェアキーボードを閉じるため）", () => {

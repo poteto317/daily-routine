@@ -73,7 +73,9 @@ describe("useTodoListDetailDataState", () => {
   it("findTodoListById が null を返すとき list=null を返す", () => {
     (findTodoListById as jest.Mock).mockReturnValue(null);
 
-    const { result } = renderHook(() => useTodoListDetailDataState("missing-id"));
+    const { result } = renderHook(() =>
+      useTodoListDetailDataState("missing-id"),
+    );
 
     expect(findTodoListById).toHaveBeenCalledWith([list], "missing-id");
     expect(result.current.list).toBeNull();

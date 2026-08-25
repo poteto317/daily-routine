@@ -36,14 +36,11 @@ describe("collectLocalSyncData の不正データ耐性", () => {
     ["数値", "42"],
     ["文字列", '"broken"'],
     ["真偽値", "true"],
-  ])(
-    "全ストレージキーに%sが保存されていても例外を投げない",
-    (_label, raw) => {
-      STORAGE_KEYS.forEach((key) => localStorage.setItem(key, raw));
+  ])("全ストレージキーに%sが保存されていても例外を投げない", (_label, raw) => {
+    STORAGE_KEYS.forEach((key) => localStorage.setItem(key, raw));
 
-      expect(() => collectLocalSyncData()).not.toThrow();
-    },
-  );
+    expect(() => collectLocalSyncData()).not.toThrow();
+  });
 
   it("一部のキーだけ壊れていても他の正常なデータは収集できる", () => {
     localStorage.setItem("journal-history", "null");

@@ -139,7 +139,8 @@ export const TypePresetName: Story = {
   },
   play: async ({ canvasElement, args }) => {
     const canvas = within(canvasElement);
-    const nameInput = canvas.getByPlaceholderText("例: 平日モーニングルーティン");
+    const nameInput =
+      canvas.getByPlaceholderText("例: 平日モーニングルーティン");
     await userEvent.type(nameInput, "朝のルーティン");
     expect(args.onChangeName).toHaveBeenCalled();
   },

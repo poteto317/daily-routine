@@ -1,4 +1,6 @@
-const { calculateMaskableSafeZonePadding } = require("./iconMaskablePadding.js");
+const {
+  calculateMaskableSafeZonePadding,
+} = require("./iconMaskablePadding.js");
 
 const BRAND_BACKGROUND = "#2563eb";
 

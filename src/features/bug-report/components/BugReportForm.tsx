@@ -40,9 +40,16 @@ export const BugReportForm = ({
   };
 
   return (
-    <form className="space-y-3" onSubmit={onSubmit} aria-label={texts.form.formAriaLabel}>
+    <form
+      className="space-y-3"
+      onSubmit={onSubmit}
+      aria-label={texts.form.formAriaLabel}
+    >
       <div>
-        <label htmlFor="bug-title" className="block text-sm font-medium text-gray-700 dark:text-gray-800 mb-1">
+        <label
+          htmlFor="bug-title"
+          className="block text-sm font-medium text-gray-700 dark:text-gray-800 mb-1"
+        >
           {texts.form.titleLabel}
         </label>
         <input
@@ -56,7 +63,10 @@ export const BugReportForm = ({
       </div>
 
       <div>
-        <label htmlFor="bug-description" className="block text-sm font-medium text-gray-700 dark:text-gray-800 mb-1">
+        <label
+          htmlFor="bug-description"
+          className="block text-sm font-medium text-gray-700 dark:text-gray-800 mb-1"
+        >
           {texts.form.descriptionLabel}
         </label>
         <textarea
@@ -70,7 +80,10 @@ export const BugReportForm = ({
       </div>
 
       <div>
-        <label htmlFor="bug-steps" className="block text-sm font-medium text-gray-700 dark:text-gray-800 mb-1">
+        <label
+          htmlFor="bug-steps"
+          className="block text-sm font-medium text-gray-700 dark:text-gray-800 mb-1"
+        >
           {texts.form.stepsLabel}
         </label>
         <textarea

@@ -35,7 +35,10 @@ describe("calculateMonthlyAllowance", () => {
 
   it("収入のみの場合、allowanceは収入合計と一致する", () => {
     const result = calculateMonthlyAllowance(
-      [incomeItem({ amount: 300000 }), incomeItem({ id: "income-2", amount: 50000 })],
+      [
+        incomeItem({ amount: 300000 }),
+        incomeItem({ id: "income-2", amount: 50000 }),
+      ],
       [],
     );
 
@@ -86,7 +89,10 @@ describe("calculateMonthlyAllowance", () => {
 
   it("収入・固定費・変動費すべてある場合、正しく合算・按分する", () => {
     const result = calculateMonthlyAllowance(
-      [incomeItem({ amount: 300000 }), incomeItem({ id: "income-2", amount: 50000 })],
+      [
+        incomeItem({ amount: 300000 }),
+        incomeItem({ id: "income-2", amount: 50000 }),
+      ],
       [
         expenseItem({ id: "expense-1", amount: 80000, kind: "fixed" }),
         expenseItem({ id: "expense-2", amount: 1000, kind: "fixed" }),

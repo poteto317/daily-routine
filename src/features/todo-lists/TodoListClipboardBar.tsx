@@ -19,8 +19,7 @@ export const TodoListClipboardBar = ({
 }: TodoListClipboardBarProps) => (
   <div className="flex items-center justify-between gap-2 mb-4 p-3 bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-700 rounded-xl">
     <span className="text-sm text-amber-700 dark:text-amber-300 font-medium">
-      📋{" "}
-      {texts.list.pasteMessage.replace("{count}", String(clipboardCount))}
+      📋 {texts.list.pasteMessage.replace("{count}", String(clipboardCount))}
     </span>
     <div className="flex gap-2">
       <button

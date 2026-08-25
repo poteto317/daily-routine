@@ -7,5 +7,11 @@ export {
   getMonthlyTotalExpense,
 } from "./storageExpenses";
 export { getBudgetCategories, saveBudgetCategories } from "./storageCategories";
-export { getBudgetIncomeItems, saveBudgetIncomeItems } from "./storageIncomeItems";
-export { getBudgetExpenseItems, saveBudgetExpenseItems } from "./storageExpenseItems";
+export {
+  getBudgetIncomeItems,
+  saveBudgetIncomeItems,
+} from "./storageIncomeItems";
+export {
+  getBudgetExpenseItems,
+  saveBudgetExpenseItems,
+} from "./storageExpenseItems";

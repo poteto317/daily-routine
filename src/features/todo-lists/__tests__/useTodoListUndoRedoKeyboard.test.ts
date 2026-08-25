@@ -3,7 +3,12 @@ import { useTodoListUndoRedoKeyboard } from "../useTodoListUndoRedoKeyboard";
 
 const fireKeyDown = (
   key: string,
-  opts: { metaKey?: boolean; ctrlKey?: boolean; shiftKey?: boolean; altKey?: boolean } = {},
+  opts: {
+    metaKey?: boolean;
+    ctrlKey?: boolean;
+    shiftKey?: boolean;
+    altKey?: boolean;
+  } = {},
   target: Element | null = null,
 ) => {
   const event = new KeyboardEvent("keydown", {
@@ -81,7 +86,11 @@ describe("useTodoListUndoRedoKeyboard", () => {
 
   it("target が null のとき undo が呼ばれる（非HTMLElement は入力欄とみなさない）", () => {
     renderHook(() => useTodoListUndoRedoKeyboard({ undo, redo }));
-    const event = new KeyboardEvent("keydown", { key: "z", metaKey: true, bubbles: true });
+    const event = new KeyboardEvent("keydown", {
+      key: "z",
+      metaKey: true,
+      bubbles: true,
+    });
     Object.defineProperty(event, "target", { value: null });
     window.dispatchEvent(event);
     expect(undo).toHaveBeenCalledTimes(1);
@@ -111,7 +120,10 @@ describe("useTodoListUndoRedoKeyboard", () => {
     renderHook(() => useTodoListUndoRedoKeyboard({ undo, redo }));
     const div = document.createElement("div");
     // jsdom は isContentEditable を未実装のため Object.defineProperty で設定
-    Object.defineProperty(div, "isContentEditable", { value: true, configurable: true });
+    Object.defineProperty(div, "isContentEditable", {
+      value: true,
+      configurable: true,
+    });
     document.body.appendChild(div);
     fireKeyDown("z", { metaKey: true }, div);
     expect(undo).not.toHaveBeenCalled();

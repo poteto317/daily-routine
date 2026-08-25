@@ -1,4 +1,7 @@
-import { buildIssueContent, type GithubIssueContent } from "./buildIssueContent";
+import {
+  buildIssueContent,
+  type GithubIssueContent,
+} from "./buildIssueContent";
 import type { GithubIssueResult } from "./createGithubIssue";
 import { shouldSkipProcessing } from "./shouldSkipProcessing";
 import type { ProcessableBugReport } from "./types";

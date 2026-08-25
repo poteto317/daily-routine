@@ -120,7 +120,10 @@ describe("buildIssueBody — stepsToReproduce の空文字・空白", () => {
 
 describe("buildIssueTitle — 空白正規化", () => {
   it("description にタブ文字が含まれる場合、半角スペースに正規化される", () => {
-    const title = buildIssueTitle({ uid: "u", description: "通知が\t表示されない" });
+    const title = buildIssueTitle({
+      uid: "u",
+      description: "通知が\t表示されない",
+    });
     expect(title).toBe("[不具合報告] 通知が 表示されない");
     expect(title).not.toContain("\t");
   });
@@ -139,7 +142,9 @@ describe("sanitizeMention", () => {
   });
 
   it("複数の @ を全て置換する", () => {
-    expect(sanitizeMention("@foo と @bar")).toBe(`@${ZERO_WIDTH_SPACE}foo と @${ZERO_WIDTH_SPACE}bar`);
+    expect(sanitizeMention("@foo と @bar")).toBe(
+      `@${ZERO_WIDTH_SPACE}foo と @${ZERO_WIDTH_SPACE}bar`,
+    );
   });
 
   it("@ が存在しない場合はそのまま返す", () => {
@@ -153,7 +158,10 @@ describe("sanitizeMention", () => {
 
 describe("buildIssueBody — @ メンション無害化", () => {
   it("description の @ をゼロ幅スペース付きに置換する", () => {
-    const body = buildIssueBody({ ...baseReport, description: "@admin に報告" });
+    const body = buildIssueBody({
+      ...baseReport,
+      description: "@admin に報告",
+    });
     expect(body).toContain(`@${ZERO_WIDTH_SPACE}admin に報告`);
     expect(body).not.toMatch(/@admin/);
   });

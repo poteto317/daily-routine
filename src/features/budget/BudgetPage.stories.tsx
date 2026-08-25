@@ -47,7 +47,12 @@ const sampleCategories: BudgetCategory[] = [
 ];
 
 const sampleIncomeItems: BudgetIncomeItem[] = [
-  { id: "income-1", name: "給与", amount: 300000, createdAt: new Date().toISOString() },
+  {
+    id: "income-1",
+    name: "給与",
+    amount: 300000,
+    createdAt: new Date().toISOString(),
+  },
 ];
 
 const sampleExpenseItems: BudgetExpenseItem[] = [

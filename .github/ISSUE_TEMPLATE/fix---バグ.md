@@ -1,10 +1,9 @@
 ---
 name: Fix - バグ
 about: バグについて
-title: ''
-labels: ''
-assignees: ''
-
+title: ""
+labels: ""
+assignees: ""
 ---
 
 # 事象

@@ -2,7 +2,9 @@ import type { TodoItemBgColorValue, TodoList } from "./types";
 
 export type ToolbarState = {
   hasCompletedItems: boolean;
-  handleUpdateAllItemsBgColor: (bgColor: TodoItemBgColorValue | undefined) => void;
+  handleUpdateAllItemsBgColor: (
+    bgColor: TodoItemBgColorValue | undefined,
+  ) => void;
   handleToggleAddItemPosition: (nextPosition: "first" | "last") => void;
 };
 
@@ -12,7 +14,10 @@ type CreateToolbarStateParams = {
     listId: string,
     bgColor: TodoItemBgColorValue | undefined,
   ) => void;
-  onUpdateListAddItemPosition: (listId: string, position: "first" | "last") => void;
+  onUpdateListAddItemPosition: (
+    listId: string,
+    position: "first" | "last",
+  ) => void;
 };
 
 export const createToolbarState = ({
@@ -21,7 +26,8 @@ export const createToolbarState = ({
   onUpdateListAddItemPosition,
 }: CreateToolbarStateParams): ToolbarState => ({
   hasCompletedItems: list.items.some((item) => item.isCompleted),
-  handleUpdateAllItemsBgColor: (bgColor) => onUpdateAllItemsBgColor(list.id, bgColor),
+  handleUpdateAllItemsBgColor: (bgColor) =>
+    onUpdateAllItemsBgColor(list.id, bgColor),
   handleToggleAddItemPosition: (nextPosition) =>
     onUpdateListAddItemPosition(list.id, nextPosition),
 });

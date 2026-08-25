@@ -104,7 +104,10 @@ describe("todo list helpers", () => {
     const itemA = createItem({ id: "a" });
     const itemB = createItem({ id: "b" });
     const newItem = createItem({ id: "new" });
-    const list = createList({ items: [itemA, itemB], addItemPosition: "first" });
+    const list = createList({
+      items: [itemA, itemB],
+      addItemPosition: "first",
+    });
 
     const result = addItemToList([list], "list-1", newItem, 0);
 

@@ -49,15 +49,15 @@ describe("PresetCard", () => {
 
   it("編集・コピー・削除ボタンが絵文字+テキストの可視ラベルを表示する（aria-labelではなく実表示内容を検証）", () => {
     render(<PresetCard {...defaultProps} />);
-    expect(
-      screen.getByRole("button", { name: /編集/ }),
-    ).toHaveTextContent("✏️ 編集");
-    expect(
-      screen.getByRole("button", { name: /コピー/ }),
-    ).toHaveTextContent("📄 コピー");
-    expect(
-      screen.getByRole("button", { name: /削除/ }),
-    ).toHaveTextContent("🗑️ 削除");
+    expect(screen.getByRole("button", { name: /編集/ })).toHaveTextContent(
+      "✏️ 編集",
+    );
+    expect(screen.getByRole("button", { name: /コピー/ })).toHaveTextContent(
+      "📄 コピー",
+    );
+    expect(screen.getByRole("button", { name: /削除/ })).toHaveTextContent(
+      "🗑️ 削除",
+    );
   });
 
   it("コピーボタンクリックで onDuplicate が呼ばれ、カード選択は発火しない", () => {
@@ -88,7 +88,9 @@ describe("PresetCard", () => {
   });
 
   it("isSelected かつ非編集中のとき適用セクションを表示する", () => {
-    render(<PresetCard {...defaultProps} isSelected={true} isEditing={false} />);
+    render(
+      <PresetCard {...defaultProps} isSelected={true} isEditing={false} />,
+    );
     expect(
       screen.getByRole("button", { name: /選択した曜日に適用/ }),
     ).toBeInTheDocument();
@@ -99,8 +101,6 @@ describe("PresetCard", () => {
     expect(
       screen.queryByRole("button", { name: /選択した曜日に適用/ }),
     ).not.toBeInTheDocument();
-    expect(
-      screen.getByPlaceholderText("プリセット名"),
-    ).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("プリセット名")).toBeInTheDocument();
   });
 });

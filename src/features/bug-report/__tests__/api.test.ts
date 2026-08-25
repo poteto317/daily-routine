@@ -76,17 +76,17 @@ describe("submitBugReport", () => {
     (firebaseLib.getOrCreateUser as jest.Mock).mockRejectedValue(
       new Error("auth failed"),
     );
-    await expect(
-      submitBugReport({ description: "本文" }),
-    ).rejects.toThrow("auth failed");
+    await expect(submitBugReport({ description: "本文" })).rejects.toThrow(
+      "auth failed",
+    );
   });
 
   it("addDoc が失敗した場合、エラーが伝播する", async () => {
     (firestore.addDoc as jest.Mock).mockRejectedValue(
       new Error("firestore write failed"),
     );
-    await expect(
-      submitBugReport({ description: "本文" }),
-    ).rejects.toThrow("firestore write failed");
+    await expect(submitBugReport({ description: "本文" })).rejects.toThrow(
+      "firestore write failed",
+    );
   });
 });

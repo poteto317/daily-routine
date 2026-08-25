@@ -38,8 +38,7 @@ export const closeExpenseInputForm = (params: {
   setExpenseAmount: SetValue<string>;
   setExpenseCategoryId: SetValue<string>;
 }): void => {
-  const { setShowExpenseForm, setExpenseAmount, setExpenseCategoryId } =
-    params;
+  const { setShowExpenseForm, setExpenseAmount, setExpenseCategoryId } = params;
 
   setShowExpenseForm(false);
   setExpenseAmount("");

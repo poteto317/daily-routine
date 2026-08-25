@@ -42,10 +42,11 @@ describe("RoutineFormOptionalFields", () => {
       />,
     );
 
-    expect(screen.getByRole("spinbutton", { name: "週間目標" })).toHaveAttribute(
-      "aria-invalid",
-      "true",
-    );
-    expect(screen.getByText("1〜7の整数で入力してください")).toBeInTheDocument();
+    expect(
+      screen.getByRole("spinbutton", { name: "週間目標" }),
+    ).toHaveAttribute("aria-invalid", "true");
+    expect(
+      screen.getByText("1〜7の整数で入力してください"),
+    ).toBeInTheDocument();
   });
 });

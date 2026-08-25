@@ -151,7 +151,11 @@ describe("useBudgetPageState composition", () => {
       expect.objectContaining({
         currentDate: expect.any(Date),
         categories: [
-          { id: "cat-1", name: "食料品", createdAt: "2026-05-01T00:00:00.000Z" },
+          {
+            id: "cat-1",
+            name: "食料品",
+            createdAt: "2026-05-01T00:00:00.000Z",
+          },
         ],
         navigateToCategoryManagement: expect.any(Function),
         navigateToSummary: expect.any(Function),

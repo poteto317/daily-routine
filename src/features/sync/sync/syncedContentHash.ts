@@ -37,7 +37,7 @@ export const computeContentHash = (data: object): number => {
   const str = stableStringify(data);
   let hash = 5381;
   for (let i = 0; i < str.length; i++) {
-    hash = ((hash << 5) + hash) + str.charCodeAt(i);
+    hash = (hash << 5) + hash + str.charCodeAt(i);
     hash = hash | 0; // 32bit integer に丸める
   }
   return hash;

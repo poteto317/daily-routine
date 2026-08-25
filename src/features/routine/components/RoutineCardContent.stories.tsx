@@ -140,7 +140,8 @@ export const LongTitle: Story = {
   args: {
     routine: {
       ...baseRoutine,
-      title: "今日やるべきことをすべてリストアップして優先順位をつける朝の計画タイム",
+      title:
+        "今日やるべきことをすべてリストアップして優先順位をつける朝の計画タイム",
       startTime: "07:30",
       category: "work",
     },

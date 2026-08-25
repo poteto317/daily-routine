@@ -5,13 +5,10 @@ import { createBudgetExpenseEditStateResult } from "./budgetExpenseEditStateResu
 
 /** 支出一覧のインライン編集状態（対象IDと編集中の入力値）を管理する。 */
 export const useBudgetExpenseEditState = () => {
-  const [editingExpenseId, setEditingExpenseId] = useState<string | null>(
-    null,
-  );
+  const [editingExpenseId, setEditingExpenseId] = useState<string | null>(null);
   const [editingExpenseDate, setEditingExpenseDate] = useState("");
   const [editingExpenseAmount, setEditingExpenseAmount] = useState("");
-  const [editingExpenseCategoryId, setEditingExpenseCategoryId] =
-    useState("");
+  const [editingExpenseCategoryId, setEditingExpenseCategoryId] = useState("");
   const [editingExpenseUsedTime, setEditingExpenseUsedTime] = useState("");
 
   const startEditExpense = useCallback((expense: Expense) => {

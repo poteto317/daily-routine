@@ -127,7 +127,9 @@ describe("useTodoListInteractionMode", () => {
       onReorderItems: expect.any(Function),
       onDragStarted: closeInlineInsert,
     });
-    expect(getLastPassedOnReorderItems()).not.toBe(defaultParams.onReorderItems);
+    expect(getLastPassedOnReorderItems()).not.toBe(
+      defaultParams.onReorderItems,
+    );
   });
 
   describe("同一セクション判定（reorderTodoItemsIfSameSectionへの配線）", () => {
@@ -189,7 +191,9 @@ describe("useTodoListInteractionMode", () => {
       );
       expect(result.current.inlineInsert.insertAfterId).toBeNull();
       expect(result.current.inlineInsert.inlineInputText).toBe("");
-      expect(result.current.inlineInsert.closeInlineInsert).toBe(closeInlineInsert);
+      expect(result.current.inlineInsert.closeInlineInsert).toBe(
+        closeInlineInsert,
+      );
     });
 
     it("inlineInsert のプロパティがトップレベルに漏れ出ない", () => {
@@ -218,7 +222,9 @@ describe("useTodoListInteractionMode", () => {
       expect(result.current.dnd.sensors).toEqual([]);
       expect(result.current.dnd.handleDragStart).toBe(dndMock.handleDragStart);
       expect(result.current.dnd.handleDragEnd).toBe(dndMock.handleDragEnd);
-      expect(result.current.dnd.handleDragCancel).toBe(dndMock.handleDragCancel);
+      expect(result.current.dnd.handleDragCancel).toBe(
+        dndMock.handleDragCancel,
+      );
     });
 
     it("dnd のプロパティがトップレベルに漏れ出ない", () => {

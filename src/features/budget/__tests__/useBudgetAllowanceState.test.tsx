@@ -22,7 +22,12 @@ describe("useBudgetAllowanceState", () => {
 
   it("収入項目・支出項目からmonthlyAllowanceを計算する", () => {
     mockGetBudgetIncomeItems.mockReturnValue([
-      { id: "income-1", name: "給与", amount: 300000, createdAt: "2026-05-01T00:00:00.000Z" },
+      {
+        id: "income-1",
+        name: "給与",
+        amount: 300000,
+        createdAt: "2026-05-01T00:00:00.000Z",
+      },
     ]);
     mockGetBudgetExpenseItems.mockReturnValue([
       {
@@ -81,7 +86,12 @@ describe("useBudgetAllowanceState", () => {
 
   it("LOCAL_DATA_UPDATED_AT_EVENTを受け取るとstorageを再読み込みし最新値を反映する（クラウド同期・他タブでの更新対応）", () => {
     mockGetBudgetIncomeItems.mockReturnValue([
-      { id: "income-1", name: "給与", amount: 300000, createdAt: "2026-05-01T00:00:00.000Z" },
+      {
+        id: "income-1",
+        name: "給与",
+        amount: 300000,
+        createdAt: "2026-05-01T00:00:00.000Z",
+      },
     ]);
     mockGetBudgetExpenseItems.mockReturnValue([
       {
@@ -98,7 +108,12 @@ describe("useBudgetAllowanceState", () => {
     expect(result.current.monthlyAllowance.allowance).toBe(220000);
 
     mockGetBudgetIncomeItems.mockReturnValue([
-      { id: "income-1", name: "給与", amount: 350000, createdAt: "2026-05-01T00:00:00.000Z" },
+      {
+        id: "income-1",
+        name: "給与",
+        amount: 350000,
+        createdAt: "2026-05-01T00:00:00.000Z",
+      },
     ]);
     mockGetBudgetExpenseItems.mockReturnValue([
       {
@@ -121,7 +136,12 @@ describe("useBudgetAllowanceState", () => {
 
   it("内容が変わっていないLOCAL_DATA_UPDATED_AT_EVENTでは再レンダーしない（無関係なstorage更新による無駄な再計算を防ぐ）", () => {
     const incomeItems = [
-      { id: "income-1", name: "給与", amount: 300000, createdAt: "2026-05-01T00:00:00.000Z" },
+      {
+        id: "income-1",
+        name: "給与",
+        amount: 300000,
+        createdAt: "2026-05-01T00:00:00.000Z",
+      },
     ];
     const expenseItems = [
       {
@@ -197,7 +217,12 @@ describe("useBudgetAllowanceState", () => {
 
   it("項目数が変わった場合（追加・削除）は変化として検知し再計算する", () => {
     mockGetBudgetIncomeItems.mockReturnValue([
-      { id: "income-1", name: "給与", amount: 300000, createdAt: "2026-05-01T00:00:00.000Z" },
+      {
+        id: "income-1",
+        name: "給与",
+        amount: 300000,
+        createdAt: "2026-05-01T00:00:00.000Z",
+      },
     ]);
     mockGetBudgetExpenseItems.mockReturnValue([]);
 
@@ -206,8 +231,18 @@ describe("useBudgetAllowanceState", () => {
     expect(result.current.monthlyAllowance.totalIncome).toBe(300000);
 
     mockGetBudgetIncomeItems.mockReturnValue([
-      { id: "income-1", name: "給与", amount: 300000, createdAt: "2026-05-01T00:00:00.000Z" },
-      { id: "income-2", name: "副業", amount: 50000, createdAt: "2026-05-02T00:00:00.000Z" },
+      {
+        id: "income-1",
+        name: "給与",
+        amount: 300000,
+        createdAt: "2026-05-01T00:00:00.000Z",
+      },
+      {
+        id: "income-2",
+        name: "副業",
+        amount: 50000,
+        createdAt: "2026-05-02T00:00:00.000Z",
+      },
     ]);
 
     act(() => {

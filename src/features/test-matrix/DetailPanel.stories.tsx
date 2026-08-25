@@ -18,10 +18,38 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 const cases: DetailTestCase[] = [
-  { id: "c-1", scenario: "正常なメールアドレスとパスワードでログイン", expected: "ホーム画面に遷移する", pc: "ok", sp: "ok", note: "" },
-  { id: "c-2", scenario: "間違ったパスワードでログイン", expected: "エラーメッセージが表示される", pc: "ok", sp: "ng", note: "Androidで失敗" },
-  { id: "c-3", scenario: "空のメールアドレスでログイン", expected: "バリデーションエラーが表示される", pc: "unchecked", sp: "unchecked", note: "" },
-  { id: "c-4", scenario: "ネットワーク切断時のログイン", expected: "ネットワークエラーメッセージが表示される", pc: "na", sp: "na", note: "" },
+  {
+    id: "c-1",
+    scenario: "正常なメールアドレスとパスワードでログイン",
+    expected: "ホーム画面に遷移する",
+    pc: "ok",
+    sp: "ok",
+    note: "",
+  },
+  {
+    id: "c-2",
+    scenario: "間違ったパスワードでログイン",
+    expected: "エラーメッセージが表示される",
+    pc: "ok",
+    sp: "ng",
+    note: "Androidで失敗",
+  },
+  {
+    id: "c-3",
+    scenario: "空のメールアドレスでログイン",
+    expected: "バリデーションエラーが表示される",
+    pc: "unchecked",
+    sp: "unchecked",
+    note: "",
+  },
+  {
+    id: "c-4",
+    scenario: "ネットワーク切断時のログイン",
+    expected: "ネットワークエラーメッセージが表示される",
+    pc: "na",
+    sp: "na",
+    note: "",
+  },
 ];
 
 export const Default: Story = {
