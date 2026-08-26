@@ -39,7 +39,10 @@ describe("useRoutines queries and ordering", () => {
     const { result } = renderHook(() => useRoutines());
 
     act(() => {
-      result.current.reorderRoutines([routines[2], routines[0], routines[1]]);
+      result.current.reorderRoutines(
+        [routines[2], routines[0], routines[1]],
+        routines,
+      );
     });
 
     expect(result.current.routines[0].id).toBe("3");

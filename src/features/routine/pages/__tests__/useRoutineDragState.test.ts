@@ -94,6 +94,44 @@ describe("useRoutineDragState", () => {
     expect(reordered.map((r) => r.id)).toEqual(["b", "c", "a"]);
   });
 
+  it("ドラッグ中に表示内容が更新されても開始時のルーティンを並び替え元として渡す", () => {
+    const onReorderAction = jest.fn();
+    const { result, rerender } = renderHook(
+      ({ currentRoutines }) =>
+        useRoutineDragState({
+          routines: currentRoutines,
+          onReorderAction,
+        }),
+      { initialProps: { currentRoutines: routines } },
+    );
+
+    act(() => {
+      result.current.handleDragStart(makeDragStartEvent("a"));
+    });
+
+    const updatedRoutines = [
+      makeRoutine("a", "09:00"),
+      makeRoutine("b", "07:00"),
+      makeRoutine("c", "08:00"),
+    ];
+    rerender({ currentRoutines: updatedRoutines });
+
+    act(() => {
+      result.current.handleDragEnd(makeDragEndEvent("a", "c"));
+    });
+
+    expect(onReorderAction).toHaveBeenCalledTimes(1);
+    const [reordered, sourceRoutines]: [Routine[], Routine[]] =
+      onReorderAction.mock.calls[0];
+    expect(sourceRoutines).toEqual(routines);
+    expect(reordered.map((routine) => routine.id)).toEqual(["b", "c", "a"]);
+    expect(reordered.map((routine) => routine.startTime)).toEqual([
+      "07:00",
+      "08:00",
+      "09:00",
+    ]);
+  });
+
   it("over が null の場合 onReorderAction は呼ばれない", () => {
     const onReorderAction = jest.fn();
     const { result } = renderHook(() =>

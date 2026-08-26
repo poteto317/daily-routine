@@ -15,7 +15,10 @@ export type RoutineMutationActions = {
     newRoutines: RoutineBatchCreateInput[],
   ) => void;
   toggleComplete: (id: string) => void;
-  reorderRoutines: (reorderedRoutines: Routine[]) => void;
+  reorderRoutines: (
+    reorderedRoutines: Routine[],
+    sourceRoutines: Routine[],
+  ) => void;
 };
 
 export type RoutineQueryActions = {

@@ -28,7 +28,10 @@ interface DraggableRoutineListProps {
   onToggleAction: (id: string) => void;
   onEditAction: (routine: Routine) => void;
   onDeleteAction: (id: string) => void;
-  onReorderAction: (routines: Routine[]) => void;
+  onReorderAction: (
+    reorderedRoutines: Routine[],
+    sourceRoutines: Routine[],
+  ) => void;
 }
 
 /**

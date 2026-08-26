@@ -60,7 +60,10 @@ export type HomeRoutineListProps = {
   onEditAction: (routine: Routine) => void;
   onDeleteAction: (id: string) => void;
   onAddRoutineAction: () => void;
-  onReorderAction: (routines: Routine[]) => void;
+  onReorderAction: (
+    reorderedRoutines: Routine[],
+    sourceRoutines: Routine[],
+  ) => void;
   viewMode: HomeViewMode;
 };
 
@@ -84,7 +87,10 @@ export type HomeCrudState = {
 export type HomeRoutineOps = {
   routines: Routine[];
   toggleComplete: (id: string) => void;
-  reorderRoutines: (routines: Routine[]) => void;
+  reorderRoutines: (
+    reorderedRoutines: Routine[],
+    sourceRoutines: Routine[],
+  ) => void;
 };
 
 export type HomeContentSource = {

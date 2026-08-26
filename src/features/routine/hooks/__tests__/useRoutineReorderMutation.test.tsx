@@ -56,7 +56,7 @@ describe("useRoutineReorderMutation", () => {
     );
 
     act(() => {
-      result.current(reorderedMonday);
+      result.current(reorderedMonday, [morningRoutines[0], eveningRoutines[0]]);
     });
 
     const expectedIds = [
@@ -99,11 +99,43 @@ describe("useRoutineReorderMutation", () => {
     );
 
     act(() => {
-      result.current([completedRoutine]);
+      result.current([completedRoutine], [completedRoutine]);
     });
 
     expect(saveRoutines).toHaveBeenCalledWith([
       { ...completedRoutine, isCompleted: false },
     ]);
+  });
+
+  it("IDごとの開始時刻が変わった古い入力をstorageへ保存しない", () => {
+    const sourceRoutines = [
+      createRoutine("a", 1, "07:00", 0, "group-a"),
+      createRoutine("b", 1, "08:00", 1, "group-b"),
+      createRoutine("c", 1, "09:00", 2, "group-c"),
+    ];
+    const currentRoutines = [
+      { ...sourceRoutines[0], startTime: "09:00" },
+      { ...sourceRoutines[1], startTime: "07:00" },
+      { ...sourceRoutines[2], startTime: "08:00" },
+    ];
+    const staleReorderedRoutines = [
+      { ...sourceRoutines[2], startTime: "07:00" },
+      { ...sourceRoutines[0], startTime: "08:00" },
+      { ...sourceRoutines[1], startTime: "09:00" },
+    ];
+    const setRoutines = jest.fn();
+    const routinesRef = { current: currentRoutines };
+
+    const { result } = renderHook(() =>
+      useRoutineReorderMutation(setRoutines, routinesRef),
+    );
+
+    act(() => {
+      result.current(staleReorderedRoutines, sourceRoutines);
+    });
+
+    expect(routinesRef.current).toEqual(currentRoutines);
+    expect(setRoutines).toHaveBeenCalledWith(currentRoutines);
+    expect(saveRoutines).toHaveBeenCalledWith(currentRoutines);
   });
 });

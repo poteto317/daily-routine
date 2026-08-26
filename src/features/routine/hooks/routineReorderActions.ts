@@ -4,31 +4,36 @@ import { assignSortOrder } from "./routineOrderModel";
 const hasInvalidReorderTargets = (
   routines: Routine[],
   reorderedRoutines: Routine[],
+  sourceRoutines: Routine[],
 ): boolean => {
   const currentIds = new Set(routines.map((routine) => routine.id));
   const reorderedIds = new Set(reorderedRoutines.map((routine) => routine.id));
+  const sourceIds = new Set(sourceRoutines.map((routine) => routine.id));
 
   return (
     reorderedIds.size !== reorderedRoutines.length ||
-    reorderedRoutines.some((routine) => !currentIds.has(routine.id))
+    sourceIds.size !== sourceRoutines.length ||
+    sourceRoutines.length !== reorderedRoutines.length ||
+    reorderedRoutines.some(
+      (routine) => !currentIds.has(routine.id) || !sourceIds.has(routine.id),
+    ) ||
+    sourceRoutines.some(
+      (routine) => !currentIds.has(routine.id) || !reorderedIds.has(routine.id),
+    )
   );
 };
 
 const hasStaleReorderStartTimes = (
   routines: Routine[],
-  reorderedRoutines: Routine[],
+  sourceRoutines: Routine[],
 ): boolean => {
-  const reorderedIds = new Set(reorderedRoutines.map((routine) => routine.id));
-  const currentStartTimes = routines
-    .filter((routine) => reorderedIds.has(routine.id))
-    .map((routine) => routine.startTime)
-    .sort();
-  const reorderedStartTimes = reorderedRoutines
-    .map((routine) => routine.startTime)
-    .sort();
+  const currentRoutinesById = new Map(
+    routines.map((routine) => [routine.id, routine]),
+  );
 
-  return currentStartTimes.some(
-    (startTime, index) => startTime !== reorderedStartTimes[index],
+  return sourceRoutines.some(
+    (routine) =>
+      currentRoutinesById.get(routine.id)?.startTime !== routine.startTime,
   );
 };
 
@@ -56,10 +61,11 @@ const mergeReorderedRoutineSlots = (
 export const reorderRoutineState = (
   routines: Routine[],
   reorderedRoutines: Routine[],
+  sourceRoutines: Routine[],
 ): Routine[] => {
   if (
-    hasInvalidReorderTargets(routines, reorderedRoutines) ||
-    hasStaleReorderStartTimes(routines, reorderedRoutines)
+    hasInvalidReorderTargets(routines, reorderedRoutines, sourceRoutines) ||
+    hasStaleReorderStartTimes(routines, sourceRoutines)
   ) {
     return routines;
   }

@@ -11,10 +11,11 @@ export const useRoutineReorderMutation = (
   routinesRef: { current: Routine[] },
 ) => {
   return useCallback(
-    (reorderedRoutines: Routine[]) => {
+    (reorderedRoutines: Routine[], sourceRoutines: Routine[]) => {
       const updated = reorderRoutineState(
         routinesRef.current,
         reorderedRoutines,
+        sourceRoutines,
       );
       routinesRef.current = updated;
       setRoutines(updated);
