@@ -5,8 +5,9 @@ import {
   type SaveAndSyncAction,
   type SetRoutines,
 } from "./routineMutationCoordinator";
-import { useRoutineCompletionMutations } from "./useRoutineCompletionMutations";
+import { useRoutineCompletionToggleMutation } from "./useRoutineCompletionToggleMutation";
 import { useRoutineCrudMutationActions } from "./useRoutineCrudMutationActions";
+import { useRoutineReorderMutation } from "./useRoutineReorderMutation";
 
 export const useRoutineMutations = (
   setRoutines: SetRoutines,
@@ -18,10 +19,15 @@ export const useRoutineMutations = (
     saveAndSync,
     routinesRef,
   );
-  const completionMutations = useRoutineCompletionMutations(
+  const toggleComplete = useRoutineCompletionToggleMutation(
     setRoutines,
     routinesRef,
   );
+  const reorderRoutines = useRoutineReorderMutation(setRoutines, routinesRef);
 
-  return createRoutineMutationsResult(crudMutations, completionMutations);
+  return createRoutineMutationsResult({
+    crudMutations,
+    toggleComplete,
+    reorderRoutines,
+  });
 };

@@ -1,7 +1,7 @@
 import { createRoutineMutationsResult } from "../routineMutationsResult";
 
 describe("routineMutationsResult", () => {
-  it("CRUD と completion の公開 shape を組み立てる", () => {
+  it("CRUD・完了切替・並び替えの公開 shape を組み立てる", () => {
     const crudMutations = {
       addRoutine: jest.fn(),
       addRoutines: jest.fn(),
@@ -10,16 +10,19 @@ describe("routineMutationsResult", () => {
       deleteRoutineGroup: jest.fn(),
       replaceRoutinesForDays: jest.fn(),
     };
-    const completionMutations = {
-      toggleComplete: jest.fn(),
-      reorderRoutines: jest.fn(),
-    };
+    const toggleComplete = jest.fn();
+    const reorderRoutines = jest.fn();
 
     expect(
-      createRoutineMutationsResult(crudMutations, completionMutations),
+      createRoutineMutationsResult({
+        crudMutations,
+        toggleComplete,
+        reorderRoutines,
+      }),
     ).toEqual({
       ...crudMutations,
-      ...completionMutations,
+      toggleComplete,
+      reorderRoutines,
     });
   });
 });

@@ -1,4 +1,5 @@
 import { act, renderHook } from "@testing-library/react";
+import type { Routine } from "@/types/routine";
 
 jest.mock("@/lib/storage/core", () => ({
   getTodayString: jest.fn(() => "2026-03-16"),
@@ -13,30 +14,29 @@ jest.mock("@/features/routine/storage", () => ({
   saveDailyProgress: jest.fn(),
 }));
 
-jest.mock("../routineCompletionActions", () => ({
-  buildDailyProgressForToggle: jest.fn(),
-  toggleRoutineCompletionInState: jest.fn(),
-}));
-
 import { saveDailyProgress } from "@/features/routine/storage";
-import {
-  buildDailyProgressForToggle,
-  toggleRoutineCompletionInState,
-} from "../routineCompletionActions";
 import { useRoutineCompletionToggleMutation } from "../useRoutineCompletionToggleMutation";
 
 describe("useRoutineCompletionToggleMutation", () => {
   it("完了切替後に progress を保存する", () => {
-    const previous = [{ id: "r1", isCompleted: false }];
-    const updated = [{ id: "r1", isCompleted: true }];
-    const progress = { date: "2026-03-16", completedRoutineIds: ["r1"] };
+    const previous: Routine[] = [
+      {
+        id: "r1",
+        title: "Morning Run",
+        startTime: "07:00",
+        duration: 30,
+        category: "health",
+        daysOfWeek: [1],
+        isCompleted: false,
+        description: "",
+        notificationMinutes: 10,
+        sortOrder: 0,
+        createdAt: "2026-03-15T00:00:00.000Z",
+        updatedAt: "2026-03-15T00:00:00.000Z",
+      },
+    ];
     const setRoutines = jest.fn();
-    const routinesRef = {
-      current: previous as unknown as import("@/types/routine").Routine[],
-    };
-
-    (toggleRoutineCompletionInState as jest.Mock).mockReturnValue(updated);
-    (buildDailyProgressForToggle as jest.Mock).mockReturnValue(progress);
+    const routinesRef = { current: previous };
 
     const { result } = renderHook(() =>
       useRoutineCompletionToggleMutation(setRoutines, routinesRef),
@@ -46,16 +46,13 @@ describe("useRoutineCompletionToggleMutation", () => {
       result.current("r1");
     });
 
-    // setRoutines は関数型 updater ではなく直接値で呼ばれる
-    expect(setRoutines).toHaveBeenCalledWith(updated);
-    expect(toggleRoutineCompletionInState).toHaveBeenCalledWith(previous, "r1");
-    // routinesRef.current が updated に更新されること
-    expect(routinesRef.current).toBe(updated);
-    expect(buildDailyProgressForToggle).toHaveBeenCalledWith(
-      updated,
-      "2026-03-16",
-      expect.objectContaining({ date: "2026-03-15" }),
-    );
-    expect(saveDailyProgress).toHaveBeenCalledWith(progress);
+    const updated = [{ ...previous[0], isCompleted: true }];
+    expect(routinesRef.current).toEqual(updated);
+    expect(setRoutines).toHaveBeenCalledWith(routinesRef.current);
+    expect(saveDailyProgress).toHaveBeenCalledWith({
+      date: "2026-03-16",
+      completedRoutineIds: ["r1"],
+      lastResetTime: "2026-03-15T00:00:00.000Z",
+    });
   });
 });

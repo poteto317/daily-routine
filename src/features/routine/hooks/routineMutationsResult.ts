@@ -1,17 +1,22 @@
 import type { RoutineMutationActions } from "./routineHookContract";
 
-export const createRoutineMutationsResult = (
+type RoutineMutationsResultArgs = {
   crudMutations: Omit<
     RoutineMutationActions,
     "toggleComplete" | "reorderRoutines"
-  >,
-  completionMutations: Pick<
-    RoutineMutationActions,
-    "toggleComplete" | "reorderRoutines"
-  >,
-): RoutineMutationActions => {
+  >;
+  toggleComplete: RoutineMutationActions["toggleComplete"];
+  reorderRoutines: RoutineMutationActions["reorderRoutines"];
+};
+
+export const createRoutineMutationsResult = ({
+  crudMutations,
+  toggleComplete,
+  reorderRoutines,
+}: RoutineMutationsResultArgs): RoutineMutationActions => {
   return {
     ...crudMutations,
-    ...completionMutations,
+    toggleComplete,
+    reorderRoutines,
   };
 };

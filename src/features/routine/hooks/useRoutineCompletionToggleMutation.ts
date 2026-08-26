@@ -5,10 +5,8 @@ import {
   getDailyProgress,
   saveDailyProgress,
 } from "@/features/routine/storage";
-import {
-  buildDailyProgressForToggle,
-  toggleRoutineCompletionInState,
-} from "./routineCompletionActions";
+import { toggleRoutineCompletionInState } from "./routineCompletionState";
+import { buildDailyProgressFromRoutines } from "./routineStateProgressModel";
 
 type SetRoutines = Dispatch<SetStateAction<Routine[]>>;
 
@@ -30,7 +28,7 @@ export const useRoutineCompletionToggleMutation = (
       routinesRef.current = updated;
       setRoutines(updated);
       saveDailyProgress(
-        buildDailyProgressForToggle(
+        buildDailyProgressFromRoutines(
           updated,
           getTodayString(),
           getDailyProgress(),

@@ -11,11 +11,12 @@ jest.mock("../useRoutineCrudMutationActions", () => ({
   })),
 }));
 
-jest.mock("../useRoutineCompletionMutations", () => ({
-  useRoutineCompletionMutations: jest.fn(() => ({
-    toggleComplete: jest.fn(),
-    reorderRoutines: jest.fn(),
-  })),
+jest.mock("../useRoutineCompletionToggleMutation", () => ({
+  useRoutineCompletionToggleMutation: jest.fn(() => jest.fn()),
+}));
+
+jest.mock("../useRoutineReorderMutation", () => ({
+  useRoutineReorderMutation: jest.fn(() => jest.fn()),
 }));
 
 jest.mock("../routineMutationsResult", () => ({
@@ -23,16 +24,17 @@ jest.mock("../routineMutationsResult", () => ({
 }));
 
 import { createRoutineMutationsResult } from "../routineMutationsResult";
-import { useRoutineCompletionMutations } from "../useRoutineCompletionMutations";
+import { useRoutineCompletionToggleMutation } from "../useRoutineCompletionToggleMutation";
 import { useRoutineCrudMutationActions } from "../useRoutineCrudMutationActions";
 import { useRoutineMutations } from "../useRoutineMutations";
+import { useRoutineReorderMutation } from "../useRoutineReorderMutation";
 
 describe("useRoutineMutations", () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  it("CRUD/completion/result builder を compose する", () => {
+  it("CRUD・完了切替・並び替えを公開 mutation contract に compose する", () => {
     const setRoutines = jest.fn();
     const saveAndSync = jest.fn();
     const routinesRef = { current: [] };
@@ -48,14 +50,22 @@ describe("useRoutineMutations", () => {
       saveAndSync,
       routinesRef,
     );
-    expect(useRoutineCompletionMutations).toHaveBeenCalledWith(
+    expect(useRoutineCompletionToggleMutation).toHaveBeenCalledWith(
       setRoutines,
       routinesRef,
     );
-    expect(createRoutineMutationsResult).toHaveBeenCalledWith(
-      (useRoutineCrudMutationActions as jest.Mock).mock.results[0].value,
-      (useRoutineCompletionMutations as jest.Mock).mock.results[0].value,
+    expect(useRoutineReorderMutation).toHaveBeenCalledWith(
+      setRoutines,
+      routinesRef,
     );
+    expect(createRoutineMutationsResult).toHaveBeenCalledWith({
+      crudMutations: (useRoutineCrudMutationActions as jest.Mock).mock
+        .results[0].value,
+      toggleComplete: (useRoutineCompletionToggleMutation as jest.Mock).mock
+        .results[0].value,
+      reorderRoutines: (useRoutineReorderMutation as jest.Mock).mock.results[0]
+        .value,
+    });
     expect(result.current).toEqual(resultShape);
   });
 });
