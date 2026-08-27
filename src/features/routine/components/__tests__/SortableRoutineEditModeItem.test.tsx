@@ -62,7 +62,7 @@ const routine: Routine = {
 };
 
 describe("SortableRoutineEditModeItem", () => {
-  it("ドラッグハンドル（⨿）が aria-label='並び替え' で表示される", () => {
+  it("Todoと同じドラッグハンドル（⠿）を表示する", () => {
     render(
       <SortableRoutineEditModeItem
         routine={routine}
@@ -72,9 +72,9 @@ describe("SortableRoutineEditModeItem", () => {
         swipeActionType="delete"
       />,
     );
-    expect(
-      screen.getByRole("button", { name: "並び替え" }),
-    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "並び替え" })).toHaveTextContent(
+      "⠿",
+    );
   });
 
   it("ルーティンタイトルが表示される", () => {

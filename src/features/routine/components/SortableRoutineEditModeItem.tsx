@@ -68,7 +68,7 @@ export const SortableRoutineEditModeItem = ({
           onTouchStartCapture={(e) => e.stopPropagation()}
           onMouseDownCapture={(e) => e.stopPropagation()}
         >
-          ⨿
+          ⠿
         </button>
         <RoutineCardContent routine={routine} showDuration />
         <RoutineItemActionButtons

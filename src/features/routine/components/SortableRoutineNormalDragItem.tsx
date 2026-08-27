@@ -15,7 +15,7 @@ type Props = {
 
 /**
  * 通常表示モードのソート可能ルーティンアイテム
- * 左端のドラッグハンドル（⨿）をタップして並び替えを開始し、カード本体のタップで完了トグルを行う
+ * 左端のドラッグハンドル（⠿）をタップして並び替えを開始し、カード本体のタップで完了トグルを行う
  */
 export const SortableRoutineNormalDragItem = ({
   routine,
@@ -64,7 +64,7 @@ export const SortableRoutineNormalDragItem = ({
         aria-label="並び替え"
         onClick={(e) => e.stopPropagation()}
       >
-        ⨿
+        ⠿
       </button>
       <RoutineCardContent routine={routine} showDuration />
     </div>
