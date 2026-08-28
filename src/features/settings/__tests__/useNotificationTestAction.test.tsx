@@ -66,6 +66,32 @@ describe("useNotificationTestAction", () => {
     expect(result.current.notificationStatus).toBe("idle");
   });
 
+  it("通知権限がdefaultなら明示的に許可を要求してから通知する", async () => {
+    const requestPermission = jest.fn().mockResolvedValue("granted");
+    const showNotification = jest.fn(async () => undefined);
+    Object.defineProperty(window, "Notification", {
+      configurable: true,
+      value: { permission: "default", requestPermission },
+    });
+    setServiceWorker({
+      addEventListener: jest.fn(),
+      ready: Promise.resolve({ showNotification }),
+    });
+    (getFCMToken as jest.Mock).mockResolvedValue("token-123");
+
+    const { result } = renderHook(() =>
+      useNotificationTestAction({ startLogCapture: jest.fn() }),
+    );
+
+    await act(async () => {
+      await result.current.handleTestNotification();
+    });
+
+    expect(requestPermission).toHaveBeenCalledTimes(1);
+    expect(getFCMToken).toHaveBeenCalledTimes(1);
+    expect(showNotification).toHaveBeenCalledTimes(1);
+  });
+
   it("通知成功なら success 後に idle へ戻り debugMessage を消す", async () => {
     const showNotification = jest.fn(async () => undefined);
 

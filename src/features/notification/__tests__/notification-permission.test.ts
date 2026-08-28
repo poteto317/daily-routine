@@ -1,5 +1,6 @@
 import {
   hasNotificationPermission,
+  resolveNotificationPermission,
   requestNotificationPermission,
 } from "../notification-permission";
 
@@ -52,6 +53,32 @@ describe("requestNotificationPermission", () => {
     await expect(requestNotificationPermission()).resolves.toBe("denied");
     expect(requestPermissionSpy).not.toHaveBeenCalled();
   });
+});
+
+describe("resolveNotificationPermission", () => {
+  it("未選択なら渡されたAPIで許可を要求する", async () => {
+    const requestPermission = jest.fn().mockResolvedValue("granted");
+
+    await expect(
+      resolveNotificationPermission({
+        permission: "default",
+        requestPermission,
+      }),
+    ).resolves.toBe("granted");
+    expect(requestPermission).toHaveBeenCalledTimes(1);
+  });
+
+  it.each(["granted", "denied"] as const)(
+    "許可状態が%sなら許可を要求せず現在値を返す",
+    async (permission) => {
+      const requestPermission = jest.fn();
+
+      await expect(
+        resolveNotificationPermission({ permission, requestPermission }),
+      ).resolves.toBe(permission);
+      expect(requestPermission).not.toHaveBeenCalled();
+    },
+  );
 });
 
 describe("hasNotificationPermission", () => {

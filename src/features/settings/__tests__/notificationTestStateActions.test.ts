@@ -6,7 +6,6 @@ import {
   getNotificationRuntimeErrorResult,
   getNotificationSuccessResult,
   getUnsupportedNotificationResult,
-  requestNotificationPermission,
   runNotificationDelivery,
 } from "../state/notificationTestStateActions";
 
@@ -70,27 +69,6 @@ describe("notificationTestStateActions", () => {
     expect(() => {
       captureNotificationLogs(undefined, jest.fn());
     }).not.toThrow();
-  });
-
-  it("permission が default 以外ならそのまま返す", async () => {
-    await expect(
-      requestNotificationPermission({
-        permission: "granted",
-        requestPermission: jest.fn(),
-      }),
-    ).resolves.toBe("granted");
-  });
-
-  it("permission が default なら requestPermission を呼ぶ", async () => {
-    const requestPermission = jest.fn(async () => "denied" as const);
-
-    await expect(
-      requestNotificationPermission({
-        permission: "default",
-        requestPermission,
-      }),
-    ).resolves.toBe("denied");
-    expect(requestPermission).toHaveBeenCalled();
   });
 
   it("各結果factoryが期待値を返す", () => {

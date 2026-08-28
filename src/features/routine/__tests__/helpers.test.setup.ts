@@ -1,9 +1,13 @@
 import { type Routine } from "@/types/routine";
+import * as notificationFeature from "@/features/notification";
 import * as firebaseLib from "@/lib/firebase";
 import * as coreStorage from "@/lib/storage/core";
 import * as settingsStorage from "@/features/settings/storage";
 
 jest.mock("@/lib/firebase", () => ({ getFCMToken: jest.fn() }));
+jest.mock("@/features/notification", () => ({
+  hasNotificationPermission: jest.fn(),
+}));
 jest.mock("@/lib/storage/core", () => ({
   getCurrentTime: jest.fn(),
   getTodayString: jest.fn(),
@@ -31,6 +35,10 @@ export const baseRoutine = {
 export const mockGetFCMToken = firebaseLib.getFCMToken as jest.MockedFunction<
   typeof firebaseLib.getFCMToken
 >;
+export const mockHasNotificationPermission =
+  notificationFeature.hasNotificationPermission as jest.MockedFunction<
+    typeof notificationFeature.hasNotificationPermission
+  >;
 export const mockGetCurrentTime =
   coreStorage.getCurrentTime as jest.MockedFunction<
     typeof coreStorage.getCurrentTime
@@ -49,5 +57,6 @@ export const mockGetSettings =
 
 export const setupHelpersDefaults = () => {
   jest.clearAllMocks();
+  mockHasNotificationPermission.mockReturnValue(true);
   mockGetTodayString.mockReturnValue("2026-02-12");
 };

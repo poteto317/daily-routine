@@ -18,16 +18,18 @@ export const getFCMToken = async (): Promise<string> => {
     );
   }
 
+  // Firebase MessagingのgetTokenは未選択時に権限要求するため、
+  // 呼び出し元に関係なくSDKへ到達する前に非要求型の前提条件を検証する。
+  const permission =
+    typeof Notification === "undefined" ? "denied" : Notification.permission;
+  if (permission !== "granted") {
+    throw new FirebaseError(
+      getPermissionDeniedMessage(permission),
+      "permission-denied",
+    );
+  }
+
   try {
-    const permission = await Notification.requestPermission();
-
-    if (permission !== "granted") {
-      throw new FirebaseError(
-        getPermissionDeniedMessage(permission),
-        "permission-denied",
-      );
-    }
-
     // 画面を制御しているのはアプリ本体の SW のため、ready では FCM の登録を
     // 取れない。FCM 用スコープの登録を明示的に引く
     const registration = await getFcmServiceWorkerRegistration();

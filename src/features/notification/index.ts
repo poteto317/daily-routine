@@ -5,6 +5,7 @@ export {
 } from "./notification-messaging";
 export {
   requestNotificationPermission,
+  resolveNotificationPermission,
   hasNotificationPermission,
 } from "./notification-permission";
 export { createNotificationSchedules } from "./notification-helpers";

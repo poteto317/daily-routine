@@ -1,10 +1,13 @@
 import { type Routine } from "@/types/routine";
+import { hasNotificationPermission } from "@/features/notification";
 import { getFCMToken } from "@/lib/firebase";
 
 export const syncRoutinesToFirebase = async (
   routines: Routine[],
   functionsUrl?: string,
 ): Promise<boolean> => {
+  if (!hasNotificationPermission()) return false;
+
   const fcmToken = await getFCMToken().catch(() => null);
   if (!fcmToken) return false;
 

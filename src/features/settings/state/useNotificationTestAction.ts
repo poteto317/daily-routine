@@ -1,11 +1,11 @@
 import { useState } from "react";
+import { resolveNotificationPermission } from "@/features/notification";
 import { getFCMToken } from "@/lib/firebase";
 import { type NotificationStatus } from "./constants";
 import { createNotificationTestActionResult } from "./notificationTestActionResult";
 import {
   getDeniedNotificationResult,
   getUnsupportedNotificationResult,
-  requestNotificationPermission,
   runNotificationDelivery,
 } from "./notificationTestStateActions";
 
@@ -34,7 +34,7 @@ export const useNotificationTestAction = ({
     }
 
     setDebugMessage("通知権限をリクエスト中...");
-    const permission = await requestNotificationPermission(Notification);
+    const permission = await resolveNotificationPermission(Notification);
     setDebugMessage(`通知権限: ${permission}`);
 
     if (permission !== "granted") {

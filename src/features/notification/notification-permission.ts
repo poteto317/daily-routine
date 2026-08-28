@@ -1,12 +1,24 @@
+type NotificationPermissionApi = {
+  permission: NotificationPermission;
+  requestPermission: () => Promise<NotificationPermission>;
+};
+
+export const resolveNotificationPermission = async (
+  notificationApi: NotificationPermissionApi,
+): Promise<NotificationPermission> => {
+  if (notificationApi.permission !== "default") {
+    return notificationApi.permission;
+  }
+
+  return notificationApi.requestPermission();
+};
+
 export const requestNotificationPermission =
   async (): Promise<NotificationPermission> => {
     if (typeof window === "undefined") return "denied";
     if (!("Notification" in window)) return "denied";
 
-    if (Notification.permission === "default")
-      return Notification.requestPermission();
-
-    return Notification.permission;
+    return resolveNotificationPermission(Notification);
   };
 
 export const hasNotificationPermission = (): boolean => {

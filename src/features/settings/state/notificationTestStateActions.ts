@@ -7,11 +7,6 @@ type NotificationTestResult = {
   clearDebugOnReset: boolean;
 };
 
-type NotificationLike = {
-  permission: NotificationPermission;
-  requestPermission: () => Promise<NotificationPermission>;
-};
-
 type ServiceWorkerMessageEvent = {
   data?: {
     type?: string;
@@ -62,16 +57,6 @@ export const captureNotificationLogs = (
 
     onLog(event.data.message);
   });
-};
-
-export const requestNotificationPermission = async (
-  notificationApi: NotificationLike,
-): Promise<NotificationPermission> => {
-  if (notificationApi.permission !== "default") {
-    return notificationApi.permission;
-  }
-
-  return notificationApi.requestPermission();
 };
 
 export const getUnsupportedNotificationResult = (): NotificationTestResult => {
@@ -146,8 +131,4 @@ export const runNotificationDelivery = async ({
   }
 };
 
-export type {
-  NotificationLike,
-  NotificationTestResult,
-  ServiceWorkerContainerLike,
-};
+export type { NotificationTestResult, ServiceWorkerContainerLike };
