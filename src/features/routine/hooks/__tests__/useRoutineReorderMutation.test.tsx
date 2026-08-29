@@ -135,7 +135,7 @@ describe("useRoutineReorderMutation", () => {
     });
 
     expect(routinesRef.current).toEqual(currentRoutines);
-    expect(setRoutines).toHaveBeenCalledWith(currentRoutines);
-    expect(saveRoutines).toHaveBeenCalledWith(currentRoutines);
+    expect(setRoutines).not.toHaveBeenCalled();
+    expect(saveRoutines).not.toHaveBeenCalled();
   });
 });

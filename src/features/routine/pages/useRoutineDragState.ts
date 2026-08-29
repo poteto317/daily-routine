@@ -1,7 +1,7 @@
 import { useCallback, useRef, useState } from "react";
 import type { DragEndEvent, DragStartEvent } from "@dnd-kit/core";
 import type { Routine } from "@/types/routine";
-import { reorderRoutinesWithOriginalTimes } from "./draggableRoutineListHelpers";
+import { reorderRoutinesWithSequentialTimes } from "./draggableRoutineListHelpers";
 
 type Params = {
   routines: Routine[];
@@ -46,7 +46,7 @@ export const useRoutineDragState = ({
       const { active, over } = event;
       if (!over || active.id === over.id) return;
 
-      const reordered = reorderRoutinesWithOriginalTimes(
+      const reordered = reorderRoutinesWithSequentialTimes(
         sourceRoutines,
         String(active.id),
         String(over.id),

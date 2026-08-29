@@ -17,6 +17,8 @@ export const useRoutineReorderMutation = (
         reorderedRoutines,
         sourceRoutines,
       );
+      if (!updated) return;
+
       routinesRef.current = updated;
       setRoutines(updated);
       saveRoutines(stripCompletionState(updated));

@@ -31,16 +31,20 @@ describe("useRoutines queries and ordering", () => {
 
   it("reorderRoutinesで並び順を更新して保存する", () => {
     const routines = [
-      { ...mockRoutine, id: "1", sortOrder: 0 },
-      { ...mockRoutine, id: "2", sortOrder: 1 },
-      { ...mockRoutine, id: "3", sortOrder: 2 },
+      { ...mockRoutine, id: "1", startTime: "09:00", sortOrder: 0 },
+      { ...mockRoutine, id: "2", startTime: "09:30", sortOrder: 1 },
+      { ...mockRoutine, id: "3", startTime: "10:00", sortOrder: 2 },
     ];
     (getRoutines as jest.Mock).mockReturnValue(routines);
     const { result } = renderHook(() => useRoutines());
 
     act(() => {
       result.current.reorderRoutines(
-        [routines[2], routines[0], routines[1]],
+        [
+          { ...routines[2], startTime: "09:00" },
+          { ...routines[0], startTime: "09:30" },
+          { ...routines[1], startTime: "10:00" },
+        ],
         routines,
       );
     });

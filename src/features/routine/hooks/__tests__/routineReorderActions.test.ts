@@ -46,7 +46,7 @@ describe("routineReorderActions", () => {
     ]);
   });
 
-  it("並び替え対象に不明なIDが含まれる場合は既存データを保持する", () => {
+  it("並び替え対象に不明なIDが含まれる場合は拒否する", () => {
     const unknownRoutine = { ...routines[0], id: "unknown" };
 
     const reorderedRoutines = [unknownRoutine, routines[0]];
@@ -56,7 +56,7 @@ describe("routineReorderActions", () => {
       reorderedRoutines,
     );
 
-    expect(updated).toEqual(routines);
+    expect(updated).toBeNull();
   });
 
   it("古い並び替え入力でも最新のルーティン情報を保持する", () => {
@@ -108,48 +108,45 @@ describe("routineReorderActions", () => {
     ]);
   });
 
-  it("並び替え入力の時刻が最新stateと異なる場合は最新stateを保持する", () => {
-    const currentRoutines: Routine[] = [
-      { ...routines[0], startTime: "08:00", updatedAt: "2026-08-26" },
-      routines[1],
-    ];
-    const staleReorderedRoutines: Routine[] = [
-      { ...routines[1], startTime: "07:00" },
-      { ...routines[0], startTime: "21:00" },
-    ];
-
-    const updated = reorderRoutineState(
-      currentRoutines,
-      staleReorderedRoutines,
-      routines,
-    );
-
-    expect(updated).toEqual(currentRoutines);
-  });
-
-  it("同じ時刻集合でもIDごとの時刻が変わった場合は最新stateを保持する", () => {
-    const sourceRoutines: Routine[] = [
-      { ...routines[0], id: "a", startTime: "07:00" },
-      { ...routines[0], id: "b", startTime: "08:00" },
-      { ...routines[0], id: "c", startTime: "09:00" },
-    ];
-    const currentRoutines: Routine[] = [
-      { ...sourceRoutines[0], startTime: "09:00" },
-      { ...sourceRoutines[1], startTime: "07:00" },
-      { ...sourceRoutines[2], startTime: "08:00" },
-    ];
-    const staleReorderedRoutines: Routine[] = [
-      { ...sourceRoutines[2], startTime: "07:00" },
-      { ...sourceRoutines[0], startTime: "08:00" },
-      { ...sourceRoutines[1], startTime: "09:00" },
+  it("カテゴリ絞り込みで非表示の同曜日ルーティンと重なる並び替えは保存しない", () => {
+    const visibleFirst: Routine = {
+      ...routines[0],
+      id: "visible-first",
+      startTime: "19:00",
+      duration: 30,
+      category: "health",
+      sortOrder: 0,
+    };
+    const hidden: Routine = {
+      ...routines[1],
+      id: "hidden",
+      startTime: "19:30",
+      duration: 20,
+      category: "work",
+      isCompleted: false,
+      sortOrder: 1,
+    };
+    const visibleLast: Routine = {
+      ...routines[0],
+      id: "visible-last",
+      startTime: "19:50",
+      duration: 20,
+      category: "health",
+      sortOrder: 2,
+    };
+    const currentRoutines = [visibleFirst, hidden, visibleLast];
+    const sourceRoutines = [visibleFirst, visibleLast];
+    const overlappingReorder = [
+      { ...visibleLast, startTime: "19:00" },
+      { ...visibleFirst, startTime: "19:20" },
     ];
 
     const updated = reorderRoutineState(
       currentRoutines,
-      staleReorderedRoutines,
+      overlappingReorder,
       sourceRoutines,
     );
 
-    expect(updated).toEqual(currentRoutines);
+    expect(updated).toBeNull();
   });
 });

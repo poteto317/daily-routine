@@ -3,7 +3,7 @@ import type { DragEndEvent, DragStartEvent } from "@dnd-kit/core";
 import { useRoutineDragState } from "../useRoutineDragState";
 import type { Routine } from "@/types/routine";
 
-// reorderRoutinesWithOriginalTimes の実装をそのまま使う
+// 並び替えと開始時刻再計算の実装をそのまま使う
 // （arrayMove は @dnd-kit/sortable に依存するためモックは最小限にとどめる）
 
 const makeRoutine = (id: string, startTime: string): Routine => ({
@@ -127,8 +127,8 @@ describe("useRoutineDragState", () => {
     expect(reordered.map((routine) => routine.id)).toEqual(["b", "c", "a"]);
     expect(reordered.map((routine) => routine.startTime)).toEqual([
       "07:00",
+      "07:30",
       "08:00",
-      "09:00",
     ]);
   });
 
