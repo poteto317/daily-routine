@@ -1,10 +1,7 @@
 import type { Dispatch, SetStateAction } from "react";
 import type { Routine, RoutinePreset } from "@/types/routine";
-import { createPresetItemActionsResult } from "./presetItemActionsResult";
-import {
-  createPresetApplyHandler,
-  createPresetDeleteHandler,
-} from "./presetApplyDeleteActions";
+import { createPresetApplyHandler } from "./presetApplyActions";
+import { createPresetDeleteHandler } from "./presetDeleteActions";
 import { createPresetDuplicateHandler } from "./presetDuplicateActions";
 
 type UsePresetItemActionsParams = {
@@ -43,9 +40,9 @@ export const usePresetItemActions = ({
     setPresets,
   });
 
-  return createPresetItemActionsResult({
+  return {
     handleApplyPreset,
     handleDeletePreset,
     handleDuplicatePreset,
-  });
+  };
 };

@@ -1,23 +1,19 @@
 import type { Routine, RoutinePreset } from "@/types/routine";
-import { resolveUpdatedRoutineTemplates } from "./presetTemplateMergePolicy";
+import { normalizePresetMetadata } from "./presetMetadataNormalization";
+import { buildRoutineTemplatesFromRoutines } from "./presetTemplateConverter";
 
 export const buildUpdatedPreset = (params: {
   preset: RoutinePreset;
   name: string;
   description: string;
   routinesToSave: Routine[];
-  currentRoutines: Routine[];
 }): RoutinePreset => {
-  const { preset, name, description, routinesToSave, currentRoutines } = params;
+  const { preset, name, description, routinesToSave } = params;
+  const metadata = normalizePresetMetadata(name, description);
 
   return {
     ...preset,
-    name: name.trim(),
-    description: description.trim() || undefined,
-    routineTemplates: resolveUpdatedRoutineTemplates({
-      preset,
-      routinesToSave,
-      currentRoutines,
-    }),
+    ...metadata,
+    routineTemplates: buildRoutineTemplatesFromRoutines(routinesToSave),
   };
 };

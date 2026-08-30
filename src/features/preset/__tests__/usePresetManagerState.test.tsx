@@ -1,53 +1,15 @@
 import { act, renderHook } from "@testing-library/react";
+import type { Routine, RoutinePreset } from "@/types/routine";
+import { getPresets, savePresets } from "../storage";
 import { usePresetManagerState } from "../usePresetManagerState";
 
-jest.mock("@/features/preset/storage", () => ({
-  addPreset: jest.fn(),
-  createPresetFromRoutines: jest.fn(),
-  createRoutinesFromPreset: jest.fn(),
-  deletePreset: jest.fn(),
-  duplicatePreset: jest.fn(),
-  getPresets: jest.fn(),
-  updatePreset: jest.fn(),
-}));
-
-import {
-  addPreset,
-  createPresetFromRoutines,
-  createRoutinesFromPreset,
-  deletePreset,
-  duplicatePreset,
-  getPresets,
-  updatePreset,
-} from "@/features/preset/storage";
-
-const mockAddPreset = addPreset as jest.MockedFunction<typeof addPreset>;
-const mockCreatePresetFromRoutines =
-  createPresetFromRoutines as jest.MockedFunction<
-    typeof createPresetFromRoutines
-  >;
-const mockCreateRoutinesFromPreset =
-  createRoutinesFromPreset as jest.MockedFunction<
-    typeof createRoutinesFromPreset
-  >;
-const mockDeletePreset = deletePreset as jest.MockedFunction<
-  typeof deletePreset
->;
-const mockDuplicatePreset = duplicatePreset as jest.MockedFunction<
-  typeof duplicatePreset
->;
-const mockGetPresets = getPresets as jest.MockedFunction<typeof getPresets>;
-const mockUpdatePreset = updatePreset as jest.MockedFunction<
-  typeof updatePreset
->;
-
-const currentRoutines = [
+const currentRoutines: Routine[] = [
   {
     id: "r1",
     title: "朝食",
     startTime: "07:00",
     duration: 30,
-    category: "life" as const,
+    category: "life",
     daysOfWeek: [1, 2],
     isCompleted: false,
     sortOrder: 0,
@@ -59,7 +21,7 @@ const currentRoutines = [
     title: "運動",
     startTime: "08:00",
     duration: 20,
-    category: "health" as const,
+    category: "health",
     daysOfWeek: [2],
     isCompleted: false,
     sortOrder: 1,
@@ -68,7 +30,7 @@ const currentRoutines = [
   },
 ];
 
-const preset = {
+const preset: RoutinePreset = {
   id: "p1",
   name: "朝ルーティン",
   description: "desc",
@@ -77,7 +39,7 @@ const preset = {
       title: "朝食",
       startTime: "07:00",
       duration: 30,
-      category: "life" as const,
+      category: "life",
     },
   ],
   createdAt: "2026-03-07T00:00:00.000Z",
@@ -86,210 +48,170 @@ const preset = {
 
 describe("usePresetManagerState", () => {
   const onApplyPreset = jest.fn();
+  let alertSpy: jest.SpyInstance;
+  let confirmSpy: jest.SpyInstance;
 
   beforeEach(() => {
-    jest.clearAllMocks();
-    mockGetPresets.mockReturnValue([preset]);
-    mockCreatePresetFromRoutines.mockReturnValue(preset);
-    mockCreateRoutinesFromPreset.mockReturnValue([
-      {
-        title: "朝食",
-        startTime: "07:00",
-        duration: 30,
-        category: "life",
-        daysOfWeek: [1],
-        isCompleted: false,
-      },
-    ]);
-    jest.spyOn(window, "alert").mockImplementation(() => undefined);
-    jest.spyOn(window, "confirm").mockReturnValue(true);
+    localStorage.clear();
+    savePresets([preset]);
+    onApplyPreset.mockClear();
+    alertSpy = jest.spyOn(window, "alert").mockImplementation(() => undefined);
+    confirmSpy = jest.spyOn(window, "confirm").mockReturnValue(true);
   });
 
   afterEach(() => {
-    (window.alert as jest.Mock).mockRestore();
-    (window.confirm as jest.Mock).mockRestore();
+    alertSpy.mockRestore();
+    confirmSpy.mockRestore();
   });
 
-  it("無効な状態ではプリセット作成時にアラートを出す", () => {
+  it("無効な状態ではプリセットを作成せず通知する", () => {
     const { result } = renderHook(() =>
       usePresetManagerState({ currentRoutines, onApplyPreset }),
     );
 
-    act(() => {
-      result.current.handleCreatePreset();
-    });
+    act(() => result.current.handleCreatePreset());
 
-    expect(window.alert).toHaveBeenCalled();
-    expect(mockAddPreset).not.toHaveBeenCalled();
+    expect(window.alert).toHaveBeenCalledTimes(1);
+    expect(getPresets()).toEqual([preset]);
   });
 
-  it("プリセットを作成して状態をリセットする", () => {
+  it("選択曜日の全ルーティンからプリセットを作成して状態をリセットする", () => {
     const { result } = renderHook(() =>
       usePresetManagerState({ currentRoutines, onApplyPreset }),
     );
 
     act(() => {
       result.current.setIsCreating(true);
-      result.current.setNewPresetName("朝");
-      result.current.toggleRoutineSelection("r1");
+      result.current.setNewPresetName("  月曜の朝  ");
+      result.current.setSourceDay(1);
     });
+    act(() => result.current.handleCreatePreset());
 
-    act(() => {
-      result.current.handleCreatePreset();
-    });
-
-    expect(mockCreatePresetFromRoutines).toHaveBeenCalledWith(
-      "朝",
-      [currentRoutines[0]],
-      undefined,
+    const createdPreset = getPresets().find(({ id }) => id !== preset.id);
+    expect(createdPreset).toEqual(
+      expect.objectContaining({
+        name: "月曜の朝",
+        routineTemplates: [expect.objectContaining({ title: "朝食" })],
+      }),
     );
-    expect(mockAddPreset).toHaveBeenCalledWith(preset);
     expect(result.current.isCreating).toBe(false);
     expect(result.current.newPresetName).toBe("");
-    expect(result.current.selectedRoutines.size).toBe(0);
+    expect(result.current.sourceDay).toBeNull();
   });
 
-  it("プリセット削除時に確認後だけ削除する", () => {
+  it("確認後にプリセットを削除して公開stateと保存値を更新する", () => {
+    const { result } = renderHook(() =>
+      usePresetManagerState({ currentRoutines, onApplyPreset }),
+    );
+
+    act(() => result.current.handleDeletePreset(preset.id));
+
+    expect(result.current.presets).toEqual([]);
+    expect(getPresets()).toEqual([]);
+  });
+
+  it("プリセットを複製して公開stateと保存値へ追加する", () => {
+    const { result } = renderHook(() =>
+      usePresetManagerState({ currentRoutines, onApplyPreset }),
+    );
+
+    act(() => result.current.handleDuplicatePreset(preset.id));
+
+    expect(result.current.presets).toHaveLength(2);
+    expect(getPresets()).toHaveLength(2);
+    expect(result.current.presets[1].name).toBe("朝ルーティンのコピー");
+  });
+
+  it("選択不足では適用せず通知する", () => {
+    const { result } = renderHook(() =>
+      usePresetManagerState({ currentRoutines, onApplyPreset }),
+    );
+
+    act(() => result.current.handleApplyPreset());
+
+    expect(window.alert).toHaveBeenCalledTimes(1);
+    expect(onApplyPreset).not.toHaveBeenCalled();
+  });
+
+  it("プリセットを適用し、callbackへ生成結果を渡して選択状態をリセットする", () => {
     const { result } = renderHook(() =>
       usePresetManagerState({ currentRoutines, onApplyPreset }),
     );
 
     act(() => {
-      result.current.handleDeletePreset("p1");
+      result.current.setSelectedPresetId(preset.id);
+      result.current.toggleDaySelection(1);
     });
+    act(() => result.current.handleApplyPreset());
 
-    expect(mockDeletePreset).toHaveBeenCalledWith("p1");
-  });
-
-  it("プリセットを複製する", () => {
-    const duplicated = {
-      id: "p1-copy",
-      name: "朝ルーティンのコピー",
-      description: "desc",
-      routineTemplates: [
+    expect(onApplyPreset).toHaveBeenCalledWith(
+      [
         {
           title: "朝食",
           startTime: "07:00",
           duration: 30,
-          category: "life" as const,
+          category: "life",
+          description: undefined,
+          notificationMinutes: undefined,
+          daysOfWeek: [1],
+          isCompleted: false,
         },
       ],
-      createdAt: "2026-03-08T00:00:00.000Z",
-      updatedAt: "2026-03-08T00:00:00.000Z",
-    };
-    mockDuplicatePreset.mockReturnValue(duplicated);
-
-    const { result } = renderHook(() =>
-      usePresetManagerState({ currentRoutines, onApplyPreset }),
-    );
-
-    act(() => {
-      result.current.handleDuplicatePreset("p1");
-    });
-
-    expect(mockDuplicatePreset).toHaveBeenCalledWith(preset);
-    expect(mockAddPreset).toHaveBeenCalledWith(duplicated);
-  });
-
-  it("選択不足では適用時にアラートを出す", () => {
-    const { result } = renderHook(() =>
-      usePresetManagerState({ currentRoutines, onApplyPreset }),
-    );
-
-    act(() => {
-      result.current.handleApplyPreset();
-    });
-
-    expect(window.alert).toHaveBeenCalled();
-    expect(onApplyPreset).not.toHaveBeenCalled();
-  });
-
-  it("プリセットを適用して選択状態をリセットする", () => {
-    const { result } = renderHook(() =>
-      usePresetManagerState({ currentRoutines, onApplyPreset }),
-    );
-
-    act(() => {
-      result.current.setSelectedPresetId("p1");
-      result.current.toggleDaySelection(1);
-    });
-
-    act(() => {
-      result.current.handleApplyPreset();
-    });
-
-    expect(mockCreateRoutinesFromPreset).toHaveBeenCalledWith(preset, [1]);
-    expect(onApplyPreset).toHaveBeenCalledWith(
-      mockCreateRoutinesFromPreset.mock.results[0].value,
       [1],
     );
     expect(result.current.selectedPresetId).toBeNull();
     expect(result.current.selectedDays.size).toBe(0);
   });
 
-  it("作成フィルター曜日の切替で対象ルーティン選択を更新する", () => {
+  it("作成元曜日は単一の曜日に置き換わる", () => {
     const { result } = renderHook(() =>
       usePresetManagerState({ currentRoutines, onApplyPreset }),
     );
 
-    act(() => {
-      result.current.toggleCreateFilterDay(1);
-    });
-    expect(Array.from(result.current.createFilterDays)).toEqual([1]);
-    expect(Array.from(result.current.selectedRoutines)).toEqual(["r1"]);
+    act(() => result.current.setSourceDay(1));
+    act(() => result.current.setSourceDay(2));
 
-    act(() => {
-      result.current.toggleCreateFilterDay(2);
-    });
-
-    act(() => {
-      result.current.toggleCreateFilterDay(1);
-    });
-    expect(Array.from(result.current.createFilterDays)).toEqual([2]);
-    expect(Array.from(result.current.selectedRoutines)).toEqual(["r1", "r2"]);
+    expect(result.current.sourceDay).toBe(2);
   });
 
-  it("編集開始と保存を行える", () => {
+  it("選択曜日の全ルーティンで既存プリセットを編集し状態をリセットする", () => {
     const { result } = renderHook(() =>
       usePresetManagerState({ currentRoutines, onApplyPreset }),
     );
 
     act(() => {
-      result.current.handleStartEdit("p1");
-      result.current.setEditPresetName("更新後");
-      result.current.toggleEditRoutineSelection("r2");
+      result.current.handleStartEdit(preset.id);
+      result.current.setEditPresetName("  更新後  ");
+      result.current.setEditSourceDay(2);
     });
+    act(() => result.current.handleSaveEdit());
 
-    act(() => {
-      result.current.handleSaveEdit();
-    });
-
-    expect(mockUpdatePreset).toHaveBeenCalledWith(
+    expect(getPresets()[0]).toEqual(
       expect.objectContaining({
-        id: "p1",
         name: "更新後",
-        routineTemplates: [expect.objectContaining({ title: "運動" })],
+        routineTemplates: [
+          expect.objectContaining({ title: "朝食" }),
+          expect.objectContaining({ title: "運動" }),
+        ],
       }),
     );
-    expect(window.alert).toHaveBeenCalled();
+    expect(window.alert).toHaveBeenCalledTimes(1);
     expect(result.current.editingPresetId).toBeNull();
   });
 
-  it("編集名が空なら保存せずアラートを出す", () => {
+  it("編集名が空なら保存せず通知する", () => {
     const { result } = renderHook(() =>
       usePresetManagerState({ currentRoutines, onApplyPreset }),
     );
 
     act(() => {
-      result.current.handleStartEdit("p1");
+      result.current.handleStartEdit(preset.id);
       result.current.setEditPresetName("   ");
+      result.current.setEditSourceDay(1);
     });
+    act(() => result.current.handleSaveEdit());
 
-    act(() => {
-      result.current.handleSaveEdit();
-    });
-
-    expect(mockUpdatePreset).not.toHaveBeenCalled();
-    expect(window.alert).toHaveBeenCalled();
+    expect(getPresets()[0].name).toBe(preset.name);
+    expect(window.alert).toHaveBeenCalledTimes(1);
   });
 });

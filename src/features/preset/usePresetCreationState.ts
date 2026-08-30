@@ -1,11 +1,6 @@
 import type { Dispatch, SetStateAction } from "react";
 import type { Routine, RoutinePreset } from "@/types/routine";
 import { createPresetCreateHandler } from "./presetCreateActions";
-import {
-  createPresetFilterDayToggleHandler,
-  createPresetSelectionToggleHandler,
-} from "./presetSelectionActions";
-import { createPresetCreationStateResult } from "./presetCreationStateResult";
 import { usePresetCreationFormState } from "./usePresetCreationFormState";
 import { usePresetCreationSelectionState } from "./usePresetCreationSelectionState";
 
@@ -25,31 +20,23 @@ export const usePresetCreationState = ({
     currentRoutines,
     newPresetName: formState.newPresetName,
     newPresetDescription: formState.newPresetDescription,
-    selectedRoutines: selectionState.selectedRoutines,
+    sourceDay: selectionState.sourceDay,
     setPresets,
     setIsCreating: formState.setIsCreating,
     setNewPresetName: formState.setNewPresetName,
     setNewPresetDescription: formState.setNewPresetDescription,
-    setSelectedRoutines: selectionState.setSelectedRoutines,
-    setCreateFilterDays: selectionState.setCreateFilterDays,
-  });
-  const toggleRoutineSelection = createPresetSelectionToggleHandler(
-    selectionState.selectedRoutines,
-    selectionState.setSelectedRoutines,
-  );
-  const toggleCreateFilterDay = createPresetFilterDayToggleHandler({
-    currentRoutines,
-    createFilterDays: selectionState.createFilterDays,
-    selectedRoutines: selectionState.selectedRoutines,
-    setCreateFilterDays: selectionState.setCreateFilterDays,
-    setSelectedRoutines: selectionState.setSelectedRoutines,
+    setSourceDay: selectionState.setSourceDay,
   });
 
-  return createPresetCreationStateResult({
-    formState,
-    selectionState,
+  return {
+    isCreating: formState.isCreating,
+    newPresetName: formState.newPresetName,
+    newPresetDescription: formState.newPresetDescription,
+    sourceDay: selectionState.sourceDay,
+    setIsCreating: formState.setIsCreating,
+    setNewPresetName: formState.setNewPresetName,
+    setNewPresetDescription: formState.setNewPresetDescription,
+    setSourceDay: selectionState.setSourceDay,
     handleCreatePreset,
-    toggleRoutineSelection,
-    toggleCreateFilterDay,
-  });
+  };
 };

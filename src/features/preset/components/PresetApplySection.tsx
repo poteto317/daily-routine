@@ -59,7 +59,10 @@ export const PresetApplySection = ({
         event.stopPropagation();
         onApply();
       }}
-      disabled={isApplyButtonDisabled(selectedDays.size)}
+      disabled={isApplyButtonDisabled(
+        selectedDays.size,
+        preset.routineTemplates.length,
+      )}
       className="w-full bg-blue-500 hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white px-4 py-2 rounded-lg transition-colors"
     >
       {PRESET_APPLY_LABEL}

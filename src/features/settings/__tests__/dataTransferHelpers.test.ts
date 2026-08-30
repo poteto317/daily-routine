@@ -26,6 +26,14 @@ const select = (...keys: (keyof typeof EMPTY_TRANSFER_OPTIONS)[]) =>
     EMPTY_TRANSFER_OPTIONS,
   );
 
+const presetFixture = {
+  id: "preset-1",
+  name: "朝の支度",
+  routineTemplates: [],
+  createdAt: "2026-08-30T00:00:00.000Z",
+  updatedAt: "2026-08-30T00:00:00.000Z",
+};
+
 describe("createExportData", () => {
   afterEach(() => {
     jest.restoreAllMocks();
@@ -254,9 +262,7 @@ describe("書き出してから取り込む", () => {
     saveTodoLists([
       { id: "list-1", title: "買い物", items: [] },
     ] as unknown as Parameters<typeof saveTodoLists>[0]);
-    savePresets([{ id: "preset-1", name: "朝の支度" }] as unknown as Parameters<
-      typeof savePresets
-    >[0]);
+    savePresets([presetFixture]);
 
     const exported = createExportData(ALL_TRANSFER_OPTIONS);
     localStorage.clear();
@@ -327,9 +333,7 @@ describe("書き出してから取り込む", () => {
     saveTodoLists([
       { id: "list-1", title: "買い物", items: [] },
     ] as unknown as Parameters<typeof saveTodoLists>[0]);
-    savePresets([{ id: "preset-1", name: "朝の支度" }] as unknown as Parameters<
-      typeof savePresets
-    >[0]);
+    savePresets([presetFixture]);
     const exported = createExportData(ALL_TRANSFER_OPTIONS);
     localStorage.clear();
 

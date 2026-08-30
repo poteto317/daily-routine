@@ -1,45 +1,52 @@
 import type { Dispatch, SetStateAction } from "react";
 import type { Routine, RoutinePreset } from "@/types/routine";
-import { createPresetAndReload } from "./presetCrudStateActions";
+import { createPresetAndReload } from "./presetCreateWorkflow";
+import { PRESET_MANAGER_MESSAGES } from "./presetManagerPresentation";
 
 type CreatePresetHandlerArgs = {
   currentRoutines: Routine[];
   newPresetName: string;
   newPresetDescription: string;
-  selectedRoutines: Set<string>;
+  sourceDay: number | null;
   setPresets: Dispatch<SetStateAction<RoutinePreset[]>>;
   setIsCreating: Dispatch<SetStateAction<boolean>>;
   setNewPresetName: Dispatch<SetStateAction<string>>;
   setNewPresetDescription: Dispatch<SetStateAction<string>>;
-  setSelectedRoutines: Dispatch<SetStateAction<Set<string>>>;
-  setCreateFilterDays: Dispatch<SetStateAction<Set<number>>>;
+  setSourceDay: Dispatch<SetStateAction<number | null>>;
 };
 
 export const createPresetCreateHandler = ({
   currentRoutines,
   newPresetName,
   newPresetDescription,
-  selectedRoutines,
+  sourceDay,
   setPresets,
   setIsCreating,
   setNewPresetName,
   setNewPresetDescription,
-  setSelectedRoutines,
-  setCreateFilterDays,
+  setSourceDay,
 }: CreatePresetHandlerArgs) => {
   return () => {
-    const { presets: nextPresets, created } = createPresetAndReload({
+    const {
+      presets: nextPresets,
+      created,
+      failureReason,
+    } = createPresetAndReload({
       currentRoutines,
       newPresetName,
       newPresetDescription,
-      selectedRoutines,
+      sourceDay,
     });
-    if (!created) return;
+    if (!created) {
+      if (failureReason === "invalid-input") {
+        window.alert(PRESET_MANAGER_MESSAGES.alertMissingFields);
+      }
+      return;
+    }
     setPresets(nextPresets);
     setIsCreating(false);
     setNewPresetName("");
     setNewPresetDescription("");
-    setSelectedRoutines(new Set());
-    setCreateFilterDays(new Set());
+    setSourceDay(null);
   };
 };

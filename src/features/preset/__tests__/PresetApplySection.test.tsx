@@ -43,7 +43,7 @@ describe("PresetApplySection", () => {
 
   it("型から外れたカテゴリでも「その他」の絵文字で表示する", () => {
     // 旧データやインポートしたデータには型に無いカテゴリが入りうる。
-    // 選択リスト（RoutineSelectionList）やホーム画面と同じく📌にそろえ、
+    // ホーム画面と同じく📌にそろえ、
     // 同じプリセット画面の中で絵文字の有無が食い違わないようにする
     const presetWithUnknown: RoutinePreset = {
       ...preset,
@@ -98,6 +98,21 @@ describe("PresetApplySection", () => {
         onApply={jest.fn()}
       />,
     );
+    expect(
+      screen.getByRole("button", { name: /選択した曜日に適用/ }),
+    ).toBeDisabled();
+  });
+
+  it("テンプレートが空なら曜日を選択しても適用ボタンは disabled", () => {
+    render(
+      <PresetApplySection
+        preset={{ ...preset, routineTemplates: [] }}
+        selectedDays={new Set([1])}
+        onToggleDay={jest.fn()}
+        onApply={jest.fn()}
+      />,
+    );
+
     expect(
       screen.getByRole("button", { name: /選択した曜日に適用/ }),
     ).toBeDisabled();

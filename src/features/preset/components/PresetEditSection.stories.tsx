@@ -10,12 +10,9 @@ const meta = {
   args: {
     onChangeEditName: fn(),
     onChangeEditDescription: fn(),
-    onToggleEditRoutine: fn(),
+    onSelectEditSourceDay: fn(),
     onSaveEdit: fn(),
     onCancelEdit: fn(),
-  },
-  argTypes: {
-    editSelectedRoutines: { control: false },
   },
 } satisfies Meta<typeof PresetEditSection>;
 
@@ -54,7 +51,7 @@ export const Empty: Story = {
     routines,
     editPresetName: "",
     editPresetDescription: "",
-    editSelectedRoutines: new Set<string>(),
+    editSourceDay: null,
   },
 };
 
@@ -63,7 +60,7 @@ export const WithValues: Story = {
     routines,
     editPresetName: "朝のルーティン改",
     editPresetDescription: "更新版の説明",
-    editSelectedRoutines: new Set(["r-1"]),
+    editSourceDay: 1,
   },
 };
 
@@ -72,7 +69,7 @@ export const NoRoutines: Story = {
     routines: [],
     editPresetName: "新しいプリセット",
     editPresetDescription: "",
-    editSelectedRoutines: new Set<string>(),
+    editSourceDay: null,
   },
 };
 
@@ -82,7 +79,7 @@ export const ClickSave: Story = {
     routines,
     editPresetName: "朝のルーティン",
     editPresetDescription: "",
-    editSelectedRoutines: new Set(["r-1"]),
+    editSourceDay: 1,
   },
   play: async ({ canvasElement, args }) => {
     const canvas = within(canvasElement);
@@ -98,7 +95,7 @@ export const ClickCancel: Story = {
     routines,
     editPresetName: "朝のルーティン",
     editPresetDescription: "",
-    editSelectedRoutines: new Set<string>(),
+    editSourceDay: 1,
   },
   play: async ({ canvasElement, args }) => {
     const canvas = within(canvasElement);

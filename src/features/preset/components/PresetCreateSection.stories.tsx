@@ -13,13 +13,8 @@ const meta = {
     onToggleCreating: fn(),
     onChangeName: fn(),
     onChangeDescription: fn(),
-    onToggleRoutine: fn(),
-    onToggleCreateFilterDay: fn(),
+    onSelectSourceDay: fn(),
     onCreatePreset: fn(),
-  },
-  argTypes: {
-    selectedRoutines: { control: false },
-    createFilterDays: { control: false },
   },
 } satisfies Meta<typeof PresetCreateSection>;
 
@@ -71,8 +66,7 @@ export const Collapsed: Story = {
     currentRoutines: routines,
     newPresetName: "",
     newPresetDescription: "",
-    selectedRoutines: new Set<string>(),
-    createFilterDays: new Set<number>(),
+    sourceDay: null,
   },
 };
 
@@ -82,19 +76,17 @@ export const OpenEmpty: Story = {
     currentRoutines: routines,
     newPresetName: "",
     newPresetDescription: "",
-    selectedRoutines: new Set<string>(),
-    createFilterDays: new Set<number>(),
+    sourceDay: null,
   },
 };
 
-export const OpenWithSelections: Story = {
+export const OpenWithSourceDay: Story = {
   args: {
     isCreating: true,
     currentRoutines: routines,
     newPresetName: "朝のルーティン",
     newPresetDescription: "毎朝の基本セット",
-    selectedRoutines: new Set(["r-1", "r-2"]),
-    createFilterDays: new Set([1, 2, 3, 4, 5]),
+    sourceDay: 1,
   },
 };
 
@@ -104,8 +96,7 @@ export const NoRoutines: Story = {
     currentRoutines: [],
     newPresetName: "",
     newPresetDescription: "",
-    selectedRoutines: new Set<string>(),
-    createFilterDays: new Set<number>(),
+    sourceDay: null,
   },
 };
 
@@ -116,8 +107,7 @@ export const ClickOpenForm: Story = {
     currentRoutines: [],
     newPresetName: "",
     newPresetDescription: "",
-    selectedRoutines: new Set<string>(),
-    createFilterDays: new Set<number>(),
+    sourceDay: null,
   },
   play: async ({ canvasElement, args }) => {
     const canvas = within(canvasElement);
@@ -134,8 +124,7 @@ export const TypePresetName: Story = {
     currentRoutines: [],
     newPresetName: "",
     newPresetDescription: "",
-    selectedRoutines: new Set<string>(),
-    createFilterDays: new Set<number>(),
+    sourceDay: null,
   },
   play: async ({ canvasElement, args }) => {
     const canvas = within(canvasElement);

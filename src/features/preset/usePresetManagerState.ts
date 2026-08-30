@@ -3,7 +3,6 @@ import { usePresetCreationState } from "./usePresetCreationState";
 import { usePresetEditState } from "./usePresetEditState";
 import { usePresetManagerActionHandlers } from "./usePresetManagerActionHandlers";
 import { usePresetManagerBaseState } from "./usePresetManagerBaseState";
-import { createPresetManagerStateResult } from "./presetManagerStateResult";
 
 interface UsePresetManagerStateParams {
   currentRoutines: Routine[];
@@ -39,10 +38,13 @@ export const usePresetManagerState = ({
     setSelectedDays: baseState.setSelectedDays,
   });
 
-  return createPresetManagerStateResult({
-    actionHandlers,
-    baseState,
-    creationState,
-    editState,
-  });
+  return {
+    presets: baseState.presets,
+    selectedPresetId: baseState.selectedPresetId,
+    selectedDays: baseState.selectedDays,
+    setSelectedPresetId: baseState.setSelectedPresetId,
+    ...actionHandlers,
+    ...creationState,
+    ...editState,
+  };
 };

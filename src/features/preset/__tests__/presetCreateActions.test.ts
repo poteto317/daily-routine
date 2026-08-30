@@ -1,10 +1,10 @@
 import { createPresetCreateHandler } from "../presetCreateActions";
 
-jest.mock("../presetCrudStateActions", () => ({
+jest.mock("../presetCreateWorkflow", () => ({
   createPresetAndReload: jest.fn(),
 }));
 
-import { createPresetAndReload } from "../presetCrudStateActions";
+import { createPresetAndReload } from "../presetCreateWorkflow";
 
 const currentRoutines = [
   {
@@ -31,8 +31,15 @@ const preset = {
 };
 
 describe("presetCreateActions", () => {
+  let alertSpy: jest.SpyInstance;
+
   beforeEach(() => {
     jest.clearAllMocks();
+    alertSpy = jest.spyOn(window, "alert").mockImplementation(() => undefined);
+  });
+
+  afterEach(() => {
+    alertSpy.mockRestore();
   });
 
   it("作成 handler が成功時に作成 state をリセットする", () => {
@@ -44,27 +51,84 @@ describe("presetCreateActions", () => {
     const setIsCreating = jest.fn();
     const setNewPresetName = jest.fn();
     const setNewPresetDescription = jest.fn();
-    const setSelectedRoutines = jest.fn();
-    const setCreateFilterDays = jest.fn();
+    const setSourceDay = jest.fn();
 
     createPresetCreateHandler({
       currentRoutines,
       newPresetName: "朝",
       newPresetDescription: "",
-      selectedRoutines: new Set(["r1"]),
+      sourceDay: 1,
       setPresets,
       setIsCreating,
       setNewPresetName,
       setNewPresetDescription,
-      setSelectedRoutines,
-      setCreateFilterDays,
+      setSourceDay,
     })();
 
     expect(setPresets).toHaveBeenCalledWith([preset]);
     expect(setIsCreating).toHaveBeenCalledWith(false);
     expect(setNewPresetName).toHaveBeenCalledWith("");
     expect(setNewPresetDescription).toHaveBeenCalledWith("");
-    expect(setSelectedRoutines).toHaveBeenCalledWith(new Set());
-    expect(setCreateFilterDays).toHaveBeenCalledWith(new Set());
+    expect(setSourceDay).toHaveBeenCalledWith(null);
+  });
+
+  it("作成 workflow が入力不正を返すと通知し、作成 state を維持する", () => {
+    (createPresetAndReload as jest.Mock).mockReturnValue({
+      presets: [],
+      created: false,
+      failureReason: "invalid-input",
+    });
+    const setPresets = jest.fn();
+    const setIsCreating = jest.fn();
+    const setNewPresetName = jest.fn();
+    const setNewPresetDescription = jest.fn();
+    const setSourceDay = jest.fn();
+
+    createPresetCreateHandler({
+      currentRoutines,
+      newPresetName: "",
+      newPresetDescription: "",
+      sourceDay: null,
+      setPresets,
+      setIsCreating,
+      setNewPresetName,
+      setNewPresetDescription,
+      setSourceDay,
+    })();
+
+    expect(window.alert).toHaveBeenCalledTimes(1);
+    expect(setPresets).not.toHaveBeenCalled();
+    expect(setIsCreating).not.toHaveBeenCalled();
+    expect(setNewPresetName).not.toHaveBeenCalled();
+    expect(setNewPresetDescription).not.toHaveBeenCalled();
+    expect(setSourceDay).not.toHaveBeenCalled();
+  });
+
+  it("作成 workflow が保存失敗を返すと誤った入力エラーを出さず作成 state を維持する", () => {
+    (createPresetAndReload as jest.Mock).mockReturnValue({
+      presets: [],
+      created: false,
+      failureReason: "storage-failure",
+    });
+    const setters = {
+      setPresets: jest.fn(),
+      setIsCreating: jest.fn(),
+      setNewPresetName: jest.fn(),
+      setNewPresetDescription: jest.fn(),
+      setSourceDay: jest.fn(),
+    };
+
+    createPresetCreateHandler({
+      currentRoutines,
+      newPresetName: "朝",
+      newPresetDescription: "朝用",
+      sourceDay: 1,
+      ...setters,
+    })();
+
+    expect(window.alert).not.toHaveBeenCalled();
+    Object.values(setters).forEach((setter) => {
+      expect(setter).not.toHaveBeenCalled();
+    });
   });
 });

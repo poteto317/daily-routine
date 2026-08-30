@@ -1,6 +1,5 @@
 import type { Routine, RoutinePreset } from "@/types/routine";
 import { buildUpdatedPreset } from "../presetTemplateBuilder";
-import { resolveUpdatedRoutineTemplates } from "../presetTemplateMergePolicy";
 
 const createRoutine = (overrides: Partial<Routine> = {}): Routine => ({
   id: "routine-1",
@@ -43,13 +42,11 @@ describe("presetTemplateBuilder", () => {
       name: "  更新後  ",
       description: "  新しい説明  ",
       routinesToSave: [routine],
-      currentRoutines: [routine],
     });
 
     expect(result.name).toBe("更新後");
     expect(result.description).toBe("新しい説明");
-    // テンプレート集合の中身はresolveUpdatedRoutineTemplatesの責務のため、
-    // ここでは選択したルーティンが反映されていることのみ確認する
+    // 元曜日から渡されたルーティンだけでテンプレートを組み立てる
     expect(result.routineTemplates).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ title: "運動", category: "health" }),
@@ -64,7 +61,6 @@ describe("presetTemplateBuilder", () => {
       name: "名前",
       description: "   ",
       routinesToSave: [routine],
-      currentRoutines: [routine],
     });
 
     expect(result.description).toBeUndefined();
@@ -78,14 +74,13 @@ describe("presetTemplateBuilder", () => {
       name: "名前",
       description: "",
       routinesToSave: [routine],
-      currentRoutines: [routine],
     });
 
     expect(result.id).toBe(preset.id);
     expect(result.createdAt).toBe(preset.createdAt);
   });
 
-  it("保持するテンプレートの決定はresolveUpdatedRoutineTemplatesに委譲する", () => {
+  it("選択した元曜日のルーティンでテンプレートを全置換する", () => {
     const preset = createPreset();
     const routine = createRoutine();
 
@@ -95,14 +90,7 @@ describe("presetTemplateBuilder", () => {
         name: "名前",
         description: "",
         routinesToSave: [routine],
-        currentRoutines: [routine],
       }).routineTemplates,
-    ).toEqual(
-      resolveUpdatedRoutineTemplates({
-        preset,
-        routinesToSave: [routine],
-        currentRoutines: [routine],
-      }),
-    );
+    ).toEqual([expect.objectContaining({ title: "朝食", startTime: "07:00" })]);
   });
 });

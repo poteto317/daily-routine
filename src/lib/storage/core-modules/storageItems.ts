@@ -75,8 +75,8 @@ export const setStorageItem = <T>(
   key: string,
   value: T,
   options?: SetStorageItemOptions,
-): void => {
-  runStorageWrite(key, () => {
+): boolean => {
+  return runStorageWrite(key, () => {
     localStorage.setItem(getResolvedStorageKey(key), JSON.stringify(value));
     updateLocalDataTimestampIfNeeded(key, options);
   });

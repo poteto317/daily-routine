@@ -22,12 +22,9 @@ const meta = {
     onSaveEdit: fn(),
     onChangeEditName: fn(),
     onChangeEditDescription: fn(),
-    onToggleEditRoutine: fn(),
+    onSelectEditSourceDay: fn(),
   },
-  argTypes: {
-    selectedDays: { control: false },
-    editSelectedRoutines: { control: false },
-  },
+  argTypes: { selectedDays: { control: false } },
 } satisfies Meta<typeof PresetListSection>;
 
 export default meta;
@@ -78,7 +75,7 @@ export const WithPresets: Story = {
     presets,
     selectedPresetId: null,
     selectedDays: new Set<number>(),
-    editSelectedRoutines: new Set<string>(),
+    editSourceDay: null,
   },
 };
 
@@ -87,7 +84,7 @@ export const Empty: Story = {
     presets: [],
     selectedPresetId: null,
     selectedDays: new Set<number>(),
-    editSelectedRoutines: new Set<string>(),
+    editSourceDay: null,
   },
 };
 
@@ -96,7 +93,7 @@ export const Selected: Story = {
     presets,
     selectedPresetId: "p-1",
     selectedDays: new Set([1, 2, 3, 4, 5]),
-    editSelectedRoutines: new Set<string>(),
+    editSourceDay: null,
   },
 };
 
@@ -106,7 +103,7 @@ export const ClickSelect: Story = {
     presets,
     selectedPresetId: null,
     selectedDays: new Set<number>(),
-    editSelectedRoutines: new Set<string>(),
+    editSourceDay: null,
   },
   play: async ({ canvasElement, args }) => {
     const canvas = within(canvasElement);
@@ -122,7 +119,7 @@ export const ClickDelete: Story = {
     presets,
     selectedPresetId: null,
     selectedDays: new Set<number>(),
-    editSelectedRoutines: new Set<string>(),
+    editSourceDay: null,
   },
   play: async ({ canvasElement, args }) => {
     const canvas = within(canvasElement);

@@ -23,12 +23,9 @@ const meta = {
     onSaveEdit: fn(),
     onChangeEditName: fn(),
     onChangeEditDescription: fn(),
-    onToggleEditRoutine: fn(),
+    onSelectEditSourceDay: fn(),
   },
-  argTypes: {
-    selectedDays: { control: false },
-    editSelectedRoutines: { control: false },
-  },
+  argTypes: { selectedDays: { control: false } },
 } satisfies Meta<typeof PresetCard>;
 
 export default meta;
@@ -74,7 +71,7 @@ export const Default: Story = {
     isSelected: false,
     isEditing: false,
     selectedDays: new Set<number>(),
-    editSelectedRoutines: new Set<string>(),
+    editSourceDay: null,
   },
 };
 
@@ -84,7 +81,7 @@ export const WithoutDescription: Story = {
     isSelected: false,
     isEditing: false,
     selectedDays: new Set<number>(),
-    editSelectedRoutines: new Set<string>(),
+    editSourceDay: null,
   },
 };
 
@@ -94,7 +91,7 @@ export const Selected: Story = {
     isSelected: true,
     isEditing: false,
     selectedDays: new Set([1, 2, 3, 4, 5]),
-    editSelectedRoutines: new Set<string>(),
+    editSourceDay: null,
   },
 };
 
@@ -104,7 +101,7 @@ export const SelectedWithDaysChosen: Story = {
     isSelected: true,
     isEditing: false,
     selectedDays: new Set([1, 3, 5]),
-    editSelectedRoutines: new Set<string>(),
+    editSourceDay: null,
   },
 };
 
@@ -114,7 +111,7 @@ export const ClickEdit: Story = {
     isSelected: false,
     isEditing: false,
     selectedDays: new Set<number>(),
-    editSelectedRoutines: new Set<string>(),
+    editSourceDay: null,
   },
   play: async ({ canvasElement, args }) => {
     const canvas = within(canvasElement);
@@ -130,7 +127,7 @@ export const ClickDelete: Story = {
     isSelected: false,
     isEditing: false,
     selectedDays: new Set<number>(),
-    editSelectedRoutines: new Set<string>(),
+    editSourceDay: null,
   },
   play: async ({ canvasElement, args }) => {
     const canvas = within(canvasElement);
@@ -146,7 +143,7 @@ export const ClickDuplicate: Story = {
     isSelected: false,
     isEditing: false,
     selectedDays: new Set<number>(),
-    editSelectedRoutines: new Set<string>(),
+    editSourceDay: null,
   },
   play: async ({ canvasElement, args }) => {
     const canvas = within(canvasElement);

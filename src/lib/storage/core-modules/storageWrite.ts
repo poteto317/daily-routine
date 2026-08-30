@@ -10,12 +10,14 @@ import { dispatchStorageWriteFailed } from "./storageWriteFailureEvent";
  * データが消えるのを防ぐため。再スローしないのは、保存に失敗しても
  * 操作自体は続けられる必要があるため。
  */
-export const runStorageWrite = (key: string, write: () => void): void => {
-  if (typeof window === "undefined") return;
+export const runStorageWrite = (key: string, write: () => void): boolean => {
+  if (typeof window === "undefined") return false;
 
   try {
     write();
+    return true;
   } catch (error) {
     dispatchStorageWriteFailed(key, error);
+    return false;
   }
 };

@@ -21,7 +21,7 @@ const defaultProps = {
   editRoutines: [],
   editPresetName: "",
   editPresetDescription: "",
-  editSelectedRoutines: new Set<string>(),
+  editSourceDay: null,
   onSelect: jest.fn(),
   onDelete: jest.fn(),
   onDuplicate: jest.fn(),
@@ -32,7 +32,7 @@ const defaultProps = {
   onSaveEdit: jest.fn(),
   onChangeEditName: jest.fn(),
   onChangeEditDescription: jest.fn(),
-  onToggleEditRoutine: jest.fn(),
+  onSelectEditSourceDay: jest.fn(),
 };
 
 describe("PresetCard", () => {

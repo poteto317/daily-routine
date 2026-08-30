@@ -1,8 +1,6 @@
-import {
-  type Routine,
-  type RoutinePreset,
-  type RoutineTemplate,
-} from "@/types/routine";
+import { type Routine, type RoutinePreset } from "@/types/routine";
+import { buildRoutineTemplatesFromRoutines } from "./presetTemplateConverter";
+import { normalizePresetMetadata } from "./presetMetadataNormalization";
 
 const createPresetId = () =>
   `preset-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
@@ -13,20 +11,11 @@ export const createPresetFromRoutines = (
   description?: string,
 ): RoutinePreset => {
   const now = new Date().toISOString();
-  const routineTemplates: RoutineTemplate[] = routines.map((routine) => ({
-    title: routine.title,
-    startTime: routine.startTime,
-    duration: routine.duration,
-    category: routine.category,
-    description: routine.description,
-    notificationMinutes: routine.notificationMinutes,
-  }));
-
+  const metadata = normalizePresetMetadata(name, description);
   return {
     id: createPresetId(),
-    name,
-    description,
-    routineTemplates,
+    ...metadata,
+    routineTemplates: buildRoutineTemplatesFromRoutines(routines),
     createdAt: now,
     updatedAt: now,
   };
@@ -50,10 +39,11 @@ export const createRoutinesFromPreset = (
 
 export const duplicatePreset = (preset: RoutinePreset): RoutinePreset => {
   const now = new Date().toISOString();
+  const metadata = normalizePresetMetadata(preset.name, preset.description);
   return {
     id: createPresetId(),
-    name: `${preset.name}のコピー`,
-    description: preset.description,
+    name: `${metadata.name}のコピー`,
+    description: metadata.description,
     routineTemplates: preset.routineTemplates.map((template) => ({
       ...template,
     })),

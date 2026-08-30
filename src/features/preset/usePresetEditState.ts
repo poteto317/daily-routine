@@ -5,8 +5,6 @@ import {
   createPresetSaveEditHandler,
   createPresetStartEditHandler,
 } from "./presetEditActions";
-import { createPresetEditStateResult } from "./presetEditStateResult";
-import { createPresetSelectionToggleHandler } from "./presetSelectionActions";
 import { usePresetEditFieldsState } from "./usePresetEditFieldsState";
 import { usePresetEditingTargetState } from "./usePresetEditingTargetState";
 
@@ -30,44 +28,47 @@ export const usePresetEditState = ({
 
   const handleStartEdit = createPresetStartEditHandler({
     presets,
-    currentRoutines,
     setEditingPresetId: targetState.setEditingPresetId,
+    setEditingPresetUpdatedAt: targetState.setEditingPresetUpdatedAt,
     setEditPresetName: fieldsState.setEditPresetName,
     setEditPresetDescription: fieldsState.setEditPresetDescription,
-    setEditSelectedRoutines: fieldsState.setEditSelectedRoutines,
+    setEditSourceDay: fieldsState.setEditSourceDay,
     setSelectedPresetId,
     setSelectedDays,
   });
   const handleCancelEdit = createPresetCancelEditHandler({
     setEditingPresetId: targetState.setEditingPresetId,
+    setEditingPresetUpdatedAt: targetState.setEditingPresetUpdatedAt,
     setEditPresetName: fieldsState.setEditPresetName,
     setEditPresetDescription: fieldsState.setEditPresetDescription,
-    setEditSelectedRoutines: fieldsState.setEditSelectedRoutines,
+    setEditSourceDay: fieldsState.setEditSourceDay,
   });
   const handleSaveEdit = createPresetSaveEditHandler({
     presets,
     editingPresetId: targetState.editingPresetId,
+    editingPresetUpdatedAt: targetState.editingPresetUpdatedAt,
     editPresetName: fieldsState.editPresetName,
     editPresetDescription: fieldsState.editPresetDescription,
-    editSelectedRoutines: fieldsState.editSelectedRoutines,
+    editSourceDay: fieldsState.editSourceDay,
     currentRoutines,
     setPresets,
     setEditingPresetId: targetState.setEditingPresetId,
+    setEditingPresetUpdatedAt: targetState.setEditingPresetUpdatedAt,
     setEditPresetName: fieldsState.setEditPresetName,
     setEditPresetDescription: fieldsState.setEditPresetDescription,
-    setEditSelectedRoutines: fieldsState.setEditSelectedRoutines,
+    setEditSourceDay: fieldsState.setEditSourceDay,
   });
-  const toggleEditRoutineSelection = createPresetSelectionToggleHandler(
-    fieldsState.editSelectedRoutines,
-    fieldsState.setEditSelectedRoutines,
-  );
 
-  return createPresetEditStateResult({
-    targetState,
-    fieldsState,
+  return {
+    editingPresetId: targetState.editingPresetId,
+    editPresetName: fieldsState.editPresetName,
+    editPresetDescription: fieldsState.editPresetDescription,
+    editSourceDay: fieldsState.editSourceDay,
+    setEditPresetName: fieldsState.setEditPresetName,
+    setEditPresetDescription: fieldsState.setEditPresetDescription,
+    setEditSourceDay: fieldsState.setEditSourceDay,
     handleStartEdit,
     handleCancelEdit,
     handleSaveEdit,
-    toggleEditRoutineSelection,
-  });
+  };
 };

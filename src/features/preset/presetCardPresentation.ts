@@ -39,8 +39,10 @@ export const getDayButtonClassName = (
   }`;
 };
 
-export const isApplyButtonDisabled = (selectedDayCount: number): boolean =>
-  selectedDayCount === 0;
+export const isApplyButtonDisabled = (
+  selectedDayCount: number,
+  routineTemplateCount: number,
+): boolean => selectedDayCount === 0 || routineTemplateCount === 0;
 
 export const formatRoutineTemplateSummary = (
   summary: RoutineTemplateSummary,

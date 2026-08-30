@@ -1,18 +1,10 @@
 import { useState } from "react";
-import { createPresetCreationSelectionStateResult } from "./presetCreationSelectionStateResult";
 
 export const usePresetCreationSelectionState = () => {
-  const [selectedRoutines, setSelectedRoutines] = useState<Set<string>>(
-    new Set(),
-  );
-  const [createFilterDays, setCreateFilterDays] = useState<Set<number>>(
-    new Set(),
-  );
+  const [sourceDay, setSourceDay] = useState<number | null>(null);
 
-  return createPresetCreationSelectionStateResult({
-    createFilterDays,
-    selectedRoutines,
-    setCreateFilterDays,
-    setSelectedRoutines,
-  });
+  return {
+    sourceDay,
+    setSourceDay,
+  };
 };

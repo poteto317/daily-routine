@@ -40,13 +40,11 @@ export const PresetManager = ({
           isCreating={state.isCreating}
           newPresetName={state.newPresetName}
           newPresetDescription={state.newPresetDescription}
-          selectedRoutines={state.selectedRoutines}
-          createFilterDays={state.createFilterDays}
+          sourceDay={state.sourceDay}
           onToggleCreating={() => state.setIsCreating(!state.isCreating)}
           onChangeName={state.setNewPresetName}
           onChangeDescription={state.setNewPresetDescription}
-          onToggleRoutine={state.toggleRoutineSelection}
-          onToggleCreateFilterDay={state.toggleCreateFilterDay}
+          onSelectSourceDay={state.setSourceDay}
           onCreatePreset={state.handleCreatePreset}
         />
         <PresetListSection
@@ -57,7 +55,7 @@ export const PresetManager = ({
           editRoutines={currentRoutines}
           editPresetName={state.editPresetName}
           editPresetDescription={state.editPresetDescription}
-          editSelectedRoutines={state.editSelectedRoutines}
+          editSourceDay={state.editSourceDay}
           onSelectPreset={state.setSelectedPresetId}
           onDeletePreset={state.handleDeletePreset}
           onDuplicatePreset={state.handleDuplicatePreset}
@@ -68,7 +66,7 @@ export const PresetManager = ({
           onSaveEdit={state.handleSaveEdit}
           onChangeEditName={state.setEditPresetName}
           onChangeEditDescription={state.setEditPresetDescription}
-          onToggleEditRoutine={state.toggleEditRoutineSelection}
+          onSelectEditSourceDay={state.setEditSourceDay}
         />
       </div>
     </div>

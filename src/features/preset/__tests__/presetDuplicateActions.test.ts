@@ -1,11 +1,11 @@
 import type { RoutinePreset } from "@/types/routine";
 import { createPresetDuplicateHandler } from "../presetDuplicateActions";
 
-jest.mock("../presetCrudStateActions", () => ({
+jest.mock("../presetDuplicateWorkflow", () => ({
   duplicatePresetAndReload: jest.fn(),
 }));
 
-import { duplicatePresetAndReload } from "../presetCrudStateActions";
+import { duplicatePresetAndReload } from "../presetDuplicateWorkflow";
 
 const preset: RoutinePreset = {
   id: "p1",

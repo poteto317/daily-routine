@@ -1,19 +1,16 @@
 import { useState } from "react";
-import { createPresetEditFieldsStateResult } from "./presetEditFieldsStateResult";
 
 export const usePresetEditFieldsState = () => {
   const [editPresetName, setEditPresetName] = useState("");
   const [editPresetDescription, setEditPresetDescription] = useState("");
-  const [editSelectedRoutines, setEditSelectedRoutines] = useState<Set<string>>(
-    new Set(),
-  );
+  const [editSourceDay, setEditSourceDay] = useState<number | null>(null);
 
-  return createPresetEditFieldsStateResult({
+  return {
     editPresetDescription,
     editPresetName,
-    editSelectedRoutines,
+    editSourceDay,
     setEditPresetDescription,
     setEditPresetName,
-    setEditSelectedRoutines,
-  });
+    setEditSourceDay,
+  };
 };

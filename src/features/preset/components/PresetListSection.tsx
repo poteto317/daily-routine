@@ -10,7 +10,7 @@ interface PresetListSectionProps {
   editRoutines: Routine[];
   editPresetName: string;
   editPresetDescription: string;
-  editSelectedRoutines: Set<string>;
+  editSourceDay: number | null;
   onSelectPreset: (presetId: string | null) => void;
   onDeletePreset: (presetId: string) => void;
   onDuplicatePreset: (presetId: string) => void;
@@ -21,7 +21,7 @@ interface PresetListSectionProps {
   onSaveEdit: () => void;
   onChangeEditName: (name: string) => void;
   onChangeEditDescription: (desc: string) => void;
-  onToggleEditRoutine: (routineId: string) => void;
+  onSelectEditSourceDay: (day: number) => void;
 }
 
 export const PresetListSection = ({
@@ -32,7 +32,7 @@ export const PresetListSection = ({
   editRoutines,
   editPresetName,
   editPresetDescription,
-  editSelectedRoutines,
+  editSourceDay,
   onSelectPreset,
   onDeletePreset,
   onDuplicatePreset,
@@ -43,7 +43,7 @@ export const PresetListSection = ({
   onSaveEdit,
   onChangeEditName,
   onChangeEditDescription,
-  onToggleEditRoutine,
+  onSelectEditSourceDay,
 }: PresetListSectionProps) => (
   <div className="space-y-4">
     <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
@@ -69,7 +69,7 @@ export const PresetListSection = ({
               editRoutines={editRoutines}
               editPresetName={editPresetName}
               editPresetDescription={editPresetDescription}
-              editSelectedRoutines={editSelectedRoutines}
+              editSourceDay={editSourceDay}
               onSelect={() => onSelectPreset(isSelected ? null : preset.id)}
               onDelete={() => onDeletePreset(preset.id)}
               onDuplicate={() => onDuplicatePreset(preset.id)}
@@ -80,7 +80,7 @@ export const PresetListSection = ({
               onSaveEdit={onSaveEdit}
               onChangeEditName={onChangeEditName}
               onChangeEditDescription={onChangeEditDescription}
-              onToggleEditRoutine={onToggleEditRoutine}
+              onSelectEditSourceDay={onSelectEditSourceDay}
             />
           );
         })}

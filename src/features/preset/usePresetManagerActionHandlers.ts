@@ -1,6 +1,5 @@
 import type { Dispatch, SetStateAction } from "react";
 import type { Routine, RoutinePreset } from "@/types/routine";
-import { createPresetManagerActionHandlersResult } from "./presetManagerActionHandlersResult";
 import { usePresetItemActions } from "./usePresetItemActions";
 import { usePresetDaySelectionAction } from "./usePresetDaySelectionAction";
 
@@ -41,10 +40,10 @@ export const usePresetManagerActionHandlers = ({
     setSelectedDays,
   });
 
-  return createPresetManagerActionHandlersResult({
+  return {
     handleApplyPreset,
     handleDeletePreset,
     handleDuplicatePreset,
     toggleDaySelection,
-  });
+  };
 };

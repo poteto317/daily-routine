@@ -1,17 +1,8 @@
 import { act, renderHook } from "@testing-library/react";
-import * as presetApplySelectionStateResultModule from "../presetApplySelectionStateResult";
 import { usePresetApplySelectionState } from "../usePresetApplySelectionState";
 
 describe("usePresetApplySelectionState", () => {
-  beforeEach(() => {
-    jest.restoreAllMocks();
-  });
-
   it("selected preset と target days を保持する", () => {
-    const resultSpy = jest.spyOn(
-      presetApplySelectionStateResultModule,
-      "createPresetApplySelectionStateResult",
-    );
     const { result } = renderHook(() => usePresetApplySelectionState());
 
     expect(result.current.selectedPresetId).toBeNull();
@@ -24,11 +15,5 @@ describe("usePresetApplySelectionState", () => {
 
     expect(result.current.selectedPresetId).toBe("p1");
     expect(Array.from(result.current.selectedDays)).toEqual([1, 2]);
-    expect(resultSpy).toHaveBeenLastCalledWith({
-      selectedPresetId: "p1",
-      selectedDays: new Set([1, 2]),
-      setSelectedPresetId: expect.any(Function),
-      setSelectedDays: expect.any(Function),
-    });
   });
 });

@@ -1,21 +1,23 @@
 import type { Dispatch, SetStateAction } from "react";
 import type { Routine, RoutinePreset } from "@/types/routine";
+import { cancelPresetEdit, startPresetEdit } from "./presetEditStateActions";
+import { savePresetEditAndReload } from "./presetEditSaveWorkflow";
 import {
-  cancelPresetEdit,
-  savePresetEditAndReload,
-  startPresetEdit,
-} from "./presetEditStateActions";
+  PRESET_EDIT_ALERT_MISSING_FIELDS,
+  PRESET_EDIT_ALERT_PRESET_NOT_FOUND,
+  PRESET_EDIT_SAVED_MESSAGE,
+} from "./presetEditPresentation";
 
 type PresetEditSetters = {
   setEditingPresetId: Dispatch<SetStateAction<string | null>>;
+  setEditingPresetUpdatedAt: Dispatch<SetStateAction<string | null>>;
   setEditPresetName: Dispatch<SetStateAction<string>>;
   setEditPresetDescription: Dispatch<SetStateAction<string>>;
-  setEditSelectedRoutines: Dispatch<SetStateAction<Set<string>>>;
+  setEditSourceDay: Dispatch<SetStateAction<number | null>>;
 };
 
 type StartEditHandlerArgs = PresetEditSetters & {
   presets: RoutinePreset[];
-  currentRoutines: Routine[];
   setSelectedPresetId: Dispatch<SetStateAction<string | null>>;
   setSelectedDays: Dispatch<SetStateAction<Set<number>>>;
 };
@@ -23,9 +25,10 @@ type StartEditHandlerArgs = PresetEditSetters & {
 type SaveEditHandlerArgs = PresetEditSetters & {
   presets: RoutinePreset[];
   editingPresetId: string | null;
+  editingPresetUpdatedAt: string | null;
   editPresetName: string;
   editPresetDescription: string;
-  editSelectedRoutines: Set<string>;
+  editSourceDay: number | null;
   currentRoutines: Routine[];
   setPresets: Dispatch<SetStateAction<RoutinePreset[]>>;
 };
@@ -33,28 +36,30 @@ type SaveEditHandlerArgs = PresetEditSetters & {
 export const applyCanceledPresetEdit = (setters: PresetEditSetters): void => {
   const nextState = cancelPresetEdit();
   setters.setEditingPresetId(nextState.editingPresetId);
+  setters.setEditingPresetUpdatedAt(nextState.editingPresetUpdatedAt);
   setters.setEditPresetName(nextState.editPresetName);
   setters.setEditPresetDescription(nextState.editPresetDescription);
-  setters.setEditSelectedRoutines(nextState.editSelectedRoutines);
+  setters.setEditSourceDay(nextState.editSourceDay);
 };
 
 export const createPresetStartEditHandler = ({
   presets,
-  currentRoutines,
   setEditingPresetId,
+  setEditingPresetUpdatedAt,
   setEditPresetName,
   setEditPresetDescription,
-  setEditSelectedRoutines,
+  setEditSourceDay,
   setSelectedPresetId,
   setSelectedDays,
 }: StartEditHandlerArgs) => {
   return (presetId: string) => {
-    const nextState = startPresetEdit(presets, presetId, currentRoutines);
+    const nextState = startPresetEdit(presets, presetId);
     if (!nextState.editingPresetId) return;
     setEditingPresetId(nextState.editingPresetId);
+    setEditingPresetUpdatedAt(nextState.editingPresetUpdatedAt);
     setEditPresetName(nextState.editPresetName);
     setEditPresetDescription(nextState.editPresetDescription);
-    setEditSelectedRoutines(nextState.editSelectedRoutines);
+    setEditSourceDay(nextState.editSourceDay);
     setSelectedPresetId(null);
     setSelectedDays(new Set());
   };
@@ -69,32 +74,60 @@ export const createPresetCancelEditHandler = (setters: PresetEditSetters) => {
 export const createPresetSaveEditHandler = ({
   presets,
   editingPresetId,
+  editingPresetUpdatedAt,
   editPresetName,
   editPresetDescription,
-  editSelectedRoutines,
+  editSourceDay,
   currentRoutines,
   setPresets,
   setEditingPresetId,
+  setEditingPresetUpdatedAt,
   setEditPresetName,
   setEditPresetDescription,
-  setEditSelectedRoutines,
+  setEditSourceDay,
 }: SaveEditHandlerArgs) => {
   return () => {
-    const { presets: nextPresets, saved } = savePresetEditAndReload({
+    const {
+      presets: nextPresets,
+      saved,
+      failureReason,
+    } = savePresetEditAndReload({
       presets,
       editingPresetId,
+      editingPresetUpdatedAt,
       editPresetName,
       editPresetDescription,
-      editSelectedRoutines,
+      sourceDay: editSourceDay,
       currentRoutines,
     });
-    if (!saved) return;
+    if (!saved) {
+      if (failureReason === "invalid-input") {
+        window.alert(PRESET_EDIT_ALERT_MISSING_FIELDS);
+      }
+      if (
+        failureReason === "preset-not-found" ||
+        failureReason === "preset-conflict"
+      ) {
+        setPresets(nextPresets);
+        window.alert(PRESET_EDIT_ALERT_PRESET_NOT_FOUND);
+        applyCanceledPresetEdit({
+          setEditingPresetId,
+          setEditingPresetUpdatedAt,
+          setEditPresetName,
+          setEditPresetDescription,
+          setEditSourceDay,
+        });
+      }
+      return;
+    }
     setPresets(nextPresets);
+    window.alert(PRESET_EDIT_SAVED_MESSAGE);
     applyCanceledPresetEdit({
       setEditingPresetId,
+      setEditingPresetUpdatedAt,
       setEditPresetName,
       setEditPresetDescription,
-      setEditSelectedRoutines,
+      setEditSourceDay,
     });
   };
 };

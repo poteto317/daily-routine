@@ -10,6 +10,7 @@ export const PRESET_MANAGER_MESSAGES = {
   confirmDeletePreset: presetTexts.manager.messages.confirmDeletePreset,
   alertNoSelectionForApply:
     presetTexts.manager.messages.alertNoSelectionForApply,
+  alertEmptyPreset: presetTexts.manager.messages.alertEmptyPreset,
   alertPresetApplied: (presetName: string) =>
     presetTexts.manager.messages.alertPresetAppliedTemplate.replace(
       "{presetName}",

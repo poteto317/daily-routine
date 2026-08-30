@@ -17,7 +17,7 @@ interface PresetCardProps {
   editRoutines: Routine[];
   editPresetName: string;
   editPresetDescription: string;
-  editSelectedRoutines: Set<string>;
+  editSourceDay: number | null;
   onSelect: () => void;
   onDelete: () => void;
   onDuplicate: () => void;
@@ -28,7 +28,7 @@ interface PresetCardProps {
   onSaveEdit: () => void;
   onChangeEditName: (name: string) => void;
   onChangeEditDescription: (desc: string) => void;
-  onToggleEditRoutine: (routineId: string) => void;
+  onSelectEditSourceDay: (day: number) => void;
 }
 
 export const PresetCard = ({
@@ -39,7 +39,7 @@ export const PresetCard = ({
   editRoutines,
   editPresetName,
   editPresetDescription,
-  editSelectedRoutines,
+  editSourceDay,
   onSelect,
   onDelete,
   onDuplicate,
@@ -50,7 +50,7 @@ export const PresetCard = ({
   onSaveEdit,
   onChangeEditName,
   onChangeEditDescription,
-  onToggleEditRoutine,
+  onSelectEditSourceDay,
 }: PresetCardProps) => (
   <div
     className={getPresetCardClassName(isSelected || isEditing)}
@@ -82,10 +82,10 @@ export const PresetCard = ({
         routines={editRoutines}
         editPresetName={editPresetName}
         editPresetDescription={editPresetDescription}
-        editSelectedRoutines={editSelectedRoutines}
+        editSourceDay={editSourceDay}
         onChangeEditName={onChangeEditName}
         onChangeEditDescription={onChangeEditDescription}
-        onToggleEditRoutine={onToggleEditRoutine}
+        onSelectEditSourceDay={onSelectEditSourceDay}
         onSaveEdit={onSaveEdit}
         onCancelEdit={onCancelEdit}
       />

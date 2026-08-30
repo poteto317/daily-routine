@@ -3,9 +3,10 @@
     "title": "📋 ルーティンプリセット管理",
     "description": "複数のルーティンをセットとして保存し、他の曜日にまとめて適用できます",
     "messages": {
-      "alertMissingFields": "プリセット名とルーティンを選択してください",
+      "alertMissingFields": "プリセット名を入力し、ルーティンがある元曜日・祝日を選択してください",
       "confirmDeletePreset": "このプリセットを削除しますか？",
       "alertNoSelectionForApply": "プリセットと適用する曜日を選択してください",
+      "alertEmptyPreset": "ルーティンがないプリセットは適用できません",
       "alertPresetAppliedTemplate": "{presetName} を選択した曜日に適用しました"
     }
   },
@@ -25,7 +26,7 @@
     "cancelLabel": "キャンセル",
     "namePlaceholder": "例: 平日モーニングルーティン",
     "descriptionPlaceholder": "プリセットの説明を入力",
-    "filterDaysLabel": "曜日・祝日でルーティンを絞り込む（タップで全選択）",
+    "sourceDayLabel": "元にする曜日・祝日を選択",
     "emptyRoutinesLabel": "ルーティンがありません",
     "submitLabel": "プリセットを作成"
   },
@@ -34,10 +35,11 @@
     "saveLabel": "保存",
     "namePlaceholder": "プリセット名",
     "descriptionPlaceholder": "説明（任意）",
-    "routineListLabel": "テンプレートに含めるルーティン",
+    "sourceDayLabel": "元にする曜日・祝日を選択",
     "emptyRoutinesLabel": "ルーティンがありません",
     "savedMessage": "プリセットを更新しました",
-    "alertMissingName": "プリセット名を入力してください"
+    "alertMissingFields": "プリセット名を入力し、ルーティンがある元曜日・祝日を選択してください",
+    "alertPresetNotFound": "編集対象のプリセットが削除または更新されたため、編集を終了しました"
   },
   "fields": {
     "nameLabel": "プリセット名",

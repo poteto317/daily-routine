@@ -23,7 +23,7 @@ describe("preset storage mutations", () => {
     savePresets([originalPreset]);
 
     const updatedPreset = { ...originalPreset, name: "更新後" };
-    updatePreset(updatedPreset);
+    updatePreset(updatedPreset, originalPreset.updatedAt);
 
     const presets = getPresets();
     expect(presets[0].name).toBe("更新後");

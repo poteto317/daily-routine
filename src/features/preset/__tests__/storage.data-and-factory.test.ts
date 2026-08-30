@@ -57,7 +57,14 @@ describe("preset storage data/factory", () => {
     // からも呼ばれるため、ここで例外を投げると同期全体が停止してしまう。
     localStorage.setItem(
       "routine-presets",
-      JSON.stringify([{ id: "p1", name: "壊れたプリセット" }]),
+      JSON.stringify([
+        {
+          id: "p1",
+          name: "壊れたプリセット",
+          createdAt: "2026-03-07T00:00:00.000Z",
+          updatedAt: "2026-03-07T00:00:00.000Z",
+        },
+      ]),
     );
 
     expect(() => getPresets()).not.toThrow();
@@ -67,7 +74,16 @@ describe("preset storage data/factory", () => {
   it("プリセット配列にnull要素が含まれていても例外を投げず除外する", () => {
     localStorage.setItem(
       "routine-presets",
-      JSON.stringify([null, { id: "p1", name: "正常", routineTemplates: [] }]),
+      JSON.stringify([
+        null,
+        {
+          id: "p1",
+          name: "正常",
+          routineTemplates: [],
+          createdAt: "2026-03-07T00:00:00.000Z",
+          updatedAt: "2026-03-07T00:00:00.000Z",
+        },
+      ]),
     );
 
     expect(() => getPresets()).not.toThrow();
@@ -82,6 +98,8 @@ describe("preset storage data/factory", () => {
         {
           id: "p1",
           name: "壊れたテンプレート入り",
+          createdAt: "2026-03-07T00:00:00.000Z",
+          updatedAt: "2026-03-07T00:00:00.000Z",
           routineTemplates: [
             null,
             {
@@ -109,6 +127,8 @@ describe("preset storage data/factory", () => {
         {
           id: "p1",
           name: "不正テンプレート混在",
+          createdAt: "2026-03-07T00:00:00.000Z",
+          updatedAt: "2026-03-07T00:00:00.000Z",
           routineTemplates: [
             { title: 123, startTime: "07:00", duration: 30, category: "life" },
             { title: "朝食", startTime: null, duration: 30, category: "life" },
@@ -134,10 +154,33 @@ describe("preset storage data/factory", () => {
     localStorage.setItem(
       "routine-presets",
       JSON.stringify([
-        { id: 1, name: "IDが数値", routineTemplates: [] },
-        { id: "p2", name: null, routineTemplates: [] },
-        { name: "IDが欠落", routineTemplates: [] },
-        { id: "p4", name: "正常", routineTemplates: [] },
+        {
+          id: 1,
+          name: "IDが数値",
+          routineTemplates: [],
+          createdAt: "2026-03-07T00:00:00.000Z",
+          updatedAt: "2026-03-07T00:00:00.000Z",
+        },
+        {
+          id: "p2",
+          name: null,
+          routineTemplates: [],
+          createdAt: "2026-03-07T00:00:00.000Z",
+          updatedAt: "2026-03-07T00:00:00.000Z",
+        },
+        {
+          name: "IDが欠落",
+          routineTemplates: [],
+          createdAt: "2026-03-07T00:00:00.000Z",
+          updatedAt: "2026-03-07T00:00:00.000Z",
+        },
+        {
+          id: "p4",
+          name: "正常",
+          routineTemplates: [],
+          createdAt: "2026-03-07T00:00:00.000Z",
+          updatedAt: "2026-03-07T00:00:00.000Z",
+        },
       ]),
     );
 
@@ -180,6 +223,17 @@ describe("preset storage data/factory", () => {
     expect(preset.routineTemplates[0]).not.toHaveProperty("daysOfWeek");
   });
 
+  it("作成時にプリセット名と説明の前後空白を正規化する", () => {
+    const preset = createPresetFromRoutines(
+      "  モーニング  ",
+      sampleRoutines,
+      "  朝のルーティン  ",
+    );
+
+    expect(preset.name).toBe("モーニング");
+    expect(preset.description).toBe("朝のルーティン");
+  });
+
   it("creates routines from preset and target days", () => {
     const preset = createPreset({
       routineTemplates: [
@@ -212,6 +266,18 @@ describe("preset storage data/factory", () => {
     expect(duplicated.name).toBe("朝ルーティンのコピー");
     expect(duplicated.description).toBe("朝の準備");
     expect(duplicated.routineTemplates).toEqual(preset.routineTemplates);
+  });
+
+  it("前後空白を含む既存プリセットの複製時にもメタデータを正規化する", () => {
+    const source = createPreset({
+      name: "  朝ルーティン  ",
+      description: "  朝の準備  ",
+    });
+
+    const duplicated = duplicatePreset(source);
+
+    expect(duplicated.name).toBe("朝ルーティンのコピー");
+    expect(duplicated.description).toBe("朝の準備");
   });
 
   it("複製後にroutineTemplates配列を書き換えても元プリセットに影響しない", () => {

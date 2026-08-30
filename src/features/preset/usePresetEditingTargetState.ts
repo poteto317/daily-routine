@@ -1,11 +1,15 @@
 import { useState } from "react";
-import { createPresetEditingTargetStateResult } from "./presetEditingTargetStateResult";
 
 export const usePresetEditingTargetState = () => {
   const [editingPresetId, setEditingPresetId] = useState<string | null>(null);
+  const [editingPresetUpdatedAt, setEditingPresetUpdatedAt] = useState<
+    string | null
+  >(null);
 
-  return createPresetEditingTargetStateResult({
+  return {
     editingPresetId,
     setEditingPresetId,
-  });
+    editingPresetUpdatedAt,
+    setEditingPresetUpdatedAt,
+  };
 };

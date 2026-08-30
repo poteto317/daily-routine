@@ -36,8 +36,9 @@ describe("runStorageWrite", () => {
   it("成功したときは通知しない", () => {
     const { details, cleanup } = listenFailures();
 
-    runStorageWrite("todo-lists", () => {});
+    const succeeded = runStorageWrite("todo-lists", () => {});
 
+    expect(succeeded).toBe(true);
     expect(details).toEqual([]);
     cleanup();
   });
@@ -45,10 +46,11 @@ describe("runStorageWrite", () => {
   it("書き込みが投げた例外を通知に変換する", () => {
     const { details, cleanup } = listenFailures();
 
-    runStorageWrite("todo-lists", () => {
+    const succeeded = runStorageWrite("todo-lists", () => {
       throw new DOMException("full", "QuotaExceededError");
     });
 
+    expect(succeeded).toBe(false);
     expect(details).toEqual([{ key: "todo-lists", reason: "quota-exceeded" }]);
     cleanup();
   });
