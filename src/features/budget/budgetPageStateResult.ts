@@ -5,7 +5,6 @@ type BudgetPageStateResultArgs = {
   closeExpenseForm: () => void;
   currentDate: Date;
   dailyRemainingBudget: number;
-  daysRemaining: number;
   editingExpenseId: string | null;
   editingExpenseAmount: string;
   editingExpenseDate: string;
@@ -43,7 +42,6 @@ export const createBudgetPageStateResult = ({
   closeExpenseForm,
   currentDate,
   dailyRemainingBudget,
-  daysRemaining,
   editingExpenseId,
   editingExpenseAmount,
   editingExpenseDate,
@@ -80,7 +78,6 @@ export const createBudgetPageStateResult = ({
     closeExpenseForm,
     currentDate,
     dailyRemainingBudget,
-    daysRemaining,
     editingExpenseId,
     editingExpenseAmount,
     editingExpenseDate,

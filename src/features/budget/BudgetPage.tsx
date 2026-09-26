@@ -50,7 +50,6 @@ export const BudgetPage = () => {
           />
           <BudgetDailySummaryCards
             dailyRemainingBudget={state.dailyRemainingBudget}
-            daysRemaining={state.daysRemaining}
             isCurrentMonth={state.isCurrentMonth}
             todayExpense={state.todayExpense}
           />

@@ -4,7 +4,6 @@ import budgetTexts from "../locales/ja.json";
 
 type BudgetDailySummaryCardsProps = {
   dailyRemainingBudget: number;
-  daysRemaining: number;
   isCurrentMonth: boolean;
   todayExpense: number;
 };
@@ -16,35 +15,27 @@ type BudgetDailySummaryCardsProps = {
  */
 export const BudgetDailySummaryCards = ({
   dailyRemainingBudget,
-  daysRemaining,
   isCurrentMonth,
   todayExpense,
 }: BudgetDailySummaryCardsProps) => {
+  if (!isCurrentMonth) {
+    return null;
+  }
+
   return (
     <BudgetSummaryCardsGrid>
-      {isCurrentMonth && daysRemaining > 0 && (
-        <BudgetMoneyCard
-          cardClassName="bg-purple-50 dark:bg-purple-100 rounded-xl p-4"
-          label={budgetTexts.summary.dailyRemainingLabel}
-          value={Math.max(0, dailyRemainingBudget)}
-          valueClassName="text-2xl font-bold text-purple-600 dark:text-purple-800"
-        >
-          <p className="text-xs text-gray-600 dark:text-gray-800 mt-1">
-            {budgetTexts.summary.daysRemainingPrefix}
-            {daysRemaining}
-            {budgetTexts.summary.daysRemainingSuffix}
-          </p>
-        </BudgetMoneyCard>
-      )}
-
-      {isCurrentMonth && (
-        <BudgetMoneyCard
-          cardClassName="bg-cyan-50 dark:bg-cyan-100 rounded-xl p-4"
-          label={budgetTexts.summary.todayLabel}
-          value={todayExpense}
-          valueClassName="text-2xl font-bold text-cyan-600 dark:text-cyan-800"
-        />
-      )}
+      <BudgetMoneyCard
+        cardClassName="bg-purple-50 dark:bg-purple-100 rounded-xl p-4"
+        label={budgetTexts.summary.dailyRemainingLabel}
+        value={Math.max(0, dailyRemainingBudget)}
+        valueClassName="text-2xl font-bold text-purple-600 dark:text-purple-800"
+      />
+      <BudgetMoneyCard
+        cardClassName="bg-cyan-50 dark:bg-cyan-100 rounded-xl p-4"
+        label={budgetTexts.summary.todayLabel}
+        value={todayExpense}
+        valueClassName="text-2xl font-bold text-cyan-600 dark:text-cyan-800"
+      />
     </BudgetSummaryCardsGrid>
   );
 };

@@ -70,7 +70,6 @@ export const useBudgetPageState = ({ navigate }: UseBudgetPageStateParams) => {
     closeExpenseForm,
     currentDate: monthState.currentDate,
     dailyRemainingBudget: metrics.dailyRemainingBudget,
-    daysRemaining: metrics.daysRemaining,
     editingExpenseId: expenseEdit.editingExpenseId,
     editingExpenseAmount: expenseEdit.editingExpenseAmount,
     editingExpenseDate: expenseEdit.editingExpenseDate,

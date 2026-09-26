@@ -33,7 +33,6 @@ const createState = (overrides: Record<string, unknown> = {}) => ({
   closeExpenseForm: jest.fn(),
   currentDate: new Date("2026-03-07T00:00:00+09:00"),
   dailyRemainingBudget: 1200,
-  daysRemaining: 26,
   expenseAmount: "1500",
   expenseDate: "2026-03-07",
   expenseCategoryId: "",
