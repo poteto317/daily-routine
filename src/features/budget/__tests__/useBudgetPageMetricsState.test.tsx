@@ -33,19 +33,19 @@ describe("useBudgetPageMetricsState", () => {
     );
 
     // 31日の月で、今日（03-07）以外に入力がある日は2日（03-01, 03-05）
-    // daysRemaining = 31 - 2 = 29
+    // unenteredDays = 31 - 2 = 29
     expect(result.current).toEqual({
       dailyBudget: 1000,
       dailyRemainingBudget: 29500 / 29,
-      daysRemaining: 29,
       isCurrentMonth: true,
       remaining: 29500,
       todayExpense: 0,
       totalExpense: 1500,
+      unenteredDays: 29,
     });
   });
 
-  it("non current month では daysRemaining と dailyRemainingBudget を 0 にする", () => {
+  it("non current month では unenteredDays と dailyRemainingBudget を 0 にする", () => {
     const { result } = renderHook(() =>
       useBudgetPageMetricsState({
         currentDate: new Date("2026-04-01T00:00:00+09:00"),
@@ -64,11 +64,11 @@ describe("useBudgetPageMetricsState", () => {
     expect(result.current).toEqual({
       dailyBudget: 1000,
       dailyRemainingBudget: 0,
-      daysRemaining: 0,
       isCurrentMonth: false,
       remaining: 28800,
       todayExpense: 0,
       totalExpense: 1200,
+      unenteredDays: 0,
     });
   });
 
@@ -97,7 +97,7 @@ describe("useBudgetPageMetricsState", () => {
     // 今日（03-07）に入力があっても例外として日数に含めるため、今日以外の入力日（03-01）の1日のみ引かれる: 31 - 1 = 30
     expect(result.current.todayExpense).toBe(800);
     expect(result.current.totalExpense).toBe(1800);
-    expect(result.current.daysRemaining).toBe(30);
+    expect(result.current.unenteredDays).toBe(30);
     expect(result.current.dailyRemainingBudget).toBe((31000 - 1800) / 30);
   });
 });

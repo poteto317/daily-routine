@@ -58,11 +58,11 @@ const monthState = {
 const metrics = {
   dailyBudget: 6333,
   dailyRemainingBudget: 5000,
-  daysRemaining: 24,
   isCurrentMonth: true,
   remaining: 188800,
   todayExpense: 400,
   totalExpense: 1200,
+  unenteredDays: 24,
 };
 
 describe("useBudgetMonthAndMetricsState", () => {

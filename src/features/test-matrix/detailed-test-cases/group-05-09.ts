@@ -558,7 +558,7 @@ export const DETAILED_TEST_CASES_GROUP_05_09: DetailTestCaseMap = {
   "8-6": [
     {
       id: "8-6-1",
-      scenario: "月間予算÷残日数を確認",
+      scenario: "当月残予算÷未入力日数（今日を含む例外ルール）を確認",
       expected: "1日あたりの使用可能額が表示される",
       pc: "unchecked",
       sp: "unchecked",

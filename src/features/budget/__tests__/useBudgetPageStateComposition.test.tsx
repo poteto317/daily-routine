@@ -70,11 +70,11 @@ describe("useBudgetPageState composition", () => {
       metrics: {
         dailyBudget: 1000,
         dailyRemainingBudget: 1200,
-        daysRemaining: 24,
         isCurrentMonth: true,
         remaining: 28800,
         todayExpense: 400,
         totalExpense: 1200,
+        unenteredDays: 24,
       },
     });
     (useBudgetPageFormState as jest.Mock).mockReturnValue({

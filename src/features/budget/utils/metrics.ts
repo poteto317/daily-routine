@@ -11,7 +11,7 @@ export type BudgetMetrics = {
    * 当月内の未入力日数（今日に入力がある場合も今日例外ルールにより日数に含める）。
    * 当月外の場合は 0。
    */
-  daysRemaining: number;
+  unenteredDays: number;
   isCurrentMonth: boolean;
   remaining: number;
   todayExpense: number;
@@ -37,17 +37,21 @@ export const calculateBudgetMetrics = (
   );
   const remaining = monthBudget - totalExpense;
   const dailyBudget = monthBudget > 0 ? monthBudget / currentMonthDays : 0;
-  const daysRemaining = calculateUnenteredMonthDays(currentDate, expenses, now);
+  const unenteredDays = calculateUnenteredMonthDays(
+    currentDate,
+    expenses,
+    now,
+  );
   const dailyRemainingBudget =
-    daysRemaining > 0 ? remaining / daysRemaining : 0;
+    unenteredDays > 0 ? remaining / unenteredDays : 0;
 
   return {
     dailyBudget,
     dailyRemainingBudget,
-    daysRemaining,
     isCurrentMonth,
     remaining,
     todayExpense,
     totalExpense,
+    unenteredDays,
   };
 };

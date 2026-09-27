@@ -14,7 +14,7 @@ type BudgetMoneyCardProps = {
  * 家計簿サマリー画面で繰り返し使われる
  * 「色付きカード + ラベル(+任意のアクション) + 金額」の表示をまとめた
  * 表示専用コンポーネント。BudgetDailySummaryCards / BudgetMonthlySummaryCards
- * の両方から使い、カード固有の補足行（内訳・件数・残日数など）は
+ * の両方から使い、カード固有の補足行（内訳・件数など）は
  * childrenで差し込む。
  */
 export const BudgetMoneyCard = ({

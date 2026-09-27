@@ -30,15 +30,15 @@ describe("calculateBudgetMetrics", () => {
     expect(metrics).toEqual({
       dailyBudget: 1000,
       dailyRemainingBudget: 28700 / 29,
-      daysRemaining: 29,
       isCurrentMonth: true,
       remaining: 28700,
       todayExpense: 800,
       totalExpense: 2300,
+      unenteredDays: 29,
     });
   });
 
-  it("当月外（翌月）の場合は daysRemaining と dailyRemainingBudget を 0 にする", () => {
+  it("当月外（翌月）の場合は unenteredDays と dailyRemainingBudget を 0 にする", () => {
     const expenses: Expense[] = [
       { id: "e1", date: "2026-04-01", amount: 1200, createdAt: "" },
     ];
@@ -50,11 +50,11 @@ describe("calculateBudgetMetrics", () => {
     expect(metrics).toEqual({
       dailyBudget: 1000,
       dailyRemainingBudget: 0,
-      daysRemaining: 0,
       isCurrentMonth: false,
       remaining: 28800,
       todayExpense: 0,
       totalExpense: 1200,
+      unenteredDays: 0,
     });
   });
 
@@ -67,7 +67,7 @@ describe("calculateBudgetMetrics", () => {
     expect(metrics.remaining).toBe(0);
   });
 
-  it("todayKeyとdaysRemainingの算出で同一のnowを共有し、Dateを複数回生成しない", () => {
+  it("todayKeyとunenteredDaysの算出で同一のnowを共有し、Dateを複数回生成しない", () => {
     const RealDate = global.Date;
     const dateSpy = jest
       .spyOn(global, "Date")
@@ -132,7 +132,71 @@ describe("calculateBudgetMetrics", () => {
     expect(metrics.isCurrentMonth).toBe(true);
     expect(metrics.todayExpense).toBe(1000);
     expect(metrics.totalExpense).toBe(4000);
-    expect(metrics.daysRemaining).toBe(29);
+    expect(metrics.unenteredDays).toBe(29);
     expect(metrics.dailyRemainingBudget).toBe(26000 / 29);
   });
+
+  it("月初日で支出が0件の場合、unenteredDaysは当月総日数となり dailyRemainingBudget は dailyBudget と一致する", () => {
+    const currentDate = new Date("2026-05-01T00:00:00+09:00");
+    const monthBudget = 31000;
+    const now = new Date("2026-05-01T08:00:00+09:00");
+
+    const metrics = calculateBudgetMetrics(currentDate, monthBudget, [], now);
+
+    // 5月は31日
+    expect(metrics.unenteredDays).toBe(31);
+    expect(metrics.dailyBudget).toBe(1000);
+    expect(metrics.dailyRemainingBudget).toBe(1000);
+    expect(metrics.totalExpense).toBe(0);
+    expect(metrics.todayExpense).toBe(0);
+  });
+
+  it("月末日（例: 3月31日）で今日以外の30日すべてに入力がある場合、今日例外ルールにより unenteredDays は 1 になり、dailyRemainingBudget は残り全額となる", () => {
+    const currentDate = new Date("2026-03-01T00:00:00+09:00");
+    const lastDayNow = new Date("2026-03-31T20:00:00+09:00");
+    const monthBudget = 31000;
+
+    // 03-01 から 03-30 までの30日分入力を作成
+    const expenses: Expense[] = Array.from({ length: 30 }, (_, i) => {
+      const day = String(i + 1).padStart(2, "0");
+      return {
+        id: `e-${day}`,
+        date: `2026-03-${day}`,
+        amount: 500,
+        createdAt: "",
+      };
+    });
+
+    const metrics = calculateBudgetMetrics(
+      currentDate,
+      monthBudget,
+      expenses,
+      lastDayNow,
+    );
+
+    // 支出合計: 30 * 500 = 15000
+    // 残り予算: 31000 - 15000 = 16000
+    // unenteredDays: 31 - 30 = 1（今日31日のみ）
+    expect(metrics.unenteredDays).toBe(1);
+    expect(metrics.remaining).toBe(16000);
+    expect(metrics.dailyRemainingBudget).toBe(16000);
+  });
+
+  it("unenteredDays が 0 の場合、dailyRemainingBudget は 0 になり Infinity にならない", () => {
+    const currentDate = new Date("2026-03-01T00:00:00+09:00");
+    const pastDate = new Date("2026-02-01T00:00:00+09:00"); // 過去月（isCurrentMonth === false）
+    const monthBudget = 30000;
+
+    const metrics = calculateBudgetMetrics(
+      pastDate,
+      monthBudget,
+      [],
+      currentDate,
+    );
+
+    expect(metrics.unenteredDays).toBe(0);
+    expect(metrics.dailyRemainingBudget).toBe(0);
+    expect(Number.isFinite(metrics.dailyRemainingBudget)).toBe(true);
+  });
 });
+
