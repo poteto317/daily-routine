@@ -96,4 +96,23 @@ describe("checkAndSendNotifications", () => {
 
     expect(showNotification).not.toHaveBeenCalled();
   });
+
+  it("平日にisHolidayが設定されているスケジュールはスキップする", async () => {
+    // 2026-07-10 は JST で金曜（5）
+    jest.setSystemTime(new Date("2026-07-10T09:00:00+09:00"));
+
+    await checkAndSendNotifications(
+      new Map([["routine-1-holiday", { ...schedule, isHoliday: true }]]),
+    );
+
+    expect(showNotification).not.toHaveBeenCalled();
+  });
+
+  it("showNotification が失敗しても例外をスローせず処理を継続する", async () => {
+    showNotification.mockRejectedValueOnce(new Error("Notification error"));
+
+    await expect(
+      checkAndSendNotifications(new Map([["routine-1-0", schedule]])),
+    ).resolves.not.toThrow();
+  });
 });

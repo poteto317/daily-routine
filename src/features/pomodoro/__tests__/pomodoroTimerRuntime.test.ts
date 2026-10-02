@@ -25,6 +25,13 @@ describe("pomodoroTimerRuntime", () => {
     expect(audio).not.toBeNull();
   });
 
+  it("window 環境で audio を生成する", () => {
+    const audio = createPomodoroAudio();
+
+    expect(global.Audio).toHaveBeenCalled();
+    expect(audio).not.toBeNull();
+  });
+
   it("interval 開始条件を判定する", () => {
     expect(shouldStartPomodoroInterval(true, 10)).toBe(true);
     expect(shouldStartPomodoroInterval(false, 10)).toBe(false);

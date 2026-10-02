@@ -71,6 +71,17 @@ describe("authService local fallback", () => {
     expect(localStorage.getItem("local-dev-auth-user")).toBeNull();
   });
 
+  it("Firebase 未設定時でもメールサインアップでローカルユーザーを作れる", async () => {
+    const mod = await import("../authService");
+
+    await mod.signUpWithEmail("signup@example.com", "password123");
+
+    const user = mod.getLocalAuthUser() as User;
+    expect(user.uid).toContain("local-user-signup-example-com");
+    expect(user.email).toBe("signup@example.com");
+    expect(user.isAnonymous).toBe(false);
+  });
+
   it("ローカル認証が無効なら Firebase 未設定時のメールログインは失敗する", async () => {
     process.env.NEXT_PUBLIC_ENABLE_LOCAL_AUTH = "false";
     const mod = await import("../authService");
@@ -80,3 +91,4 @@ describe("authService local fallback", () => {
     ).rejects.toThrow();
   });
 });
+

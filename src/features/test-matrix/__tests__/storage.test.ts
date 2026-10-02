@@ -51,6 +51,13 @@ describe("test matrix storage compatibility", () => {
         "saveTestMatrixDetailData",
       ].sort(),
     );
+    expect(legacyStorage.hasBrokenVersionDetailData({})).toBeDefined();
+    expect(legacyStorage.migrateLegacyCategories([])).toBeDefined();
+    expect(legacyStorage.migrateLegacyDetailData({})).toBeDefined();
+    expect(legacyStorage.mergeStoredDetailData({})).toBeDefined();
+    expect(legacyStorage.mergeStoredTestMatrixCategories([], [])).toBeDefined();
+    expect(legacyStorage.getStoredTestMatrixCategories()).toBeDefined();
+    expect(legacyStorage.getStoredTestMatrixDetailData()).toBeDefined();
   });
 });
 

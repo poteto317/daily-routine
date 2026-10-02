@@ -59,6 +59,14 @@ describe("pomodoro storage", () => {
     expect(result).toBe(4);
   });
 
+  it("getTodayPomodorosは当日件数が未登録の場合0を返す", () => {
+    mockGetStorageItem.mockReturnValue({} as never);
+
+    const result = getTodayPomodoros();
+
+    expect(result).toBe(0);
+  });
+
   it("incrementTodayPomodorosは当日件数を+1して保存する", () => {
     mockGetStorageItem.mockReturnValue({
       "2026-02-12": { date: "2026-02-12", completedPomodoros: 1 },
@@ -69,6 +77,17 @@ describe("pomodoro storage", () => {
     expect(result).toBe(2);
     expect(mockSetStorageItem).toHaveBeenCalledWith("pomodoro-history", {
       "2026-02-12": { date: "2026-02-12", completedPomodoros: 2 },
+    });
+  });
+
+  it("incrementTodayPomodorosは当日件数が未登録の場合1で初期化して保存する", () => {
+    mockGetStorageItem.mockReturnValue({} as never);
+
+    const result = incrementTodayPomodoros();
+
+    expect(result).toBe(1);
+    expect(mockSetStorageItem).toHaveBeenCalledWith("pomodoro-history", {
+      "2026-02-12": { date: "2026-02-12", completedPomodoros: 1 },
     });
   });
 });
