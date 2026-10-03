@@ -104,6 +104,78 @@ describe("applyChanges", () => {
     expect(uploadedAts).toEqual([5000, 5, 4, 3, 2]);
   });
 
+  it("最新スナップショットが API 由来なら新規作成せず同じドキュメントを上書きする", async () => {
+    const fake = createFakeFirestore({
+      "users/u1": baseDoc,
+      "users/u1/syncSnapshots/app1": { id: "app1", uploadedAt: 100, deviceId: "device-a", data: {} },
+      "users/u1/syncSnapshots/api1": {
+        id: "api1",
+        uploadedAt: 900,
+        deviceId: API_DEVICE_ID,
+        data: { old: true },
+      },
+    });
+    await applyChanges(
+      fake.db,
+      "u1",
+      () => ({ status: 200, body: {}, changes: { budgetCategories: [{ id: "c1" }] } }),
+      deps(5000),
+    );
+
+    expect(fake.snapshotsOf("u1")).toHaveLength(2);
+    expect(fake.get("users/u1/syncSnapshots/app1")).toEqual({
+      id: "app1",
+      uploadedAt: 100,
+      deviceId: "device-a",
+      data: {},
+    });
+    expect(fake.get("users/u1/syncSnapshots/api1")).toEqual({
+      id: "api1",
+      uploadedAt: 5000,
+      deviceId: API_DEVICE_ID,
+      data: { routines: [{ id: "r1" }], budgetCategories: [{ id: "c1" }] },
+      updatedAt: "SERVER_TS",
+    });
+  });
+
+  it("API 由来の最新スナップショットを上書きする場合は上限でも古いものを削除しない", async () => {
+    const initial: Record<string, Record<string, unknown>> = { "users/u1": baseDoc };
+    for (let index = 1; index < MAX_SYNC_SNAPSHOTS; index += 1) {
+      initial[`users/u1/syncSnapshots/s${index}`] = { uploadedAt: index, deviceId: "device-a", data: {} };
+    }
+    initial["users/u1/syncSnapshots/api1"] = {
+      id: "api1",
+      uploadedAt: 900,
+      deviceId: API_DEVICE_ID,
+      data: {},
+    };
+    const fake = createFakeFirestore(initial);
+    await applyChanges(
+      fake.db,
+      "u1",
+      () => ({ status: 200, body: {}, changes: { budgetCategories: [] } }),
+      deps(5000),
+    );
+    const uploadedAts = fake.snapshotsOf("u1").map((s) => (s as { uploadedAt: number }).uploadedAt);
+    expect(uploadedAts).toEqual([5000, 4, 3, 2, 1]);
+  });
+
+  it("最新スナップショットがアプリ端末由来なら新規作成する", async () => {
+    const fake = createFakeFirestore({
+      "users/u1": baseDoc,
+      "users/u1/syncSnapshots/app1": { id: "app1", uploadedAt: 100, deviceId: "device-a", data: {} },
+    });
+    await applyChanges(
+      fake.db,
+      "u1",
+      () => ({ status: 200, body: {}, changes: { budgetCategories: [] } }),
+      deps(5000),
+    );
+    const snapshots = fake.snapshotsOf("u1") as { uploadedAt: number; deviceId: string }[];
+    expect(snapshots.map((s) => s.uploadedAt)).toEqual([5000, 100]);
+    expect(snapshots[0].deviceId).toBe(API_DEVICE_ID);
+  });
+
   it("changes が無ければ何も書き込まない", async () => {
     const fake = createFakeFirestore({ "users/u1": baseDoc });
     const outcome = await applyChanges(

@@ -75,6 +75,21 @@ export const applyChanges = (
       updatedAt: serverTimestamp,
     });
 
+    const snapshotData = toSnapshotPayload({ ...current, ...outcome.changes });
+    const latest = existingSnapshots.docs[0];
+
+    if (latest && latest.data().deviceId === API_DEVICE_ID) {
+      // 連続したAPI書き込みでアプリ由来の復元ポイントを押し出さないよう、最新のAPIスナップショットを上書きする
+      transaction.set(latest.ref, {
+        id: latest.id,
+        uploadedAt: lastModified,
+        deviceId: API_DEVICE_ID,
+        data: snapshotData,
+        updatedAt: serverTimestamp,
+      });
+      return outcome;
+    }
+
     existingSnapshots.docs
       .slice(MAX_SYNC_SNAPSHOTS - 1)
       .forEach((snapshot) => transaction.delete(snapshot.ref));
@@ -84,7 +99,7 @@ export const applyChanges = (
       id: snapshotRef.id,
       uploadedAt: lastModified,
       deviceId: API_DEVICE_ID,
-      data: toSnapshotPayload({ ...current, ...outcome.changes }),
+      data: snapshotData,
       updatedAt: serverTimestamp,
     });
 
