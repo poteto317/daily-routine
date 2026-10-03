@@ -2,6 +2,10 @@ import { notFound } from "../../errors";
 import { parseBody, parseQueryMonth } from "../../validation";
 import { createdOutcome, deletedOutcome, okOutcome } from "../outcomes";
 import type { Operation, ResourceOperations } from "../types";
+import {
+  assertAmountRuleForPatch,
+  assertZeroAmountOnPastDate,
+} from "./expenseAmountRule";
 import { applyExpensePatch, createExpense } from "./expenseEntity";
 import {
   EXPENSE_KEYS,
@@ -26,6 +30,7 @@ const list: Operation = ({ data, query }) => {
 
 const create: Operation = ({ data, body, now }) => {
   const input = parseCreateExpenseInput(parseBody(body, EXPENSE_KEYS), data);
+  assertZeroAmountOnPastDate(input, now);
   const expense = createExpense(input, now);
   return createdOutcome(
     { expense },
@@ -33,16 +38,15 @@ const create: Operation = ({ data, body, now }) => {
   );
 };
 
-const update: Operation = ({ data, id, body }) => {
+const update: Operation = ({ data, id, body, now }) => {
   const input = parseBody(body, EXPENSE_KEYS);
   const expenses = readExpensesByMonth(data);
   const found = findExpense(expenses, id);
   if (!found) throw notFound("支出");
 
-  const updated = applyExpensePatch(
-    found.expense,
-    parseExpensePatchInput(input, data),
-  );
+  const patchInput = parseExpensePatchInput(input, data);
+  const updated = applyExpensePatch(found.expense, patchInput);
+  assertAmountRuleForPatch(patchInput.patch, updated, now);
   return okOutcome(
     { expense: updated },
     toBudgetDataChanges(data, replaceExpense(expenses, found, updated)),

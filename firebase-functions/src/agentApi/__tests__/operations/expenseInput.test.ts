@@ -53,15 +53,26 @@ describe("parseCreateExpenseInput", () => {
     { amount: 1 },
     { date: "2026-10-01" },
     { date: "2026-10-32", amount: 1 },
-    { date: "2026-10-01", amount: 0 },
     { date: "2026-10-01", amount: 1, categoryId: "nope" },
     { date: "2026-10-01", amount: 1, usedTime: "24:00" },
+    { date: "2026-10-01", amount: -1 },
   ])("不正な入力 %j は 400", (input) => {
     expectApiError(
       () => parseCreateExpenseInput(input, data),
       400,
       "invalid_field",
     );
+  });
+});
+
+describe("parseCreateExpenseInput（0 円）", () => {
+  it("0 円は、日付に関わらず、入力の形としては受け付ける（日付との組み合わせは expenseAmountRule で確認する）", () => {
+    expect(
+      parseCreateExpenseInput({ date: "2026-10-02", amount: 0 }, data),
+    ).toMatchObject({ date: "2026-10-02", amount: 0 });
+    expect(
+      parseCreateExpenseInput({ date: "2099-01-01", amount: 0 }, data),
+    ).toMatchObject({ amount: 0 });
   });
 });
 
@@ -77,6 +88,13 @@ describe("parseExpensePatchInput", () => {
     expect(parseExpensePatchInput({ categoryId: null }, data)).toEqual({
       patch: {},
       clearCategory: true,
+    });
+  });
+
+  it("amount: 0 はパッチに含める（日付との組み合わせは、更新時に確認する）", () => {
+    expect(parseExpensePatchInput({ amount: 0 }, data)).toEqual({
+      patch: { amount: 0 },
+      clearCategory: false,
     });
   });
 
