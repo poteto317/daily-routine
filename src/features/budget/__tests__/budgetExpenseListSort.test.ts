@@ -34,7 +34,7 @@ describe("budgetExpenseListSort", () => {
     ]);
   });
 
-  describe("使用時刻(resolveExpenseUsedTime)と一覧の並び順(sortExpensesByDateDesc)", () => {
+  describe("追加時刻(resolveExpenseUsedTime)と一覧の並び順(sortExpensesByDateDesc)", () => {
     it("resolveExpenseUsedTimeはusedTimeが設定済みならその値をそのまま返す", () => {
       expect(
         resolveExpenseUsedTime({
@@ -59,7 +59,7 @@ describe("budgetExpenseListSort", () => {
       ).toBe("09:00");
     });
 
-    it("resolveExpenseUsedTimeはusedTimeが空文字列（ネイティブ時刻inputのクリア操作等）でもcreatedAtへフォールバックする", () => {
+    it("resolveExpenseUsedTimeはusedTimeが空文字列（以前の編集画面で時刻をクリアして保存されたデータ等）でもcreatedAtへフォールバックする", () => {
       // usedTime: "" は null/undefined ではないため `??` では素通りしてしまう
       // （回帰: `new Date("2026-03-03T")` は Invalid Date になり並び替えが壊れる）。
       // "2026-03-03T00:00:00.000Z" はJST（UTC+9）で09:00になる。
@@ -74,7 +74,7 @@ describe("budgetExpenseListSort", () => {
       ).toBe("09:00");
     });
 
-    it("同じ日付の支出はusedTimeが新しい順（使用時刻が遅い順）に並ぶ", () => {
+    it("同じ日付の支出はusedTimeが新しい順（追加時刻が遅い順）に並ぶ", () => {
       const morning = {
         id: "morning",
         date: "2026-03-05",
@@ -90,7 +90,7 @@ describe("budgetExpenseListSort", () => {
         usedTime: "20:00",
       };
 
-      // 配列の格納順（先に記録した方が先頭）に関わらず、使用時刻が
+      // 配列の格納順（先に記録した方が先頭）に関わらず、追加時刻が
       // 遅い方（evening）が上に来ることを確認する。
       expect(
         sortExpensesByDateDesc([morning, evening]).map((e) => e.id),
@@ -148,7 +148,7 @@ describe("budgetExpenseListSort", () => {
       ).toEqual(["fallback", "explicit-early"]);
     });
 
-    it("日付が異なる場合は使用時刻に関わらず日付が優先される", () => {
+    it("日付が異なる場合は追加時刻に関わらず日付が優先される", () => {
       const earlierDateLaterTime = {
         id: "earlier-date",
         date: "2026-03-04",

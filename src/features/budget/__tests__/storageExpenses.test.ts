@@ -71,7 +71,7 @@ describe("budget storageExpenses", () => {
     });
   });
 
-  it("addExpenseはcreatedAtとusedTimeを同一のnowから算出する（記録時刻と使用時刻のデフォルトが一致する）", () => {
+  it("addExpenseはcreatedAtとusedTimeを同一のnowから算出する（記録時刻と追加時刻のデフォルトが一致する）", () => {
     mockGetBudgetData.mockReturnValue({ expenses: {} });
 
     addExpense("2026-05-10", 1500, "cat-1");
@@ -352,7 +352,7 @@ describe("budget storageExpenses", () => {
     });
   });
 
-  it("updateExpenseはupdatesにusedTimeを含めて渡すと使用時刻を更新する", () => {
+  it("updateExpenseはupdatesにusedTimeを含めて渡すと追加時刻を更新する", () => {
     mockGetBudgetData.mockReturnValue({
       expenses: {
         "2026-05": [
