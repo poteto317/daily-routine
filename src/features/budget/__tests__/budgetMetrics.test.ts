@@ -198,5 +198,32 @@ describe("calculateBudgetMetrics", () => {
     expect(metrics.dailyRemainingBudget).toBe(0);
     expect(Number.isFinite(metrics.dailyRemainingBudget)).toBe(true);
   });
-});
 
+  it("今日より前の 0 円の入力は、残り日数に含めず、1日あたり使える金額が増える", () => {
+    const currentDate = new Date("2026-03-01T00:00:00+09:00");
+    const withoutZero = calculateBudgetMetrics(currentDate, 31000, []);
+    const withZero = calculateBudgetMetrics(currentDate, 31000, [
+      { id: "z1", date: "2026-03-03", amount: 0, createdAt: "" },
+      { id: "z2", date: "2026-03-04", amount: 0, createdAt: "" },
+    ]);
+
+    // 0 円は支出合計に影響せず、未入力日数だけが 31 -> 29 に減る
+    expect(withZero.totalExpense).toBe(0);
+    expect(withZero.remaining).toBe(31000);
+    expect(withZero.unenteredDays).toBe(29);
+    expect(withZero.dailyRemainingBudget).toBe(31000 / 29);
+    expect(withZero.dailyRemainingBudget).toBeGreaterThan(
+      withoutZero.dailyRemainingBudget,
+    );
+  });
+
+  it("今日の 0 円は、残り日数に影響しない", () => {
+    const currentDate = new Date("2026-03-01T00:00:00+09:00");
+    const metrics = calculateBudgetMetrics(currentDate, 31000, [
+      { id: "z1", date: "2026-03-07", amount: 0, createdAt: "" },
+    ]);
+
+    expect(metrics.unenteredDays).toBe(31);
+    expect(metrics.dailyRemainingBudget).toBe(1000);
+  });
+});

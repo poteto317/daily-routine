@@ -48,6 +48,10 @@ export const toDateKey = (date: Date): string => {
   return `${yyyy}-${mm}-${dd}`;
 };
 
+/** "YYYY-MM-DD" の日付が、now の日付（ローカル）より前かどうか。固定長なので文字列比較で判定できる */
+export const isBeforeToday = (dateValue: string, now: Date): boolean =>
+  dateValue < toDateKey(now);
+
 export const getDefaultExpenseDate = (targetMonth: Date): string => {
   const now = new Date();
   if (isCurrentMonthDate(targetMonth, now)) {

@@ -2,6 +2,7 @@ import type { Expense } from "@/types/routine";
 import {
   daysInMonth,
   getMonthKeyFromDateValue,
+  isBeforeToday,
   isCurrentMonthDate,
   toDateKey,
   toMonthKey,
@@ -12,6 +13,8 @@ import {
  * - 当月でない場合: 0
  * - 当月の場合: 今月の総日数 - 「今日以外で支出入力がある日（当月分）」のユニーク日数
  *   ※今日に入力があっても今日だけは日数に含める（今日例外ルール）
+ *   ※0 円の入力は「支出が無かった日」の記録として、今日より前の日付のものだけを入力済みに数える
+ *     （今日以降の 0 円は、まだ確定していないため数えない）
  *   ※結果は 0 未満にならないようクランプする
  */
 export const calculateUnenteredMonthDays = (
@@ -30,7 +33,9 @@ export const calculateUnenteredMonthDays = (
   for (const expense of expenses) {
     if (
       getMonthKeyFromDateValue(expense.date) === currentMonthKey &&
-      expense.date !== todayKey
+      expense.date !== todayKey &&
+      // 0 円だけは、今日より前の日付のものに限る（0 円以外は、従来どおり数える）
+      (expense.amount !== 0 || isBeforeToday(expense.date, now))
     ) {
       expenseDatesExcludingToday.add(expense.date);
     }
