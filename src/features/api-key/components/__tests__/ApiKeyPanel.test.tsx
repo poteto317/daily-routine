@@ -1,10 +1,10 @@
 import { render, screen } from "@testing-library/react";
-import { ApiKeySection } from "../ApiKeySection";
-import texts from "@/features/api-key/locales/ja.json";
-import * as apiKey from "@/features/api-key";
+import { ApiKeyPanel } from "../ApiKeyPanel";
+import texts from "../../locales/ja.json";
+import * as state from "../../useApiKeyState";
 
-jest.mock("@/features/api-key", () => ({ useApiKeyState: jest.fn() }));
-const mockedUseApiKeyState = jest.mocked(apiKey.useApiKeyState);
+jest.mock("../../useApiKeyState");
+const mockedUseApiKeyState = jest.mocked(state.useApiKeyState);
 
 const baseState = {
   hasKey: false,
@@ -17,10 +17,10 @@ const baseState = {
   handleCopy: jest.fn(),
 };
 
-describe("ApiKeySection", () => {
+describe("ApiKeyPanel", () => {
   it("未発行なら「キーを発行」だけを出す", () => {
     mockedUseApiKeyState.mockReturnValue(baseState);
-    render(<ApiKeySection />);
+    render(<ApiKeyPanel />);
     expect(screen.getByText(texts.statusNone)).toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: texts.issueButton }),
@@ -32,7 +32,7 @@ describe("ApiKeySection", () => {
 
   it("発行済みなら再発行と失効を出す", () => {
     mockedUseApiKeyState.mockReturnValue({ ...baseState, hasKey: true });
-    render(<ApiKeySection />);
+    render(<ApiKeyPanel />);
     expect(screen.getByText(texts.statusIssued)).toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: texts.reissueButton }),
@@ -48,7 +48,7 @@ describe("ApiKeySection", () => {
       hasKey: true,
       issuedKey: "drk_secret",
     });
-    render(<ApiKeySection />);
+    render(<ApiKeyPanel />);
     expect(screen.getByText(texts.issuedNotice)).toBeInTheDocument();
     expect(screen.getByDisplayValue("drk_secret")).toHaveAttribute("readonly");
     expect(
@@ -62,14 +62,14 @@ describe("ApiKeySection", () => {
       hasKey: null,
       error: "失敗",
     });
-    render(<ApiKeySection />);
+    render(<ApiKeyPanel />);
     expect(screen.getByText(texts.statusLoading)).toBeInTheDocument();
     expect(screen.getByText("失敗")).toBeInTheDocument();
   });
 
   it("処理中はボタンを無効にする", () => {
     mockedUseApiKeyState.mockReturnValue({ ...baseState, isWorking: true });
-    render(<ApiKeySection />);
+    render(<ApiKeyPanel />);
     expect(
       screen.getByRole("button", { name: texts.issueButton }),
     ).toBeDisabled();

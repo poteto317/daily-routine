@@ -36,16 +36,10 @@ jest.mock("@/features/sync/sync", () => ({
 }));
 
 jest.mock("@/features/api-key", () => ({
-  useApiKeyState: () => ({
-    hasKey: false,
-    issuedKey: null,
-    isWorking: false,
-    error: null,
-    copied: false,
-    handleIssue: jest.fn(),
-    handleRevoke: jest.fn(),
-    handleCopy: jest.fn(),
-  }),
+  ApiKeySection: () =>
+    jest
+      .requireActual<typeof import("react")>("react")
+      .createElement("div", { "data-testid": "api-key-section" }),
 }));
 
 Object.defineProperty(navigator, "serviceWorker", {

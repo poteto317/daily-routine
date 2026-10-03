@@ -9,7 +9,7 @@ import { FeatureVisibilitySection } from "./components/FeatureVisibilitySection"
 import { MenuOrderSection } from "./components/MenuOrderSection";
 import { AppearanceSection } from "./components/AppearanceSection";
 import { DataManagementSection } from "./components/DataManagementSection";
-import { ApiKeySection } from "./components/ApiKeySection";
+import { ApiKeySection } from "@/features/api-key";
 import { PrivacyNoteSection } from "./components/PrivacyNoteSection";
 import texts from "./locales/ja.json";
 

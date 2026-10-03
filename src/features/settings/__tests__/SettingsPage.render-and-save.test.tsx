@@ -32,6 +32,11 @@ describe("SettingsPage render/autosave", () => {
     expect(screen.getByDisplayValue("5")).toBeInTheDocument();
   });
 
+  it("API キー欄が表示される", () => {
+    render(<SettingsPage />);
+    expect(screen.getByTestId("api-key-section")).toBeInTheDocument();
+  });
+
   it("保存ボタンは表示されない", () => {
     render(<SettingsPage />);
     expect(screen.queryByRole("button", { name: /^保存$/ })).toBeNull();
