@@ -32,18 +32,12 @@ PR へのコミットをプッシュした後は、以下の手順を必ず実�
    - PR の「Conversation」タブで未解決のレビュースレッドがないか確認する
    - 未解決スレッドがある場合はすべて Resolve してから次のステップへ
 
-2. **Copilot へのレビュー依頼**
-   - 未解決スレッドが 0 件になったら、以下の PowerShell コマンドをローカルターミナルから実行して Copilot にレビューを依頼してください
-   - `GITHUB_TOKEN`（GitHub Actions）からは Copilot レビューをトリガーできないため、必ずローカルターミナルから実行すること
-   - `PR_NUMBER` には対象 PR の番号を設定してください（例: `7`）
-   - `REPO` には対象リポジトリの `OWNER/REPO` を設定してください（例: `poteto317/daily-routine`）
-
-   ```powershell
-   $PR_NUMBER = "<対象PR番号>"
-   $REPO = "<OWNER/REPO>"
-   gh api -X POST "repos/$REPO/pulls/$PR_NUMBER/requested_reviewers" `
-     -f "reviewers[]=copilot-pull-request-reviewer[bot]"
-   ```
+2. **サブエージェントによるレビュー**
+   - 未解決スレッドが 0 件になったら、**Copilot にはレビューを依頼せず**、サブエージェントにレビューを依頼してください
+   - Copilot へのレビュー依頼（`requested_reviewers` API の呼び出し、`@github-copilot review` コメントなど）は行わないこと。すでに依頼済みの場合は取り消してください
+   - レビュー用のサブエージェントは読み取り専用で PR をレビューし、指摘（path・行番号・重大度・対応すべきか）と判定を返します。PR へのコメント・レビューの投稿は、呼び出し元が行います
+   - 指摘があれば、別のサブエージェントで内容を確認して対応の要否を判断し、必要なら対応します（ユニットテストの拡充、コミット、プッシュ、PR 本文の更新、対応した指摘のスレッドの Resolve）
+   - 対応すべき指摘が無くなるまで、サブエージェントによるレビューと対応を繰り返してください
 
 # Daily Routine App - 開発ガイドライン
 
