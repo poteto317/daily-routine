@@ -81,14 +81,12 @@ export const BudgetPage = () => {
             editingExpenseDate={state.editingExpenseDate}
             editingExpenseAmount={state.editingExpenseAmount}
             editingExpenseCategoryId={state.editingExpenseCategoryId}
-            editingExpenseUsedTime={state.editingExpenseUsedTime}
             onStartEdit={state.startEditExpense}
             onCancelEdit={state.cancelEditExpense}
             onSaveEdit={state.handleUpdateExpense}
             onEditDateChange={state.handleEditExpenseDateChange}
             onEditAmountChange={state.handleEditExpenseAmountChange}
             onEditCategoryIdChange={state.handleEditExpenseCategoryIdChange}
-            onEditUsedTimeChange={state.handleEditExpenseUsedTimeChange}
             onDelete={(expenseId) => {
               if (window.confirm(budgetTexts.page.confirmDeleteExpense)) {
                 state.handleDeleteExpense(expenseId);

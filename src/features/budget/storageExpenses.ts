@@ -20,7 +20,7 @@ export const addExpense = (
     data.expenses[month] = [];
   }
 
-  // createdAt（記録時刻）とusedTime（使用時刻）は、追加時点では
+  // createdAt（記録時刻）とusedTime（追加時刻）は、追加時点では
   // 同じ瞬間を指すため同一のnowから算出する。
   const now = new Date();
 

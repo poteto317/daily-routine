@@ -24,7 +24,6 @@
     "dateDayLabel": "日付（日）",
     "amountLabel": "金額",
     "categoryLabel": "カテゴリ（任意）",
-    "usedTimeLabel": "時刻",
     "requiredMark": "*",
     "amountPlaceholder": "例: 1500",
     "categoryPlaceholder": "選択しない",

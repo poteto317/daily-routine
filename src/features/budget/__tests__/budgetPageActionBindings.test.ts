@@ -20,7 +20,6 @@ describe("budgetPageActionBindings", () => {
         editingExpenseAmount: "3000",
         editingExpenseDate: "2026-03-10",
         editingExpenseCategoryId: "category-food",
-        editingExpenseUsedTime: "08:45",
         setExpenses,
       }),
     ).toEqual({
@@ -35,7 +34,6 @@ describe("budgetPageActionBindings", () => {
       editingExpenseAmount: "3000",
       editingExpenseDate: "2026-03-10",
       editingExpenseCategoryId: "category-food",
-      editingExpenseUsedTime: "08:45",
       setExpenses,
     });
   });

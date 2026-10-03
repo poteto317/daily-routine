@@ -217,9 +217,6 @@ describe("useBudgetPageState", () => {
     expect(result.current.editingExpenseDate).toBe("2026-03-03");
     expect(result.current.editingExpenseAmount).toBe("1000");
     expect(result.current.editingExpenseCategoryId).toBe("");
-    // usedTime未設定の既存支出なので、createdAtの時刻部分（ローカル）へ
-    // フォールバックする（"2026-03-03T00:00:00.000Z" はJSTで09:00）。
-    expect(result.current.editingExpenseUsedTime).toBe("09:00");
 
     act(() => {
       result.current.handleEditExpenseDateChange("2026-03-10");
@@ -235,43 +232,11 @@ describe("useBudgetPageState", () => {
       date: "2026-03-10",
       amount: 2000,
       categoryId: "category-books",
-      usedTime: "09:00",
     });
     expect(result.current.editingExpenseId).toBeNull();
   });
 
-  it("支出編集で使用時刻を変更して保存すると、新しい使用時刻で保存される", () => {
-    const { result } = renderHook(() =>
-      useBudgetPageState({ navigate: mockNavigate }),
-    );
-
-    act(() => {
-      result.current.startEditExpense({
-        id: "e-mar",
-        date: "2026-03-03",
-        amount: 1000,
-        createdAt: "2026-03-03T00:00:00.000Z",
-      });
-    });
-
-    act(() => {
-      result.current.handleEditExpenseUsedTimeChange("21:45");
-    });
-
-    expect(result.current.editingExpenseUsedTime).toBe("21:45");
-
-    act(() => {
-      result.current.handleUpdateExpense();
-    });
-
-    expect(mockUpdateExpense).toHaveBeenCalledWith(
-      "2026-03",
-      "e-mar",
-      expect.objectContaining({ usedTime: "21:45" }),
-    );
-  });
-
-  it("支出編集を開始する時、既にusedTimeが設定済みの支出はその値をそのまま使う", () => {
+  it("支出を編集して保存しても、追加時刻（usedTime）は更新内容に含めない（既存の値が保たれる）", () => {
     const { result } = renderHook(() =>
       useBudgetPageState({ navigate: mockNavigate }),
     );
@@ -285,8 +250,17 @@ describe("useBudgetPageState", () => {
         usedTime: "15:30",
       });
     });
+    expect(result.current).not.toHaveProperty("editingExpenseUsedTime");
+    expect(result.current).not.toHaveProperty(
+      "handleEditExpenseUsedTimeChange",
+    );
 
-    expect(result.current.editingExpenseUsedTime).toBe("15:30");
+    act(() => {
+      result.current.handleUpdateExpense();
+    });
+
+    expect(mockUpdateExpense).toHaveBeenCalledTimes(1);
+    expect(mockUpdateExpense.mock.calls[0][2]).not.toHaveProperty("usedTime");
   });
 
   it("無効な金額では支出の編集を保存せず編集を継続する", () => {

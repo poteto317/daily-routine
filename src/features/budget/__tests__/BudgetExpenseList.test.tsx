@@ -12,14 +12,12 @@ const createProps = (overrides: Record<string, unknown> = {}) => ({
   editingExpenseDate: "",
   editingExpenseAmount: "",
   editingExpenseCategoryId: "",
-  editingExpenseUsedTime: "",
   onStartEdit: jest.fn(),
   onCancelEdit: jest.fn(),
   onSaveEdit: jest.fn(),
   onEditDateChange: jest.fn(),
   onEditAmountChange: jest.fn(),
   onEditCategoryIdChange: jest.fn(),
-  onEditUsedTimeChange: jest.fn(),
   onDelete: jest.fn(),
   ...overrides,
 });
@@ -170,7 +168,6 @@ describe("BudgetExpenseList", () => {
           editingExpenseDate: "2026-05-22",
           editingExpenseAmount: "850",
           editingExpenseCategoryId: "cat-lunch",
-          editingExpenseUsedTime: "12:30",
           expenses: [
             {
               id: "e1",
@@ -188,7 +185,6 @@ describe("BudgetExpenseList", () => {
     expect(screen.getByLabelText("日付（日）")).toHaveValue("2026-05-22");
     expect(screen.getByLabelText(/金額/)).toHaveValue(850);
     expect(screen.getByLabelText(/カテゴリ/)).toHaveValue("cat-lunch");
-    expect(screen.getByLabelText("時刻")).toHaveValue("12:30");
     expect(screen.getByRole("button", { name: "保存" })).toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: "キャンセル" }),
@@ -239,7 +235,6 @@ describe("BudgetExpenseList", () => {
     const onEditDateChange = jest.fn();
     const onEditAmountChange = jest.fn();
     const onEditCategoryIdChange = jest.fn();
-    const onEditUsedTimeChange = jest.fn();
     render(
       <BudgetExpenseList
         {...createProps({
@@ -247,11 +242,9 @@ describe("BudgetExpenseList", () => {
           editingExpenseDate: "2026-05-22",
           editingExpenseAmount: "850",
           editingExpenseCategoryId: "",
-          editingExpenseUsedTime: "12:30",
           onEditDateChange,
           onEditAmountChange,
           onEditCategoryIdChange,
-          onEditUsedTimeChange,
           expenses: [
             {
               id: "e1",
@@ -273,14 +266,10 @@ describe("BudgetExpenseList", () => {
     fireEvent.change(screen.getByLabelText(/カテゴリ/), {
       target: { value: "cat-lunch" },
     });
-    fireEvent.change(screen.getByLabelText("時刻"), {
-      target: { value: "18:45" },
-    });
 
     expect(onEditDateChange).toHaveBeenCalledWith("2026-05-25");
     expect(onEditAmountChange).toHaveBeenCalledWith("1000");
     expect(onEditCategoryIdChange).toHaveBeenCalledWith("cat-lunch");
-    expect(onEditUsedTimeChange).toHaveBeenCalledWith("18:45");
   });
 
   it("編集中の日付の「月」を前後の月に変更すると、その月の同じ日でonEditDateChangeが呼ばれる", () => {

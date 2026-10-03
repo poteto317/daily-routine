@@ -5,7 +5,6 @@ describe("createBudgetExpenseEditStateResult", () => {
     const setEditingExpenseDate = jest.fn();
     const setEditingExpenseAmount = jest.fn();
     const setEditingExpenseCategoryId = jest.fn();
-    const setEditingExpenseUsedTime = jest.fn();
     const startEditExpense = jest.fn();
     const cancelEditExpense = jest.fn();
 
@@ -15,11 +14,9 @@ describe("createBudgetExpenseEditStateResult", () => {
         editingExpenseDate: "2026-03-05",
         editingExpenseAmount: "2500",
         editingExpenseCategoryId: "category-books",
-        editingExpenseUsedTime: "09:15",
         setEditingExpenseDate,
         setEditingExpenseAmount,
         setEditingExpenseCategoryId,
-        setEditingExpenseUsedTime,
         startEditExpense,
         cancelEditExpense,
       }),
@@ -28,11 +25,9 @@ describe("createBudgetExpenseEditStateResult", () => {
       editingExpenseDate: "2026-03-05",
       editingExpenseAmount: "2500",
       editingExpenseCategoryId: "category-books",
-      editingExpenseUsedTime: "09:15",
       setEditingExpenseDate,
       setEditingExpenseAmount,
       setEditingExpenseCategoryId,
-      setEditingExpenseUsedTime,
       startEditExpense,
       cancelEditExpense,
     });

@@ -16,7 +16,6 @@ type UseBudgetExpenseActionsParams = {
   editingExpenseAmount: string;
   editingExpenseDate: string;
   editingExpenseCategoryId: string;
-  editingExpenseUsedTime: string;
   setExpenses: (value: Expense[]) => void;
   closeExpenseForm: () => void;
   closeExpenseEdit: () => void;
@@ -32,7 +31,6 @@ export const useBudgetExpenseActions = ({
   editingExpenseAmount,
   editingExpenseDate,
   editingExpenseCategoryId,
-  editingExpenseUsedTime,
   setExpenses,
   closeExpenseForm,
   closeExpenseEdit,
@@ -52,7 +50,6 @@ export const useBudgetExpenseActions = ({
     editingExpenseAmount,
     editingExpenseDate,
     editingExpenseCategoryId,
-    editingExpenseUsedTime,
     currentDate,
     setExpenses,
     closeExpenseEdit,
