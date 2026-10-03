@@ -139,6 +139,21 @@ describe("agentApi end-to-end: 古い形式の同期データ（フィールド�
     expect(budgetData.expenses).toBeDefined();
   });
 
+  it("budgetCategories だけが欠けた状態で categoryId を指定した支出作成は、409 ではなく 400 になる", async () => {
+    const doc = { ...oldDoc, budgetData: { expenses: {} } };
+    const { fake, call } = setup(doc);
+    const res = await call("POST", "/budget/expenses", {
+      date: "2026-10-03",
+      amount: 800,
+      categoryId: "budget-category-1",
+    });
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({
+      error: { code: "invalid_field", message: expect.any(String) },
+    });
+    expect(fake.get("users/u1")).toEqual(doc);
+  });
+
   it("一覧は空として返し、更新・削除は従来どおり 404 になる", async () => {
     const { call } = setup(oldDoc);
     const list = await call("GET", "/budget/income-items");
