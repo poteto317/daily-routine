@@ -1,4 +1,4 @@
-import type { SyncDocData } from "./types";
+import type { SyncDocData } from "../syncDoc";
 
 export const readArray = <T>(data: SyncDocData, field: string): T[] => {
   const value = data[field];

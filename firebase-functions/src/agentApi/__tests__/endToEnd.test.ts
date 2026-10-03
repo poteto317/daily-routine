@@ -2,7 +2,7 @@
 import type { Request } from "firebase-functions/https";
 import type { Response } from "express";
 import { createAgentApiHandler } from "../handler";
-import type { SyncDocData } from "../operations/types";
+import type { SyncDocData } from "../syncDoc";
 import { applyChanges } from "../syncWriter";
 import { createFakeFirestore } from "./fakeFirestore";
 

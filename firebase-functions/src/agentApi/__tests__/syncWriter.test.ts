@@ -1,10 +1,7 @@
 /** @jest-environment node */
-import {
-  API_DEVICE_ID,
-  MAX_SYNC_SNAPSHOTS,
-  applyChanges,
-  readLastModified,
-} from "../syncWriter";
+import { API_DEVICE_ID, MAX_SYNC_SNAPSHOTS } from "../syncConstants";
+import type { OperationOutcome } from "../operations/types";
+import { applyChanges } from "../syncWriter";
 import { createFakeFirestore } from "./fakeFirestore";
 
 const deps = (now: number) => ({
@@ -19,15 +16,6 @@ const baseDoc = {
   deviceId: "device-a",
   updatedAt: "OLD_TS",
 };
-
-describe("readLastModified", () => {
-  it("number / Timestamp風 / その他", () => {
-    expect(readLastModified(123)).toBe(123);
-    expect(readLastModified({ toMillis: () => 456 })).toBe(456);
-    expect(readLastModified(undefined)).toBe(0);
-    expect(readLastModified("x")).toBe(0);
-  });
-});
 
 describe("applyChanges", () => {
   it("changes と同期メタ情報だけを書き、他フィールドは変更しない", async () => {
@@ -54,14 +42,18 @@ describe("applyChanges", () => {
   });
 
   it("時計が巻き戻っていても lastModified は既存値 + 1 以上にする", async () => {
-    const fake = createFakeFirestore({ "users/u1": { ...baseDoc, lastModified: 9000 } });
+    const fake = createFakeFirestore({
+      "users/u1": { ...baseDoc, lastModified: 9000 },
+    });
     await applyChanges(
       fake.db,
       "u1",
       () => ({ status: 200, body: {}, changes: { budgetCategories: [] } }),
       deps(100),
     );
-    expect((fake.get("users/u1") as { lastModified: number }).lastModified).toBe(9001);
+    expect(
+      (fake.get("users/u1") as { lastModified: number }).lastModified,
+    ).toBe(9001);
   });
 
   it("変更後の状態をスナップショットとして保存する（メタ情報は除く）", async () => {
@@ -69,7 +61,11 @@ describe("applyChanges", () => {
     await applyChanges(
       fake.db,
       "u1",
-      () => ({ status: 200, body: {}, changes: { budgetCategories: [{ id: "c1" }] } }),
+      () => ({
+        status: 200,
+        body: {},
+        changes: { budgetCategories: [{ id: "c1" }] },
+      }),
       deps(5000),
     );
 
@@ -88,9 +84,14 @@ describe("applyChanges", () => {
   });
 
   it("スナップショットは最大件数に収め、古いものから削除する", async () => {
-    const initial: Record<string, Record<string, unknown>> = { "users/u1": baseDoc };
+    const initial: Record<string, Record<string, unknown>> = {
+      "users/u1": baseDoc,
+    };
     for (let index = 1; index <= MAX_SYNC_SNAPSHOTS; index += 1) {
-      initial[`users/u1/syncSnapshots/s${index}`] = { uploadedAt: index, data: {} };
+      initial[`users/u1/syncSnapshots/s${index}`] = {
+        uploadedAt: index,
+        data: {},
+      };
     }
     const fake = createFakeFirestore(initial);
     await applyChanges(
@@ -100,14 +101,21 @@ describe("applyChanges", () => {
       deps(5000),
     );
 
-    const uploadedAts = fake.snapshotsOf("u1").map((s) => (s as { uploadedAt: number }).uploadedAt);
+    const uploadedAts = fake
+      .snapshotsOf("u1")
+      .map((s) => (s as { uploadedAt: number }).uploadedAt);
     expect(uploadedAts).toEqual([5000, 5, 4, 3, 2]);
   });
 
   it("最新スナップショットが API 由来なら新規作成せず同じドキュメントを上書きする", async () => {
     const fake = createFakeFirestore({
       "users/u1": baseDoc,
-      "users/u1/syncSnapshots/app1": { id: "app1", uploadedAt: 100, deviceId: "device-a", data: {} },
+      "users/u1/syncSnapshots/app1": {
+        id: "app1",
+        uploadedAt: 100,
+        deviceId: "device-a",
+        data: {},
+      },
       "users/u1/syncSnapshots/api1": {
         id: "api1",
         uploadedAt: 900,
@@ -118,7 +126,11 @@ describe("applyChanges", () => {
     await applyChanges(
       fake.db,
       "u1",
-      () => ({ status: 200, body: {}, changes: { budgetCategories: [{ id: "c1" }] } }),
+      () => ({
+        status: 200,
+        body: {},
+        changes: { budgetCategories: [{ id: "c1" }] },
+      }),
       deps(5000),
     );
 
@@ -139,9 +151,15 @@ describe("applyChanges", () => {
   });
 
   it("API 由来の最新スナップショットを上書きする場合は上限でも古いものを削除しない", async () => {
-    const initial: Record<string, Record<string, unknown>> = { "users/u1": baseDoc };
+    const initial: Record<string, Record<string, unknown>> = {
+      "users/u1": baseDoc,
+    };
     for (let index = 1; index < MAX_SYNC_SNAPSHOTS; index += 1) {
-      initial[`users/u1/syncSnapshots/s${index}`] = { uploadedAt: index, deviceId: "device-a", data: {} };
+      initial[`users/u1/syncSnapshots/s${index}`] = {
+        uploadedAt: index,
+        deviceId: "device-a",
+        data: {},
+      };
     }
     initial["users/u1/syncSnapshots/api1"] = {
       id: "api1",
@@ -156,14 +174,21 @@ describe("applyChanges", () => {
       () => ({ status: 200, body: {}, changes: { budgetCategories: [] } }),
       deps(5000),
     );
-    const uploadedAts = fake.snapshotsOf("u1").map((s) => (s as { uploadedAt: number }).uploadedAt);
+    const uploadedAts = fake
+      .snapshotsOf("u1")
+      .map((s) => (s as { uploadedAt: number }).uploadedAt);
     expect(uploadedAts).toEqual([5000, 4, 3, 2, 1]);
   });
 
   it("最新スナップショットがアプリ端末由来なら新規作成する", async () => {
     const fake = createFakeFirestore({
       "users/u1": baseDoc,
-      "users/u1/syncSnapshots/app1": { id: "app1", uploadedAt: 100, deviceId: "device-a", data: {} },
+      "users/u1/syncSnapshots/app1": {
+        id: "app1",
+        uploadedAt: 100,
+        deviceId: "device-a",
+        data: {},
+      },
     });
     await applyChanges(
       fake.db,
@@ -171,14 +196,17 @@ describe("applyChanges", () => {
       () => ({ status: 200, body: {}, changes: { budgetCategories: [] } }),
       deps(5000),
     );
-    const snapshots = fake.snapshotsOf("u1") as { uploadedAt: number; deviceId: string }[];
+    const snapshots = fake.snapshotsOf("u1") as {
+      uploadedAt: number;
+      deviceId: string;
+    }[];
     expect(snapshots.map((s) => s.uploadedAt)).toEqual([5000, 100]);
     expect(snapshots[0].deviceId).toBe(API_DEVICE_ID);
   });
 
   it("changes が無ければ何も書き込まない", async () => {
     const fake = createFakeFirestore({ "users/u1": baseDoc });
-    const outcome = await applyChanges(
+    const outcome = await applyChanges<OperationOutcome>(
       fake.db,
       "u1",
       () => ({ status: 200, body: { x: 1 } }),

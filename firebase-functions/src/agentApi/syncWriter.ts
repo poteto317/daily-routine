@@ -1,71 +1,42 @@
 import type * as admin from "firebase-admin";
-import { ApiError } from "./errors";
-import type { OperationOutcome, SyncDocData } from "./operations/types";
-
-/** アプリの MAX_SYNC_SNAPSHOTS（src/features/sync/sync/snapshots.ts）と同じ値 */
-export const MAX_SYNC_SNAPSHOTS = 5;
-/** 端末の deviceId と衝突しない固定値。アプリの watchRemoteChanges が「他端末の更新」と判定する */
-export const API_DEVICE_ID = "api";
-
-const META_KEYS = ["lastModified", "deviceId", "updatedAt"] as const;
+import { noSyncData } from "./errors";
+import { nextLastModified } from "./lastModified";
+import { saveApiSnapshot } from "./snapshotWriter";
+import { API_DEVICE_ID } from "./syncConstants";
+import type { SyncDocData } from "./syncDoc";
 
 export type WriteDeps = {
   now: () => number;
   serverTimestamp: () => unknown;
 };
 
-export const readLastModified = (value: unknown): number => {
-  if (typeof value === "number") return value;
-  if (
-    typeof value === "object" &&
-    value !== null &&
-    "toMillis" in value &&
-    typeof (value as { toMillis: unknown }).toMillis === "function"
-  ) {
-    return (value as { toMillis: () => number }).toMillis();
-  }
-  return 0;
-};
-
-const toSnapshotPayload = (data: SyncDocData): SyncDocData =>
-  Object.fromEntries(
-    Object.entries(data).filter(
-      ([key]) => !(META_KEYS as readonly string[]).includes(key),
-    ),
-  );
-
-export const applyChanges = (
+/**
+ * users/{uid} を 1 つのトランザクションで更新する。
+ * 変更フィールドと同期メタ情報だけを書き、変更後のスナップショットも保存する。
+ */
+export const applyChanges = <T extends { changes?: SyncDocData }>(
   db: admin.firestore.Firestore,
   uid: string,
-  build: (data: SyncDocData) => OperationOutcome,
+  build: (data: SyncDocData) => T,
   deps: WriteDeps,
-): Promise<OperationOutcome> =>
+): Promise<T> =>
   db.runTransaction(async (transaction) => {
     const userRef = db.collection("users").doc(uid);
     const snapshotsRef = userRef.collection("syncSnapshots");
 
     // Firestore トランザクションは読み取りを書き込みより先に済ませる必要がある
     const userDoc = await transaction.get(userRef);
+    // スナップショットは種別の判定と参照にしか使わないため、deviceId だけ取得する（本文の全読みを避ける）
     const existingSnapshots = await transaction.get(
-      snapshotsRef.orderBy("uploadedAt", "desc"),
+      snapshotsRef.orderBy("uploadedAt", "desc").select("deviceId"),
     );
-
-    if (!userDoc.exists) {
-      throw new ApiError(
-        404,
-        "no_sync_data",
-        "同期データがありません。先にアプリからクラウドへアップロードしてください",
-      );
-    }
+    if (!userDoc.exists) throw noSyncData();
 
     const current = userDoc.data() as SyncDocData;
     const outcome = build(current);
     if (!outcome.changes) return outcome;
 
-    const lastModified = Math.max(
-      deps.now(),
-      readLastModified(current.lastModified) + 1,
-    );
+    const lastModified = nextLastModified(current.lastModified, deps.now());
     const serverTimestamp = deps.serverTimestamp();
 
     transaction.update(userRef, {
@@ -74,33 +45,13 @@ export const applyChanges = (
       deviceId: API_DEVICE_ID,
       updatedAt: serverTimestamp,
     });
-
-    const snapshotData = toSnapshotPayload({ ...current, ...outcome.changes });
-    const latest = existingSnapshots.docs[0];
-
-    if (latest && latest.data().deviceId === API_DEVICE_ID) {
-      // 連続したAPI書き込みでアプリ由来の復元ポイントを押し出さないよう、最新のAPIスナップショットを上書きする
-      transaction.set(latest.ref, {
-        id: latest.id,
-        uploadedAt: lastModified,
-        deviceId: API_DEVICE_ID,
-        data: snapshotData,
-        updatedAt: serverTimestamp,
-      });
-      return outcome;
-    }
-
-    existingSnapshots.docs
-      .slice(MAX_SYNC_SNAPSHOTS - 1)
-      .forEach((snapshot) => transaction.delete(snapshot.ref));
-
-    const snapshotRef = snapshotsRef.doc();
-    transaction.set(snapshotRef, {
-      id: snapshotRef.id,
-      uploadedAt: lastModified,
-      deviceId: API_DEVICE_ID,
-      data: snapshotData,
-      updatedAt: serverTimestamp,
+    saveApiSnapshot({
+      transaction,
+      snapshotsRef,
+      existing: existingSnapshots.docs,
+      data: { ...current, ...outcome.changes },
+      lastModified,
+      serverTimestamp,
     });
 
     return outcome;

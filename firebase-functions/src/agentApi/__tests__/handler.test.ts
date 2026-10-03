@@ -2,7 +2,8 @@
 import type { Request } from "firebase-functions/https";
 import type { Response } from "express";
 import { ApiError } from "../errors";
-import { createAgentApiHandler, type HandlerDeps } from "../handler";
+import { createAgentApiHandler } from "../handler";
+import type { HandlerDeps } from "../handlerDeps";
 
 jest.mock("firebase-functions/logger", () => ({ error: jest.fn() }));
 
@@ -15,13 +16,15 @@ const makeRes = () => {
   return res;
 };
 
-const makeReq = (overrides: Partial<{
-  method: string;
-  path: string;
-  headers: Record<string, string>;
-  query: Record<string, unknown>;
-  body: unknown;
-}> = {}): Request =>
+const makeReq = (
+  overrides: Partial<{
+    method: string;
+    path: string;
+    headers: Record<string, string>;
+    query: Record<string, unknown>;
+    body: unknown;
+  }> = {},
+): Request =>
   ({
     method: "GET",
     path: "/budget/categories",
@@ -34,9 +37,7 @@ const makeReq = (overrides: Partial<{
 const makeDeps = (overrides: Partial<HandlerDeps> = {}): HandlerDeps => ({
   resolveUid: jest.fn().mockResolvedValue("u1"),
   readData: jest.fn().mockResolvedValue({ budgetCategories: [{ id: "c1" }] }),
-  runWrite: jest.fn(async (_uid, build) =>
-    build({ budgetCategories: [] }),
-  ),
+  runWrite: jest.fn(async (_uid, build) => build({ budgetCategories: [] })),
   now: () => NOW,
   ...overrides,
 });
@@ -99,13 +100,20 @@ describe("createAgentApiHandler", () => {
     });
   });
 
-  it("query の配列値は無視（undefined 扱い）し、文字列のみ渡す", async () => {
+  it("重複したクエリパラメータは 400 invalid_query で、操作は実行しない", async () => {
+    const deps = makeDeps();
     const res = await run(
-      makeDeps(),
-      makeReq({ path: "/budget/expenses", query: { month: ["2026-10", "2026-11"] } }),
+      deps,
+      makeReq({
+        path: "/budget/expenses",
+        query: { month: ["2026-10", "2026-11"] },
+      }),
     );
-    // month が配列 → undefined 扱いで全月取得（400 にならない）
-    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({
+      error: { code: "invalid_query", message: expect.any(String) },
+    });
+    expect(deps.readData).not.toHaveBeenCalled();
   });
 
   it("ルート不一致 404 / メソッド不一致 405 / 検証エラー 400 をエラー形式で返す", async () => {
@@ -125,7 +133,9 @@ describe("createAgentApiHandler", () => {
   it("runWrite が ApiError を投げたらその status を返す", async () => {
     const res = await run(
       makeDeps({
-        runWrite: jest.fn().mockRejectedValue(new ApiError(404, "no_sync_data", "なし")),
+        runWrite: jest
+          .fn()
+          .mockRejectedValue(new ApiError(404, "no_sync_data", "なし")),
       }),
       makeReq({ method: "POST", body: { name: "a" } }),
     );
@@ -134,7 +144,9 @@ describe("createAgentApiHandler", () => {
 
   it("想定外エラーは 500 で詳細を返さない", async () => {
     const res = await run(
-      makeDeps({ resolveUid: jest.fn().mockRejectedValue(new Error("secret detail")) }),
+      makeDeps({
+        resolveUid: jest.fn().mockRejectedValue(new Error("secret detail")),
+      }),
       makeReq(),
     );
     expect(res.status).toHaveBeenCalledWith(500);

@@ -1,27 +1,8 @@
 import { createHash } from "crypto";
-import type * as admin from "firebase-admin";
 
+/** API キーの形式: drk_ + 32 バイト乱数の base64url（43 文字）。クライアントの生成側と一致させる */
 export const API_KEY_PATTERN = /^drk_[A-Za-z0-9_-]{43}$/;
 
+/** apiKeys のドキュメント ID にする、キーの SHA-256 小文字 hex（UTF-8） */
 export const hashApiKey = (key: string): string =>
   createHash("sha256").update(key, "utf8").digest("hex");
-
-export const extractBearerToken = (header: string | undefined): string | null => {
-  if (!header) return null;
-  const parts = header.split(" ");
-  if (parts.length !== 2 || parts[0] !== "Bearer" || parts[1].length === 0) {
-    return null;
-  }
-  return parts[1];
-};
-
-export const resolveUidByApiKey = async (
-  db: admin.firestore.Firestore,
-  key: string,
-): Promise<string | null> => {
-  if (!API_KEY_PATTERN.test(key)) return null;
-  const snapshot = await db.collection("apiKeys").doc(hashApiKey(key)).get();
-  if (!snapshot.exists) return null;
-  const uid = snapshot.data()?.uid;
-  return typeof uid === "string" && uid.length > 0 ? uid : null;
-};

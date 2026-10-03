@@ -4,7 +4,9 @@ import type { OperationContext } from "../operations/types";
 
 const NOW = new Date("2026-10-03T00:30:00.000Z"); // JST 09:30
 
-const context = (overrides: Partial<OperationContext> = {}): OperationContext => ({
+const context = (
+  overrides: Partial<OperationContext> = {},
+): OperationContext => ({
   data: {},
   query: {},
   body: {},
@@ -13,7 +15,11 @@ const context = (overrides: Partial<OperationContext> = {}): OperationContext =>
 });
 
 const categories = [
-  { id: "budget-category-1", name: "食費", createdAt: "2026-01-01T00:00:00.000Z" },
+  {
+    id: "budget-category-1",
+    name: "食費",
+    createdAt: "2026-01-01T00:00:00.000Z",
+  },
 ];
 
 const expense = {
@@ -37,12 +43,17 @@ describe("expenseOperations.list", () => {
       "2026-09": [{ ...expense, id: "expense-0", date: "2026-09-30" }],
     });
     expect(
-      (expenseOperations.list(context({ data, query: { month: "2026-10" } }))
-        .body as { expenses: unknown[] }).expenses,
+      (
+        expenseOperations.list(context({ data, query: { month: "2026-10" } }))
+          .body as { expenses: unknown[] }
+      ).expenses,
     ).toEqual([expense]);
     expect(
-      (expenseOperations.list(context({ data })).body as { expenses: unknown[] })
-        .expenses,
+      (
+        expenseOperations.list(context({ data })).body as {
+          expenses: unknown[];
+        }
+      ).expenses,
     ).toHaveLength(2);
   });
 
@@ -65,11 +76,16 @@ describe("expenseOperations.create", () => {
     const outcome = expenseOperations.create(
       context({
         data: dataWith({ "2026-10": [expense] }),
-        body: { date: "2026-10-03", amount: 1200, categoryId: "budget-category-1" },
+        body: {
+          date: "2026-10-03",
+          amount: 1200,
+          categoryId: "budget-category-1",
+        },
       }),
     );
     expect(outcome.status).toBe(201);
-    const created = (outcome.body as { expense: Record<string, unknown> }).expense;
+    const created = (outcome.body as { expense: Record<string, unknown> })
+      .expense;
     expect(created).toMatchObject({
       date: "2026-10-03",
       amount: 1200,
@@ -79,7 +95,10 @@ describe("expenseOperations.create", () => {
     });
     expect(created.id).toMatch(/^expense-\d+-[a-z0-9]+$/);
     expect(outcome.changes).toEqual({
-      budgetData: { expenses: { "2026-10": [expense, created] }, extra: "keep" },
+      budgetData: {
+        expenses: { "2026-10": [expense, created] },
+        extra: "keep",
+      },
     });
   });
 
@@ -87,7 +106,8 @@ describe("expenseOperations.create", () => {
     const outcome = expenseOperations.create(
       context({ body: { date: "2026-10-03", amount: 100 } }),
     );
-    const created = (outcome.body as { expense: Record<string, unknown> }).expense;
+    const created = (outcome.body as { expense: Record<string, unknown> })
+      .expense;
     expect("categoryId" in created).toBe(false);
   });
 
@@ -169,7 +189,11 @@ describe("expenseOperations.update", () => {
     ).toThrow(expect.objectContaining({ status: 404 }));
     expect(() =>
       expenseOperations.update(
-        context({ data: dataWith({ "2026-10": [expense] }), id: "expense-1", body: {} }),
+        context({
+          data: dataWith({ "2026-10": [expense] }),
+          id: "expense-1",
+          body: {},
+        }),
       ),
     ).toThrow(expect.objectContaining({ code: "empty_patch" }));
   });

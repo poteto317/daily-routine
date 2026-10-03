@@ -4,7 +4,9 @@ import type { OperationContext } from "../operations/types";
 
 const NOW = new Date("2026-10-03T00:00:00.000Z");
 
-const context = (overrides: Partial<OperationContext> = {}): OperationContext => ({
+const context = (
+  overrides: Partial<OperationContext> = {},
+): OperationContext => ({
   data: {},
   query: {},
   body: {},
@@ -29,10 +31,14 @@ describe("journalOperations.list", () => {
       date: "2026-10-02",
       updatedAt: "2026-10-02T00:00:00.000Z",
     };
-    const data = { journalHistory: { "2026-10-01": [entry], "2026-10-02": [newer] } };
+    const data = {
+      journalHistory: { "2026-10-01": [entry], "2026-10-02": [newer] },
+    };
     expect(
-      (journalOperations.list(context({ data, query: { date: "2026-10-01" } }))
-        .body as { entries: unknown[] }).entries,
+      (
+        journalOperations.list(context({ data, query: { date: "2026-10-01" } }))
+          .body as { entries: unknown[] }
+      ).entries,
     ).toEqual([entry]);
     expect(
       (journalOperations.list(context({ data })).body as { entries: unknown[] })
@@ -124,7 +130,9 @@ describe("journalOperations.update", () => {
       ),
     ).toThrow(expect.objectContaining({ code: "unknown_field" }));
     expect(() =>
-      journalOperations.update(context({ data, id: "nope", body: { title: "a" } })),
+      journalOperations.update(
+        context({ data, id: "nope", body: { title: "a" } }),
+      ),
     ).toThrow(expect.objectContaining({ status: 404 }));
     expect(() =>
       journalOperations.update(context({ data, id: "journal-1", body: {} })),
@@ -172,7 +180,9 @@ describe("journalOperations.remove", () => {
     const other = { ...entry, id: "journal-2", date: "2026-10-02" };
     const outcome = journalOperations.remove(
       context({
-        data: { journalHistory: { "2026-10-01": [entry], "2026-10-02": [other] } },
+        data: {
+          journalHistory: { "2026-10-01": [entry], "2026-10-02": [other] },
+        },
         id: "journal-1",
       }),
     );

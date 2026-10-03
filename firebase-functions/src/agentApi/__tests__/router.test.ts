@@ -11,14 +11,24 @@ describe("matchRoute", () => {
     ["GET", "/budget/income-items", "incomeItems", "list", undefined],
     ["POST", "/budget/expense-items", "expenseItems", "create", undefined],
     ["GET", "/journal/entries", "journalEntries", "list", undefined],
-    ["DELETE", "/journal/entries/journal-1", "journalEntries", "remove", "journal-1"],
+    [
+      "DELETE",
+      "/journal/entries/journal-1",
+      "journalEntries",
+      "remove",
+      "journal-1",
+    ],
   ])("%s %s", (method, path, resource, action, id) => {
     expect(matchRoute(method, path)).toEqual({ resource, action, id });
   });
 
   it("末尾スラッシュと URL エンコードされた ID を扱う", () => {
-    expect(matchRoute("GET", "/budget/expenses/")).toMatchObject({ action: "list" });
-    expect(matchRoute("DELETE", "/budget/expenses/a%20b")).toMatchObject({ id: "a b" });
+    expect(matchRoute("GET", "/budget/expenses/")).toMatchObject({
+      action: "list",
+    });
+    expect(matchRoute("DELETE", "/budget/expenses/a%20b")).toMatchObject({
+      id: "a b",
+    });
   });
 
   it("未知のパスは 404", () => {

@@ -1,4 +1,4 @@
-export type SyncDocData = Record<string, unknown>;
+import type { SyncDocData } from "../syncDoc";
 
 export type OperationContext = {
   data: SyncDocData;
