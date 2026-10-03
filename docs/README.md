@@ -32,6 +32,7 @@
 
 機能仕様と技術仕様のリファレンス。
 
+- **[agent-api.md](./04-reference/agent-api.md)** - AI エージェント向け API（家計簿・ジャーナルの CRUD）のリファレンス
 - **[features.md](./04-reference/features.md)** - 実装済み全18機能の詳細ドキュメント
 
 ---
