@@ -41,6 +41,19 @@ service cloud.firestore {
         && get(/databases/$(database)/documents/accounts/$(request.auth.uid)).data.isAdmin == true;
     }
 
+    // AI エージェント向け API キー: ドキュメント ID はキーの SHA-256 ハッシュ。
+    // 自分の uid のキーのみ作成・読み取り・削除できる。更新は禁止（再発行は削除+作成）。
+    // API 側（Cloud Functions / Admin SDK）はルールの対象外。
+    match /apiKeys/{keyHash} {
+      allow create: if request.auth != null
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.keys().hasOnly(["uid", "createdAt"]);
+      allow read, delete: if request.auth != null
+        && resource.data.uid == request.auth.uid;
+      allow update: if false;
+    }
+
     // その他のドキュメントはデフォルトで拒否
     match /{document=**} {
       allow read, write: if false;
