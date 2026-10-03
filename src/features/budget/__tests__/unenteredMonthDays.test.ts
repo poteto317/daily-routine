@@ -129,4 +129,58 @@ describe("calculateUnenteredMonthDays", () => {
     // 2026年2月は28日。今日(02-15)以外に入力なし -> 28
     expect(calculateUnenteredMonthDays(febDate, [], febNow)).toBe(28);
   });
+
+  describe("0 円の入力（支出が無かった日）", () => {
+    it("今日より前の日付の 0 円は、入力済みの日として未入力日数から引く", () => {
+      const expenses: Expense[] = [
+        { id: "e1", date: "2026-03-01", amount: 0, createdAt: "" },
+        { id: "e2", date: "2026-03-05", amount: 0, createdAt: "" },
+      ];
+      // 31 - 2 = 29
+      expect(calculateUnenteredMonthDays(currentDate, expenses, now)).toBe(29);
+    });
+
+    it("同じ日の 0 円と金額ありの入力は、1 日分だけ引く", () => {
+      const expenses: Expense[] = [
+        { id: "e1", date: "2026-03-01", amount: 0, createdAt: "" },
+        { id: "e2", date: "2026-03-01", amount: 500, createdAt: "" },
+      ];
+      expect(calculateUnenteredMonthDays(currentDate, expenses, now)).toBe(30);
+    });
+
+    it("今日の 0 円は、今日例外ルールにより引かない", () => {
+      const expenses: Expense[] = [
+        { id: "e1", date: "2026-03-07", amount: 0, createdAt: "" },
+      ];
+      expect(calculateUnenteredMonthDays(currentDate, expenses, now)).toBe(31);
+    });
+
+    it("未来の日付の 0 円は、まだ確定していないため引かない", () => {
+      const expenses: Expense[] = [
+        { id: "e1", date: "2026-03-10", amount: 0, createdAt: "" },
+      ];
+      expect(calculateUnenteredMonthDays(currentDate, expenses, now)).toBe(31);
+    });
+
+    it("未来の日付でも、金額がある入力は従来どおり引く（0 円だけが過去に限られる）", () => {
+      const expenses: Expense[] = [
+        { id: "e1", date: "2026-03-10", amount: 100, createdAt: "" },
+      ];
+      expect(calculateUnenteredMonthDays(currentDate, expenses, now)).toBe(30);
+    });
+
+    it("他の月の 0 円は、当月の日数から引かない", () => {
+      const expenses: Expense[] = [
+        { id: "e1", date: "2026-02-28", amount: 0, createdAt: "" },
+      ];
+      expect(calculateUnenteredMonthDays(currentDate, expenses, now)).toBe(31);
+    });
+  });
+
+  it("0 円以外の既存データ（負の金額）は、従来どおり入力済みの日として引く（0 円の規則は 0 円にだけ働く）", () => {
+    const expenses: Expense[] = [
+      { id: "e1", date: "2026-03-03", amount: -500, createdAt: "" },
+    ];
+    expect(calculateUnenteredMonthDays(currentDate, expenses, now)).toBe(30);
+  });
 });

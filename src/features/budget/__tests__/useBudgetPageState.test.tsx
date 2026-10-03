@@ -155,6 +155,44 @@ describe("useBudgetPageState", () => {
     expect(mockAddExpense).not.toHaveBeenCalled();
   });
 
+  it("今日より前の日付なら、0 円の支出（支出が無かった日）を追加できる", () => {
+    const { result } = renderHook(() =>
+      useBudgetPageState({ navigate: mockNavigate }),
+    );
+
+    act(() => {
+      result.current.openExpenseForm();
+      result.current.handleExpenseAmountChange("0");
+      result.current.handleExpenseDateChange("2026-03-05");
+    });
+
+    act(() => {
+      result.current.handleAddExpense();
+    });
+
+    expect(mockAddExpense).toHaveBeenCalledWith("2026-03-05", 0, undefined);
+    expect(result.current.showExpenseForm).toBe(false);
+  });
+
+  it("今日の日付では、0 円の支出を追加せず、フォームを開いたままにする", () => {
+    const { result } = renderHook(() =>
+      useBudgetPageState({ navigate: mockNavigate }),
+    );
+
+    act(() => {
+      result.current.openExpenseForm();
+      result.current.handleExpenseAmountChange("0");
+      result.current.handleExpenseDateChange("2026-03-07");
+    });
+
+    act(() => {
+      result.current.handleAddExpense();
+    });
+
+    expect(mockAddExpense).not.toHaveBeenCalled();
+    expect(result.current.showExpenseForm).toBe(true);
+  });
+
   it("支出削除後に一覧を再取得する", () => {
     const { result } = renderHook(() =>
       useBudgetPageState({ navigate: mockNavigate }),
@@ -278,9 +316,62 @@ describe("useBudgetPageState", () => {
     });
 
     act(() => {
-      result.current.handleEditExpenseAmountChange("0");
+      result.current.handleEditExpenseAmountChange("-100");
     });
 
+    act(() => {
+      result.current.handleUpdateExpense();
+    });
+
+    expect(mockUpdateExpense).not.toHaveBeenCalled();
+    expect(result.current.editingExpenseId).toBe("e-mar");
+  });
+
+  it("支出の編集で、過去の日付の金額を 0 円にして保存できる", () => {
+    const { result } = renderHook(() =>
+      useBudgetPageState({ navigate: mockNavigate }),
+    );
+
+    act(() => {
+      result.current.startEditExpense({
+        id: "e-mar",
+        date: "2026-03-03",
+        amount: 1000,
+        createdAt: "2026-03-03T00:00:00.000Z",
+      });
+    });
+    act(() => {
+      result.current.handleEditExpenseAmountChange("0");
+    });
+    act(() => {
+      result.current.handleUpdateExpense();
+    });
+
+    expect(mockUpdateExpense).toHaveBeenCalledWith(
+      "2026-03",
+      "e-mar",
+      expect.objectContaining({ amount: 0, date: "2026-03-03" }),
+    );
+    expect(result.current.editingExpenseId).toBeNull();
+  });
+
+  it("支出の編集で、日付を今日にして金額を 0 円にすると、保存せず編集を継続する", () => {
+    const { result } = renderHook(() =>
+      useBudgetPageState({ navigate: mockNavigate }),
+    );
+
+    act(() => {
+      result.current.startEditExpense({
+        id: "e-mar",
+        date: "2026-03-03",
+        amount: 1000,
+        createdAt: "2026-03-03T00:00:00.000Z",
+      });
+    });
+    act(() => {
+      result.current.handleEditExpenseDateChange("2026-03-07");
+      result.current.handleEditExpenseAmountChange("0");
+    });
     act(() => {
       result.current.handleUpdateExpense();
     });

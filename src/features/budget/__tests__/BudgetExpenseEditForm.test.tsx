@@ -93,4 +93,53 @@ describe("BudgetExpenseEditForm", () => {
       screen.queryByRole("button", { name: /の支出を削除/ }),
     ).not.toBeInTheDocument();
   });
+
+  describe("0 円が保存できない組み合わせの通知", () => {
+    beforeEach(() => {
+      jest.useFakeTimers().setSystemTime(new Date("2026-05-22T12:00:00+09:00"));
+    });
+
+    afterEach(() => {
+      jest.useRealTimers();
+    });
+
+    it("今日の日付の支出を 0 円にすると、理由を通知し、金額欄を無効（aria-invalid）にする", () => {
+      renderForm({
+        editingExpenseDate: "2026-05-22",
+        editingExpenseAmount: "0",
+      });
+
+      expect(screen.getByRole("alert")).toHaveTextContent(
+        "0 円は、今日より前の日付だけ記録できます",
+      );
+      const amountInput = screen.getByLabelText(/金額/);
+      expect(amountInput).toHaveAttribute("aria-invalid", "true");
+      expect(amountInput).toHaveAttribute(
+        "aria-describedby",
+        screen.getByRole("alert").getAttribute("id"),
+      );
+    });
+
+    it("過去の日付の支出を 0 円にしても、通知しない", () => {
+      renderForm({
+        editingExpenseDate: "2026-05-21",
+        editingExpenseAmount: "0",
+      });
+
+      expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+      expect(screen.getByLabelText(/金額/)).toHaveAttribute(
+        "aria-invalid",
+        "false",
+      );
+    });
+
+    it("0 円以外の金額は、今日の日付でも通知しない", () => {
+      renderForm({
+        editingExpenseDate: "2026-05-22",
+        editingExpenseAmount: "850",
+      });
+
+      expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    });
+  });
 });

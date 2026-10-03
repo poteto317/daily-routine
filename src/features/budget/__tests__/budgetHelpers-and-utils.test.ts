@@ -16,6 +16,7 @@ import {
   getDayFromDateValue,
   getDefaultExpenseDate,
   getMonthKeyFromDateValue,
+  isBeforeToday,
   isCurrentMonthDate,
   monthKeyToDate,
   shiftMonthToFirstDay,
@@ -25,6 +26,7 @@ import {
 import { formatCurrency } from "../utils/format";
 import {
   getMonthStateSnapshot,
+  parseNonNegativeAmount,
   parsePositiveAmount,
 } from "../budgetPageStateHelpers";
 
@@ -245,5 +247,22 @@ describe("budget helpers and utils", () => {
     expect(parsePositiveAmount("1200.5")).toBe(1200.5);
     expect(parsePositiveAmount("0")).toBeNull();
     expect(parsePositiveAmount("abc")).toBeNull();
+  });
+
+  it("parseNonNegativeAmount は 0 を含む 0 以上の数値だけを返す", () => {
+    expect(parseNonNegativeAmount("0")).toBe(0);
+    expect(parseNonNegativeAmount("1200.5")).toBe(1200.5);
+    expect(parseNonNegativeAmount("-1")).toBeNull();
+    expect(parseNonNegativeAmount("abc")).toBeNull();
+    expect(parseNonNegativeAmount("")).toBeNull();
+  });
+
+  it("isBeforeToday は、今日（ローカル）より前の日付だけを true にする", () => {
+    const now = new Date("2026-03-07T12:00:00+09:00");
+    expect(isBeforeToday("2026-03-06", now)).toBe(true);
+    expect(isBeforeToday("2026-02-28", now)).toBe(true);
+    expect(isBeforeToday("2026-03-07", now)).toBe(false);
+    expect(isBeforeToday("2026-03-08", now)).toBe(false);
+    expect(isBeforeToday("2027-01-01", now)).toBe(false);
   });
 });

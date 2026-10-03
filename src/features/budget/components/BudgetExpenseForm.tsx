@@ -1,5 +1,8 @@
+import { useId } from "react";
 import type { BudgetCategory } from "@/types/routine";
+import { isZeroAmountOnUnavailableDate } from "../utils/expenseAmountRule";
 import { BudgetExpenseDateSelect } from "./BudgetExpenseDateSelect";
+import { BudgetZeroAmountNotice } from "./BudgetZeroAmountNotice";
 import budgetTexts from "../locales/ja.json";
 
 type BudgetExpenseFormProps = {
@@ -25,6 +28,14 @@ export const BudgetExpenseForm = ({
   onCategoryIdChange,
   onDateChange,
 }: BudgetExpenseFormProps) => {
+  const amountHintId = useId();
+  const zeroNoticeId = useId();
+  const isZeroRejected = isZeroAmountOnUnavailableDate(
+    expenseAmount,
+    expenseDate,
+    new Date(),
+  );
+
   return (
     <div className="bg-gray-50 dark:bg-gray-200 rounded-xl p-4 mb-6">
       <h4 className="font-bold text-gray-900 dark:text-black mb-3">
@@ -52,8 +63,19 @@ export const BudgetExpenseForm = ({
             value={expenseAmount}
             onChange={(e) => onAmountChange(e.target.value)}
             placeholder={budgetTexts.expenseForm.amountPlaceholder}
+            aria-invalid={isZeroRejected}
+            aria-describedby={
+              isZeroRejected ? `${amountHintId} ${zeroNoticeId}` : amountHintId
+            }
             className="w-full px-4 py-2 border border-gray-300 dark:border-gray-400 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-white text-gray-900"
           />
+          <p
+            id={amountHintId}
+            className="mt-1 text-xs text-gray-600 dark:text-gray-700"
+          >
+            {budgetTexts.expenseForm.amountHint}
+          </p>
+          <BudgetZeroAmountNotice id={zeroNoticeId} visible={isZeroRejected} />
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-900 mb-1">

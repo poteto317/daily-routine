@@ -26,6 +26,8 @@
     "categoryLabel": "カテゴリ（任意）",
     "requiredMark": "*",
     "amountPlaceholder": "例: 1500",
+    "zeroAmountNotAllowed": "0 円は、今日より前の日付だけ記録できます。日付を変えるか、金額を入力してください。",
+    "amountHint": "支出が無かった日は、0 を入力して記録できます（今日より前の日付のみ）。記録した日は、1日あたり使える金額の計算の残り日数に含めません。",
     "categoryPlaceholder": "選択しない",
     "addLabel": "追加",
     "cancelLabel": "キャンセル"

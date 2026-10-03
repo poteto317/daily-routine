@@ -23,11 +23,18 @@ export const getMonthStateSnapshot = (date: Date): MonthStateSnapshot => {
   };
 };
 
-export const parsePositiveAmount = (value: string): number | null => {
+const parseAmount = (
+  value: string,
+  isAllowed: (amount: number) => boolean,
+): number | null => {
   const amount = Number.parseFloat(value);
-  if (Number.isNaN(amount) || amount <= 0) {
-    return null;
-  }
-
-  return amount;
+  return Number.isNaN(amount) || !isAllowed(amount) ? null : amount;
 };
+
+/** 0 を含む 0 以上の金額を読み取る。数値でない・負の値は null */
+export const parseNonNegativeAmount = (value: string): number | null =>
+  parseAmount(value, (amount) => amount >= 0);
+
+/** 0 より大きい金額を読み取る。数値でない・0 以下は null */
+export const parsePositiveAmount = (value: string): number | null =>
+  parseAmount(value, (amount) => amount > 0);
