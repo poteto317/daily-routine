@@ -35,6 +35,19 @@ jest.mock("@/features/sync/sync", () => ({
   watchRemoteChanges: jest.fn(),
 }));
 
+jest.mock("@/features/api-key", () => ({
+  useApiKeyState: () => ({
+    hasKey: false,
+    issuedKey: null,
+    isWorking: false,
+    error: null,
+    copied: false,
+    handleIssue: jest.fn(),
+    handleRevoke: jest.fn(),
+    handleCopy: jest.fn(),
+  }),
+}));
+
 Object.defineProperty(navigator, "serviceWorker", {
   value: {
     ready: Promise.resolve({

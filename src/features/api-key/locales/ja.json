@@ -1,0 +1,23 @@
+{
+  "title": "🔑 API キー",
+  "description": "AI エージェントから家計簿・ジャーナルを操作する API 用のキーを発行します。API で更新した後は、アプリで同期（ダウンロード）してください。",
+  "statusLabel": "状態",
+  "statusLoading": "確認中…",
+  "statusIssued": "発行済み",
+  "statusNone": "未発行",
+  "issueButton": "キーを発行",
+  "reissueButton": "キーを再発行",
+  "revokeButton": "キーを失効",
+  "issuedNotice": "⚠️ このキーは今だけ表示されます。必ず控えてください。再表示はできません。",
+  "issuedKeyLabel": "発行されたキー",
+  "copyButton": "コピー",
+  "copiedLabel": "コピーしました",
+  "confirmReissue": "新しいキーを発行します。現在のキーは無効になります。\n\n続行しますか？",
+  "confirmRevoke": "キーを失効します。このキーでの API 利用はできなくなります。\n\n続行しますか？",
+  "errors": {
+    "load": "❌ キーの状態を取得できませんでした。通信環境を確認してください",
+    "issue": "❌ キーの発行に失敗しました。通信環境を確認して再度お試しください",
+    "revoke": "❌ キーの失効に失敗しました。通信環境を確認して再度お試しください",
+    "copy": "❌ コピーに失敗しました。手動で選択してコピーしてください"
+  }
+}

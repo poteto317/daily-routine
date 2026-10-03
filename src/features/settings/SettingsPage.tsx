@@ -9,6 +9,7 @@ import { FeatureVisibilitySection } from "./components/FeatureVisibilitySection"
 import { MenuOrderSection } from "./components/MenuOrderSection";
 import { AppearanceSection } from "./components/AppearanceSection";
 import { DataManagementSection } from "./components/DataManagementSection";
+import { ApiKeySection } from "./components/ApiKeySection";
 import { PrivacyNoteSection } from "./components/PrivacyNoteSection";
 import texts from "./locales/ja.json";
 
@@ -81,6 +82,7 @@ export const SettingsPage = () => {
               handleImport={state.handleImport}
               fileInputRef={state.fileInputRef}
             />
+            <ApiKeySection />
           </div>
           <PrivacyNoteSection />
         </CardPanel>
