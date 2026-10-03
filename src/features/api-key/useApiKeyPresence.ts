@@ -6,7 +6,10 @@ type Args = {
   onLoadError: () => void;
 };
 
-/** マウント時に 1 回だけキーの発行有無を取得する。null は確認中 */
+/**
+ * マウント時に 1 回だけキーの発行有無を取得する。null は確認中。
+ * 失敗したときはページの再読み込みで再取得する（エラー文言で案内する）。
+ */
 export const useApiKeyPresence = ({ onLoadError }: Args) => {
   const [hasKey, setHasKey] = useState<boolean | null>(null);
   const onLoadErrorRef = useRef(onLoadError);

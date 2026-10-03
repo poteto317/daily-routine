@@ -50,6 +50,28 @@ describe("useCopyApiKey", () => {
     expect(result.current.copied).toBe(false);
   });
 
+  it("コピー成功後の再試行が失敗したら copied を false に戻し、エラーと同時に成功表示を出さない", async () => {
+    const writeText = jest
+      .fn()
+      .mockResolvedValueOnce(undefined)
+      .mockRejectedValueOnce(new Error("denied"));
+    mockClipboard(writeText);
+    const onError = jest.fn();
+    const { result } = renderHook(() => useCopyApiKey("drk_x", onError));
+
+    await act(async () => {
+      await result.current.handleCopy();
+    });
+    expect(result.current.copied).toBe(true);
+
+    await act(async () => {
+      await result.current.handleCopy();
+    });
+
+    expect(result.current.copied).toBe(false);
+    expect(onError).toHaveBeenCalledWith(texts.errors.copy);
+  });
+
   it("クリップボード API が無い環境でも onError で通知する", async () => {
     mockClipboard(undefined);
     const onError = jest.fn();

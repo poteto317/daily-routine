@@ -14,6 +14,8 @@ export const useCopyApiKey = (
       await navigator.clipboard.writeText(issuedKey);
       setCopied(true);
     } catch {
+      // 成功表示（「コピーしました」）とエラーが同時に出ないようにする
+      setCopied(false);
       onError(texts.errors.copy);
     }
   }, [issuedKey, onError]);

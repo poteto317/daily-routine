@@ -54,4 +54,17 @@ describe("IssuedApiKeyPanel", () => {
     fireEvent.focus(input);
     expect(select).toHaveBeenCalled();
   });
+
+  it("コピー結果は role=status の領域で通知する（領域は常に置き、中身だけ切り替える）", () => {
+    const { rerender } = render(
+      <IssuedApiKeyPanel issuedKey="k" copied={false} onCopy={jest.fn()} />,
+    );
+    const region = screen.getByRole("status");
+    expect(region).toHaveAttribute("aria-live", "polite");
+    expect(region).toBeEmptyDOMElement();
+
+    rerender(<IssuedApiKeyPanel issuedKey="k" copied onCopy={jest.fn()} />);
+    expect(screen.getByRole("status")).toBe(region);
+    expect(region).toHaveTextContent(texts.copiedLabel);
+  });
 });

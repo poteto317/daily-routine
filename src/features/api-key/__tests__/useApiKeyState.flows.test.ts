@@ -95,6 +95,13 @@ describe("useApiKeyState（フック同士の連携）", () => {
     expect(result.current.copied).toBe(false);
   });
 
+  it("初回取得の失敗メッセージは、ページの再読み込みで復帰できることを案内する", async () => {
+    mockedService.hasApiKey.mockRejectedValue(new Error("x"));
+    const { result } = renderHook(() => useApiKeyState());
+    await waitFor(() => expect(result.current.error).toBe(texts.errors.load));
+    expect(texts.errors.load).toContain("再読み込み");
+  });
+
   it("初回取得の失敗エラーは、次の発行を始めると消える", async () => {
     mockedService.hasApiKey.mockRejectedValue(new Error("x"));
     const { result } = renderHook(() => useApiKeyState());

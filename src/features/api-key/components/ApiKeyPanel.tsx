@@ -35,7 +35,10 @@ export const ApiKeyPanel = () => {
           />
         )}
         {error && (
-          <div className="mt-2 p-2 bg-red-100 dark:bg-red-200 border border-red-300 rounded text-xs text-red-800 dark:text-red-900">
+          <div
+            role="alert"
+            className="mt-2 p-2 bg-red-100 dark:bg-red-200 border border-red-300 rounded text-xs text-red-800 dark:text-red-900"
+          >
             {error}
           </div>
         )}

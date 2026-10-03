@@ -28,8 +28,13 @@ export const IssuedApiKeyPanel = ({ issuedKey, copied, onCopy }: Props) => (
     >
       {texts.copyButton}
     </button>
-    {copied && (
-      <span className="ml-2 text-xs text-emerald-700">{texts.copiedLabel}</span>
-    )}
+    {/* スクリーンリーダーに結果が伝わるよう、領域は常に置いて中身だけ切り替える */}
+    <span
+      role="status"
+      aria-live="polite"
+      className="ml-2 text-xs text-emerald-700"
+    >
+      {copied ? texts.copiedLabel : ""}
+    </span>
   </div>
 );

@@ -74,4 +74,14 @@ describe("ApiKeyPanel", () => {
       screen.getByRole("button", { name: texts.issueButton }),
     ).toBeDisabled();
   });
+
+  it("エラーは role=alert でスクリーンリーダーに通知し、無ければ出さない", () => {
+    mockedUseApiKeyState.mockReturnValue({ ...baseState, error: "失敗" });
+    const { rerender } = render(<ApiKeyPanel />);
+    expect(screen.getByRole("alert")).toHaveTextContent("失敗");
+
+    mockedUseApiKeyState.mockReturnValue({ ...baseState, error: null });
+    rerender(<ApiKeyPanel />);
+    expect(screen.queryByRole("alert")).toBeNull();
+  });
 });
