@@ -41,4 +41,10 @@ describe("matchRoute", () => {
       expect.objectContaining({ status: 405 }),
     );
   });
+
+  it("不正なパーセントエンコードは 400", () => {
+    expect(() => matchRoute("DELETE", "/budget/expenses/%E0%A4%A")).toThrow(
+      expect.objectContaining({ status: 400, code: "invalid_path" }),
+    );
+  });
 });

@@ -33,6 +33,9 @@ const notFoundRoute = (): ApiError =>
 const methodNotAllowed = (): ApiError =>
   new ApiError(405, "method_not_allowed", "このメソッドは使用できません");
 
+const invalidPath = (): ApiError =>
+  new ApiError(400, "invalid_path", "パスの ID が不正です");
+
 export const matchRoute = (method: string, path: string): RouteMatch => {
   const segments = path.split("/").filter((segment) => segment.length > 0);
   if (segments.length < 2 || segments.length > 3) throw notFoundRoute();
@@ -48,5 +51,9 @@ export const matchRoute = (method: string, path: string): RouteMatch => {
 
   const action = ITEM_ACTIONS[method];
   if (!action) throw methodNotAllowed();
-  return { resource, action, id: decodeURIComponent(segments[2]) };
+  try {
+    return { resource, action, id: decodeURIComponent(segments[2]) };
+  } catch {
+    throw invalidPath();
+  }
 };
