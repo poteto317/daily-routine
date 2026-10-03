@@ -53,7 +53,7 @@ describe("issueApiKey", () => {
     await expect(issueApiKey()).rejects.toThrow("batch failed");
   });
 
-  it("キーを生成して UTF-8 のハッシュにしたものを保存する", async () => {
+  it("生成したキーをハッシュ化する", async () => {
     await issueApiKey();
     expect(mockedGenerator.hashApiKey).toHaveBeenCalledWith("drk_new");
   });
