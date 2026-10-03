@@ -95,6 +95,72 @@ describe("useApiKeyState（フック同士の連携）", () => {
     expect(result.current.copied).toBe(false);
   });
 
+  it("コピー失敗後の再試行が成功すると、コピーのエラーが消えて copied になる", async () => {
+    const { result } = await loaded();
+    await act(async () => {
+      await result.current.handleIssue();
+    });
+    Object.defineProperty(navigator, "clipboard", {
+      value: {
+        writeText: jest
+          .fn()
+          .mockRejectedValueOnce(new Error("denied"))
+          .mockResolvedValueOnce(undefined),
+      },
+      configurable: true,
+    });
+
+    await act(async () => {
+      await result.current.handleCopy();
+    });
+    expect(result.current.error).toBe(texts.errors.copy);
+    expect(result.current.copied).toBe(false);
+
+    await act(async () => {
+      await result.current.handleCopy();
+    });
+    expect(result.current.error).toBeNull();
+    expect(result.current.copied).toBe(true);
+  });
+
+  it("コピーに成功しても、再発行失敗のエラーは消えない（コピーのエラーだけを消す）", async () => {
+    const { result } = await loaded();
+    await act(async () => {
+      await result.current.handleIssue();
+    });
+    mockedService.issueApiKey.mockRejectedValue(new Error("x"));
+    await act(async () => {
+      await result.current.handleIssue();
+    });
+    expect(result.current.error).toBe(texts.errors.issue);
+    expect(result.current.issuedKey).toBe("drk_new");
+
+    await act(async () => {
+      await result.current.handleCopy();
+    });
+
+    expect(result.current.copied).toBe(true);
+    expect(result.current.error).toBe(texts.errors.issue);
+  });
+
+  it("コピーに成功しても、失効失敗のエラーは消えない", async () => {
+    const { result } = await loaded();
+    await act(async () => {
+      await result.current.handleIssue();
+    });
+    mockedService.revokeApiKeys.mockRejectedValue(new Error("x"));
+    await act(async () => {
+      await result.current.handleRevoke();
+    });
+    expect(result.current.error).toBe(texts.errors.revoke);
+
+    await act(async () => {
+      await result.current.handleCopy();
+    });
+
+    expect(result.current.error).toBe(texts.errors.revoke);
+  });
+
   it("初回取得の失敗メッセージは、ページの再読み込みで復帰できることを案内する", async () => {
     mockedService.hasApiKey.mockRejectedValue(new Error("x"));
     const { result } = renderHook(() => useApiKeyState());

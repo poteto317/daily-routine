@@ -95,4 +95,37 @@ describe("useCopyApiKey", () => {
 
     expect(result.current.copied).toBe(false);
   });
+
+  it("コピーに成功したら onSuccess を呼び、失敗したときは呼ばない", async () => {
+    const writeText = jest
+      .fn()
+      .mockRejectedValueOnce(new Error("denied"))
+      .mockResolvedValueOnce(undefined);
+    mockClipboard(writeText);
+    const onSuccess = jest.fn();
+    const { result } = renderHook(() =>
+      useCopyApiKey("drk_x", jest.fn(), onSuccess),
+    );
+
+    await act(async () => {
+      await result.current.handleCopy();
+    });
+    expect(onSuccess).not.toHaveBeenCalled();
+    expect(result.current.copied).toBe(false);
+
+    await act(async () => {
+      await result.current.handleCopy();
+    });
+    expect(onSuccess).toHaveBeenCalledTimes(1);
+    expect(result.current.copied).toBe(true);
+  });
+
+  it("onSuccess を渡さなくてもコピーできる（省略可能）", async () => {
+    mockClipboard(jest.fn().mockResolvedValue(undefined));
+    const { result } = renderHook(() => useCopyApiKey("drk_x", jest.fn()));
+    await act(async () => {
+      await result.current.handleCopy();
+    });
+    expect(result.current.copied).toBe(true);
+  });
 });

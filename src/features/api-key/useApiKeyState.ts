@@ -13,9 +13,15 @@ export const useApiKeyState = () => {
   const { hasKey, setHasKey } = useApiKeyPresence({
     onLoadError: handleLoadError,
   });
+  // コピーに成功したら、前回のコピー失敗のエラーだけを消す（取得・発行・失効のエラーは残す）
+  const clearCopyError = useCallback(
+    () => setError((prev) => (prev === texts.errors.copy ? null : prev)),
+    [],
+  );
   const { copied, handleCopy, resetCopied } = useCopyApiKey(
     issuedKey,
     setError,
+    clearCopyError,
   );
   const { isWorking, handleIssue, handleRevoke } = useApiKeyCommands({
     hasKey,
