@@ -3,12 +3,12 @@ import { generateApiKey, hashApiKey } from "./apiKeyGenerator";
 import {
   deleteApiKeyHashes,
   listApiKeyHashes,
-  saveApiKeyHash,
+  replaceApiKeyHash,
 } from "./apiKeyRepository";
 
 /**
- * 新しいキーを保存してから旧キーを削除する。
- * 保存に失敗した場合は旧キーを残し、キーが無い状態を作らない。
+ * 新しいキーの保存と旧キーの削除を、1 つのバッチで原子的に行う。
+ * 失敗したら何も変わらない（旧キーは有効なまま）ので、エラー表示が実際の状態と一致する。
  * 戻り値の平文キーは呼び出し側が 1 回だけ表示する（保存しない）。
  */
 export const issueApiKey = async (): Promise<string> => {
@@ -17,10 +17,7 @@ export const issueApiKey = async (): Promise<string> => {
   const hash = await hashApiKey(key);
   const previousHashes = await listApiKeyHashes(user.uid);
 
-  await saveApiKeyHash(user.uid, hash);
-  if (previousHashes.length > 0) {
-    await deleteApiKeyHashes(previousHashes);
-  }
+  await replaceApiKeyHash(user.uid, hash, previousHashes);
   return key;
 };
 

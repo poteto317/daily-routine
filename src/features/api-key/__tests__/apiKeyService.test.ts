@@ -16,41 +16,46 @@ beforeEach(() => {
   mockedGenerator.generateApiKey.mockReturnValue("drk_new");
   mockedGenerator.hashApiKey.mockResolvedValue("hash-new");
   mockedRepository.listApiKeyHashes.mockResolvedValue([]);
+  mockedRepository.replaceApiKeyHash.mockResolvedValue(undefined);
+  mockedRepository.deleteApiKeyHashes.mockResolvedValue(undefined);
 });
 
 describe("issueApiKey", () => {
-  it("新しいハッシュを保存し、平文キーを返す", async () => {
+  it("旧キーが無ければ、新しいハッシュだけを保存して平文キーを返す", async () => {
     await expect(issueApiKey()).resolves.toBe("drk_new");
-    expect(mockedRepository.saveApiKeyHash).toHaveBeenCalledWith(
+    expect(mockedRepository.replaceApiKeyHash).toHaveBeenCalledWith(
       "user-1",
       "hash-new",
+      [],
     );
   });
 
-  it("旧キーは新キー保存後に削除する（キーが無い瞬間を作らない）", async () => {
+  it("旧キーがあれば、新キーの保存と旧キーの削除を同じ呼び出しで行う（原子的）", async () => {
     mockedRepository.listApiKeyHashes.mockResolvedValue(["hash-old"]);
-    const order: string[] = [];
-    mockedRepository.saveApiKeyHash.mockImplementation(async () => {
-      order.push("save");
-    });
-    mockedRepository.deleteApiKeyHashes.mockImplementation(async () => {
-      order.push("delete");
-    });
 
     await issueApiKey();
 
-    expect(order).toEqual(["save", "delete"]);
-    expect(mockedRepository.deleteApiKeyHashes).toHaveBeenCalledWith([
-      "hash-old",
-    ]);
+    expect(mockedRepository.replaceApiKeyHash).toHaveBeenCalledTimes(1);
+    expect(mockedRepository.replaceApiKeyHash).toHaveBeenCalledWith(
+      "user-1",
+      "hash-new",
+      ["hash-old"],
+    );
+    expect(mockedRepository.deleteApiKeyHashes).not.toHaveBeenCalled();
   });
 
-  it("保存に失敗したら旧キーを削除せずエラーを伝播する", async () => {
+  it("入れ替えに失敗したらエラーを伝播し、平文キーは返さない", async () => {
     mockedRepository.listApiKeyHashes.mockResolvedValue(["hash-old"]);
-    mockedRepository.saveApiKeyHash.mockRejectedValue(new Error("save failed"));
+    mockedRepository.replaceApiKeyHash.mockRejectedValue(
+      new Error("batch failed"),
+    );
 
-    await expect(issueApiKey()).rejects.toThrow("save failed");
-    expect(mockedRepository.deleteApiKeyHashes).not.toHaveBeenCalled();
+    await expect(issueApiKey()).rejects.toThrow("batch failed");
+  });
+
+  it("キーを生成して UTF-8 のハッシュにしたものを保存する", async () => {
+    await issueApiKey();
+    expect(mockedGenerator.hashApiKey).toHaveBeenCalledWith("drk_new");
   });
 });
 
