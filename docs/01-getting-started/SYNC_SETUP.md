@@ -46,6 +46,7 @@ service cloud.firestore {
     // API 側（Cloud Functions / Admin SDK）はルールの対象外。
     match /apiKeys/{keyHash} {
       allow create: if request.auth != null
+        && keyHash.matches('^[0-9a-f]{64}$')
         && request.resource.data.uid == request.auth.uid
         && request.resource.data.createdAt == request.time
         && request.resource.data.keys().hasOnly(["uid", "createdAt"]);
