@@ -4,6 +4,7 @@ import { syncRoutines as createSyncRoutines } from "./sync";
 import { checkNotifications as createCheckNotifications } from "./notifications";
 import { cleanupNotifications as createCleanupNotifications } from "./notificationCleanup";
 import { onBugReportCreated as createOnBugReportCreated } from "./bugReport/onBugReportCreated";
+import { agentApi as createAgentApi } from "./agentApi/agentApi";
 
 const db = initializeFirebase();
 
@@ -14,3 +15,4 @@ export const syncRoutines = createSyncRoutines(db);
 export const checkNotifications = createCheckNotifications(db);
 export const cleanupNotifications = createCleanupNotifications(db);
 export const onBugReportCreated = createOnBugReportCreated(db);
+export const agentApi = createAgentApi(db);
