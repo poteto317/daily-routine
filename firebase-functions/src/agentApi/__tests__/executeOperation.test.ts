@@ -97,3 +97,97 @@ describe("executeOperation", () => {
     ).rejects.toThrow("tx failed");
   });
 });
+
+describe("executeOperation（クエリパラメータの検証）", () => {
+  const listRequest = (query: Record<string, string | undefined>) => ({
+    ...request,
+    query,
+  });
+
+  it("支出の一覧は month、ジャーナルの一覧は date を受け付ける", async () => {
+    const deps = makeDeps({
+      readData: jest.fn().mockResolvedValue({}),
+    });
+    await expect(
+      executeOperation(
+        deps,
+        "u1",
+        { resource: "expenses", action: "list" },
+        listRequest({ month: "2026-10" }),
+      ),
+    ).resolves.toMatchObject({ status: 200 });
+    await expect(
+      executeOperation(
+        deps,
+        "u1",
+        { resource: "journalEntries", action: "list" },
+        listRequest({ date: "2026-10-03" }),
+      ),
+    ).resolves.toMatchObject({ status: 200 });
+  });
+
+  it("一覧の未知のクエリキー（打ち間違い）は 400 invalid_query で、Firestore を読まない", async () => {
+    const deps = makeDeps();
+    await expect(
+      executeOperation(
+        deps,
+        "u1",
+        { resource: "expenses", action: "list" },
+        listRequest({ mont: "2026-10" }),
+      ),
+    ).rejects.toMatchObject({ status: 400, code: "invalid_query" });
+    expect(deps.readData).not.toHaveBeenCalled();
+  });
+
+  it("リソースに対応しないクエリキーも 400（支出に date、ジャーナルに month）", async () => {
+    const deps = makeDeps();
+    await expect(
+      executeOperation(
+        deps,
+        "u1",
+        { resource: "expenses", action: "list" },
+        listRequest({ date: "2026-10-03" }),
+      ),
+    ).rejects.toMatchObject({ code: "invalid_query" });
+    await expect(
+      executeOperation(
+        deps,
+        "u1",
+        { resource: "journalEntries", action: "list" },
+        listRequest({ month: "2026-10" }),
+      ),
+    ).rejects.toMatchObject({ code: "invalid_query" });
+  });
+
+  it("クエリを受け付けないカテゴリ・収入項目・支出項目の一覧にクエリを付けると 400", async () => {
+    const deps = makeDeps();
+    for (const resource of [
+      "categories",
+      "incomeItems",
+      "expenseItems",
+    ] as const) {
+      await expect(
+        executeOperation(
+          deps,
+          "u1",
+          { resource, action: "list" },
+          listRequest({ month: "2026-10" }),
+        ),
+      ).rejects.toMatchObject({ code: "invalid_query" });
+    }
+    expect(deps.readData).not.toHaveBeenCalled();
+  });
+
+  it("書き込み系（作成・更新・削除）にクエリを付けると 400 で、トランザクションを開始しない", async () => {
+    const deps = makeDeps();
+    await expect(
+      executeOperation(
+        deps,
+        "u1",
+        { resource: "categories", action: "create" },
+        listRequest({ month: "2026-10" }),
+      ),
+    ).rejects.toMatchObject({ status: 400, code: "invalid_query" });
+    expect(deps.runWrite).not.toHaveBeenCalled();
+  });
+});

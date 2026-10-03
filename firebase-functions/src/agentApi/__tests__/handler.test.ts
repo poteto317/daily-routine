@@ -116,6 +116,22 @@ describe("createAgentApiHandler", () => {
     expect(deps.readData).not.toHaveBeenCalled();
   });
 
+  it("クエリの打ち間違い（?mont=2026-10）は 400 invalid_query で、全件を返さない", async () => {
+    const deps = makeDeps();
+    const res = await run(
+      deps,
+      makeReq({ path: "/budget/expenses", query: { mont: "2026-10" } }),
+    );
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({
+      error: {
+        code: "invalid_query",
+        message: expect.stringContaining("mont"),
+      },
+    });
+    expect(deps.readData).not.toHaveBeenCalled();
+  });
+
   it("ルート不一致 404 / メソッド不一致 405 / 検証エラー 400 をエラー形式で返す", async () => {
     const notFoundRes = await run(makeDeps(), makeReq({ path: "/nope" }));
     expect(notFoundRes.status).toHaveBeenCalledWith(404);
