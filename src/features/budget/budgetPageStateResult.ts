@@ -9,7 +9,6 @@ type BudgetPageStateResultArgs = {
   editingExpenseAmount: string;
   editingExpenseDate: string;
   editingExpenseCategoryId: string;
-  editingExpenseUsedTime: string;
   expenseAmount: string;
   expenseDate: string;
   expenseCategoryId: string;
@@ -26,7 +25,6 @@ type BudgetPageStateResultArgs = {
   handleEditExpenseAmountChange: (value: string) => void;
   handleEditExpenseDateChange: (value: string) => void;
   handleEditExpenseCategoryIdChange: (value: string) => void;
-  handleEditExpenseUsedTimeChange: (value: string) => void;
   isCurrentMonth: boolean;
   navigateToCategoryManagement: () => void;
   navigateToSummary: () => void;
@@ -46,7 +44,6 @@ export const createBudgetPageStateResult = ({
   editingExpenseAmount,
   editingExpenseDate,
   editingExpenseCategoryId,
-  editingExpenseUsedTime,
   expenseAmount,
   expenseDate,
   expenseCategoryId,
@@ -63,7 +60,6 @@ export const createBudgetPageStateResult = ({
   handleEditExpenseAmountChange,
   handleEditExpenseDateChange,
   handleEditExpenseCategoryIdChange,
-  handleEditExpenseUsedTimeChange,
   isCurrentMonth,
   navigateToCategoryManagement,
   navigateToSummary,
@@ -82,7 +78,6 @@ export const createBudgetPageStateResult = ({
     editingExpenseAmount,
     editingExpenseDate,
     editingExpenseCategoryId,
-    editingExpenseUsedTime,
     expenseAmount,
     expenseDate,
     expenseCategoryId,
@@ -99,7 +94,6 @@ export const createBudgetPageStateResult = ({
     handleEditExpenseAmountChange,
     handleEditExpenseDateChange,
     handleEditExpenseCategoryIdChange,
-    handleEditExpenseUsedTimeChange,
     isCurrentMonth,
     navigateToCategoryManagement,
     navigateToSummary,
