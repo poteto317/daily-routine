@@ -1,4 +1,5 @@
 /** @jest-environment node */
+import { ApiError } from "../errors";
 import { API_DEVICE_ID, MAX_SYNC_SNAPSHOTS } from "../syncConstants";
 import type { OperationOutcome } from "../operations/types";
 import { applyChanges } from "../syncWriter";
@@ -215,6 +216,106 @@ describe("applyChanges", () => {
     expect(outcome.body).toEqual({ x: 1 });
     expect(fake.get("users/u1")).toEqual(baseDoc);
     expect(fake.snapshotsOf("u1")).toHaveLength(0);
+  });
+
+  it("変更対象のフィールドが同期ドキュメントに無ければ 409 outdated_sync_data で、何も書き込まない", async () => {
+    const { budgetCategories, ...withoutCategories } = baseDoc;
+    void budgetCategories;
+    const fake = createFakeFirestore({ "users/u1": withoutCategories });
+    await expect(
+      applyChanges(
+        fake.db,
+        "u1",
+        () => ({
+          status: 201,
+          body: {},
+          changes: { budgetCategories: [{ id: "c1" }] },
+        }),
+        deps(5000),
+      ),
+    ).rejects.toMatchObject({ status: 409, code: "outdated_sync_data" });
+    expect(fake.get("users/u1")).toEqual(withoutCategories);
+    expect(fake.snapshotsOf("u1")).toHaveLength(0);
+  });
+
+  it("値が null のフィールドも欠損として扱う（アプリの正規化と同じ）", async () => {
+    const fake = createFakeFirestore({
+      "users/u1": { ...baseDoc, budgetCategories: null },
+    });
+    await expect(
+      applyChanges(
+        fake.db,
+        "u1",
+        () => ({
+          status: 200,
+          body: {},
+          changes: { budgetCategories: [] },
+        }),
+        deps(5000),
+      ),
+    ).rejects.toMatchObject({ code: "outdated_sync_data" });
+  });
+
+  it("複数フィールドを書く操作は、1 つでも欠けていれば中断する", async () => {
+    const fake = createFakeFirestore({ "users/u1": baseDoc });
+    await expect(
+      applyChanges(
+        fake.db,
+        "u1",
+        () => ({
+          status: 200,
+          body: {},
+          changes: { budgetCategories: [], journalHistory: {} },
+        }),
+        deps(5000),
+      ),
+    ).rejects.toMatchObject({ code: "outdated_sync_data" });
+    expect(fake.get("users/u1")).toEqual(baseDoc);
+  });
+
+  it("空配列で存在するフィールドには書き込める（欠損と空を区別する）", async () => {
+    const fake = createFakeFirestore({
+      "users/u1": { ...baseDoc, budgetCategories: [] },
+    });
+    await expect(
+      applyChanges(
+        fake.db,
+        "u1",
+        () => ({
+          status: 201,
+          body: {},
+          changes: { budgetCategories: [{ id: "c1" }] },
+        }),
+        deps(5000),
+      ),
+    ).resolves.toMatchObject({ status: 201 });
+  });
+
+  it("変更が無い操作（一覧など）は、フィールドが欠けていても通る", async () => {
+    const fake = createFakeFirestore({ "users/u1": { lastModified: 1000 } });
+    const outcome = await applyChanges<OperationOutcome>(
+      fake.db,
+      "u1",
+      () => ({ status: 200, body: {} }),
+      deps(5000),
+    );
+    expect(outcome.status).toBe(200);
+  });
+
+  it("操作側の検証エラー（400 など）は、欠損の判定より先に返る", async () => {
+    const { budgetCategories, ...withoutCategories } = baseDoc;
+    void budgetCategories;
+    const fake = createFakeFirestore({ "users/u1": withoutCategories });
+    await expect(
+      applyChanges(
+        fake.db,
+        "u1",
+        () => {
+          throw new ApiError(400, "invalid_field", "x");
+        },
+        deps(5000),
+      ),
+    ).rejects.toMatchObject({ status: 400 });
   });
 
   it("users/{uid} が無ければ 404 no_sync_data で何も作らない", async () => {

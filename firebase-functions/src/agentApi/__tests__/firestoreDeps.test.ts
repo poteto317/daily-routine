@@ -32,7 +32,12 @@ describe("createFirestoreHandlerDeps", () => {
 
   it("runWrite はトランザクションで書き込み、同期メタ情報を更新する", async () => {
     const { fake, deps } = setup({
-      "users/u1": { routines: [], lastModified: 1000, deviceId: "device-a" },
+      "users/u1": {
+        routines: [],
+        budgetCategories: [],
+        lastModified: 1000,
+        deviceId: "device-a",
+      },
     });
     const outcome = await deps.runWrite("u1", () => ({
       status: 200,

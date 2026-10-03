@@ -1,5 +1,11 @@
 /** @jest-environment node */
-import { ApiError, emptyPatch, noSyncData, notFound } from "../errors";
+import {
+  ApiError,
+  emptyPatch,
+  noSyncData,
+  notFound,
+  outdatedSyncData,
+} from "../errors";
 
 describe("ApiError", () => {
   it("status / code / message を保持し、Error として扱える", () => {
@@ -37,5 +43,14 @@ describe("emptyPatch", () => {
     expect(error.status).toBe(400);
     expect(error.code).toBe("empty_patch");
     expect(error.message).toContain("更新");
+  });
+});
+
+describe("outdatedSyncData", () => {
+  it("409 outdated_sync_data で、最新のアプリからのアップロードを案内する", () => {
+    const error = outdatedSyncData();
+    expect(error.status).toBe(409);
+    expect(error.code).toBe("outdated_sync_data");
+    expect(error.message).toContain("アップロード");
   });
 });

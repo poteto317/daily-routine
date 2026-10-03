@@ -1,9 +1,9 @@
 import type * as admin from "firebase-admin";
-import { noSyncData } from "./errors";
+import { noSyncData, outdatedSyncData } from "./errors";
 import { nextLastModified } from "./lastModified";
 import { saveApiSnapshot } from "./snapshotWriter";
 import { API_DEVICE_ID } from "./syncConstants";
-import type { SyncDocData } from "./syncDoc";
+import { findMissingFields, type SyncDocData } from "./syncDoc";
 
 export type WriteDeps = {
   now: () => number;
@@ -35,6 +35,10 @@ export const applyChanges = <T extends { changes?: SyncDocData }>(
     const current = userDoc.data() as SyncDocData;
     const outcome = build(current);
     if (!outcome.changes) return outcome;
+    // 書き込み対象のフィールドが無い古い形式のドキュメントには、新しく作らず中断する
+    if (findMissingFields(current, Object.keys(outcome.changes)).length > 0) {
+      throw outdatedSyncData();
+    }
 
     const lastModified = nextLastModified(current.lastModified, deps.now());
     const serverTimestamp = deps.serverTimestamp();
