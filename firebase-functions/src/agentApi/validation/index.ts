@@ -1,6 +1,6 @@
 export { parseBody } from "./body";
 export type { JsonObject } from "./body";
-export { readAmount } from "./amountField";
+export { readAmount, readAmountAllowingZero } from "./amountField";
 export { readDate, readTime } from "./dateTimeFields";
 export { readEnum } from "./enumField";
 export {

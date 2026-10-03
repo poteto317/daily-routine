@@ -1,7 +1,7 @@
 import { ApiError, emptyPatch } from "../../errors";
 import {
   compact,
-  readAmount,
+  readAmountAllowingZero,
   readDate,
   readString,
   readTime,
@@ -45,13 +45,13 @@ export type CreateExpenseInput = {
   usedTime?: string;
 };
 
-/** 作成用の本文を検証する。date と amount は必須 */
+/** 作成用の本文を検証する。date と amount は必須。0 円と日付の組み合わせは、別途 expenseAmountRule で確認する */
 export const parseCreateExpenseInput = (
   input: JsonObject,
   data: SyncDocData,
 ): CreateExpenseInput => {
   const date = required("date", readDate(input, "date"));
-  const amount = required("amount", readAmount(input, "amount"));
+  const amount = required("amount", readAmountAllowingZero(input, "amount"));
   const categoryId = readString(input, "categoryId", CATEGORY_ID_OPTIONS);
   if (categoryId !== undefined) assertCategoryExists(data, categoryId);
   return { date, amount, categoryId, usedTime: readTime(input, "usedTime") };
@@ -79,7 +79,7 @@ export const parseExpensePatchInput = (
   return {
     patch: compact({
       date: readDate(input, "date"),
-      amount: readAmount(input, "amount"),
+      amount: readAmountAllowingZero(input, "amount"),
       usedTime: readTime(input, "usedTime"),
       categoryId,
     }),

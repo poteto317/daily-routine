@@ -199,6 +199,116 @@ describe("expenseOperations.update", () => {
   });
 });
 
+describe("expenseOperations（0 円の支出）", () => {
+  const expectZeroRejected = (run: () => unknown) =>
+    expect(run).toThrow(
+      expect.objectContaining({
+        status: 400,
+        code: "invalid_field",
+        message: expect.stringContaining("amount"),
+      }),
+    );
+
+  it("create: 今日（JST）より前の日付なら、0 円で作成できる", () => {
+    const outcome = expenseOperations.create(
+      context({ body: { date: "2026-10-02", amount: 0 } }),
+    );
+    expect(outcome.status).toBe(201);
+    expect(
+      (outcome.body as { expense: { amount: number } }).expense.amount,
+    ).toBe(0);
+  });
+
+  it("create: 今日・未来の日付では、0 円を 400 にする", () => {
+    expectZeroRejected(() =>
+      expenseOperations.create(
+        context({ body: { date: "2026-10-03", amount: 0 } }),
+      ),
+    );
+    expectZeroRejected(() =>
+      expenseOperations.create(
+        context({ body: { date: "2026-10-04", amount: 0 } }),
+      ),
+    );
+  });
+
+  it("update: 過去の日付の支出の金額を、0 円に更新できる", () => {
+    const outcome = expenseOperations.update(
+      context({
+        data: dataWith({ "2026-10": [expense] }),
+        id: "expense-1",
+        body: { amount: 0 },
+      }),
+    );
+    expect(outcome.status).toBe(200);
+    expect(
+      (outcome.body as { expense: { amount: number } }).expense.amount,
+    ).toBe(0);
+  });
+
+  it("update: 今日の日付の支出を、0 円に更新すると 400", () => {
+    const today = { ...expense, date: "2026-10-03" };
+    expectZeroRejected(() =>
+      expenseOperations.update(
+        context({
+          data: dataWith({ "2026-10": [today] }),
+          id: "expense-1",
+          body: { amount: 0 },
+        }),
+      ),
+    );
+  });
+
+  it("update: 0 円の支出の日付を、今日・未来に変えると 400（金額が変わらなくても確認する）", () => {
+    const zero = { ...expense, amount: 0 };
+    expectZeroRejected(() =>
+      expenseOperations.update(
+        context({
+          data: dataWith({ "2026-10": [zero] }),
+          id: "expense-1",
+          body: { date: "2026-10-03" },
+        }),
+      ),
+    );
+  });
+
+  it("update: 0 円の支出の日付を、別の過去の日付に変えるのは許可する", () => {
+    const zero = { ...expense, amount: 0 };
+    const outcome = expenseOperations.update(
+      context({
+        data: dataWith({ "2026-10": [zero] }),
+        id: "expense-1",
+        body: { date: "2026-09-30" },
+      }),
+    );
+    expect(outcome.status).toBe(200);
+  });
+
+  it("update: 日付と金額を同時に変えるときは、更新後の組み合わせで確認する（0 円を過去の日付へ移す）", () => {
+    const today = { ...expense, date: "2026-10-03" };
+    const outcome = expenseOperations.update(
+      context({
+        data: dataWith({ "2026-10": [today] }),
+        id: "expense-1",
+        body: { date: "2026-10-01", amount: 0 },
+      }),
+    );
+    expect(outcome.status).toBe(200);
+  });
+
+  it("update: 金額も日付も変えない更新（カテゴリだけ）は、確認しない（既存のデータを止めない）", () => {
+    const legacy = { ...expense, date: "2026-10-03", amount: 0 };
+    const outcome = expenseOperations.update(
+      context({
+        data: dataWith({ "2026-10": [legacy] }),
+        id: "expense-1",
+        body: { categoryId: null },
+      }),
+    );
+    expect(outcome.status).toBe(200);
+  });
+});
+
 describe("expenseOperations.remove", () => {
   it("該当支出だけを除去する", () => {
     const other = { ...expense, id: "expense-2" };
