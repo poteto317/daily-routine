@@ -31,10 +31,10 @@ const readHistory = (data: SyncDocData): JournalHistory =>
 const findEntry = (
   history: JournalHistory,
   id: string | undefined,
-): JournalEntry | null => {
-  for (const entries of Object.values(history)) {
+): { key: string; entry: JournalEntry } | null => {
+  for (const [key, entries] of Object.entries(history)) {
     const entry = entries.find((candidate) => candidate.id === id);
-    if (entry) return entry;
+    if (entry) return { key, entry };
   }
   return null;
 };
@@ -82,8 +82,9 @@ const update: Operation = ({ data, id, body, now }) => {
   const input = asJsonObject(body);
   assertKnownKeys(input, ["title", "content"]);
   const history = readHistory(data);
-  const existing = findEntry(history, id);
-  if (!existing) throw notFound("ジャーナル");
+  const found = findEntry(history, id);
+  if (!found) throw notFound("ジャーナル");
+  const { key, entry: existing } = found;
   const patch = compact({
     title: readString(input, "title", TITLE_OPTIONS),
     content: readString(input, "content", CONTENT_OPTIONS),
@@ -97,13 +98,16 @@ const update: Operation = ({ data, id, body, now }) => {
     ...patch,
     updatedAt: now.toISOString(),
   };
+  if (updated.title.trim() === "" && updated.content.trim() === "") {
+    throw new ApiError(400, "empty_entry", "title か content のどちらかは空にできません");
+  }
   return {
     status: 200,
     body: { entry: updated },
     changes: {
       journalHistory: {
         ...history,
-        [existing.date]: history[existing.date].map((entry) =>
+        [key]: history[key].map((entry) =>
           entry.id === updated.id ? updated : entry,
         ),
       },
@@ -113,10 +117,11 @@ const update: Operation = ({ data, id, body, now }) => {
 
 const remove: Operation = ({ data, id }) => {
   const history = readHistory(data);
-  const existing = findEntry(history, id);
-  if (!existing) throw notFound("ジャーナル");
-  const remaining = history[existing.date].filter((entry) => entry.id !== id);
-  const { [existing.date]: removedDay, ...otherDays } = history;
+  const found = findEntry(history, id);
+  if (!found) throw notFound("ジャーナル");
+  const { key } = found;
+  const remaining = history[key].filter((entry) => entry.id !== id);
+  const { [key]: removedDay, ...otherDays } = history;
   void removedDay;
   return {
     status: 200,
@@ -124,7 +129,7 @@ const remove: Operation = ({ data, id }) => {
     changes: {
       journalHistory:
         remaining.length > 0
-          ? { ...otherDays, [existing.date]: remaining }
+          ? { ...otherDays, [key]: remaining }
           : otherDays,
     },
   };

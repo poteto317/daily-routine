@@ -130,6 +130,41 @@ describe("journalOperations.update", () => {
       journalOperations.update(context({ data, id: "journal-1", body: {} })),
     ).toThrow(expect.objectContaining({ code: "empty_patch" }));
   });
+
+  it("バケットキーと entry.date が食い違っていてもキーを使って更新できる", () => {
+    const mismatched = { ...entry, date: "2026-09-30" };
+    const outcome = journalOperations.update(
+      context({
+        data: { journalHistory: { "2026-10-01": [mismatched] } },
+        id: "journal-1",
+        body: { content: "歩いた" },
+      }),
+    );
+    expect(outcome.changes).toEqual({
+      journalHistory: {
+        "2026-10-01": [
+          { ...mismatched, content: "歩いた", updatedAt: NOW.toISOString() },
+        ],
+      },
+    });
+  });
+
+  it("title と content を両方空にする更新は 400 empty_entry", () => {
+    const data = { journalHistory: { "2026-10-01": [entry] } };
+    expect(() =>
+      journalOperations.update(
+        context({ data, id: "journal-1", body: { title: " ", content: "" } }),
+      ),
+    ).toThrow(expect.objectContaining({ status: 400, code: "empty_entry" }));
+  });
+
+  it("片方を空にしても、もう片方が非空なら更新できる", () => {
+    const data = { journalHistory: { "2026-10-01": [entry] } };
+    const outcome = journalOperations.update(
+      context({ data, id: "journal-1", body: { title: "" } }),
+    );
+    expect((outcome.body as { entry: { title: string } }).entry.title).toBe("");
+  });
 });
 
 describe("journalOperations.remove", () => {
@@ -146,6 +181,17 @@ describe("journalOperations.remove", () => {
       body: { deleted: "journal-1" },
       changes: { journalHistory: { "2026-10-02": [other] } },
     });
+  });
+
+  it("バケットキーと entry.date が食い違っていてもキーを使って削除できる", () => {
+    const mismatched = { ...entry, date: "2026-09-30" };
+    const outcome = journalOperations.remove(
+      context({
+        data: { journalHistory: { "2026-10-01": [mismatched] } },
+        id: "journal-1",
+      }),
+    );
+    expect(outcome.changes).toEqual({ journalHistory: {} });
   });
 
   it("存在しない ID は 404", () => {
