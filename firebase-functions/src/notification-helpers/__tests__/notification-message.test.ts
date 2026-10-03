@@ -23,7 +23,7 @@ describe("buildRoutineNotificationMessage", () => {
   it("タイトル・本文・宛先トークンが正しく設定される", () => {
     const message = buildRoutineNotificationMessage("token-abc", routine);
 
-    expect(message.token).toBe("token-abc");
+    expect((message as { token?: string }).token).toBe("token-abc");
     expect(message.notification?.title).toBe(NOTIFICATION_TEXTS.title);
     expect(message.notification?.body).toBe('"朝の運動" の時間です');
   });
