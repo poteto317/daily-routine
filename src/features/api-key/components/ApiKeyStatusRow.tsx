@@ -6,8 +6,16 @@ type Props = {
   hasKey: boolean | null;
 };
 
+/**
+ * キーの発行状態。初回取得・発行・失効で値が変わるため、フォーカスを移動しなくても
+ * スクリーンリーダーに通知されるよう、ラベルと値を含む領域を role=status にする。
+ */
 export const ApiKeyStatusRow = ({ hasKey }: Props) => (
-  <div className="flex items-center justify-between">
+  <div
+    role="status"
+    aria-live="polite"
+    className="flex items-center justify-between"
+  >
     <span className="text-sm font-medium text-gray-700 dark:text-gray-800">
       {texts.statusLabel}
     </span>

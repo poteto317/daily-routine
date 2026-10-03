@@ -153,11 +153,16 @@ describe("useApiKeyState（フック同士の連携）", () => {
       await result.current.handleRevoke();
     });
     expect(result.current.error).toBe(texts.errors.revoke);
+    // 失効に失敗しても、表示中のキーは残る（コピーできる前提）
+    expect(result.current.issuedKey).toBe("drk_new");
 
     await act(async () => {
       await result.current.handleCopy();
     });
 
+    // コピーが実際に成功したうえで、失効失敗のエラーが残る
+    expect(navigator.clipboard.writeText).toHaveBeenCalledWith("drk_new");
+    expect(result.current.copied).toBe(true);
     expect(result.current.error).toBe(texts.errors.revoke);
   });
 
