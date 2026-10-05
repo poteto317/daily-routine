@@ -178,7 +178,7 @@ describe("executeOperation（クエリパラメータの検証）", () => {
     expect(deps.readData).not.toHaveBeenCalled();
   });
 
-  it("書き込み系（作成・更新・削除）にクエリを付けると 400 で、トランザクションを開始しない", async () => {
+  it("書き込み系（作成・更新・削除）に未許可のクエリを付けると 400 で、トランザクションを開始しない", async () => {
     const deps = makeDeps();
     await expect(
       executeOperation(
@@ -189,5 +189,40 @@ describe("executeOperation（クエリパラメータの検証）", () => {
       ),
     ).rejects.toMatchObject({ status: 400, code: "invalid_query" });
     expect(deps.runWrite).not.toHaveBeenCalled();
+  });
+
+  it("Todo アイテムの削除は listId クエリを受け付け、未知のクエリは 400", async () => {
+    const deps = makeDeps({
+      runWrite: jest.fn(async (_uid, build) =>
+        build({
+          todoLists: [
+            {
+              id: "l1",
+              title: "リスト",
+              items: [{ id: "i1", title: "アイテム", isCompleted: false, createdAt: "t" }],
+              createdAt: "t",
+              updatedAt: "t",
+            },
+          ],
+        }),
+      ),
+    });
+    await expect(
+      executeOperation(
+        deps,
+        "u1",
+        { resource: "todoItems", action: "remove", id: "i1" },
+        { ...listRequest({ listId: "l1" }), id: "i1" },
+      ),
+    ).resolves.toMatchObject({ status: 200, body: { deleted: "i1" } });
+
+    await expect(
+      executeOperation(
+        deps,
+        "u1",
+        { resource: "todoItems", action: "remove", id: "i1" },
+        { ...listRequest({ listId: "l1", extra: "x" }), id: "i1" },
+      ),
+    ).rejects.toMatchObject({ status: 400, code: "invalid_query" });
   });
 });

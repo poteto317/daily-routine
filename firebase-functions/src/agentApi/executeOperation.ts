@@ -1,6 +1,6 @@
 import { noSyncData } from "./errors";
 import type { HandlerDeps } from "./handlerDeps";
-import { RESOURCE_OPERATIONS, RESOURCE_QUERY_KEYS } from "./operations";
+import { getAllowedQueryKeys, RESOURCE_OPERATIONS } from "./operations";
 import type { OperationContext, OperationOutcome } from "./operations/types";
 import type { RouteMatch } from "./router";
 import { assertKnownQueryKeys } from "./validation";
@@ -19,9 +19,10 @@ export const executeOperation = async (
   request: OperationRequest,
 ): Promise<OperationOutcome> => {
   const operation = RESOURCE_OPERATIONS[route.resource][route.action];
-  const allowedQueryKeys =
-    route.action === "list" ? RESOURCE_QUERY_KEYS[route.resource] : [];
-  assertKnownQueryKeys(request.query, allowedQueryKeys);
+  assertKnownQueryKeys(
+    request.query,
+    getAllowedQueryKeys(route.resource, route.action),
+  );
 
   if (route.action === "list") {
     const data = await deps.readData(uid);
