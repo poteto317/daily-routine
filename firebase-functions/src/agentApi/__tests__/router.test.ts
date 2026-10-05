@@ -18,6 +18,18 @@ describe("matchRoute", () => {
       "remove",
       "journal-1",
     ],
+    ["GET", "/todo/lists", "todoLists", "list", undefined],
+    ["POST", "/todo/lists", "todoLists", "create", undefined],
+    ["PATCH", "/todo/lists/list-1", "todoLists", "update", "list-1"],
+    ["DELETE", "/todo/lists/list-1", "todoLists", "remove", "list-1"],
+    ["GET", "/todo/items", "todoItems", "list", undefined],
+    ["POST", "/todo/items", "todoItems", "create", undefined],
+    ["PATCH", "/todo/items/item-1", "todoItems", "update", "item-1"],
+    ["DELETE", "/todo/items/item-1", "todoItems", "remove", "item-1"],
+    ["GET", "/todo/categories", "todoCategories", "list", undefined],
+    ["POST", "/todo/categories", "todoCategories", "create", undefined],
+    ["PATCH", "/todo/categories/cat-1", "todoCategories", "update", "cat-1"],
+    ["DELETE", "/todo/categories/cat-1", "todoCategories", "remove", "cat-1"],
   ])("%s %s", (method, path, resource, action, id) => {
     expect(matchRoute(method, path)).toEqual({ resource, action, id });
   });

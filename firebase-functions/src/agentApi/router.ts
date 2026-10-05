@@ -15,6 +15,9 @@ const RESOURCE_PATHS: Record<string, ResourceName> = {
   "budget/income-items": "incomeItems",
   "budget/expense-items": "expenseItems",
   "journal/entries": "journalEntries",
+  "todo/lists": "todoLists",
+  "todo/items": "todoItems",
+  "todo/categories": "todoCategories",
 };
 
 const COLLECTION_ACTIONS: Record<string, Action> = {

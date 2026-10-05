@@ -30,11 +30,15 @@ export const createSimpleCollection = (
 
   const create: Operation = ({ data, body, now }) => {
     const input = parseBody(body, allowedKeys);
+    const createdFields = config.parseCreate(input);
     const item: Item = {
       id: generateId(idPrefix, now),
-      ...config.parseCreate(input),
+      ...createdFields,
       createdAt: now.toISOString(),
     };
+    for (const [key, value] of Object.entries(createdFields)) {
+      if (value === null) delete item[key];
+    }
     return createdOutcome(
       { [itemKey]: item },
       { [field]: [...readArray<Item>(data, field), item] },
@@ -49,6 +53,9 @@ export const createSimpleCollection = (
     const patch = config.parsePatch(input);
     if (Object.keys(patch).length === 0) throw emptyPatch();
     const updated: Item = { ...existing, ...patch };
+    for (const [key, value] of Object.entries(patch)) {
+      if (value === null) delete updated[key];
+    }
     return okOutcome(
       { [itemKey]: updated },
       { [field]: items.map((item) => (item.id === id ? updated : item)) },
