@@ -31,6 +31,7 @@ const config: Config = {
     "/node_modules/",
     "/firebase-functions/lib/",
     "/e2e/",
+    "/\\.worktrees/",
   ],
   collectCoverageFrom: [
     "src/**/*.{js,jsx,ts,tsx}",
