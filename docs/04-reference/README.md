@@ -6,7 +6,7 @@
 
 ### 機能仕様
 
-- **[agent-api.md](./agent-api.md)** - AI エージェント向け API（家計簿・ジャーナルの CRUD）のリファレンス
+- **[agent-api.md](./agent-api.md)** - AI エージェント向け API（家計簿・ジャーナル・Todo の CRUD）のリファレンス
 - **[features.md](./features.md)** - 実装済み全機能の詳細ドキュメント
   - 18機能の完全仕様
   - 各機能の使い方
