@@ -24,6 +24,8 @@ const eslintConfig = defineConfig([
     "coverage/**",
     // Ignore Storybook build output:
     "storybook-static/**",
+    // Ignore worktrees:
+    ".worktrees/**",
   ]),
   {
     // tools/配下の.jsファイルはCommonJS（module.exports/require）で書く方針のため、
