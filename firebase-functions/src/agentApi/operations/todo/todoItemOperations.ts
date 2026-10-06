@@ -13,12 +13,7 @@ import {
 import { insertItem, moveItem } from "./todoItemMovement";
 import { updateListItems } from "./todoListEntity";
 import { parseQueryCompleted, parseQueryListId } from "./todoQueryParams";
-import {
-  findList,
-  readLists,
-  replaceList,
-  toListChanges,
-} from "./todoStore";
+import { findList, readLists, replaceList, toListChanges } from "./todoStore";
 
 const list: Operation = ({ data, query }) => {
   const listId = parseQueryListId(query.listId);

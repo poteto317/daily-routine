@@ -20,7 +20,11 @@ describe("insertItem", () => {
   const items = [item("a"), item("b")];
 
   it("insertAfterIndex の直後に挿入する", () => {
-    expect(ids(insertItem(items, item("x"), "last", 0))).toEqual(["a", "x", "b"]);
+    expect(ids(insertItem(items, item("x"), "last", 0))).toEqual([
+      "a",
+      "x",
+      "b",
+    ]);
   });
 
   it("指定が無ければ position が first のときは先頭、last のときは末尾に追加する", () => {

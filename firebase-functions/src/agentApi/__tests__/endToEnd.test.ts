@@ -130,12 +130,7 @@ describe("agentApi end-to-end（フェイク Firestore）", () => {
     expect(createdItem.bgColor).toBe("bg-red-50");
 
     // 4. アイテム一覧取得
-    const listItemsRes = await call(
-      "GET",
-      "/todo/items",
-      {},
-      { listId },
-    );
+    const listItemsRes = await call("GET", "/todo/items", {}, { listId });
     expect(listItemsRes.status).toHaveBeenCalledWith(200);
     const items = (listItemsRes.json as jest.Mock).mock.calls[0][0].items;
     expect(items).toHaveLength(1);
@@ -167,8 +162,8 @@ describe("agentApi end-to-end（フェイク Firestore）", () => {
       { listId, completed: "true" },
     );
     expect(completedTrueRes.status).toHaveBeenCalledWith(200);
-    const completedItems = (completedTrueRes.json as jest.Mock).mock
-      .calls[0][0].items;
+    const completedItems = (completedTrueRes.json as jest.Mock).mock.calls[0][0]
+      .items;
     expect(completedItems).toHaveLength(1);
     expect(completedItems[0].id).toBe(itemId);
     expect(completedItems[0].index).toBe(0);

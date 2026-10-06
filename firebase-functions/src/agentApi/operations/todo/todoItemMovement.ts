@@ -15,7 +15,10 @@ export const insertItem = (
 ): TodoItem[] => {
   if (insertAfterIndex !== undefined) {
     if (insertAfterIndex >= items.length) {
-      throw invalidField("insertAfterIndex", "既存アイテムの位置を指定してください");
+      throw invalidField(
+        "insertAfterIndex",
+        "既存アイテムの位置を指定してください",
+      );
     }
     return [
       ...items.slice(0, insertAfterIndex + 1),
@@ -27,7 +30,10 @@ export const insertItem = (
 };
 
 /** startIndex を親とみなし、それより深いインデントが続く範囲の終端（exclusive） */
-export const blockEndIndex = (items: TodoItem[], startIndex: number): number => {
+export const blockEndIndex = (
+  items: TodoItem[],
+  startIndex: number,
+): number => {
   const parentIndent = indentOf(items[startIndex]);
   let end = startIndex + 1;
   while (end < items.length && indentOf(items[end]) > parentIndent) end += 1;
@@ -54,7 +60,9 @@ export const moveItem = (
   const moved = items.slice(fromIndex, end);
   const remaining = [...items.slice(0, fromIndex), ...items.slice(end)];
   const insertAt =
-    toIndex > fromIndex ? blockEndIndex(items, toIndex) - moved.length : toIndex;
+    toIndex > fromIndex
+      ? blockEndIndex(items, toIndex) - moved.length
+      : toIndex;
   remaining.splice(insertAt, 0, ...moved);
   return remaining;
 };

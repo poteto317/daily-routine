@@ -105,7 +105,13 @@ describe("todoCategoryOperations", () => {
       .category;
     expect("color" in updated).toBe(false);
     expect(outcome.changes).toEqual({
-      todoCategories: [{ id: "todo-category-1", name: "買い物", createdAt: "2026-01-01T00:00:00.000Z" }],
+      todoCategories: [
+        {
+          id: "todo-category-1",
+          name: "買い物",
+          createdAt: "2026-01-01T00:00:00.000Z",
+        },
+      ],
     });
   });
 

@@ -31,7 +31,11 @@ describe("createTodoList", () => {
 
   it("defaultItemBgColor を指定した場合は設定される", () => {
     const list = createTodoList(
-      { title: "仕事", defaultItemBgColor: "bg-red-50", addItemPosition: "first" },
+      {
+        title: "仕事",
+        defaultItemBgColor: "bg-red-50",
+        addItemPosition: "first",
+      },
       NOW,
     );
     expect(list.defaultItemBgColor).toBe("bg-red-50");
