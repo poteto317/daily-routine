@@ -6,11 +6,9 @@ import {
 } from "./budgetCollections";
 import { expenseOperations } from "./expenses";
 import { journalOperations } from "./journal";
-import {
-  todoCategoryOperations,
-  todoItemOperations,
-  todoListOperations,
-} from "./todo";
+import { todoCategoryOperations } from "./todo/todoCategoryOperations";
+import { todoItemOperations } from "./todo/todoItemOperations";
+import { todoListOperations } from "./todo/todoListOperations";
 import type { ResourceOperations } from "./types";
 
 export type ResourceName =
@@ -31,7 +29,7 @@ export const RESOURCE_QUERY_KEYS: Record<ResourceName, readonly string[]> = {
   expenseItems: [],
   journalEntries: ["date"],
   todoLists: [],
-  todoItems: ["listId"],
+  todoItems: ["listId", "completed"],
   todoCategories: [],
 };
 

@@ -12,7 +12,7 @@ import {
 } from "./todoItemInput";
 import { insertItem, moveItem } from "./todoItemMovement";
 import { updateListItems } from "./todoListEntity";
-import { parseQueryListId } from "./todoQueryParams";
+import { parseQueryCompleted, parseQueryListId } from "./todoQueryParams";
 import {
   findList,
   readLists,
@@ -22,10 +22,19 @@ import {
 
 const list: Operation = ({ data, query }) => {
   const listId = parseQueryListId(query.listId);
+  const completed = parseQueryCompleted(query.completed);
   const { list: found } = findList(readLists(data), listId);
+  const allItemsWithIndex = found.items.map((item, index) => ({
+    ...item,
+    index,
+  }));
+  const items =
+    completed === undefined
+      ? allItemsWithIndex
+      : allItemsWithIndex.filter((item) => item.isCompleted === completed);
   return okOutcome({
     listId,
-    items: found.items.map((item, index) => ({ ...item, index })),
+    items,
   });
 };
 
