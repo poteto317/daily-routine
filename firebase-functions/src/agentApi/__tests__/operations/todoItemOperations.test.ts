@@ -68,66 +68,67 @@ describe("todoItemOperations", () => {
       });
     });
 
-    it("completed=true の場合、完了済みのアイテムのみ返す", () => {
-      const outcome = todoItemOperations.list(
-        context({
-          data: initialData,
-          query: { listId: "todo-list-1", completed: "true" },
-        }),
-      );
-      expect(outcome.status).toBe(200);
-      expect(outcome.body).toEqual({
-        listId: "todo-list-1",
-        items: [{ ...existingList.items[1], index: 1 }],
-      });
-    });
-
-    it("completed=false の場合、未完了のアイテムのみ返す", () => {
-      const outcome = todoItemOperations.list(
-        context({
-          data: initialData,
-          query: { listId: "todo-list-1", completed: "false" },
-        }),
-      );
-      expect(outcome.status).toBe(200);
-      expect(outcome.body).toEqual({
-        listId: "todo-list-1",
-        items: [{ ...existingList.items[0], index: 0 }],
-      });
-    });
-
     it("listId がない場合は 400", () => {
       expect(() =>
         todoItemOperations.list(context({ data: initialData })),
       ).toThrow(expect.objectContaining({ status: 400, code: "invalid_query" }));
     });
 
+    const mixedList = {
+      ...existingList,
+      items: [
+        { id: "open-1", title: "未完了1", isCompleted: false, createdAt: "" },
+        { id: "done-1", title: "完了1", isCompleted: true, createdAt: "" },
+        { id: "open-2", title: "未完了2", isCompleted: false, createdAt: "" },
+        { id: "done-2", title: "完了2", isCompleted: true, createdAt: "" },
+      ],
+    };
+
     it("completed=true の場合は完了済みアイテムのみを返し、元のリスト内の index を維持する", () => {
       const outcome = todoItemOperations.list(
         context({
-          data: initialData,
+          data: { todoLists: [mixedList] },
           query: { listId: "todo-list-1", completed: "true" },
         }),
       );
       expect(outcome.status).toBe(200);
       expect(outcome.body).toEqual({
         listId: "todo-list-1",
-        items: [{ ...existingList.items[1], index: 1 }],
+        items: [
+          { ...mixedList.items[1], index: 1 },
+          { ...mixedList.items[3], index: 3 },
+        ],
       });
     });
 
-    it("completed=false の場合は未完了アイテムのみを返し、元のリスト内の index を維持する", () => {
+    it("completed=false の場合は未完了アイテムのみを返し、index を詰めずに元のリスト内の位置を維持する", () => {
       const outcome = todoItemOperations.list(
         context({
-          data: initialData,
+          data: { todoLists: [mixedList] },
           query: { listId: "todo-list-1", completed: "false" },
         }),
       );
       expect(outcome.status).toBe(200);
       expect(outcome.body).toEqual({
         listId: "todo-list-1",
-        items: [{ ...existingList.items[0], index: 0 }],
+        items: [
+          { ...mixedList.items[0], index: 0 },
+          { ...mixedList.items[2], index: 2 },
+        ],
       });
+    });
+
+    it("completed で絞り込んでも該当アイテムが無い場合は空配列を返す", () => {
+      const outcome = todoItemOperations.list(
+        context({
+          data: {
+            todoLists: [{ ...mixedList, items: [mixedList.items[0]] }],
+          },
+          query: { listId: "todo-list-1", completed: "true" },
+        }),
+      );
+      expect(outcome.status).toBe(200);
+      expect(outcome.body).toEqual({ listId: "todo-list-1", items: [] });
     });
 
     it("不正な completed クエリの場合は 400 invalid_query", () => {
@@ -303,13 +304,14 @@ describe("todoItemOperations", () => {
       expect(updatedLists[0].updatedAt).toBe(NOW.toISOString());
     });
 
-    it("子ブロック（より深いインデントの連続）を巻き込んで削除する", () => {
+    // Web クライアントの deleteItemFromList と同じく、削除は指定アイテム 1 件のみ
+    it("親アイテムを削除しても子孫アイテムは indent を保ったまま残る", () => {
       const listWithChildren = {
         ...existingList,
         items: [
           { id: "parent", title: "親", indent: 0, isCompleted: false, createdAt: "" },
           { id: "child1", title: "子1", indent: 1, isCompleted: false, createdAt: "" },
-          { id: "child2", title: "子2", indent: 2, isCompleted: false, createdAt: "" },
+          { id: "child2", title: "孫", indent: 2, isCompleted: false, createdAt: "" },
           { id: "sibling", title: "兄弟", indent: 0, isCompleted: false, createdAt: "" },
         ],
       };
@@ -321,9 +323,39 @@ describe("todoItemOperations", () => {
         }),
       );
       expect(outcome.status).toBe(200);
+      expect(outcome.body).toEqual({ deleted: "parent" });
       const updatedLists = outcome.changes?.todoLists as TodoList[];
-      expect(updatedLists[0].items).toHaveLength(1);
-      expect(updatedLists[0].items[0].id).toBe("sibling");
+      expect(updatedLists[0].items.map((item) => item.id)).toEqual([
+        "child1",
+        "child2",
+        "sibling",
+      ]);
+      expect(updatedLists[0].items.map((item) => item.indent)).toEqual([
+        1, 2, 0,
+      ]);
+    });
+
+    it("子アイテムを削除しても親と兄弟は残る", () => {
+      const listWithChildren = {
+        ...existingList,
+        items: [
+          { id: "parent", title: "親", indent: 0, isCompleted: false, createdAt: "" },
+          { id: "child1", title: "子1", indent: 1, isCompleted: false, createdAt: "" },
+          { id: "child2", title: "子2", indent: 1, isCompleted: false, createdAt: "" },
+        ],
+      };
+      const outcome = todoItemOperations.remove(
+        context({
+          data: { todoLists: [listWithChildren] },
+          id: "child1",
+          query: { listId: "todo-list-1" },
+        }),
+      );
+      const updatedLists = outcome.changes?.todoLists as TodoList[];
+      expect(updatedLists[0].items.map((item) => item.id)).toEqual([
+        "parent",
+        "child2",
+      ]);
     });
 
     it("query に listId がない場合は 400", () => {
