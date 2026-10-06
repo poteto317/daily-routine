@@ -16,7 +16,7 @@ describe("RESOURCE_QUERY_KEYS", () => {
   it("リソースごとの許可クエリパラメータが定義されている", () => {
     expect(RESOURCE_QUERY_KEYS.expenses).toEqual(["month"]);
     expect(RESOURCE_QUERY_KEYS.journalEntries).toEqual(["date"]);
-    expect(RESOURCE_QUERY_KEYS.todoItems).toEqual(["listId"]);
+    expect(RESOURCE_QUERY_KEYS.todoItems).toEqual(["listId", "completed"]);
     expect(RESOURCE_QUERY_KEYS.categories).toEqual([]);
     expect(RESOURCE_QUERY_KEYS.incomeItems).toEqual([]);
     expect(RESOURCE_QUERY_KEYS.expenseItems).toEqual([]);
@@ -32,7 +32,10 @@ describe("RESOURCE_QUERY_KEYS", () => {
 describe("getAllowedQueryKeys", () => {
   it("list アクションでは RESOURCE_QUERY_KEYS のキーを返す", () => {
     expect(getAllowedQueryKeys("expenses", "list")).toEqual(["month"]);
-    expect(getAllowedQueryKeys("todoItems", "list")).toEqual(["listId"]);
+    expect(getAllowedQueryKeys("todoItems", "list")).toEqual([
+      "listId",
+      "completed",
+    ]);
     expect(getAllowedQueryKeys("todoLists", "list")).toEqual([]);
   });
 

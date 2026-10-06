@@ -151,7 +151,44 @@ describe("agentApi end-to-end（フェイク Firestore）", () => {
       (updateItemRes.json as jest.Mock).mock.calls[0][0].item.isCompleted,
     ).toBe(true);
 
+    // 5.5 未完了アイテムを追加して completed フィルタを検証
+    const createItem2Res = await call("POST", "/todo/items", {
+      listId,
+      title: "パン",
+    });
+    expect(createItem2Res.status).toHaveBeenCalledWith(201);
+    const item2Id = (createItem2Res.json as jest.Mock).mock.calls[0][0].item.id;
+
+    // completed=true で完了済みのみ取得
+    const completedTrueRes = await call(
+      "GET",
+      "/todo/items",
+      {},
+      { listId, completed: "true" },
+    );
+    expect(completedTrueRes.status).toHaveBeenCalledWith(200);
+    const completedItems = (completedTrueRes.json as jest.Mock).mock
+      .calls[0][0].items;
+    expect(completedItems).toHaveLength(1);
+    expect(completedItems[0].id).toBe(itemId);
+    expect(completedItems[0].index).toBe(0);
+
+    // completed=false で未完了のみ取得
+    const completedFalseRes = await call(
+      "GET",
+      "/todo/items",
+      {},
+      { listId, completed: "false" },
+    );
+    expect(completedFalseRes.status).toHaveBeenCalledWith(200);
+    const uncompletedItems = (completedFalseRes.json as jest.Mock).mock
+      .calls[0][0].items;
+    expect(uncompletedItems).toHaveLength(1);
+    expect(uncompletedItems[0].id).toBe(item2Id);
+    expect(uncompletedItems[0].index).toBe(1);
+
     // 6. アイテム削除
+    await call("DELETE", `/todo/items/${item2Id}`, {}, { listId });
     const deleteItemRes = await call(
       "DELETE",
       `/todo/items/${itemId}`,
