@@ -199,7 +199,14 @@ describe("executeOperation（クエリパラメータの検証）", () => {
             {
               id: "l1",
               title: "リスト",
-              items: [{ id: "i1", title: "アイテム", isCompleted: false, createdAt: "t" }],
+              items: [
+                {
+                  id: "i1",
+                  title: "アイテム",
+                  isCompleted: false,
+                  createdAt: "t",
+                },
+              ],
               createdAt: "t",
               updatedAt: "t",
             },

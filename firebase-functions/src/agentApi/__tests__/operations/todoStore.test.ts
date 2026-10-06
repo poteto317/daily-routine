@@ -32,7 +32,10 @@ describe("todoStore", () => {
   it("findList は存在しない ID で 404 not_found を投げる", () => {
     const lists = [list("a"), list("b")];
     expect(() => findList(lists, "unknown")).toThrow(
-      expect.objectContaining({ status: 404, message: "リストが見つかりません" }),
+      expect.objectContaining({
+        status: 404,
+        message: "リストが見つかりません",
+      }),
     );
   });
 

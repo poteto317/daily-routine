@@ -18,7 +18,11 @@ const list = (items: Array<{ isCompleted: boolean }>): TodoList => ({
 describe("summarizeList", () => {
   it("items 配列を除外し、itemCount と completedCount を付与する", () => {
     const summary = summarizeList(
-      list([{ isCompleted: true }, { isCompleted: false }, { isCompleted: true }]),
+      list([
+        { isCompleted: true },
+        { isCompleted: false },
+        { isCompleted: true },
+      ]),
     );
     expect(summary).toEqual({
       id: "l1",

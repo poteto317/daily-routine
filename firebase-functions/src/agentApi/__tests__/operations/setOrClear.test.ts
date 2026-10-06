@@ -9,7 +9,11 @@ describe("setOrClear", () => {
 
   it("値が指定された場合はプロパティを追加または更新する", () => {
     const obj = { a: 1, b: "hello" };
-    expect(setOrClear(obj, "c", "world")).toEqual({ a: 1, b: "hello", c: "world" });
+    expect(setOrClear(obj, "c", "world")).toEqual({
+      a: 1,
+      b: "hello",
+      c: "world",
+    });
     expect(setOrClear(obj, "a", 2)).toEqual({ a: 2, b: "hello" });
   });
 

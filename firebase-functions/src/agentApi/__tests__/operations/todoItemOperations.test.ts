@@ -71,7 +71,9 @@ describe("todoItemOperations", () => {
     it("listId がない場合は 400", () => {
       expect(() =>
         todoItemOperations.list(context({ data: initialData })),
-      ).toThrow(expect.objectContaining({ status: 400, code: "invalid_query" }));
+      ).toThrow(
+        expect.objectContaining({ status: 400, code: "invalid_query" }),
+      );
     });
 
     const mixedList = {
@@ -139,7 +141,9 @@ describe("todoItemOperations", () => {
             query: { listId: "todo-list-1", completed: "yes" },
           }),
         ),
-      ).toThrow(expect.objectContaining({ status: 400, code: "invalid_query" }));
+      ).toThrow(
+        expect.objectContaining({ status: 400, code: "invalid_query" }),
+      );
     });
 
     it("存在しない listId の場合は 404", () => {
@@ -213,7 +217,9 @@ describe("todoItemOperations", () => {
             },
           }),
         ),
-      ).toThrow(expect.objectContaining({ status: 400, code: "invalid_field" }));
+      ).toThrow(
+        expect.objectContaining({ status: 400, code: "invalid_field" }),
+      );
     });
   });
 
@@ -283,7 +289,9 @@ describe("todoItemOperations", () => {
             },
           }),
         ),
-      ).toThrow(expect.objectContaining({ status: 400, code: "invalid_field" }));
+      ).toThrow(
+        expect.objectContaining({ status: 400, code: "invalid_field" }),
+      );
     });
   });
 
@@ -309,10 +317,34 @@ describe("todoItemOperations", () => {
       const listWithChildren = {
         ...existingList,
         items: [
-          { id: "parent", title: "親", indent: 0, isCompleted: false, createdAt: "" },
-          { id: "child1", title: "子1", indent: 1, isCompleted: false, createdAt: "" },
-          { id: "child2", title: "孫", indent: 2, isCompleted: false, createdAt: "" },
-          { id: "sibling", title: "兄弟", indent: 0, isCompleted: false, createdAt: "" },
+          {
+            id: "parent",
+            title: "親",
+            indent: 0,
+            isCompleted: false,
+            createdAt: "",
+          },
+          {
+            id: "child1",
+            title: "子1",
+            indent: 1,
+            isCompleted: false,
+            createdAt: "",
+          },
+          {
+            id: "child2",
+            title: "孫",
+            indent: 2,
+            isCompleted: false,
+            createdAt: "",
+          },
+          {
+            id: "sibling",
+            title: "兄弟",
+            indent: 0,
+            isCompleted: false,
+            createdAt: "",
+          },
         ],
       };
       const outcome = todoItemOperations.remove(
@@ -339,9 +371,27 @@ describe("todoItemOperations", () => {
       const listWithChildren = {
         ...existingList,
         items: [
-          { id: "parent", title: "親", indent: 0, isCompleted: false, createdAt: "" },
-          { id: "child1", title: "子1", indent: 1, isCompleted: false, createdAt: "" },
-          { id: "child2", title: "子2", indent: 1, isCompleted: false, createdAt: "" },
+          {
+            id: "parent",
+            title: "親",
+            indent: 0,
+            isCompleted: false,
+            createdAt: "",
+          },
+          {
+            id: "child1",
+            title: "子1",
+            indent: 1,
+            isCompleted: false,
+            createdAt: "",
+          },
+          {
+            id: "child2",
+            title: "子2",
+            indent: 1,
+            isCompleted: false,
+            createdAt: "",
+          },
         ],
       };
       const outcome = todoItemOperations.remove(
@@ -366,7 +416,9 @@ describe("todoItemOperations", () => {
             id: "item-1",
           }),
         ),
-      ).toThrow(expect.objectContaining({ status: 400, code: "invalid_query" }));
+      ).toThrow(
+        expect.objectContaining({ status: 400, code: "invalid_query" }),
+      );
     });
 
     it("アイテムが存在しない場合は 404", () => {

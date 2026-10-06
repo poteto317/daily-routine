@@ -31,4 +31,3 @@ export const parseQueryCompleted = (
   if (trimmed === "false") return false;
   throw invalidQuery("completed は true または false で指定してください");
 };
-

@@ -8,12 +8,7 @@ import {
   TODO_LIST_KEYS,
 } from "./todoListInput";
 import { summarizeList } from "./todoListSummary";
-import {
-  findList,
-  readLists,
-  replaceList,
-  toListChanges,
-} from "./todoStore";
+import { findList, readLists, replaceList, toListChanges } from "./todoStore";
 
 const list: Operation = ({ data }) =>
   okOutcome({ lists: readLists(data).map(summarizeList) });
