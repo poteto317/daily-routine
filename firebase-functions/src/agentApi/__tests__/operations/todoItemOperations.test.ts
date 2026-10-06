@@ -262,6 +262,61 @@ describe("todoItemOperations", () => {
       expect(updatedLists[0].items[1].id).toBe("item-1");
     });
 
+    describe("子ブロックを持つリストでの移動", () => {
+      const listWithChildren = {
+        ...existingList,
+        items: [
+          { id: "a", title: "A", indent: 0, isCompleted: false, createdAt: "" },
+          {
+            id: "a1",
+            title: "A1",
+            indent: 1,
+            isCompleted: false,
+            createdAt: "",
+          },
+          { id: "b", title: "B", indent: 0, isCompleted: false, createdAt: "" },
+          {
+            id: "b1",
+            title: "B1",
+            indent: 1,
+            isCompleted: false,
+            createdAt: "",
+          },
+          { id: "c", title: "C", indent: 0, isCompleted: false, createdAt: "" },
+        ],
+      };
+      const move = (id: string, moveToIndex: number) =>
+        todoItemOperations.update(
+          context({
+            data: { todoLists: [listWithChildren] },
+            id,
+            body: { listId: "todo-list-1", moveToIndex },
+          }),
+        );
+      const idsOf = (outcome: ReturnType<typeof move>) =>
+        (outcome.changes?.todoLists as TodoList[])[0].items.map(
+          (item) => item.id,
+        );
+
+      it("下方向の移動では移動先アイテムの子ブロックの後ろに入り、レスポンスの index は実際の位置を返す", () => {
+        const outcome = move("a", 2);
+        expect(idsOf(outcome)).toEqual(["b", "b1", "a", "a1", "c"]);
+        expect(outcome.body).toEqual(expect.objectContaining({ index: 2 }));
+      });
+
+      it("上方向の移動では移動先アイテムの直前に入り、子ブロックごと移動する", () => {
+        const outcome = move("b", 0);
+        expect(idsOf(outcome)).toEqual(["b", "b1", "a", "a1", "c"]);
+        expect(outcome.body).toEqual(expect.objectContaining({ index: 0 }));
+      });
+
+      it("自分の子ブロック内の位置を指定した場合は移動しない", () => {
+        const outcome = move("a", 1);
+        expect(idsOf(outcome)).toEqual(["a", "a1", "b", "b1", "c"]);
+        expect(outcome.body).toEqual(expect.objectContaining({ index: 0 }));
+      });
+    });
+
     it("存在しない itemId の場合は 404", () => {
       expect(() =>
         todoItemOperations.update(
