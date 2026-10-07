@@ -3,6 +3,15 @@ import { useWorkoutTrackerPageState } from "../page/useWorkoutTrackerPageState";
 import * as storage from "../storage";
 
 jest.mock("../storage", () => ({
+  getWorkoutExercises: jest.fn(() => [
+    {
+      id: "ベンチプレス",
+      name: "ベンチプレス",
+      label: "strength" as const,
+      createdAt: "",
+      updatedAt: "",
+    },
+  ]),
   getAllWorkoutRecords: jest.fn(() => []),
   addWorkoutRecord: jest.fn(),
   deleteWorkoutRecord: jest.fn(),
@@ -52,6 +61,7 @@ describe("useWorkoutTrackerPageState", () => {
       date: "2026-03-01",
       label: "strength" as const,
       exerciseName: "ベンチプレス",
+      exerciseId: "ベンチプレス",
       weightKg: 60,
       reps: 10,
       createdAt: "2026-03-01T00:00:00.000Z",
@@ -62,7 +72,7 @@ describe("useWorkoutTrackerPageState", () => {
     const { result } = renderHook(() => useWorkoutTrackerPageState());
 
     act(() => {
-      result.current.setExerciseName("ベンチプレス");
+      result.current.setExerciseId("ベンチプレス");
       result.current.setWeightKg("60");
       result.current.setReps("10");
     });
@@ -74,6 +84,7 @@ describe("useWorkoutTrackerPageState", () => {
       expect.objectContaining({
         label: "strength",
         exerciseName: "ベンチプレス",
+        exerciseId: "ベンチプレス",
         weightKg: 60,
         reps: 10,
       }),
@@ -81,7 +92,7 @@ describe("useWorkoutTrackerPageState", () => {
     expect(result.current.groups).toEqual([
       { date: "2026-03-01", records: [added] },
     ]);
-    expect(result.current.formValues.exerciseName).toBe("");
+    expect(result.current.formValues.exerciseId).toBe("");
   });
 
   it("エラー表示後に入力を直して送信すると成功しエラーが消える", () => {
@@ -90,6 +101,7 @@ describe("useWorkoutTrackerPageState", () => {
       date: "2026-03-01",
       label: "strength" as const,
       exerciseName: "ベンチプレス",
+      exerciseId: "ベンチプレス",
       weightKg: 60,
       reps: 10,
       createdAt: "2026-03-01T00:00:00.000Z",
@@ -103,7 +115,7 @@ describe("useWorkoutTrackerPageState", () => {
     expect(result.current.formError).not.toBeNull();
 
     act(() => {
-      result.current.setExerciseName("ベンチプレス");
+      result.current.setExerciseId("ベンチプレス");
       result.current.setWeightKg("60");
       result.current.setReps("10");
     });

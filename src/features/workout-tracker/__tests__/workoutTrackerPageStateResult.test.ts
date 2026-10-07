@@ -6,7 +6,7 @@ describe("createWorkoutTrackerPageStateResult", () => {
       formValues: {
         label: "strength" as const,
         date: "2026-03-01",
-        exerciseName: "",
+        exerciseId: "",
         weightKg: "",
         reps: "",
         sets: "",
@@ -16,7 +16,7 @@ describe("createWorkoutTrackerPageStateResult", () => {
       groups: [],
       setLabel: jest.fn(),
       setDate: jest.fn(),
-      setExerciseName: jest.fn(),
+      setExerciseId: jest.fn(),
       setWeightKg: jest.fn(),
       setReps: jest.fn(),
       setSets: jest.fn(),

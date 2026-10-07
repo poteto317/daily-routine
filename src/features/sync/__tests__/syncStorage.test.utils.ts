@@ -24,6 +24,10 @@ type StorageSaveAssertionMap = {
 };
 
 const storageReadMocks: StorageReadMockMap = {
+  workoutExercises: (value) =>
+    (workoutTrackerStorage.getWorkoutExercises as jest.Mock).mockReturnValue(
+      value,
+    ),
   routines: (value) =>
     (routineStorage.getRoutines as jest.Mock).mockReturnValue(value),
   dailyProgress: (value) =>
@@ -67,6 +71,10 @@ const storageReadMocks: StorageReadMockMap = {
 };
 
 const storageSaveAssertions: StorageSaveAssertionMap = {
+  workoutExercises: (value) =>
+    expect(workoutTrackerStorage.saveWorkoutExercises).toHaveBeenCalledWith(
+      value,
+    ),
   routines: (value) =>
     expect(routineStorage.saveRoutines).toHaveBeenCalledWith(value),
   dailyProgress: (value) => {
@@ -116,6 +124,8 @@ const storageSaveAssertions: StorageSaveAssertionMap = {
 };
 
 const storageReadAssertions: StorageReadAssertionMap = {
+  workoutExercises: () =>
+    expect(workoutTrackerStorage.getWorkoutExercises).toHaveBeenCalled(),
   routines: () => expect(routineStorage.getRoutines).toHaveBeenCalled(),
   dailyProgress: () =>
     expect(routineStorage.getDailyProgress).toHaveBeenCalled(),

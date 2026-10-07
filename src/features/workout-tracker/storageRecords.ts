@@ -2,6 +2,7 @@ import {
   type NewWorkoutRecordInput,
   type WorkoutRecord,
 } from "@/types/routine";
+import texts from "./locales/ja.json";
 import { generateId } from "@/lib/storage/core";
 import {
   getWorkoutRecordHistory,
@@ -21,7 +22,8 @@ export const addWorkoutRecord = (
   } satisfies WorkoutRecord;
 
   history[input.date] = [...(history[input.date] ?? []), record];
-  saveWorkoutRecordHistory(history);
+  if (!saveWorkoutRecordHistory(history))
+    throw new Error(texts.exercises.saveFailed);
 
   return record;
 };
@@ -37,7 +39,8 @@ export const deleteWorkoutRecord = (date: string, recordId: string): void => {
     delete history[date];
   }
 
-  saveWorkoutRecordHistory(history);
+  if (!saveWorkoutRecordHistory(history))
+    throw new Error(texts.exercises.saveFailed);
 };
 
 export const getAllWorkoutRecords = (): WorkoutRecord[] => {

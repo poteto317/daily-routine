@@ -4,6 +4,15 @@ import { useWorkoutTrackerDataState } from "../page/useWorkoutTrackerDataState";
 import { getAllWorkoutRecords } from "../storage";
 
 jest.mock("../storage", () => ({
+  getWorkoutExercises: jest.fn(() => [
+    {
+      id: "ベンチプレス",
+      name: "ベンチプレス",
+      label: "strength" as const,
+      createdAt: "",
+      updatedAt: "",
+    },
+  ]),
   getAllWorkoutRecords: jest.fn(),
 }));
 

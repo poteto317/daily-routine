@@ -31,12 +31,14 @@ describe("workout-tracker storageRecords", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockGetWorkoutRecordHistory.mockReturnValue({});
+    mockSaveWorkoutRecordHistory.mockReturnValue(true);
     mockGenerateId.mockReturnValue("workout-1");
   });
 
   describe("addWorkoutRecord", () => {
     it("新しい日付にレコードを追加する", () => {
       const record = addWorkoutRecord({
+        exerciseId: "exercise-1",
         label: "strength",
         date: "2026-03-01",
         exerciseName: "ベンチプレス",
@@ -76,6 +78,7 @@ describe("workout-tracker storageRecords", () => {
       mockGetWorkoutRecordHistory.mockReturnValue(existing);
 
       addWorkoutRecord({
+        exerciseId: "exercise-1",
         label: "running",
         date: "2026-03-01",
         exerciseName: "夜のジョグ",
@@ -89,6 +92,7 @@ describe("workout-tracker storageRecords", () => {
 
     it("runningのレコードにweightKg等が含まれない", () => {
       const record = addWorkoutRecord({
+        exerciseId: "exercise-1",
         label: "running",
         date: "2026-03-01",
         exerciseName: "ランニング",
@@ -157,6 +161,7 @@ describe("workout-tracker storageRecords", () => {
 
     it("存在しない日付を指定しても何もしない", () => {
       mockGetWorkoutRecordHistory.mockReturnValue({});
+      mockSaveWorkoutRecordHistory.mockReturnValue(true);
 
       deleteWorkoutRecord("2026-03-01", "none");
 
