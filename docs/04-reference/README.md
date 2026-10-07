@@ -6,6 +6,7 @@
 
 ### 機能仕様
 
+- **[openapi.yaml](./openapi.yaml)** - 実装済み HTTP API の OpenAPI 3.0.3 定義（認証・入力・応答・エラー）
 - **[agent-api.md](./agent-api.md)** - AI エージェント向け API（家計簿・ジャーナル・Todo の CRUD）のリファレンス
 - **[features.md](./features.md)** - 実装済み全機能の詳細ドキュメント
   - 18機能の完全仕様
