@@ -18,6 +18,8 @@ import {
   saveWorkTemplates,
 } from "@/features/work-tracker/storage";
 import {
+  getWorkoutExercises,
+  saveWorkoutExercises,
   getWorkoutRecordHistory,
   saveWorkoutRecordHistory,
 } from "@/features/workout-tracker/storage";
@@ -41,6 +43,7 @@ export const collectRecordTransferData = (): TransferPayload => ({
   journalHistory: getJournalHistory(),
   weightHistory: getWeightHistory(),
   workoutRecordHistory: getWorkoutRecordHistory(),
+  workoutExercises: getWorkoutExercises(),
   mealHistory: getMealHistory(),
   pomodoroHistory: getPomodoroHistory(),
   workSessionHistory: getWorkSessionHistory(),
@@ -49,6 +52,11 @@ export const collectRecordTransferData = (): TransferPayload => ({
 
 /** 履歴はいずれも日付などをキーにしたオブジェクト。テンプレートだけが配列 */
 export const RECORD_TRANSFER_FIELDS: TransferField[] = [
+  arrayField(
+    "workoutExercises",
+    saveWorkoutExercises,
+    invalid("workoutExercises"),
+  ),
   objectField("journalHistory", saveJournalHistory, invalid("journalHistory")),
   objectField("weightHistory", saveWeightHistory, invalid("weightHistory")),
   objectField(

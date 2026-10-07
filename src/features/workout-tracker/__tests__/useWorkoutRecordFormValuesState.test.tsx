@@ -9,7 +9,7 @@ describe("useWorkoutRecordFormValuesState", () => {
     expect(result.current.values).toEqual({
       label: "strength",
       date: getTodayString(),
-      exerciseName: "",
+      exerciseId: "",
       weightKg: "",
       reps: "",
       sets: "",
@@ -23,8 +23,8 @@ describe("useWorkoutRecordFormValuesState", () => {
     act(() => result.current.setLabel("running"));
     expect(result.current.values.label).toBe("running");
 
-    act(() => result.current.setExerciseName("ベンチプレス"));
-    expect(result.current.values.exerciseName).toBe("ベンチプレス");
+    act(() => result.current.setExerciseId("ベンチプレス"));
+    expect(result.current.values.exerciseId).toBe("ベンチプレス");
 
     act(() => result.current.setWeightKg("60"));
     expect(result.current.values.weightKg).toBe("60");
@@ -46,14 +46,14 @@ describe("useWorkoutRecordFormValuesState", () => {
     const { result } = renderHook(() => useWorkoutRecordFormValuesState());
 
     act(() => {
-      result.current.setExerciseName("ベンチプレス");
+      result.current.setExerciseId("ベンチプレス");
       result.current.setWeightKg("60");
       result.current.setDate("2026-01-01");
     });
 
     act(() => result.current.resetValues());
 
-    expect(result.current.values.exerciseName).toBe("");
+    expect(result.current.values.exerciseId).toBe("");
     expect(result.current.values.weightKg).toBe("");
     expect(result.current.values.date).toBe("2026-01-01");
   });

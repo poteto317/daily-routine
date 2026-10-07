@@ -16,6 +16,7 @@ export const hasAnyLocalSyncData = (data: LocalSyncDataSummary): boolean => {
     Object.keys(data.pomodoroHistory).length > 0 ||
     Object.keys(data.workSessionHistory).length > 0 ||
     data.workTemplates.length > 0 ||
+    data.workoutExercises.length > 0 ||
     Object.keys(data.weightHistory).length > 0 ||
     Object.keys(data.workoutRecordHistory).length > 0 ||
     Object.keys(data.journalHistory).length > 0 ||

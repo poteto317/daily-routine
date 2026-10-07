@@ -6,7 +6,10 @@ import {
   getWorkTemplates,
 } from "@/features/work-tracker/storage";
 import { getWeightHistory } from "@/features/weight-tracker/storage";
-import { getWorkoutRecordHistory } from "@/features/workout-tracker/storage";
+import {
+  getWorkoutRecordHistory,
+  getWorkoutExercises,
+} from "@/features/workout-tracker/storage";
 import { getJournalHistory } from "@/features/journal/storage";
 import { getMealHistory } from "@/features/meal/storage";
 import { getPresets } from "@/features/preset/storage";
@@ -27,6 +30,7 @@ export type CoreSyncData = Pick<
   | "workTemplates"
   | "weightHistory"
   | "workoutRecordHistory"
+  | "workoutExercises"
   | "journalHistory"
   | "mealHistory"
   | "presets"
@@ -95,6 +99,7 @@ export const normalizeCoreSyncData = (
   workTemplates: data.workTemplates ?? getWorkTemplates(),
   weightHistory: data.weightHistory ?? getWeightHistory(),
   workoutRecordHistory: data.workoutRecordHistory ?? getWorkoutRecordHistory(),
+  workoutExercises: data.workoutExercises ?? getWorkoutExercises(),
   journalHistory: data.journalHistory ?? getJournalHistory(),
   mealHistory: data.mealHistory ?? getMealHistory(),
   presets: data.presets ?? getPresets(),

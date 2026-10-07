@@ -33,9 +33,10 @@ export const useWorkoutTrackerActions = ({
       createDeleteWorkoutRecordHandler({
         reload,
         confirmDelete: window.confirm,
+        setError,
       })(record);
     },
-    [reload],
+    [reload, setError],
   );
 
   return { handleAddRecord, handleDeleteRecord };

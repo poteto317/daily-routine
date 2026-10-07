@@ -7,3 +7,11 @@ export {
   deleteWorkoutRecord,
   getAllWorkoutRecords,
 } from "./storageRecords";
+
+export {
+  getWorkoutExercises,
+  saveWorkoutExercises,
+  addWorkoutExercise,
+  renameWorkoutExercise,
+  deleteWorkoutExercise,
+} from "./storageExercises";

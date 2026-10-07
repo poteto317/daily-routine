@@ -1,10 +1,14 @@
-import type { NewWorkoutRecordInput, WorkoutLabel } from "@/types/routine";
+import type {
+  NewWorkoutRecordInput,
+  WorkoutLabel,
+  WorkoutExercise,
+} from "@/types/routine";
 import texts from "./locales/ja.json";
 
 export type WorkoutRecordFormValues = {
   label: WorkoutLabel;
   date: string;
-  exerciseName: string;
+  exerciseId: string;
   weightKg: string;
   reps: string;
   sets: string;
@@ -39,6 +43,9 @@ export const validateStrengthWorkoutForm = (
     return { valid: false, error: texts.form.errorRepsRequired };
   }
   const sets = toPositiveNumber(values.sets);
+  if (values.sets.trim() !== "" && sets === null) {
+    return { valid: false, error: texts.form.errorSetsRequired };
+  }
 
   return {
     valid: true,
@@ -46,6 +53,7 @@ export const validateStrengthWorkoutForm = (
       label: "strength",
       date: values.date,
       exerciseName,
+      exerciseId: values.exerciseId,
       weightKg,
       reps,
       ...(sets !== null ? { sets } : {}),
@@ -71,6 +79,7 @@ export const validateRunningWorkoutForm = (
       label: "running",
       date: values.date,
       exerciseName,
+      exerciseId: values.exerciseId,
       caloriesBurned,
     },
   };
@@ -82,17 +91,28 @@ export const validateRunningWorkoutForm = (
  */
 export const validateWorkoutRecordForm = (
   values: WorkoutRecordFormValues,
+  exercises: WorkoutExercise[],
 ): WorkoutRecordFormValidation => {
-  const exerciseName = values.exerciseName.trim();
-  if (!exerciseName) {
+  const exercise = exercises.find(
+    (ex) => ex.id === values.exerciseId && ex.label === values.label,
+  );
+  if (!exercise) {
     return { valid: false, error: texts.form.errorExerciseNameRequired };
   }
 
-  if (!values.date) {
+  const parsedDate = new Date(0);
+  const [year, month, day] = values.date.split("-").map(Number);
+  parsedDate.setUTCFullYear(year, month - 1, day);
+  if (
+    !/^\d{4}-\d{2}-\d{2}$/.test(values.date) ||
+    parsedDate.getUTCFullYear() !== year ||
+    parsedDate.getUTCMonth() !== month - 1 ||
+    parsedDate.getUTCDate() !== day
+  ) {
     return { valid: false, error: texts.form.errorDateRequired };
   }
 
   return values.label === "strength"
-    ? validateStrengthWorkoutForm(values, exerciseName)
-    : validateRunningWorkoutForm(values, exerciseName);
+    ? validateStrengthWorkoutForm(values, exercise.name)
+    : validateRunningWorkoutForm(values, exercise.name);
 };
