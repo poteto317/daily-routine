@@ -33,6 +33,7 @@
 
 機能仕様と技術仕様のリファレンス。
 
+- **[openapi.yaml](./04-reference/openapi.yaml)** - 実装済み HTTP API の OpenAPI 3.0.3 定義
 - **[agent-api.md](./04-reference/agent-api.md)** - AI エージェント向け API（家計簿・ジャーナル・Todo の CRUD）のリファレンス
 - **[features.md](./04-reference/features.md)** - 実装済み全18機能の詳細ドキュメント
 
