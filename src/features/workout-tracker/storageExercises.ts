@@ -6,12 +6,11 @@ import texts from "./locales/ja.json";
 
 export const getWorkoutExercises = (): WorkoutExercise[] =>
   getStorageItem(STORAGE_KEY_WORKOUT_EXERCISES, []);
-export const saveWorkoutExercises = (exercises: WorkoutExercise[]): boolean =>
-  setStorageItem(STORAGE_KEY_WORKOUT_EXERCISES, exercises);
-
-const persist = (exercises: WorkoutExercise[]): void => {
-  if (!saveWorkoutExercises(exercises))
+/** 同期・バックアップを含む全ての呼び出し元に書き込み失敗を伝える。 */
+export const saveWorkoutExercises = (exercises: WorkoutExercise[]): void => {
+  if (!setStorageItem(STORAGE_KEY_WORKOUT_EXERCISES, exercises)) {
     throw new Error(texts.exercises.saveFailed);
+  }
 };
 
 /** 新しい種目を作成する。過去の記録には触れない。 */
@@ -28,7 +27,7 @@ export const addWorkoutExercise = (
     createdAt: now,
     updatedAt: now,
   };
-  persist([...exercises, exercise]);
+  saveWorkoutExercises([...exercises, exercise]);
   return exercise;
 };
 
@@ -44,7 +43,7 @@ export const renameWorkoutExercise = (
     name: validateWorkoutExerciseName(name, existing.label, exercises, id),
     updatedAt: new Date().toISOString(),
   };
-  persist(exercises.map((ex) => (ex.id === id ? updated : ex)));
+  saveWorkoutExercises(exercises.map((ex) => (ex.id === id ? updated : ex)));
   return updated;
 };
 
@@ -53,5 +52,5 @@ export const deleteWorkoutExercise = (id: string): void => {
   const exercises = getWorkoutExercises();
   if (!exercises.some((ex) => ex.id === id))
     throw new Error(texts.exercises.notFound);
-  persist(exercises.filter((ex) => ex.id !== id));
+  saveWorkoutExercises(exercises.filter((ex) => ex.id !== id));
 };
