@@ -1,4 +1,5 @@
-import { useCallback, useState } from "react";
+import { LOCAL_DATA_UPDATED_AT_EVENT } from "@/lib/storage/core";
+import { useCallback, useEffect, useState } from "react";
 import type { WorkoutRecord, WorkoutExercise } from "@/types/routine";
 import { getAllWorkoutRecords, getWorkoutExercises } from "../storage";
 
@@ -17,6 +18,15 @@ export const useWorkoutTrackerDataState = () => {
     setRecords(getAllWorkoutRecords());
     setExercises(getWorkoutExercises());
   }, []);
+
+  useEffect(() => {
+    window.addEventListener(LOCAL_DATA_UPDATED_AT_EVENT, reload);
+    window.addEventListener("storage", reload);
+    return () => {
+      window.removeEventListener(LOCAL_DATA_UPDATED_AT_EVENT, reload);
+      window.removeEventListener("storage", reload);
+    };
+  }, [reload]);
 
   return { records, exercises, reload };
 };
