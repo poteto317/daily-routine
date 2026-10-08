@@ -31,7 +31,6 @@ describe("workout-tracker storageRecords", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockGetWorkoutRecordHistory.mockReturnValue({});
-    mockSaveWorkoutRecordHistory.mockReturnValue(true);
     mockGenerateId.mockReturnValue("workout-1");
   });
 
@@ -161,7 +160,6 @@ describe("workout-tracker storageRecords", () => {
 
     it("存在しない日付を指定しても何もしない", () => {
       mockGetWorkoutRecordHistory.mockReturnValue({});
-      mockSaveWorkoutRecordHistory.mockReturnValue(true);
 
       deleteWorkoutRecord("2026-03-01", "none");
 

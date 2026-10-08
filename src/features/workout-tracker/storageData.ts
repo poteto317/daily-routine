@@ -1,3 +1,4 @@
+import texts from "./locales/ja.json";
 import { type WorkoutRecordHistory } from "@/types/routine";
 import { getStorageItem, setStorageItem } from "@/lib/storage/core";
 import { STORAGE_KEY_WORKOUT_RECORDS } from "./storageKeys";
@@ -8,6 +9,8 @@ export const getWorkoutRecordHistory = (): WorkoutRecordHistory => {
 
 export const saveWorkoutRecordHistory = (
   history: WorkoutRecordHistory,
-): boolean => {
-  return setStorageItem(STORAGE_KEY_WORKOUT_RECORDS, history);
+): void => {
+  if (!setStorageItem(STORAGE_KEY_WORKOUT_RECORDS, history)) {
+    throw new Error(texts.exercises.saveFailed);
+  }
 };

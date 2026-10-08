@@ -17,6 +17,7 @@ describe("workout-tracker storageData", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockGetStorageItem.mockReturnValue({} as never);
+    mockSetStorageItem.mockReturnValue(true);
   });
 
   it("getWorkoutRecordHistoryは履歴を取得する", () => {
