@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, within } from "@testing-library/react";
+import { act, fireEvent, render, screen, within } from "@testing-library/react";
 import { WorkoutTrackerPage } from "../WorkoutTrackerPage";
 import {
   addWorkoutExercise,
@@ -100,4 +100,42 @@ it("種目IDのない旧記録も表示する", () => {
   });
   render(<WorkoutTrackerPage />);
   expect(screen.getByText(/昔のラン/)).toBeInTheDocument();
+});
+
+it("同期ダウンロード後は開いている画面の候補と記録を更新する", async () => {
+  render(<WorkoutTrackerPage />);
+  const { saveSyncDataToLocal } =
+    await import("@/features/sync/sync/localData");
+  act(() =>
+    saveSyncDataToLocal({
+      workoutExercises: [
+        {
+          id: "remote-ex",
+          name: "同期した種目",
+          label: "strength",
+          createdAt: "2026-10-08T00:00:00Z",
+          updatedAt: "2026-10-08T00:00:00Z",
+        },
+      ],
+      workoutRecordHistory: {
+        "2026-10-08": [
+          {
+            id: "remote-record",
+            date: "2026-10-08",
+            exerciseName: "APIの記録",
+            exerciseId: "remote-ex",
+            label: "strength",
+            weightKg: 40,
+            reps: 5,
+            createdAt: "2026-10-08T00:00:00Z",
+            updatedAt: "2026-10-08T00:00:00Z",
+          },
+        ],
+      },
+    }),
+  );
+  expect(
+    within(selectExercise()).getByRole("option", { name: "同期した種目" }),
+  ).toBeInTheDocument();
+  expect(screen.getByText(/APIの記録/)).toBeInTheDocument();
 });
