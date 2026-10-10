@@ -1,5 +1,8 @@
+import texts from "../locales/ja.json";
 import {
   validateWorkoutRecordForm,
+  validateStrengthWorkoutForm,
+  validateRunningWorkoutForm,
   type WorkoutRecordFormValues,
 } from "../workoutRecordFormValidation";
 import type { WorkoutExercise } from "@/types/routine";
@@ -94,5 +97,64 @@ it("既存仕様どおり小数を受け付ける", () => {
   ).toMatchObject({
     valid: true,
     record: { weightKg: 0.5, reps: 1.5, sets: 2.5 },
+  });
+});
+
+it("種目、日付、重量、回数の順にエラーを返す", () => {
+  const invalid = {
+    ...values,
+    exerciseId: "missing",
+    date: "bad",
+    weightKg: "0",
+    reps: "0",
+    sets: "0",
+  };
+  expect(validateWorkoutRecordForm(invalid, exercises)).toEqual({
+    valid: false,
+    error: texts.form.errorExerciseNameRequired,
+  });
+  expect(
+    validateWorkoutRecordForm({ ...invalid, exerciseId: "s" }, exercises),
+  ).toEqual({ valid: false, error: texts.form.errorDateRequired });
+  expect(
+    validateWorkoutRecordForm(
+      { ...invalid, exerciseId: "s", date: values.date },
+      exercises,
+    ),
+  ).toEqual({ valid: false, error: texts.form.errorWeightRequired });
+  expect(
+    validateWorkoutRecordForm(
+      { ...invalid, exerciseId: "s", date: values.date, weightKg: "1" },
+      exercises,
+    ),
+  ).toEqual({ valid: false, error: texts.form.errorRepsRequired });
+});
+
+it("従来の種別別バリデータも公開入口から利用できる", () => {
+  expect(validateStrengthWorkoutForm(values, "保存時の種目名")).toEqual({
+    valid: true,
+    record: {
+      label: "strength",
+      date: values.date,
+      exerciseId: "s",
+      exerciseName: "保存時の種目名",
+      weightKg: 60,
+      reps: 10,
+    },
+  });
+  expect(
+    validateRunningWorkoutForm(
+      { ...values, label: "running", exerciseId: "r" },
+      "ジョグ",
+    ),
+  ).toEqual({
+    valid: true,
+    record: {
+      label: "running",
+      date: values.date,
+      exerciseId: "r",
+      exerciseName: "ジョグ",
+      caloriesBurned: 300,
+    },
   });
 });

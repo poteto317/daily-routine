@@ -65,3 +65,15 @@ describe("useWorkoutTrackerDataState", () => {
     expect(result.current.reload).toBe(firstReload);
   });
 });
+
+it("購読解除後は保存イベントで再読込しない", async () => {
+  const { LOCAL_DATA_UPDATED_AT_EVENT } = await import("@/lib/storage/core");
+  mockGetAllWorkoutRecords.mockReturnValue([]);
+  const { unmount } = renderHook(() => useWorkoutTrackerDataState());
+  mockGetAllWorkoutRecords.mockClear();
+  act(() => window.dispatchEvent(new Event(LOCAL_DATA_UPDATED_AT_EVENT)));
+  expect(mockGetAllWorkoutRecords).toHaveBeenCalledTimes(1);
+  unmount();
+  act(() => window.dispatchEvent(new Event(LOCAL_DATA_UPDATED_AT_EVENT)));
+  expect(mockGetAllWorkoutRecords).toHaveBeenCalledTimes(1);
+});

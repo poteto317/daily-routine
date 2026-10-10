@@ -5,7 +5,7 @@ import texts from "./locales/ja.json";
 export const validateWorkoutExerciseName = (
   name: string,
   label: WorkoutLabel,
-  exercises: WorkoutExercise[],
+  exercises: readonly WorkoutExercise[],
   excludeId?: string,
 ): string => {
   const normalized = name.trim();
