@@ -6,7 +6,7 @@ import type { WorkoutRecordFormValues } from "../workoutRecordFormValidation";
 const createInitialValues = (): WorkoutRecordFormValues => ({
   label: "strength",
   date: getTodayString(),
-  exerciseName: "",
+  exerciseId: "",
   weightKg: "",
   reps: "",
   sets: "",
@@ -27,10 +27,11 @@ export const useWorkoutRecordFormValuesState = () => {
     setValues((prev) => ({ ...prev, [key]: value }));
   };
 
-  const setLabel = (label: WorkoutLabel) => setField("label", label);
+  const setLabel = (label: WorkoutLabel) =>
+    setValues((prev) => ({ ...prev, label, exerciseId: "" }));
   const setDate = (date: string) => setField("date", date);
-  const setExerciseName = (exerciseName: string) =>
-    setField("exerciseName", exerciseName);
+  const setExerciseId = (exerciseId: string) =>
+    setField("exerciseId", exerciseId);
   const setWeightKg = (weightKg: string) => setField("weightKg", weightKg);
   const setReps = (reps: string) => setField("reps", reps);
   const setSets = (sets: string) => setField("sets", sets);
@@ -45,7 +46,7 @@ export const useWorkoutRecordFormValuesState = () => {
     values,
     setLabel,
     setDate,
-    setExerciseName,
+    setExerciseId,
     setWeightKg,
     setReps,
     setSets,

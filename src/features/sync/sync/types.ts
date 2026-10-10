@@ -13,6 +13,7 @@ import type {
   RoutinePreset,
   WeightHistory,
   WorkoutRecordHistory,
+  WorkoutExercise,
   WorkSessionHistory,
   WorkTemplate,
 } from "@/types/routine";
@@ -28,6 +29,7 @@ export interface SyncPayload {
   workTemplates: WorkTemplate[];
   weightHistory: WeightHistory;
   workoutRecordHistory: WorkoutRecordHistory;
+  workoutExercises: WorkoutExercise[];
   journalHistory: JournalHistory;
   budgetData: BudgetData;
   budgetCategories: BudgetCategory[];

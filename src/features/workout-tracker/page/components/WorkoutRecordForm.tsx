@@ -1,6 +1,6 @@
 "use client";
 
-import type { WorkoutLabel } from "@/types/routine";
+import type { WorkoutLabel, WorkoutExercise } from "@/types/routine";
 import texts from "../../locales/ja.json";
 import type { WorkoutRecordFormValues } from "../../workoutRecordFormValidation";
 import { WorkoutLabelSelector } from "./WorkoutLabelSelector";
@@ -8,12 +8,15 @@ import { WorkoutRunningFields } from "./WorkoutRunningFields";
 import { WorkoutStrengthFields } from "./WorkoutStrengthFields";
 import { inputClassName } from "./workoutFormFieldStyles";
 
+import { WorkoutExerciseSelect } from "./WorkoutExerciseSelect";
+
 type WorkoutRecordFormProps = {
+  exercises: WorkoutExercise[];
   values: WorkoutRecordFormValues;
   error: string | null;
   onChangeLabelAction: (label: WorkoutLabel) => void;
   onChangeDateAction: (date: string) => void;
-  onChangeExerciseNameAction: (exerciseName: string) => void;
+  onChangeExerciseIdAction: (exerciseId: string) => void;
   onChangeWeightKgAction: (weightKg: string) => void;
   onChangeRepsAction: (reps: string) => void;
   onChangeSetsAction: (sets: string) => void;
@@ -27,10 +30,11 @@ type WorkoutRecordFormProps = {
  */
 export const WorkoutRecordForm = ({
   values,
+  exercises,
   error,
   onChangeLabelAction,
   onChangeDateAction,
-  onChangeExerciseNameAction,
+  onChangeExerciseIdAction,
   onChangeWeightKgAction,
   onChangeRepsAction,
   onChangeSetsAction,
@@ -62,18 +66,12 @@ export const WorkoutRecordForm = ({
         />
       </div>
 
-      <div>
-        <label className="block text-xs text-gray-500 dark:text-gray-600 mb-1">
-          {texts.form.exerciseNameLabel}
-        </label>
-        <input
-          type="text"
-          value={values.exerciseName}
-          onChange={(e) => onChangeExerciseNameAction(e.target.value)}
-          placeholder={texts.form.exerciseNamePlaceholder}
-          className={inputClassName}
-        />
-      </div>
+      <WorkoutExerciseSelect
+        exercises={exercises}
+        label={values.label}
+        value={values.exerciseId}
+        onChangeAction={onChangeExerciseIdAction}
+      />
 
       {isStrength ? (
         <WorkoutStrengthFields

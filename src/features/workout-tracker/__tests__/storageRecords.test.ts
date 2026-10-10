@@ -37,6 +37,7 @@ describe("workout-tracker storageRecords", () => {
   describe("addWorkoutRecord", () => {
     it("新しい日付にレコードを追加する", () => {
       const record = addWorkoutRecord({
+        exerciseId: "exercise-1",
         label: "strength",
         date: "2026-03-01",
         exerciseName: "ベンチプレス",
@@ -76,6 +77,7 @@ describe("workout-tracker storageRecords", () => {
       mockGetWorkoutRecordHistory.mockReturnValue(existing);
 
       addWorkoutRecord({
+        exerciseId: "exercise-1",
         label: "running",
         date: "2026-03-01",
         exerciseName: "夜のジョグ",
@@ -89,6 +91,7 @@ describe("workout-tracker storageRecords", () => {
 
     it("runningのレコードにweightKg等が含まれない", () => {
       const record = addWorkoutRecord({
+        exerciseId: "exercise-1",
         label: "running",
         date: "2026-03-01",
         exerciseName: "ランニング",

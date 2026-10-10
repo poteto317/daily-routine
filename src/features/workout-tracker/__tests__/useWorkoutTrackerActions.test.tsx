@@ -6,6 +6,15 @@ import { addWorkoutRecord, deleteWorkoutRecord } from "../storage";
 import { validateWorkoutRecordForm } from "../workoutRecordFormValidation";
 
 jest.mock("../storage", () => ({
+  getWorkoutExercises: jest.fn(() => [
+    {
+      id: "ベンチプレス",
+      name: "ベンチプレス",
+      label: "strength" as const,
+      createdAt: "",
+      updatedAt: "",
+    },
+  ]),
   addWorkoutRecord: jest.fn(),
   deleteWorkoutRecord: jest.fn(),
 }));
@@ -28,6 +37,7 @@ const formValues = {
   label: "strength" as const,
   date: "2026-03-01",
   exerciseName: "ベンチプレス",
+  exerciseId: "ベンチプレス",
   weightKg: "60",
   reps: "10",
   sets: "",
@@ -39,6 +49,7 @@ const record: WorkoutRecord = {
   date: "2026-03-01",
   label: "strength",
   exerciseName: "ベンチプレス",
+  exerciseId: "ベンチプレス",
   weightKg: 60,
   reps: 10,
   createdAt: "2026-03-01T00:00:00.000Z",
@@ -62,6 +73,7 @@ describe("useWorkoutTrackerActions", () => {
           label: "strength",
           date: "2026-03-01",
           exerciseName: "ベンチプレス",
+          exerciseId: "ベンチプレス",
           weightKg: 60,
           reps: 10,
         },
@@ -79,6 +91,7 @@ describe("useWorkoutTrackerActions", () => {
         label: "strength",
         date: "2026-03-01",
         exerciseName: "ベンチプレス",
+        exerciseId: "ベンチプレス",
         weightKg: 60,
         reps: 10,
       });

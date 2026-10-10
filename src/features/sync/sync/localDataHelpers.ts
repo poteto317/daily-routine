@@ -1,3 +1,4 @@
+import { hasWorkoutSyncData } from "./workoutSyncData";
 import { hasBudgetSyncData } from "./budgetSyncData";
 import { hasTodoListSyncData } from "./todoListSyncData";
 import type { SyncPayload } from "./types";
@@ -16,8 +17,8 @@ export const hasAnyLocalSyncData = (data: LocalSyncDataSummary): boolean => {
     Object.keys(data.pomodoroHistory).length > 0 ||
     Object.keys(data.workSessionHistory).length > 0 ||
     data.workTemplates.length > 0 ||
+    hasWorkoutSyncData(data) ||
     Object.keys(data.weightHistory).length > 0 ||
-    Object.keys(data.workoutRecordHistory).length > 0 ||
     Object.keys(data.journalHistory).length > 0 ||
     hasBudgetSyncData(data) ||
     Object.keys(data.mealHistory).length > 0 ||

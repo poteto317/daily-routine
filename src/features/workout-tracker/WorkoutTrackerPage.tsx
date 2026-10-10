@@ -2,6 +2,7 @@
 
 import { CardPanel } from "@/components";
 import texts from "./locales/ja.json";
+import { WorkoutExerciseManager } from "./page/components/WorkoutExerciseManager";
 import { WorkoutRecordForm } from "./page/components/WorkoutRecordForm";
 import { WorkoutRecordHistoryList } from "./page/components/WorkoutRecordHistoryList";
 import { useWorkoutTrackerPageState } from "./page/useWorkoutTrackerPageState";
@@ -12,12 +13,14 @@ import { useWorkoutTrackerPageState } from "./page/useWorkoutTrackerPageState";
  */
 export const WorkoutTrackerPage = () => {
   const {
+    exercises,
+    exerciseActions,
     formValues,
     formError,
     groups,
     setLabel,
     setDate,
-    setExerciseName,
+    setExerciseId,
     setWeightKg,
     setReps,
     setSets,
@@ -36,11 +39,12 @@ export const WorkoutTrackerPage = () => {
 
           <div className="mb-6">
             <WorkoutRecordForm
+              exercises={exercises}
               values={formValues}
               error={formError}
               onChangeLabelAction={setLabel}
               onChangeDateAction={setDate}
-              onChangeExerciseNameAction={setExerciseName}
+              onChangeExerciseIdAction={setExerciseId}
               onChangeWeightKgAction={setWeightKg}
               onChangeRepsAction={setReps}
               onChangeSetsAction={setSets}
@@ -48,6 +52,12 @@ export const WorkoutTrackerPage = () => {
               onSubmitAction={onSubmitAction}
             />
           </div>
+
+          <WorkoutExerciseManager
+            label={formValues.label}
+            exercises={exercises}
+            actions={exerciseActions}
+          />
 
           <WorkoutRecordHistoryList
             groups={groups}

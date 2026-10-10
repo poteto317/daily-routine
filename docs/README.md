@@ -18,24 +18,27 @@
 
 開発におけるコーディング規約とベストプラクティス。
 
+- **[architecture.md](./02-development/architecture.md)** - システム全体構成・オフライン同期・セキュリティ設計
 - **[coding-standards.md](./02-development/coding-standards.md)** - React/Next.jsのコーディング規約
 - **[refactoring-guide.md](./02-development/refactoring-guide.md)** - コンポーネントのリファクタリングルール
 - **[review-lessons.md](./02-development/review-lessons.md)** - レビュー指摘の教訓集（発生条件・原因・修正・チェックリスト）
-- **[drag-reorder-investigation.md](./02-development/drag-reorder-investigation.md)** - ルーティン並び替えドラッグ不安定問題の調査・修正記録
+- **[github-actions-guide.md](./02-development/github-actions-guide.md)** - GitHub Actions CI/CD パイプラインガイド
+- **[storybook-guide.md](./02-development/storybook-guide.md)** - Storybook コンポーネントカタログ運用ガイド
 
 ### 🧪 [03. テストガイド](./03-testing/)
 
 アプリケーションのテスト方法とマトリクス。
 
-- **[test-matrix.md](./03-testing/test-matrix.md)** - 機能テストマトリクス（120項目以上）
+- **[README.md](./03-testing/README.md)** - ユニットテスト、E2Eテスト（Playwright）、ビルドテストの実行ガイド
+- **[test-matrix.md](./03-testing/test-matrix.md)** - 機能テストマトリクス（全26セクション×230項目以上）
 
 ### 📖 [04. リファレンス](./04-reference/)
 
 機能仕様と技術仕様のリファレンス。
 
 - **[openapi.yaml](./04-reference/openapi.yaml)** - 実装済み HTTP API の OpenAPI 3.0.3 定義
-- **[agent-api.md](./04-reference/agent-api.md)** - AI エージェント向け API（家計簿・ジャーナル・Todo の CRUD）のリファレンス
-- **[features.md](./04-reference/features.md)** - 実装済み全18機能の詳細ドキュメント
+- **[agent-api.md](./04-reference/agent-api.md)** - AI エージェント向け API（家計簿・ジャーナル・Todo・運動記録の CRUD）のリファレンス
+- **[features.md](./04-reference/features.md)** - 実装済み全機能の詳細ドキュメント（運動記録、不具合報告、APIキー管理、Todo管理、同期履歴管理等を含む完全仕様）
 
 ---
 
@@ -82,4 +85,4 @@
 
 ---
 
-**最終更新日**: 2026年3月31日
+**最終更新日**: 2026年10月10日

@@ -1,3 +1,4 @@
+import { useWorkoutExerciseActions } from "./useWorkoutExerciseActions";
 import { groupWorkoutRecordsByDate } from "../workoutRecordGrouping";
 import { useWorkoutRecordFormError } from "./useWorkoutRecordFormError";
 import { useWorkoutRecordFormValuesState } from "./useWorkoutRecordFormValuesState";
@@ -9,12 +10,12 @@ import { createWorkoutTrackerPageStateResult } from "./workoutTrackerPageStateRe
  * 運動記録ページの合成ルートhook。データ・フォーム・操作を束ねる。
  */
 export const useWorkoutTrackerPageState = () => {
-  const { records, reload } = useWorkoutTrackerDataState();
+  const { records, exercises, reload } = useWorkoutTrackerDataState();
   const {
     values,
     setLabel,
     setDate,
-    setExerciseName,
+    setExerciseId,
     setWeightKg,
     setReps,
     setSets,
@@ -28,20 +29,31 @@ export const useWorkoutTrackerPageState = () => {
     setError,
   });
 
+  const exerciseActions = useWorkoutExerciseActions({
+    label: values.label,
+    selectedId: values.exerciseId,
+    select: setExerciseId,
+    reload,
+  });
+
   const groups = groupWorkoutRecordsByDate(records);
 
-  return createWorkoutTrackerPageStateResult({
-    formValues: values,
-    formError: error,
-    groups,
-    setLabel,
-    setDate,
-    setExerciseName,
-    setWeightKg,
-    setReps,
-    setSets,
-    setCaloriesBurned,
-    onSubmitAction: () => handleAddRecord(values),
-    onDeleteRecordAction: handleDeleteRecord,
-  });
+  return {
+    exercises,
+    exerciseActions,
+    ...createWorkoutTrackerPageStateResult({
+      formValues: values,
+      formError: error,
+      groups,
+      setLabel,
+      setDate,
+      setExerciseId,
+      setWeightKg,
+      setReps,
+      setSets,
+      setCaloriesBurned,
+      onSubmitAction: () => handleAddRecord(values),
+      onDeleteRecordAction: handleDeleteRecord,
+    }),
+  };
 };

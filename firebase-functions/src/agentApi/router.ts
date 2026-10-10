@@ -18,6 +18,8 @@ const RESOURCE_PATHS: Record<string, ResourceName> = {
   "todo/lists": "todoLists",
   "todo/items": "todoItems",
   "todo/categories": "todoCategories",
+  "workout/exercises": "workoutExercises",
+  "workout/records": "workoutRecords",
 };
 
 const COLLECTION_ACTIONS: Record<string, Action> = {

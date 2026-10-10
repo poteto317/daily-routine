@@ -20,11 +20,12 @@
     "caloriesLabel": "消費カロリー (kcal)",
     "caloriesPlaceholder": "例: 300",
     "addButton": "追加",
-    "errorExerciseNameRequired": "種目名を入力してください",
-    "errorDateRequired": "日付を入力してください",
+    "errorExerciseNameRequired": "種目を選択してください",
+    "errorDateRequired": "実在する日付を入力してください",
     "errorWeightRequired": "重量を入力してください",
     "errorRepsRequired": "回数を入力してください",
-    "errorCaloriesRequired": "消費カロリーを入力してください"
+    "errorCaloriesRequired": "消費カロリーを入力してください",
+    "errorSetsRequired": "セット数は0より大きい数値で入力してください"
   },
   "historyList": {
     "title": "📋 記録履歴",
@@ -36,5 +37,22 @@
     "repsUnit": "回",
     "caloriesUnit": "kcal",
     "deleteAriaLabel": "削除"
+  },
+  "exercises": {
+    "manage": "種目を管理",
+    "title": "種目の管理",
+    "nameLabel": "種目名",
+    "add": "種目を追加",
+    "save": "名前を保存",
+    "delete": "種目を削除",
+    "empty": "種目を追加してください",
+    "select": "種目を選択してください",
+    "invalidName": "種目名は1〜100文字で入力してください",
+    "duplicate": "同じ種類に同名の種目があります",
+    "notFound": "種目が見つかりません。選び直してください",
+    "saveFailed": "保存できませんでした。入力内容を確認して再度お試しください",
+    "confirmDelete": "「{name}」を削除しますか？過去の運動記録は残ります。",
+    "newNameLabel": "新しい種目名",
+    "renameLabel": "種目名を変更：{name}"
   }
 }
