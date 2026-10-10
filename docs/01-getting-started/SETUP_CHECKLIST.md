@@ -6,10 +6,10 @@
 
 ## ✅ 完了済み
 
-- [x] Node.js インストール（v22.22.0）
+- [x] Node.js インストール（v22 または v24 LTS、リポジトリ推奨 `.nvmrc`: 24）
 - [x] npm インストール（11.6.2）
 - [x] ルートディレクトリで `npm install` 実行
-- [x] functions ディレクトリで `npm install` 実行
+- [x] firebase-functions ディレクトリで `npm install` 実行
 - [x] Firebase CLI インストール（15.5.1）
 - [x] Firebase ログイン
 - [x] Vercel CLI インストール（50.9.6）
@@ -70,7 +70,7 @@ Firebase Console で匿名認証を有効化：
 
 ### 4. Firestore セキュリティルールの設定
 
-Firebase Console → Firestore Database → ルール：
+Firebase Console → Firestore Database → ルール（リポジトリの `firestore.rules` と同等）：
 
 ```javascript
 rules_version = '2';
@@ -104,6 +104,49 @@ service cloud.firestore {
         && get(/databases/$(database)/documents/accounts/$(request.auth.uid)).data.isAdmin == true;
     }
 
+    // 不具合報告: クライアントは自分の uid の報告を作成・読み取りのみ可能（status: pending 固定）
+    // update / delete は Cloud Functions (Admin SDK) のみ
+    match /bugReports/{reportId} {
+      allow read: if request.auth != null
+        && resource.data.uid == request.auth.uid;
+      allow create: if request.auth != null
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.status == "pending"
+        && request.resource.data.description is string
+        && request.resource.data.description.matches('[\\s\\S]*[^\\s][\\s\\S]*')
+        && request.resource.data.description.size() <= 2000
+        && (!('title' in request.resource.data) || (request.resource.data.title is string && request.resource.data.title.size() <= 100))
+        && (!('stepsToReproduce' in request.resource.data) || (request.resource.data.stepsToReproduce is string && request.resource.data.stepsToReproduce.size() <= 2000))
+        && (!('meta' in request.resource.data) || (
+          request.resource.data.meta is map
+          && request.resource.data.meta.keys().hasOnly(['appVersion', 'userAgent', 'url', 'locale', 'timezone', 'createdAtClient'])
+          && request.resource.data.meta.appVersion is string && request.resource.data.meta.appVersion.size() <= 50
+          && request.resource.data.meta.userAgent is string && request.resource.data.meta.userAgent.size() <= 500
+          && request.resource.data.meta.url is string && request.resource.data.meta.url.size() <= 2000
+          && request.resource.data.meta.locale is string && request.resource.data.meta.locale.size() <= 20
+          && request.resource.data.meta.timezone is string && request.resource.data.meta.timezone.size() <= 50
+          && request.resource.data.meta.createdAtClient is string && request.resource.data.meta.createdAtClient.size() <= 30
+        ))
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.updatedAt == request.time
+        && request.resource.data.keys().hasOnly([
+          "uid", "status", "description", "title", "stepsToReproduce", "meta", "createdAt", "updatedAt"
+        ]);
+      allow update, delete: if false;
+    }
+
+    // AI エージェント向け API キー: ドキュメント ID はキーの SHA-256 ハッシュ
+    match /apiKeys/{keyHash} {
+      allow create: if request.auth != null
+        && keyHash.matches('^[0-9a-f]{64}$')
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.keys().hasOnly(["uid", "createdAt"]);
+      allow read, delete: if request.auth != null
+        && resource.data.uid == request.auth.uid;
+      allow update: if false;
+    }
+
     // その他のドキュメントはデフォルトで拒否
     match /{document=**} {
       allow read, write: if false;
@@ -131,8 +174,29 @@ npm run dev
 
 ### Cloud Functions のデプロイ
 
+Cloud Functions は Node.js 24 環境で以下の 5 つの関数をエクスポートします：
+
+- `syncRoutines`: ルーティン通知用同期 (HTTP)
+- `checkNotifications`: 通知チェックスケジューラー (Pub/Sub)
+- `cleanupNotifications`: 通知クリーンアップスケジューラー (Pub/Sub)
+- `onBugReportCreated`: 不具合報告 GitHub Issue 自動起票 (Firestore トリガー)
+- `agentApi`: AI エージェント向け CRUD REST API (HTTP)
+
+不具合報告機能で GitHub Issue を自動起票する場合は、事前に Secret を設定します（詳細は `docs/02-development/bug-report-secrets-config.md` 参照）：
+
 ```bash
+firebase functions:secrets:set GITHUB_TOKEN
+firebase functions:secrets:set GITHUB_REPO # 任意（デフォルト: poteto317/daily-routine）
+```
+
+ビルドとデプロイ：
+
+```bash
+cd firebase-functions
+npm run build
+cd ..
 firebase deploy --only functions
+firebase deploy --only firestore:rules
 ```
 
 デプロイ後、Functions の URL が表示されるので、`.env.local` の `NEXT_PUBLIC_FUNCTIONS_URL` を更新してください。
@@ -149,17 +213,24 @@ vercel --prod
 
 Vercel で本番運用する場合は、`.env.local` に設定した Firebase 関連の環境変数を Vercel プロジェクト側にも設定してください。
 
-対象例:
+### 環境変数一覧リファレンス
 
-- `NEXT_PUBLIC_ENABLE_LOCAL_AUTH`
-- `NEXT_PUBLIC_FIREBASE_API_KEY`
-- `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN`
-- `NEXT_PUBLIC_FIREBASE_PROJECT_ID`
-- `NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET`
-- `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID`
-- `NEXT_PUBLIC_FIREBASE_APP_ID`
-- `NEXT_PUBLIC_FIREBASE_VAPID_KEY`
-- `NEXT_PUBLIC_FUNCTIONS_URL`
+`.env.local` および本番環境で利用される環境変数の一覧です。
+
+| 環境変数名                                 | 必須/任意        | 説明                                                                            | 設定例・既定値                                            |
+| :----------------------------------------- | :--------------- | :------------------------------------------------------------------------------ | :-------------------------------------------------------- |
+| `NEXT_PUBLIC_ENABLE_LOCAL_AUTH`            | 任意             | Firebase未設定環境での開発用ローカル擬似認証フラグ。`localhost` でのみ有効      | `false`（開発時のみ `true`）                              |
+| `NEXT_PUBLIC_FIREBASE_API_KEY`             | 必須             | Firebase Web API キー                                                           | `your-api-key`                                               |
+| `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN`         | 必須             | Firebase Authentication ドメイン                                                | `<project-id>.firebaseapp.com`                            |
+| `NEXT_PUBLIC_FIREBASE_PROJECT_ID`          | 必須             | Firebase プロジェクト ID                                                        | `daily-routine-xxxx`                                      |
+| `NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET`      | 任意             | Cloud Storage バケット名                                                        | `<project-id>.appspot.com`                                |
+| `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID` | 必須             | FCM 送信者 ID（プロジェクト番号）                                               | `123456789012`                                            |
+| `NEXT_PUBLIC_FIREBASE_APP_ID`              | 必須             | Firebase Web アプリ ID                                                          | `1:123456:web:abcdef`                                     |
+| `NEXT_PUBLIC_FIREBASE_VAPID_KEY`           | 任意             | Web Push (FCM) 通知用 VAPID 公開鍵                                              | `BEl62v...`                                               |
+| `NEXT_PUBLIC_FUNCTIONS_URL`                | 任意             | Cloud Functions のベース URL（通知同期用）                                      | `https://asia-northeast1-<project-id>.cloudfunctions.net` |
+| `NEXT_PUBLIC_APP_VERSION`                  | 自動             | アプリケーションのバージョン（`next.config.ts` で `package.json` から自動注入） | `0.1.0`                                                   |
+| `GITHUB_TOKEN`                             | Functions Secret | 不具合報告の GitHub Issue 自動起票用トークン                                    | Secret Manager に登録                                     |
+| `GITHUB_REPO`                              | Functions Secret | 不具合報告の起票先 GitHub リポジトリ（デフォルト: `poteto317/daily-routine`）   | Secret Manager に登録                                     |
 
 設定方法:
 
@@ -172,6 +243,7 @@ Vercel で本番運用する場合は、`.env.local` に設定した Firebase �
 
 - [実装機能一覧](../04-reference/features.md) - 全機能の詳細仕様
 - [クラウド同期セットアップ](./SYNC_SETUP.md) - Firestore同期の設定方法
+- [システムアーキテクチャ設計](../02-development/architecture.md) - 全体構成とデータフロー
 - [開発ガイドライン](../02-development/) - コーディング規約
 - [テストガイド](../03-testing/) - テスト方法
 
@@ -181,4 +253,4 @@ Vercel で本番運用する場合は、`.env.local` に設定した Firebase �
 
 ---
 
-**最終更新日**: 2026年4月1日
+**最終更新日**: 2026年10月10日

@@ -4,6 +4,14 @@
 
 ## 📚 ドキュメント一覧
 
+### アーキテクチャ設計
+
+- **[architecture.md](./architecture.md)** - システム全体構成・データ同期モデル・セキュリティ設計
+  - クライアント・Firebase・外部API（GitHub・エージェント）の全体連携図
+  - オフラインファースト＆LocalStorage主導の同期メカニズム
+  - レイヤード構成と依存関係ルール
+  - AI エージェント API とセキュリティ設計
+
 ### コーディング規約
 
 - **[coding-standards.md](./coding-standards.md)** - React/Next.jsのコーディング規約
@@ -26,11 +34,18 @@
   - 入力の扱い、データの整合、原子性、セキュリティルール、UI・アクセシビリティ、テスト、構造、運用
   - レビュー用チェックリスト
 
-### 調査記録
+### 調査記録・設計書・運用ガイド
 
 - **[drag-reorder-investigation.md](./drag-reorder-investigation.md)** - ルーティン並び替え（ドラッグ＆ドロップ）不安定問題の調査・修正記録
   - `touchAction: "pan-y"` とブラウザスクロールの競合が根本原因
   - dnd-kit TouchSensor の仕組みと制約
+- **[sync-indicator-investigation.md](./sync-indicator-investigation.md)** - 同期インジケーター・状態表示の挙動調査と改善
+- **[bug-report-feature-plan.md](./bug-report-feature-plan.md)** - 不具合報告機能の設計と GitHub Issue 自動起票のアーキテクチャ
+- **[bug-report-secrets-config.md](./bug-report-secrets-config.md)** - Cloud Functions の GitHub Token / Secret 設定手順ガイド
+- **[github-actions-guide.md](./github-actions-guide.md)** - GitHub Actions CI/CD パイプラインの構成と運用ガイド
+- **[storybook-guide.md](./storybook-guide.md)** - Storybook コンポーネントカタログガイド（起動・100以上のStory運用）
+- **[todo-item-action-menu-unification-plan.md](./todo-item-action-menu-unification-plan.md)** - Todo アイテム操作メニューの共通化・UI 統一設計
+- **[2026-10-09-workout-srp-review.md](./2026-10-09-workout-srp-review.md)** - 運動記録モジュールの単一責任原則（SRP）リファクタリングとレビュー記録
 
 ## 🎯 開発の基本方針
 

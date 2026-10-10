@@ -41,26 +41,27 @@ React (TypeScript) 開発の生産性を最大限に高めるための推奨拡�
 
 ---
 
-## 推奨設定 (settings.json)
+## ワークスペース推奨設定 (.vscode/settings.json)
 
-拡張機能を最大限活かすために、VS Codeの `settings.json` に以下の設定を追加することをお勧めします。
+リポジトリには `.vscode/settings.json` が配置されており、以下の設定が標準で適用されています。新規環境ではリポジトリの設定が優先されます。
 
 ```json
 {
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true,
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit"
   },
-  "emmet.includeLanguages": {
-    "javascript": "javascriptreact",
-    "typescript": "typescriptreact"
+  "css.lint.unknownAtRules": "ignore", // Tailwind CSS v4 の @theme, @variant 警告を抑止
+  "files.exclude": {
+    "firebase-functions/node_modules": true,
+    "firebase-functions/lib": true
   },
-  "[typescript]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[typescriptreact]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  "search.exclude": {
+    "firebase-functions/node_modules": true,
+    "firebase-functions/lib": true
   }
 }
 ```
@@ -69,8 +70,9 @@ React (TypeScript) 開発の生産性を最大限に高めるための推奨拡�
 
 ## 📖 関連ドキュメント
 
-- [開発ガイドライン](../02-development/) - コーディング規約とリファクタリング
 - [セットアップチェックリスト](./SETUP_CHECKLIST.md) - 環境構築手順
+- [開発ガイドライン](../02-development/) - コーディング規約とリファクタリング
+- [システムアーキテクチャ設計](../02-development/architecture.md) - システム構成
 
 ---
 
@@ -78,4 +80,4 @@ React (TypeScript) 開発の生産性を最大限に高めるための推奨拡�
 
 ---
 
-**最終更新日**: 2026年2月17日
+**最終更新日**: 2026年10月10日

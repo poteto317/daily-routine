@@ -73,6 +73,7 @@ export const createSyncPayloadFixture = (
   workTemplates: [],
   weightHistory: {},
   workoutRecordHistory: {},
+  workoutExercises: [],
   journalHistory: {},
   budgetData: { expenses: {} },
   budgetCategories: [],

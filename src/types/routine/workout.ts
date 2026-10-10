@@ -1,11 +1,21 @@
 /** 運動記録のラベル（種別） */
 export type WorkoutLabel = "strength" | "running";
 
+export interface WorkoutExercise {
+  id: string;
+  name: string;
+  label: WorkoutLabel;
+  createdAt: string;
+  updatedAt: string;
+}
+
 interface WorkoutRecordBase {
   id: string;
   /** YYYY-MM-DD */
   date: string;
-  /** 種目名 */
+  /** 旧記録は未設定。削除された種目の ID も履歴として保持する */
+  exerciseId?: string;
+  /** 記録時の種目名 */
   exerciseName: string;
   createdAt: string;
   updatedAt: string;
@@ -46,4 +56,4 @@ type DistributiveOmit<T, K extends PropertyKey> = T extends unknown
 export type NewWorkoutRecordInput = DistributiveOmit<
   WorkoutRecord,
   "id" | "createdAt" | "updatedAt"
->;
+> & { exerciseId: string };

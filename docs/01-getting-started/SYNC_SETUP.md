@@ -41,6 +41,37 @@ service cloud.firestore {
         && get(/databases/$(database)/documents/accounts/$(request.auth.uid)).data.isAdmin == true;
     }
 
+    // 不具合報告: クライアントは自分の uid の報告を作成・読み取りのみ可能（status: pending 固定）
+    // update / delete は Cloud Functions (Admin SDK) のみ
+    match /bugReports/{reportId} {
+      allow read: if request.auth != null
+        && resource.data.uid == request.auth.uid;
+      allow create: if request.auth != null
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.status == "pending"
+        && request.resource.data.description is string
+        && request.resource.data.description.matches('[\\s\\S]*[^\\s][\\s\\S]*')
+        && request.resource.data.description.size() <= 2000
+        && (!('title' in request.resource.data) || (request.resource.data.title is string && request.resource.data.title.size() <= 100))
+        && (!('stepsToReproduce' in request.resource.data) || (request.resource.data.stepsToReproduce is string && request.resource.data.stepsToReproduce.size() <= 2000))
+        && (!('meta' in request.resource.data) || (
+          request.resource.data.meta is map
+          && request.resource.data.meta.keys().hasOnly(['appVersion', 'userAgent', 'url', 'locale', 'timezone', 'createdAtClient'])
+          && request.resource.data.meta.appVersion is string && request.resource.data.meta.appVersion.size() <= 50
+          && request.resource.data.meta.userAgent is string && request.resource.data.meta.userAgent.size() <= 500
+          && request.resource.data.meta.url is string && request.resource.data.meta.url.size() <= 2000
+          && request.resource.data.meta.locale is string && request.resource.data.meta.locale.size() <= 20
+          && request.resource.data.meta.timezone is string && request.resource.data.meta.timezone.size() <= 50
+          && request.resource.data.meta.createdAtClient is string && request.resource.data.meta.createdAtClient.size() <= 30
+        ))
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.updatedAt == request.time
+        && request.resource.data.keys().hasOnly([
+          "uid", "status", "description", "title", "stepsToReproduce", "meta", "createdAt", "updatedAt"
+        ]);
+      allow update, delete: if false;
+    }
+
     // AI エージェント向け API キー: ドキュメント ID はキーの SHA-256 ハッシュ。
     // 自分の uid のキーのみ作成・読み取り・削除できる。更新は禁止（再発行は削除+作成）。
     // API 側（Cloud Functions / Admin SDK）はルールの対象外。
@@ -91,15 +122,35 @@ service cloud.firestore {
    - 最終同期時刻を記録
    - リモート変更の有無を表示
 
+5. **同期履歴・スナップショット復元**
+   - 直近最大5件のスナップショットを自動保存
+   - メニュー「同期履歴管理」からスナップショット一覧を確認・ワンクリック復元可能
+
 ### データ構造
 
-Firestoreに保存されるデータ：
+Firestore（`users/{userId}`）に保存されるデータ：
 
 ```typescript
 {
   routines: Routine[],
+  dailyProgress: DailyProgress,
   dailyHistory: Record<string, DailyHistory>,
   settings: AppSettings,
+  budgetData: BudgetData,
+  budgetCategories: BudgetCategory[],
+  budgetIncomeItems: BudgetIncomeItem[],
+  budgetExpenseItems: BudgetExpenseItem[],
+  journalHistory: Record<string, JournalEntry>,
+  mealHistory: Record<string, MealRecord[]>,
+  weightHistory: Record<string, WeightRecord>,
+  workoutRecordHistory: Record<string, WorkoutRecord[]>,
+  workoutExercises: WorkoutExercise[],
+  pomodoroHistory: Record<string, number>,
+  workSessionHistory: Record<string, WorkSession[]>,
+  workTemplates: WorkTemplate[],
+  presets: RoutinePreset[],
+  todoLists: TodoList[],
+  todoCategories: TodoCategory[],
   lastModified: number,
   deviceId: string,
   updatedAt: Timestamp
@@ -130,10 +181,10 @@ Firestoreに保存されるデータ：
 ### 注意事項
 
 - 同期は手動で行う必要があります（自動同期はありません）
-- アップロード時は既存のクラウドデータが上書きされます
-- ダウンロード時は既存のローカルデータが上書きされます
+- アップロード時はクラウドデータが更新され、直前までのデータは `syncSnapshots` に最大5件自動バックアップされます
+- ダウンロード時は全上書きではなく、クラウドに存在しないフィールドの手元のデータは保持され、当日のチェック進捗（`dailyProgress`）も誤消失しないよう保護マージされます
 - 匿名認証のため、アプリのキャッシュをクリアするとユーザーIDが変わります
-- バックアップとして定期的にエクスポート機能も併用することをおすすめします
+- バックアップとして定期的に設定画面のエクスポート機能も併用することをおすすめします
 
 ### トラブルシューティング
 
@@ -158,6 +209,7 @@ Firestoreに保存されるデータ：
 
 ## 📖 関連ドキュメント
 
+- [システムアーキテクチャ設計](../02-development/architecture.md) - 同期モデルとデータ保護設計
 - [セットアップチェックリスト](./SETUP_CHECKLIST.md) - 環境構築手順
 - [機能リファレンス](../04-reference/features.md) - クラウド同期機能の詳細
 
