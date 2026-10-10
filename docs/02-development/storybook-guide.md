@@ -37,6 +37,7 @@ src/
 └── features/
     ├── routine/         # ルーティン一覧、フォーム、編集ドラッグ行等
     ├── budget/          # 家計簿サマリーカード、支出一覧、編集フォーム等
+    ├── journal/         # ジャーナルページ、入力カード、編集カード、履歴一覧等
     ├── todo-lists/      # Todoリスト、アイテム行、タイトル編集等
     ├── calendar/        # カレンダーグリッド、詳細パネル等
     ├── statistics/      # チャートパネル、期間切替、週間目標等
@@ -54,20 +55,20 @@ src/
 
 新しい UI コンポーネントを作成またはリファクタリングした際は、以下のルールに従って Story を追加してください。
 
-### 4-1. 基本テンプレート
+### 4-1. 基本テンプレート (`@storybook/nextjs-vite`)
 
 ```typescript
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/nextjs-vite";
+import { expect, userEvent, within } from "storybook/test";
 import { MyComponent } from "./MyComponent";
 
-const meta: Meta<typeof MyComponent> = {
+const meta = {
   title: "Features/MyFeature/MyComponent",
   component: MyComponent,
-  tags: ["autodocs"],
-};
+} satisfies Meta<typeof MyComponent>;
 
 export default meta;
-type Story = StoryObj<typeof MyComponent>;
+type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {
@@ -75,22 +76,29 @@ export const Default: Story = {
   },
 };
 
-export const Loading: Story = {
+export const InteractiveCheck: Story = {
   args: {
-    isLoading: true,
+    // テスト用 Props
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.click(canvas.getByRole("button"));
+    expect(canvas.getByText("完了")).toBeTruthy();
   },
 };
 ```
 
-### 4-2. 作成時の注意点
+### 4-2. 設定と作成時のポイント
 
-1. **ドメインロジックの分離**: Storybook で表示するコンポーネントは、可能な限り純粋な Props（Presentation Component）で構成し、API 通信やグローバル副作用を直接持たない設計にします。
-2. **状態バリエーションの網羅**:
-   - 通常状態（Default）
-   - 空データ状態（Empty）
-   - ローディング状態（Loading）
-   - エラー状態（Error）
-3. **日本語テキスト**: `locales/ja.json` から読み込んだ文言を使用するか、Storybook 上で分かりやすい日本語ダミーデータを Props として渡します。
+1. **テーマ切り替えデコレーター (`.storybook/preview.tsx`)**:
+   - ツールバーの `Theme`（Light / Dark）を切り替えると、`withDarkMode` デコレーターが `document.documentElement` の `.dark` クラスを自動で付け外しし、`globals.css` の `@variant dark` スタイルを即座にプレビューできます。
+2. **ドメインロジックの分離と LocalStorage 初期化**:
+   - プレゼンテーションコンポーネントは純粋な Props で構成します。
+   - ページ単位の Story で LocalStorage を参照する場合は、`beforeEach()` フック内でストレージの初期化とクリーンアップ関数（`return () => ...`）を定義し、Story 間で状態が漏れないようにします。
+3. **インタラクションテスト (`play` 関数)**:
+   - `storybook/test` の `within`, `userEvent`, `expect` を用いて、ボタン押下やフォーム開閉などの UI インタラクションを Story 内で自動検証できます。
+4. **状態バリエーションの網羅**:
+   - 通常状態（Default）、空データ状態（Empty）、ローディング状態（Loading）、エラー状態（Error）を網羅します。
 
 ---
 
