@@ -30,8 +30,10 @@
 
 ### 2. 自動テスト
 
+`npm test` は `TZ=Asia/Tokyo` 環境下でフロントエンド（`src/`）、Cloud Functions（`firebase-functions/src/`）、および補助ツール（`tools/`）のすべてのユニットテストを一括実行します。
+
 ```bash
-# ユニットテスト実行
+# ユニットテスト実行 (TZ=Asia/Tokyo)
 npm test
 
 # カバレッジ付きテスト
@@ -71,17 +73,26 @@ npm run test:e2e:ui
 - Firebase未設定でもlocalhostのローカル疑似ログイン（`NEXT_PUBLIC_ENABLE_LOCAL_AUTH`）で動作するため、Firebase認証情報の設定は不要です。
 - CIでは`chromium`のみ実行しています。
 
-### 4. ビルドテスト
+### 4. ビルド・一括検証テスト
 
 ```bash
-# 型チェック
+# 型チェック（本体 + テスト用 tsconfig）
 npm run typecheck
 
-# Lintチェック
+# Lintチェック（警告0許容）
 npm run lint
 
-# ビルドテスト
+# Tailwind shorthand 構文チェック
+npm run tailwind:scan
+
+# プロダクションビルドテスト
 npm run build
+
+# 高速一括検証（tailwind:scan + lint + typecheck + test）
+npm run verify:fast
+
+# フル一括検証（verify:fast + build）
+npm run verify
 ```
 
 ## 📋 テストマトリクスの使い方

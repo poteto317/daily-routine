@@ -697,20 +697,21 @@ Progressive Web App (PWA) 技術と Workbox による Service Worker を活用�
   - 通信復帰後に「クラウド同期」から手動で Firestore へ最新状態をアップロード可能
 - **Service Worker によるアセット・ドキュメントキャッシュ**
   - Next.js のプロダクションビルド時に Workbox `InjectManifest`（`src/service-worker/custom-sw.js`）を通じて `public/sw.js` を生成
-  - 静的アセット（JS, CSS, Webフォント, 各種アイコン画像）の事前キャッシュ（プリキャッシュ）
-  - HTML ドキュメントの事前ウォームアップ（`warmDocumentCache`）により、過去に開いたことのないページやリロード時でもオフラインで瞬時に表示
+  - 静的アセット（JS, CSS, Webフォント, 各種アイコン画像）の事前キャッシュ（プリキャッシュ、`__WB_MANIFEST`）
+  - HTML ドキュメントは `NetworkFirst` 戦略（7日間保持・最大10件）を採用し、Service Worker アクティベート時に事前ウォームアップ（`warmDocumentCache`）を実行することで、リロード時でもオフラインで瞬時に表示
+  - スクリプト・スタイルは `StaleWhileRevalidate` 戦略（30日間保持・最大50件）で高速化と最新化を両立
 - **ホーム画面への追加（インストール）**
-  - `public/manifest.json` による Web App Manifest 定義（アプリアイコン、テーマカラー `#4F46E5`、スタンドアロン表示モード）
+  - `public/manifest.json` による Web App Manifest 定義（アプリアイコン、テーマカラー `#2563eb`、背景色 `#ffffff`、スタンドアロン表示モード、ポートレート固定）
   - 各種デバイス向け解像度アイコン（48px〜512px、iOS 用 Apple Touch Icon、Android 向け maskable アイコン）を完備
 - **バックグラウンド通知統合**
-  - Firebase Cloud Messaging 用 Service Worker（`public/firebase-messaging-sw.js`）と連携し、アプリを閉じていてもルーティンリマインダーや更新通知を受信可能
+  - Firebase Cloud Messaging 用 Service Worker（`public/firebase-messaging-sw.js`）およびカスタム Service Worker のスケジューラ（`custom-sw/schedulerControl.js`）と連携し、ルーティンリマインダーや更新通知を受信可能
 
 **技術仕様**
 
-- サービスワーカー: `src/service-worker/`（`custom-sw.js`, `custom-sw/warmDocumentCache.js`, `custom-sw/jstDate.js` 等）
+- サービスワーカー: `src/service-worker/`（`custom-sw.js`, `custom-sw/warmDocumentCache.js`, `custom-sw/schedulerControl.js`, `custom-sw/jstDate.js` 等）
 - 生成ツール: `tools/generate-icons.mjs`, `tools/verify-icons-in-sync.mjs`, `tools/generate-firebase-messaging-sw.mjs`
 - マニフェスト: `public/manifest.json`
-- ライブラリ: `@ducanh2912/next-pwa`, `workbox-webpack-plugin`, `workbox-precaching`, `workbox-routing`, `workbox-strategies`
+- ライブラリ: `workbox-webpack-plugin`, `workbox-precaching`, `workbox-routing`, `workbox-strategies`, `workbox-expiration`
 
 ---
 
