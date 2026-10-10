@@ -182,7 +182,18 @@ jobs:
 
 ---
 
-### ステップ 4: Tailwind 短縮記法チェック
+### ステップ 4: アイコンアセットの同期チェック
+
+```yaml
+- name: Verify icon assets are in sync
+  run: npm run verify:icons
+```
+
+`public/icon.svg` から再生成したピクセルデータと、コミット済み PNG のピクセルデータを比較し、SVG 編集時のアイコン再生成忘れを検知します。OS/アーキテクチャ差異を吸収するため、デコード後のピクセルデータで比較しています。
+
+---
+
+### ステップ 5: Tailwind 短縮記法チェック
 
 ```yaml
 - name: Tailwind shorthand scan
@@ -193,7 +204,7 @@ jobs:
 
 ---
 
-### ステップ 5: ESLint
+### ステップ 6: ESLint
 
 ```yaml
 - name: Lint
@@ -204,7 +215,7 @@ ESLint で静的解析を実行。`--max-warnings 0` により、warning も含�
 
 ---
 
-### ステップ 6: TypeScript 型チェック
+### ステップ 7: TypeScript 型チェック
 
 ```yaml
 - name: Type check
@@ -215,7 +226,7 @@ ESLint で静的解析を実行。`--max-warnings 0` により、warning も含�
 
 ---
 
-### ステップ 7: テスト
+### ステップ 8: テスト
 
 ```yaml
 - name: Run tests
@@ -226,7 +237,7 @@ Jest テストをシリアル実行（`--runInBand`）で実行。CI 環境で�
 
 ---
 
-### ステップ 8: ビルド
+### ステップ 9: ビルド
 
 ```yaml
 - name: Build
@@ -244,6 +255,32 @@ Next.js のプロダクションビルドを実行。ビルドが成功するこ
 
 ---
 
+### E2E テストジョブ（`e2e`）
+
+```yaml
+e2e:
+  name: E2E Tests (Playwright)
+  runs-on: ubuntu-latest
+  steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
+      with:
+        node-version: "24.x"
+    - run: npm ci
+    - run: npx playwright install --with-deps chromium
+    - run: npm run test:e2e
+    - uses: actions/upload-artifact@v4
+      if: ${{ !cancelled() }}
+      with:
+        name: playwright-report
+        path: playwright-report/
+```
+
+- **Playwright による統合検証**: 実ブラウザ（Chromium）を起動し、主要機能（認証モック、ルーティン、家計簿、Todo、データ同期等）のシナリオテストを自動実行
+- **成果物保存**: テスト失敗時にもレポートを 7 日間 GitHub Artifacts として保存し、デバッグを可能にする
+
+---
+
 ## 実行の流れ（ライフサイクル）
 
 ```
@@ -251,9 +288,14 @@ Next.js のプロダクションビルドを実行。ビルドが成功するこ
          ↓
 GitHub が .github/workflows/ci.yml を検出
          ↓
-Ubuntu サーバー（Runner）が Node 22.x / 24.x で並列起動
-         ↓
-[Checkout] → [Node.js Setup] → [npm ci] → [tailwind:scan] → [lint] → [typecheck] → [test] → [build]
+並列実行:
+  ├── [ci] ジョブ (Node 22.x / 24.x マトリクス):
+  │     [Checkout] → [Setup Node] → [npm ci] → [verify:icons] → [tailwind:scan]
+  │     → [lint] → [typecheck] → [test] → [build]
+  │
+  └── [e2e] ジョブ (Node 24.x):
+        [Checkout] → [Setup Node] → [npm ci] → [Install Playwright] → [test:e2e]
+        → [Upload Report]
          ↓
 結果が PR ページに表示（✅ Pass / ❌ Fail）
 ```
