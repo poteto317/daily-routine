@@ -1,49 +1,9 @@
-import { useId, useState } from "react";
 import type { WorkoutExercise, WorkoutLabel } from "@/types/routine";
-import type { useWorkoutExerciseActions } from "../useWorkoutExerciseActions";
+import type { WorkoutExerciseActions } from "../workoutExerciseActionTypes";
+import { getWorkoutExerciseOptions } from "../workoutExerciseOptions";
+import { WorkoutExerciseAddForm } from "./WorkoutExerciseAddForm";
+import { WorkoutExerciseEditor } from "./WorkoutExerciseEditor";
 import texts from "../../locales/ja.json";
-import { inputClassName } from "./workoutFormFieldStyles";
-
-type Actions = ReturnType<typeof useWorkoutExerciseActions>;
-
-const ExerciseEditor = ({
-  exercise,
-  actions,
-}: {
-  exercise: WorkoutExercise;
-  actions: Actions;
-}) => {
-  const [name, setName] = useState(exercise.name);
-  return (
-    <li className="space-y-2 border-b border-gray-200 py-3">
-      <input
-        aria-label={texts.exercises.renameLabel.replace(
-          "{name}",
-          exercise.name,
-        )}
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        className={inputClassName}
-      />
-      <div className="flex flex-wrap gap-3">
-        <button
-          type="button"
-          className="text-blue-600"
-          onClick={() => actions.rename(exercise.id, name)}
-        >
-          {texts.exercises.save}
-        </button>
-        <button
-          type="button"
-          className="text-red-600"
-          onClick={() => actions.remove(exercise)}
-        >
-          {texts.exercises.delete}
-        </button>
-      </div>
-    </li>
-  );
-};
 
 export const WorkoutExerciseManager = ({
   label,
@@ -52,10 +12,8 @@ export const WorkoutExerciseManager = ({
 }: {
   label: WorkoutLabel;
   exercises: WorkoutExercise[];
-  actions: Actions;
+  actions: WorkoutExerciseActions;
 }) => {
-  const [name, setName] = useState("");
-  const id = useId();
   return (
     <details className="mb-6 rounded-xl border border-gray-200 p-4">
       <summary className="cursor-pointer font-medium">
@@ -68,39 +26,20 @@ export const WorkoutExerciseManager = ({
             ? texts.form.labelStrength
             : texts.form.labelRunning}
         </h2>
-        <label htmlFor={id} className="block text-sm">
-          {texts.exercises.newNameLabel}
-        </label>
-        <input
-          id={id}
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          className={inputClassName}
-        />
-        <button
-          type="button"
-          className="rounded-lg bg-blue-600 px-4 py-2 text-white"
-          onClick={() => {
-            if (actions.add(name)) setName("");
-          }}
-        >
-          {texts.exercises.add}
-        </button>
+        <WorkoutExerciseAddForm add={actions.add} />
         {actions.error && (
           <p role="alert" className="text-sm text-red-600">
             {actions.error}
           </p>
         )}
         <ul>
-          {exercises
-            .filter((ex) => ex.label === label)
-            .map((ex) => (
-              <ExerciseEditor
-                key={ex.id + ex.updatedAt}
-                exercise={ex}
-                actions={actions}
-              />
-            ))}
+          {getWorkoutExerciseOptions(exercises, label).map((ex) => (
+            <WorkoutExerciseEditor
+              key={ex.id + ex.updatedAt}
+              exercise={ex}
+              actions={actions}
+            />
+          ))}
         </ul>
       </div>
     </details>

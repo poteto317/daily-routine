@@ -1,3 +1,7 @@
+import {
+  getWorkoutExerciseOptions,
+  getSelectedWorkoutExerciseId,
+} from "../workoutExerciseOptions";
 import { useId } from "react";
 import type { WorkoutExercise, WorkoutLabel } from "@/types/routine";
 import texts from "../../locales/ja.json";
@@ -15,7 +19,7 @@ export const WorkoutExerciseSelect = ({
   onChangeAction: (id: string) => void;
 }) => {
   const id = useId();
-  const options = exercises.filter((ex) => ex.label === label);
+  const options = getWorkoutExerciseOptions(exercises, label);
   return (
     <div>
       <label htmlFor={id} className="block text-xs text-gray-500 mb-1">
@@ -23,7 +27,7 @@ export const WorkoutExerciseSelect = ({
       </label>
       <select
         id={id}
-        value={options.some((ex) => ex.id === value) ? value : ""}
+        value={getSelectedWorkoutExerciseId(options, value)}
         onChange={(e) => onChangeAction(e.target.value)}
         className={inputClassName}
       >
