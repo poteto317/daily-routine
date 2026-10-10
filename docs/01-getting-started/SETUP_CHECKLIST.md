@@ -186,7 +186,9 @@ Cloud Functions は Node.js 24 環境で以下の 5 つの関数をエクスポ�
 
 ```bash
 firebase functions:secrets:set GITHUB_TOKEN
-firebase functions:secrets:set GITHUB_REPO # 任意（デフォルト: poteto317/daily-routine）
+
+# 任意の起票先は firebase-functions/.env.<project-id> に以下を記載
+# GITHUB_REPO=owner/repo（未指定時: poteto317/daily-routine）
 ```
 
 ビルドとデプロイ：
@@ -230,7 +232,7 @@ Vercel で本番運用する場合は、`.env.local` に設定した Firebase �
 | `NEXT_PUBLIC_FUNCTIONS_URL`                | 任意             | Cloud Functions のベース URL（通知同期用）                                      | `https://asia-northeast1-<project-id>.cloudfunctions.net` |
 | `NEXT_PUBLIC_APP_VERSION`                  | 自動             | アプリケーションのバージョン（`next.config.ts` で `package.json` から自動注入） | `0.1.0`                                                   |
 | `GITHUB_TOKEN`                             | Functions Secret | 不具合報告の GitHub Issue 自動起票用トークン                                    | Secret Manager に登録                                     |
-| `GITHUB_REPO`                              | Functions Secret | 不具合報告の起票先 GitHub リポジトリ（デフォルト: `poteto317/daily-routine`）   | Secret Manager に登録                                     |
+| `GITHUB_REPO`                              | Functions 文字列パラメータ | 不具合報告の起票先 GitHub リポジトリ（デフォルト: `poteto317/daily-routine`）   | firebase-functions/.env.<project-id> に設定                                     |
 
 設定方法:
 

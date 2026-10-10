@@ -83,9 +83,9 @@ firebase-functions/
   3. リポジトリに `bug` ラベル付き Issue を自動起票
   4. 成功時: ドキュメントを `status: "issued"`, `issueNumber`, `issueUrl`, `updatedAt` で更新
   5. 失敗時: `status: "error"`, `errorMessage` を記録
-- **必要な Secret**:
-  - `GITHUB_TOKEN`: GitHub 個人アクセストークン（`repo` スコープ）
-  - `GITHUB_REPO`: 対象リポジトリ名（例: `poteto317/daily-routine`。未設定時はデフォルト値を使用）
+- **設定値**:
+  - `GITHUB_TOKEN`（Secret）: GitHub 個人アクセストークン（`repo` スコープ）
+  - `GITHUB_REPO`（文字列パラメータ）: 対象リポジトリ名（例: `poteto317/daily-routine`。未設定時はデフォルト値を使用）
   - 設定手順の詳細は `docs/02-development/bug-report-secrets-config.md` を参照
 
 ### 3. 通知系関数 (`syncRoutines`, `checkNotifications`, `cleanupNotifications`)
@@ -125,12 +125,13 @@ firebase deploy --only functions:onBugReportCreated
 
 デプロイ後、表示された HTTPS URL をルートの `.env.local` の `NEXT_PUBLIC_FUNCTIONS_URL` に設定してください。
 
-### 4. Secret の設定（初回のみ）
+### 4. Secret と起票先の設定
 
 ```bash
 firebase functions:secrets:set GITHUB_TOKEN
-firebase functions:secrets:set GITHUB_REPO
 ```
+
+起票先を変更する場合は `firebase-functions/.env.<project-id>` に `GITHUB_REPO=owner/repo` を記載し、再デプロイしてください。`<project-id>` は対象のFirebaseプロジェクトIDです。`GITHUB_REPO` は `defineString` の通常パラメータであり、Secretとして登録しません。省略時の起票先は `poteto317/daily-routine` です。
 
 ---
 

@@ -198,7 +198,7 @@ sequenceDiagram
 ### 5-2. 秘密情報の管理
 
 - **Firebase Functions Secrets**:
-  GitHub REST API 呼び出しに必要な `GITHUB_TOKEN` および対象リポジトリ名 `GITHUB_REPO` は、GCP Secret Manager で安全に管理され、コード内にはコミットされません。
+  GitHub REST API 呼び出しに必要な `GITHUB_TOKEN` は Secret Manager で管理します。対象リポジトリ名 `GITHUB_REPO` は `defineString` の通常パラメータで、Functions の `.env.<project-id>` に設定します。未指定時は `poteto317/daily-routine` を使用します。
 - **FCM Service Worker 自動生成**:
   Firebase 設定情報を公開リポジトリに残さないため、ビルド時に `.env.local` から `tools/generate-firebase-messaging-sw.mjs` を通じて動的生成されます。
 

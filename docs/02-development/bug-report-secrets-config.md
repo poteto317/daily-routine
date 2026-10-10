@@ -99,3 +99,21 @@ firebase deploy --only functions
 
 - 機能全体プラン: [bug-report-feature-plan.md](./bug-report-feature-plan.md)
 - Firestore ルール: リポジトリルート `firestore.rules` の `bugReports` セクション
+
+## 6. 起票先の変更
+
+`GITHUB_REPO` は `defineString` の通常パラメータです。Secret として登録しても、この関数の起票先には反映されません（PR #181で関連ガイドの誤記を修正）。
+
+対象のFirebaseプロジェクトIDに合わせて、`firebase-functions/.env.<project-id>` に次を記載し、関数を再デプロイします。既存ファイルがある場合は他の設定を保持して追記・更新してください。
+
+```dotenv
+GITHUB_REPO=owner/repository
+```
+
+```bash
+firebase deploy --only functions:onBugReportCreated --project <project-id>
+```
+
+未指定時は `poteto317/daily-routine` を使用します。ローカルエミュレータ用の上書きは `firebase-functions/.env.local` に記載します。`GITHUB_TOKEN` は引き続きSecretとして設定し、通常の環境変数ファイルには記載しません。環境変数ファイルはコミットしません。
+
+ユニットテストでは、実際の `githubRepo.value()` に環境変数を渡し、GitHub呼び出しをモックして起票先URLを確認します。実リポジトリへのIssue作成は行いません。

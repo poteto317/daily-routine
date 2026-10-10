@@ -576,7 +576,7 @@ Firestoreを使用した複数端末間のデータ同期・バックアップ�
 
 - ファイル: `src/features/bug-report/`, `firebase-functions/src/bugReport/`
 - 保存先: Firestore `bugReports/{reportId}`
-- 連携: GitHub REST API (Secret: `GITHUB_TOKEN`, `GITHUB_REPO`)
+- 連携: GitHub REST API（Secret: `GITHUB_TOKEN`、文字列パラメータ: `GITHUB_REPO`）
 
 ---
 
