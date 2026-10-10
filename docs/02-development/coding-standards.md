@@ -50,6 +50,15 @@
 - JSDocコメントも日本語推奨
 - 例: `/** ルーティンの完了状態を切り替える */`
 
+### フォーム・キーボード操作の原則
+
+- **IME 変換中の Enter 誤爆防止**: 日本語入力（IME変換確定）での Enter キー押下によってフォーム送信やリスト追加が誤発火しないよう、`keydown` イベントハンドラでは必ず `isImeComposingKeyDown`（`src/lib/isImeComposingKeyDown.ts`）で判定を行ってください。
+  ```typescript
+  if (isImeComposingKeyDown(e)) return;
+  ```
+- **Escape キーのモーダル閉じ (`useCloseOnEscape`)**: `role="dialog"` / `aria-modal="true"` を持つモーダルやパネルでは、共通フック `useCloseOnEscape`（`src/hooks/useCloseOnEscape.ts`）を使用してください。内部で `isImeComposingNativeKeyDown` により IME 変換キャンセル時の誤クローズを防ぎます。
+- **作成フォーム送信時のソフトウェアキーボード自動収納 (`useDismissKeyboardOnSubmit`)**: モバイル端末でアイテム作成後にソフトウェアキーボードが開いたまま残るのを防ぐため、作成フォームの送信ハンドラには `useDismissKeyboardOnSubmit`（`src/hooks/useDismissKeyboardOnSubmit.ts`）を使用してください。`onSubmit` によるアンマウントより先にアクティブな入力要素を `blur()` します。
+
 ### ViewModelパターンの適用
 
 - **テキスト定数**: `locales/ja.json` にまとめる（国際化対応）
@@ -68,10 +77,14 @@
 - 常に「変更のしやすさ」と「削除のしやすさ」を意識した疎結合なコードを作成してください。
 - コメントが日本語で書かれているか確認してください。
 - テキスト定数がハードコードされていないか確認してください。
+- フォーム入力やキーボード操作で IME 確定が考慮されているか確認してください。
 
 ## 📖 関連ドキュメント
 
+- [システムアーキテクチャ設計](./architecture.md) - 全体構成・同期モデル・セキュリティ
 - [リファクタリングガイド](./refactoring-guide.md) - コンポーネントのリファクタリング手順
+- [レビュー教訓集](./review-lessons.md) - 過去レビュー指摘からの教訓
+- [Storybook ガイド](./storybook-guide.md) - UI カタログの開発・運用
 - [機能リファレンス](../04-reference/features.md) - 実装済み機能の詳細
 - [テストガイド](../03-testing/) - テスト方法とマトリクス
 
@@ -81,4 +94,4 @@
 
 ---
 
-**最終更新日**: 2026年2月17日
+**最終更新日**: 2026年10月10日
