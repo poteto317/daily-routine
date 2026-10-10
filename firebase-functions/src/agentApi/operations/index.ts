@@ -1,4 +1,3 @@
-import { workoutExerciseOperations, workoutRecordOperations } from "./workout";
 import type { Action } from "../router";
 import {
   categoryOperations,
@@ -13,8 +12,6 @@ import { todoListOperations } from "./todo/todoListOperations";
 import type { ResourceOperations } from "./types";
 
 export type ResourceName =
-  | "workoutExercises"
-  | "workoutRecords"
   | "expenses"
   | "categories"
   | "incomeItems"
@@ -27,8 +24,6 @@ export type ResourceName =
 /** 一覧で受け付けるクエリパラメータ。一覧と削除以外の操作ではクエリを受け付けない */
 export const RESOURCE_QUERY_KEYS: Record<ResourceName, readonly string[]> = {
   expenses: ["month"],
-  workoutExercises: ["label"],
-  workoutRecords: ["date", "label", "exerciseId"],
   categories: [],
   incomeItems: [],
   expenseItems: [],
@@ -57,8 +52,6 @@ export const getAllowedQueryKeys = (
 
 export const RESOURCE_OPERATIONS: Record<ResourceName, ResourceOperations> = {
   expenses: expenseOperations,
-  workoutExercises: workoutExerciseOperations,
-  workoutRecords: workoutRecordOperations,
   categories: categoryOperations,
   incomeItems: incomeItemOperations,
   expenseItems: expenseItemOperations,

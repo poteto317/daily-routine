@@ -8,7 +8,7 @@ type CreateWorkoutTrackerPageStateResultParams = {
   groups: WorkoutRecordDateGroup[];
   setLabel: (label: WorkoutLabel) => void;
   setDate: (date: string) => void;
-  setExerciseId: (exerciseId: string) => void;
+  setExerciseName: (exerciseName: string) => void;
   setWeightKg: (weightKg: string) => void;
   setReps: (reps: string) => void;
   setSets: (sets: string) => void;
@@ -26,7 +26,7 @@ export const createWorkoutTrackerPageStateResult = ({
   groups,
   setLabel,
   setDate,
-  setExerciseId,
+  setExerciseName,
   setWeightKg,
   setReps,
   setSets,
@@ -40,7 +40,7 @@ export const createWorkoutTrackerPageStateResult = ({
     groups,
     setLabel,
     setDate,
-    setExerciseId,
+    setExerciseName,
     setWeightKg,
     setReps,
     setSets,

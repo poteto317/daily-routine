@@ -120,10 +120,7 @@ function toggleRoutine(routineId: string) {
 
 ## 🔗 関連ドキュメント
 
-- [システムアーキテクチャ設計](./architecture.md) - 全体構成とレイヤード責務
 - [コーディング規約](./coding-standards.md) - ディレクトリ構成と依存関係ルール
-- [レビュー教訓集](./review-lessons.md) - レビュー指摘からの教訓
-- [Storybook ガイド](./storybook-guide.md) - UI カタログの開発・運用
 - [機能リファレンス](../04-reference/features.md) - 全機能の詳細仕様
 - [テストガイド](../03-testing/) - テスト方法
 
@@ -133,4 +130,4 @@ function toggleRoutine(routineId: string) {
 
 ---
 
-**最終更新日**: 2026年10月10日
+**最終更新日**: 2026年2月17日
