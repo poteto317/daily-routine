@@ -15,7 +15,7 @@ const mockUseWorkoutTrackerPageState =
 const baseFormValues = {
   label: "strength" as const,
   date: "2026-03-01",
-  exerciseId: "",
+  exerciseName: "",
   weightKg: "",
   reps: "",
   sets: "",
@@ -23,19 +23,12 @@ const baseFormValues = {
 };
 
 const createState = (overrides: Record<string, unknown> = {}) => ({
-  exercises: [],
-  exerciseActions: {
-    add: jest.fn(),
-    rename: jest.fn(),
-    remove: jest.fn(),
-    error: null,
-  },
   formValues: baseFormValues,
   formError: null,
   groups: [],
   setLabel: jest.fn(),
   setDate: jest.fn(),
-  setExerciseId: jest.fn(),
+  setExerciseName: jest.fn(),
   setWeightKg: jest.fn(),
   setReps: jest.fn(),
   setSets: jest.fn(),
@@ -76,7 +69,6 @@ describe("WorkoutTrackerPage", () => {
                 date: "2026-03-01",
                 label: "strength",
                 exerciseName: "ベンチプレス",
-                exerciseId: "ベンチプレス",
                 weightKg: 60,
                 reps: 10,
                 createdAt: "2026-03-01T00:00:00.000Z",

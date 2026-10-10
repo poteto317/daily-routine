@@ -1,10 +1,6 @@
 import type { WorkoutRecord } from "@/types/routine";
 import { buildWorkoutRecordDeleteConfirmMessage } from "../workoutRecordConfirmMessages";
-import {
-  addWorkoutRecord,
-  deleteWorkoutRecord,
-  getWorkoutExercises,
-} from "../storage";
+import { addWorkoutRecord, deleteWorkoutRecord } from "../storage";
 import {
   validateWorkoutRecordForm,
   type WorkoutRecordFormValues,
@@ -28,18 +24,13 @@ export const createAddWorkoutRecordHandler = ({
   setError,
 }: CreateAddWorkoutRecordHandlerParams) => {
   return (values: WorkoutRecordFormValues) => {
-    const result = validateWorkoutRecordForm(values, getWorkoutExercises());
+    const result = validateWorkoutRecordForm(values);
     if (!result.valid) {
       setError(result.error);
       return;
     }
 
-    try {
-      addWorkoutRecord(result.record);
-    } catch (error) {
-      setError(error instanceof Error ? error.message : "");
-      return;
-    }
+    addWorkoutRecord(result.record);
     setError(null);
     resetForm();
     reload();
@@ -49,7 +40,6 @@ export const createAddWorkoutRecordHandler = ({
 type CreateDeleteWorkoutRecordHandlerParams = {
   reload: () => void;
   confirmDelete: ConfirmDeleteWorkoutRecord;
-  setError?: (error: string | null) => void;
 };
 
 /**
@@ -58,18 +48,12 @@ type CreateDeleteWorkoutRecordHandlerParams = {
 export const createDeleteWorkoutRecordHandler = ({
   reload,
   confirmDelete,
-  setError,
 }: CreateDeleteWorkoutRecordHandlerParams) => {
   return (record: WorkoutRecord) => {
     const message = buildWorkoutRecordDeleteConfirmMessage(record.exerciseName);
     if (!confirmDelete(message)) return;
 
-    try {
-      deleteWorkoutRecord(record.date, record.id);
-    } catch (error) {
-      setError?.(error instanceof Error ? error.message : "");
-      return;
-    }
+    deleteWorkoutRecord(record.date, record.id);
     reload();
   };
 };

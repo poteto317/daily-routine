@@ -52,7 +52,6 @@ export type {
 export type { WeightHistory, WeightRecord } from "./weight";
 
 export type {
-  WorkoutExercise,
   NewWorkoutRecordInput,
   RunningWorkoutRecord,
   StrengthWorkoutRecord,

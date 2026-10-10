@@ -22,24 +22,24 @@
 - **ルーティン管理** — 作成・編集・削除、曜日別・祝日別の表示制御、時刻順表示、カテゴリ分類、週1〜7回の目標設定
 - **達成カレンダー・統計** — 日次達成履歴、週次・月次・カテゴリ別レポート、週間目標の進捗と現在・最長ストリーク
 - **プリセット管理** — ルーティンをセットとして保存し曜日単位で一括適用
-- **Todo リスト・管理** — 複数リスト管理、階層インデント（0〜3段階）、背景色設定、カテゴリ分類、完了切り替え
+- **Todo リスト** — 複数リスト管理、階層インデント、完了切り替え
 
 ### ライフログ・生産性
 
-運動記録（筋トレ・ランニング・種目マスター管理） / 家計簿 / ジャーナル / 食事記録 / 体重記録 / 天気表示 / ポモドーロタイマー / 作業トラッカー
+家計簿 / ジャーナル / 食事記録 / 体重記録 / 天気表示 / ポモドーロタイマー / 作業トラッカー
 
 ### システム
 
-Firebase 匿名認証 / Firestore 同期（スナップショット履歴・復元対応） / 不具合報告（GitHub Issue 自動起票） / API キー管理（CLI・設定画面） / AI エージェント REST API / PWA インストール / 通知 / テーマ切り替え / JSON インポート・エクスポート / アカウント管理
+Firebase 匿名認証 / Firestore 同期 / PWA インストール / 通知 / テーマ切り替え / JSON インポート・エクスポート / アカウント管理
 
 ## 技術スタック
 
-- Next.js 16.3.0
+- Next.js 16.1.6
 - React 19.2.3
 - TypeScript 5
 - Tailwind CSS v4
 - Firebase Web SDK 12.8.0
-- Firebase Cloud Functions (Node.js 24)
+- Firebase Cloud Functions
 - Jest + React Testing Library
 - Chart.js / react-chartjs-2
 - next-pwa / Workbox
@@ -133,9 +133,6 @@ npm run lint
 npm run typecheck
 npm run test -- --runInBand
 npm run verify
-npm run <private-ops> -- <command>
-npm run storybook
-npm run test:e2e
 ```
 
 `npm run verify` は以下を順に実行します。
@@ -150,21 +147,18 @@ npm run test:e2e
 
 - テストフレームワークは Jest + React Testing Library です。
 - 各機能のテストは `src/**/__tests__/` にあります。
-- ブラウザ操作の E2E テストは Playwright（`e2e/`）で実行できます。
 - CI 相当の確認は `npm run verify` を使ってください。
 
 ```bash
 npm run test:watch
 npm run test:ci
-npm run test:e2e
 ```
 
 ## データと同期
 
 - 各機能のローカル保存は feature 単位の `storage.ts` に集約しています。
-- ルーティンを含む全機能データは Firestore クラウド同期に対応しています。
-- 設定画面やヘッダー操作から手動同期（アップロード／ダウンロード）が可能です。
-- Firestore 上に最新5件の同期スナップショットが保存され、「同期履歴管理」画面から過去のスナップショットへ復元できます。
+- ルーティン関連データは Firestore 同期に対応しています。
+- 設定画面やヘッダー操作から手動同期が可能です。
 - 匿名認証のため、ブラウザストレージを消すと別ユーザーとして扱われます。
 
 ## デプロイ
@@ -182,7 +176,6 @@ cd firebase-functions
 npm run build
 cd ..
 firebase deploy --only functions
-firebase deploy --only firestore:rules
 ```
 
 ## ディレクトリ構成
@@ -190,7 +183,7 @@ firebase deploy --only firestore:rules
 ```text
 daily-routine/
 ├── docs/                  # セットアップ、開発、テスト、仕様ドキュメント
-├── firebase-functions/    # Firebase Cloud Functions (Node.js 24)
+├── firebase-functions/    # Firebase Cloud Functions
 ├── public/                # PWA マニフェスト、アイコン、SW テンプレート
 ├── src/
 │   ├── app/               # Next.js App Router
@@ -203,9 +196,7 @@ daily-routine/
 │   ├── service-worker/    # 追加の Service Worker 関連コード
 │   ├── services/          # 認証サービスなど
 │   └── types/             # 型定義
-├── tools/                 # 補助スクリプト (api-key CLI, SW 生成, アイコン等)
-├── e2e/                   # Playwright E2E テスト
-├── firestore.rules        # Firestore セキュリティルール
+├── tools/                 # 補助スクリプト
 ├── .env.local.example     # 環境変数テンプレート
 ├── firebase.json
 ├── next.config.ts
@@ -218,13 +209,9 @@ daily-routine/
 - [docs/README.md](./docs/README.md)
 - [docs/01-getting-started/SETUP_CHECKLIST.md](./docs/01-getting-started/SETUP_CHECKLIST.md)
 - [docs/01-getting-started/SYNC_SETUP.md](./docs/01-getting-started/SYNC_SETUP.md)
-- [docs/02-development/architecture.md](./docs/02-development/architecture.md)
 - [docs/02-development/coding-standards.md](./docs/02-development/coding-standards.md)
-- [docs/02-development/storybook-guide.md](./docs/02-development/storybook-guide.md)
 - [docs/03-testing/test-matrix.md](./docs/03-testing/test-matrix.md)
 - [docs/04-reference/features.md](./docs/04-reference/features.md)
-- [（非公開のエージェント API 仕様）](./（非公開のエージェント API 仕様）)
-- [（非公開の OpenAPI 仕様）](./（非公開の OpenAPI 仕様）)
 
 ## 補足
 

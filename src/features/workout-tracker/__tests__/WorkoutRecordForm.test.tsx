@@ -5,7 +5,7 @@ import texts from "../locales/ja.json";
 const baseValues = {
   label: "strength" as const,
   date: "2026-03-01",
-  exerciseId: "",
+  exerciseName: "",
   weightKg: "",
   reps: "",
   sets: "",
@@ -13,20 +13,11 @@ const baseValues = {
 };
 
 const defaultProps = {
-  exercises: [
-    {
-      id: "ベンチプレス",
-      name: "ベンチプレス",
-      label: "strength" as const,
-      createdAt: "",
-      updatedAt: "",
-    },
-  ],
   values: baseValues,
   error: null,
   onChangeLabelAction: jest.fn(),
   onChangeDateAction: jest.fn(),
-  onChangeExerciseIdAction: jest.fn(),
+  onChangeExerciseNameAction: jest.fn(),
   onChangeWeightKgAction: jest.fn(),
   onChangeRepsAction: jest.fn(),
   onChangeSetsAction: jest.fn(),
@@ -90,21 +81,21 @@ describe("WorkoutRecordForm", () => {
     expect(onChangeLabelAction).toHaveBeenCalledWith("running");
   });
 
-  it("種目名を入力するとonChangeExerciseIdActionが呼ばれる", () => {
-    const onChangeExerciseIdAction = jest.fn();
+  it("種目名を入力するとonChangeExerciseNameActionが呼ばれる", () => {
+    const onChangeExerciseNameAction = jest.fn();
     render(
       <WorkoutRecordForm
         {...defaultProps}
-        onChangeExerciseIdAction={onChangeExerciseIdAction}
+        onChangeExerciseNameAction={onChangeExerciseNameAction}
       />,
     );
 
     fireEvent.change(
-      screen.getByRole("combobox", { name: texts.form.exerciseNameLabel }),
+      screen.getByPlaceholderText(texts.form.exerciseNamePlaceholder),
       { target: { value: "ベンチプレス" } },
     );
 
-    expect(onChangeExerciseIdAction).toHaveBeenCalledWith("ベンチプレス");
+    expect(onChangeExerciseNameAction).toHaveBeenCalledWith("ベンチプレス");
   });
 
   it("エラーメッセージがあれば表示する", () => {

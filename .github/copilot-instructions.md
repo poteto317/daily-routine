@@ -68,10 +68,6 @@ PR へのコミットをプッシュした後は、以下の手順を必ず実�
 11. **PWA対応**: オフライン動作、ホーム画面追加
 12. **プリセット管理**: ルーティンプリセットの管理
 13. **アカウント管理**: ユーザーアカウント管理（管理者向け）
-14. **運動記録**: 筋トレ・ランニングの実績と種目マスター管理
-15. **不具合報告**: アプリ内からのバグ報告と GitHub Issue 自動起票連携
-16. **APIキー管理 / AIエージェント API**: 外部エージェントからの CRUD 操作と認証キー管理
-17. **同期履歴管理**: クラウド同期スナップショット履歴の閲覧・ワンクリック復元
 
 ---
 
@@ -346,15 +342,6 @@ NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=
 NEXT_PUBLIC_FIREBASE_APP_ID=
 NEXT_PUBLIC_FIREBASE_VAPID_KEY=
 NEXT_PUBLIC_FUNCTIONS_URL=
-
-# ローカル開発用認証（任意）
-NEXT_PUBLIC_ENABLE_LOCAL_AUTH=false
-NEXT_PUBLIC_DEV_AUTH_EMAIL=
-NEXT_PUBLIC_DEV_AUTH_PASSWORD=
-
-# AIエージェント API（任意・npm run <private-ops> -- issue で自動設定可）
-AGENT_API_KEY=
-AGENT_API_BASE_URL=
 ```
 
 ---

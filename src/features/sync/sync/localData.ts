@@ -26,7 +26,10 @@ import {
   getWeightHistory,
   saveWeightHistory,
 } from "@/features/weight-tracker/storage";
-import { collectWorkoutSyncData, saveWorkoutSyncData } from "./workoutSyncData";
+import {
+  getWorkoutRecordHistory,
+  saveWorkoutRecordHistory,
+} from "@/features/workout-tracker/storage";
 import {
   getJournalHistory,
   saveJournalHistory,
@@ -61,7 +64,7 @@ export const collectLocalSyncData = (): Omit<
   workSessionHistory: getWorkSessionHistory(),
   workTemplates: getWorkTemplates(),
   weightHistory: getWeightHistory(),
-  ...collectWorkoutSyncData(),
+  workoutRecordHistory: getWorkoutRecordHistory(),
   journalHistory: getJournalHistory(),
   ...collectBudgetSyncData(),
   mealHistory: getMealHistory(),
@@ -106,7 +109,7 @@ export const saveSyncDataToLocal = (
     saveWorkSessionHistory(normalized.workSessionHistory);
     saveWorkTemplates(normalized.workTemplates);
     saveWeightHistory(normalized.weightHistory);
-    saveWorkoutSyncData(normalized);
+    saveWorkoutRecordHistory(normalized.workoutRecordHistory);
     saveJournalHistory(normalized.journalHistory);
     saveBudgetSyncData(normalized);
     saveMealHistory(normalized.mealHistory);
