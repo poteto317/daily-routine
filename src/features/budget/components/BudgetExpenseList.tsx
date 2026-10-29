@@ -36,7 +36,10 @@ export const BudgetExpenseList = ({
   onEditCategoryIdChange,
   onDelete,
 }: BudgetExpenseListProps) => {
-  const sortedExpenses = sortExpensesByDateDesc(expenses);
+  const sortedExpenses = useMemo(
+    () => sortExpensesByDateDesc(expenses),
+    [expenses],
+  );
   const categoryLookup = useMemo(
     () => buildBudgetCategoryLookup(categories),
     [categories],
