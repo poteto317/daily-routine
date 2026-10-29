@@ -3,8 +3,6 @@ import { BugReportForm } from "../components/BugReportForm";
 import texts from "../locales/ja.json";
 
 const defaultProps = {
-  title: "",
-  setTitle: jest.fn(),
   description: "",
   setDescription: jest.fn(),
   stepsToReproduce: "",
@@ -21,7 +19,6 @@ describe("BugReportForm", () => {
 
   it("全フィールドとラベルを表示する", () => {
     render(<BugReportForm {...defaultProps} />);
-    expect(screen.getByLabelText(texts.form.titleLabel)).toBeInTheDocument();
     expect(
       screen.getByLabelText(texts.form.descriptionLabel),
     ).toBeInTheDocument();
@@ -32,27 +29,14 @@ describe("BugReportForm", () => {
     render(
       <BugReportForm
         {...defaultProps}
-        title="タイトル"
         description="説明文"
         stepsToReproduce="手順1"
       />,
-    );
-    expect(screen.getByLabelText(texts.form.titleLabel)).toHaveValue(
-      "タイトル",
     );
     expect(screen.getByLabelText(texts.form.descriptionLabel)).toHaveValue(
       "説明文",
     );
     expect(screen.getByLabelText(texts.form.stepsLabel)).toHaveValue("手順1");
-  });
-
-  it("タイトル入力時に setTitle を呼ぶ", () => {
-    const setTitle = jest.fn();
-    render(<BugReportForm {...defaultProps} setTitle={setTitle} />);
-    fireEvent.change(screen.getByLabelText(texts.form.titleLabel), {
-      target: { value: "新タイトル" },
-    });
-    expect(setTitle).toHaveBeenCalledWith("新タイトル");
   });
 
   it("説明入力時に setDescription を呼ぶ", () => {
@@ -131,9 +115,6 @@ describe("BugReportForm", () => {
   it("各入力フィールドにプレースホルダーを表示する", () => {
     render(<BugReportForm {...defaultProps} />);
     expect(
-      screen.getByPlaceholderText(texts.form.titlePlaceholder),
-    ).toBeInTheDocument();
-    expect(
       screen.getByPlaceholderText(texts.form.descriptionPlaceholder),
     ).toBeInTheDocument();
     // stepsPlaceholder は \n を含むため getByPlaceholderText が使えない — 属性で検証する
@@ -145,9 +126,6 @@ describe("BugReportForm", () => {
 
   it("各入力要素は htmlFor/id で対応するラベルと関連付けられている", () => {
     render(<BugReportForm {...defaultProps} />);
-    expect(
-      screen.getByRole("textbox", { name: texts.form.titleLabel }),
-    ).toHaveAttribute("id", "bug-title");
     expect(
       screen.getByRole("textbox", { name: texts.form.descriptionLabel }),
     ).toHaveAttribute("id", "bug-description");

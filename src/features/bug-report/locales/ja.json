@@ -4,8 +4,6 @@
     "description": "アプリの不具合や改善要望を開発者に送信できます。"
   },
   "form": {
-    "titleLabel": "タイトル（任意）",
-    "titlePlaceholder": "例: 通知が表示されない",
     "descriptionLabel": "不具合の内容",
     "descriptionPlaceholder": "発生している不具合の内容を具体的に記入してください",
     "stepsLabel": "再現手順（任意）",
