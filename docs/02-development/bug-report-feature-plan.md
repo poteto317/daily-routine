@@ -120,7 +120,7 @@ type BugReport = {
 - `firestore.rules` に `bugReports` ルール追加（クライアントは create のみ・サーバ専用
   フィールド禁止）。
 - Secret / 環境変数の定義方針を README / docs に追記
-  （`GITHUB_TOKEN`(secret), `GITHUB_REPO`, `AI_API_KEY`(secret) 等）。
+  （`GITHUB_TOKEN`(secret), `GITHUB_REPO`, `ANTHROPIC_API_KEY`(secret) 等）。
 - **成果物**: 型・ルール・ドキュメント。機能挙動の変更なし。
 
 > Phase 0 実装済み成果物:
@@ -179,15 +179,20 @@ type BugReport = {
 
 ### Phase 3 — AI による本文整形を組み込み
 
-- `firebase-functions/src/bugReport/aiIssueFormatter.ts`
+- `firebase-functions/src/bugReport/aiIssueFormatter.ts`（旧案。実装は `draftIssueWithClaude.ts` ほか）
   - 入力: ユーザー記述 + メタ。出力スキーマ: `{ title, body, labels: string[] }`。
   - プロンプト設計（日本語、再現手順の構造化、ラベル候補を限定リストから推定）。
-  - `secrets:[AI_API_KEY]`。プロバイダは抽象 IF 経由で差し替え可能に。
+  - `secrets:[ANTHROPIC_API_KEY]`。（旧案）プロバイダは抽象 IF 経由で差し替え可能に（実装では Anthropic に固定し、抽象 IF は設けていない）。
 - `onBugReportCreated` のフローに組み込み（AI整形 → Issue作成）。
 - **フォールバック**: AI 失敗時は Phase 2 の素テンプレートで Issue 化（機能継続）。
 - `aiLabels` を Firestore に記録。
 - **テスト**: AI クライアントをモックし、整形結果が Issue 本文/ラベルに反映されること、
   失敗時フォールバックを検証。
+
+> **進捗（2026-10-29、一部実装）**
+>
+> - 実装済み: `draftIssueWithClaude.ts` で Claude API（`claude-opus-5-5`）によりタイトルと本文を整形し、`handleBugReport` から処理ロック取得後に呼び出す。失敗時（利用上限超過・残高不足・タイムアウト・拒否応答・出力不正など）は Phase 2 の素テンプレートで Issue 化する。Secret は `ANTHROPIC_API_KEY`（`none` で無効化）。プロバイダは Anthropic に固定し、抽象 IF は設けていない。
+> - 未実装: ラベル候補の推定と `aiLabels` の Firestore への記録。
 
 ### Phase 4 — 運用・管理整備（任意・推奨）
 

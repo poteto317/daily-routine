@@ -157,12 +157,16 @@ jobs:
   with:
     node-version: ${{ matrix.node-version }}
     cache: npm
+    cache-dependency-path: |
+      package-lock.json
+      firebase-functions/package-lock.json
 ```
 
-| 設定                                       | 意味                                                      |
-| ------------------------------------------ | --------------------------------------------------------- |
-| `node-version: ${{ matrix.node-version }}` | matrix で定義した Node.js バージョンを使う                |
-| `cache: npm`                               | npm キャッシュを有効化。2回目以降の `npm ci` が高速になる |
+| 設定                                       | 意味                                                                                                                                                                                           |
+| ------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `node-version: ${{ matrix.node-version }}` | matrix で定義した Node.js バージョンを使う                                                                                                                                                     |
+| `cache: npm`                               | npm キャッシュを有効化。2回目以降の `npm ci` が高速になる                                                                                                                                      |
+| `cache-dependency-path`                    | ルートと Cloud Functions の両方の lock ファイル（`package-lock.json`、`firebase-functions/package-lock.json`）をキャッシュキーに使う。指定するとルートの既定値が使われなくなるため、両方を書く |
 
 **Node.js 22.x / 24.x を使う理由**: 22.x / 24.x はいずれも LTS ラインのバージョン（最新フェーズは [公式リリーススケジュール](https://nodejs.org/en/about/previous-releases) を参照）。24.x は Cloud Functions でも使用しているバージョンのため、両系統で実行することでバージョン間の互換性を確認する。
 
@@ -182,7 +186,18 @@ jobs:
 
 ---
 
-### ステップ 4: アイコンアセットの同期チェック
+### ステップ 4: Cloud Functions の依存パッケージのインストール
+
+```yaml
+- name: Install Cloud Functions dependencies
+  run: npm ci --prefix firebase-functions
+```
+
+`firebase-functions/package-lock.json` に従い、Cloud Functions 側の依存パッケージをインストールする。ルートの jest が `firebase-functions/src` のテストも実行し、Cloud Functions 側の依存（Anthropic SDK など）を import するため、ルートの `npm ci` だけでは足りない。
+
+---
+
+### ステップ 5: アイコンアセットの同期チェック
 
 ```yaml
 - name: Verify icon assets are in sync
@@ -193,7 +208,7 @@ jobs:
 
 ---
 
-### ステップ 5: Tailwind 短縮記法チェック
+### ステップ 6: Tailwind 短縮記法チェック
 
 ```yaml
 - name: Tailwind shorthand scan
@@ -204,7 +219,7 @@ jobs:
 
 ---
 
-### ステップ 6: ESLint
+### ステップ 7: ESLint
 
 ```yaml
 - name: Lint
@@ -215,7 +230,7 @@ ESLint で静的解析を実行。`--max-warnings 0` により、warning も含�
 
 ---
 
-### ステップ 7: TypeScript 型チェック
+### ステップ 8: TypeScript 型チェック
 
 ```yaml
 - name: Type check
@@ -226,7 +241,18 @@ ESLint で静的解析を実行。`--max-warnings 0` により、warning も含�
 
 ---
 
-### ステップ 8: テスト
+### ステップ 9: Cloud Functions の型チェック
+
+```yaml
+- name: Type check Cloud Functions
+  run: npm run typecheck:functions
+```
+
+`tsc --noEmit -p firebase-functions` で、Cloud Functions 側の `tsconfig.json` を使って型チェックのみ実行する（`lib/` は出力しない）。ルートの `typecheck` は `firebase-functions` を除外しているため、別の手順でチェックしている。手元の `npm run verify:fast` にも含まれる。
+
+---
+
+### ステップ 10: テスト
 
 ```yaml
 - name: Run tests
@@ -237,7 +263,7 @@ Jest テストをシリアル実行（`--runInBand`）で実行。CI 環境で�
 
 ---
 
-### ステップ 9: ビルド
+### ステップ 11: ビルド
 
 ```yaml
 - name: Build
@@ -290,8 +316,9 @@ GitHub が .github/workflows/ci.yml を検出
          ↓
 並列実行:
   ├── [ci] ジョブ (Node 22.x / 24.x マトリクス):
-  │     [Checkout] → [Setup Node] → [npm ci] → [verify:icons] → [tailwind:scan]
-  │     → [lint] → [typecheck] → [test] → [build]
+  │     [Checkout] → [Setup Node] → [npm ci] → [npm ci (functions)]
+  │     → [verify:icons] → [tailwind:scan] → [lint] → [typecheck]
+  │     → [typecheck (functions)] → [test] → [build]
   │
   └── [e2e] ジョブ (Node 24.x):
         [Checkout] → [Setup Node] → [npm ci] → [Install Playwright] → [test:e2e]

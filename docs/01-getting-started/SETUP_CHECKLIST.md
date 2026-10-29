@@ -182,10 +182,12 @@ Cloud Functions は Node.js 24 環境で以下の 5 つの関数をエクスポ�
 - `onBugReportCreated`: 不具合報告 GitHub Issue 自動起票 (Firestore トリガー)
 - `agentApi`: AI エージェント向け CRUD REST API (HTTP)
 
-不具合報告機能で GitHub Issue を自動起票する場合は、事前に Secret を設定します（詳細は `docs/02-development/bug-report-secrets-config.md` 参照）：
+Cloud Functions をデプロイする場合は、事前に Secret の設定が必須です。`onBugReportCreated` も一緒にデプロイされるため、不具合報告機能を使うかどうかに関わらず必要になります。Claude を使わない場合は `ANTHROPIC_API_KEY` に `none` を登録します（詳細は `docs/02-development/bug-report-secrets-config.md` 参照）：
 
 ```bash
 firebase functions:secrets:set GITHUB_TOKEN
+# Claude による Issue の整形に使う Anthropic の API キー（使わない場合は値に none を登録）
+firebase functions:secrets:set ANTHROPIC_API_KEY
 
 # 任意の起票先は firebase-functions/.env.<project-id> に以下を記載
 # GITHUB_REPO=owner/repo（未指定時: poteto317/daily-routine）
@@ -219,20 +221,21 @@ Vercel で本番運用する場合は、`.env.local` に設定した Firebase �
 
 `.env.local` および本番環境で利用される環境変数の一覧です。
 
-| 環境変数名                                 | 必須/任意        | 説明                                                                            | 設定例・既定値                                            |
-| :----------------------------------------- | :--------------- | :------------------------------------------------------------------------------ | :-------------------------------------------------------- |
-| `NEXT_PUBLIC_ENABLE_LOCAL_AUTH`            | 任意             | Firebase未設定環境での開発用ローカル擬似認証フラグ。`localhost` でのみ有効      | `false`（開発時のみ `true`）                              |
-| `NEXT_PUBLIC_FIREBASE_API_KEY`             | 必須             | Firebase Web API キー                                                           | `your-api-key`                                               |
-| `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN`         | 必須             | Firebase Authentication ドメイン                                                | `<project-id>.firebaseapp.com`                            |
-| `NEXT_PUBLIC_FIREBASE_PROJECT_ID`          | 必須             | Firebase プロジェクト ID                                                        | `daily-routine-xxxx`                                      |
-| `NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET`      | 任意             | Cloud Storage バケット名                                                        | `<project-id>.appspot.com`                                |
-| `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID` | 必須             | FCM 送信者 ID（プロジェクト番号）                                               | `123456789012`                                            |
-| `NEXT_PUBLIC_FIREBASE_APP_ID`              | 必須             | Firebase Web アプリ ID                                                          | `1:123456:web:abcdef`                                     |
-| `NEXT_PUBLIC_FIREBASE_VAPID_KEY`           | 任意             | Web Push (FCM) 通知用 VAPID 公開鍵                                              | `BEl62v...`                                               |
-| `NEXT_PUBLIC_FUNCTIONS_URL`                | 任意             | Cloud Functions のベース URL（通知同期用）                                      | `https://asia-northeast1-<project-id>.cloudfunctions.net` |
-| `NEXT_PUBLIC_APP_VERSION`                  | 自動             | アプリケーションのバージョン（`next.config.ts` で `package.json` から自動注入） | `0.1.0`                                                   |
-| `GITHUB_TOKEN`                             | Functions Secret | 不具合報告の GitHub Issue 自動起票用トークン                                    | Secret Manager に登録                                     |
-| `GITHUB_REPO`                              | Functions 文字列パラメータ | 不具合報告の起票先 GitHub リポジトリ（デフォルト: `poteto317/daily-routine`）   | firebase-functions/.env.<project-id> に設定                                     |
+| 環境変数名                                 | 必須/任意                  | 説明                                                                                      | 設定例・既定値                                            |
+| :----------------------------------------- | :------------------------- | :---------------------------------------------------------------------------------------- | :-------------------------------------------------------- |
+| `NEXT_PUBLIC_ENABLE_LOCAL_AUTH`            | 任意                       | Firebase未設定環境での開発用ローカル擬似認証フラグ。`localhost` でのみ有効                | `false`（開発時のみ `true`）                              |
+| `NEXT_PUBLIC_FIREBASE_API_KEY`             | 必須                       | Firebase Web API キー                                                                     | `your-api-key`                                               |
+| `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN`         | 必須                       | Firebase Authentication ドメイン                                                          | `<project-id>.firebaseapp.com`                            |
+| `NEXT_PUBLIC_FIREBASE_PROJECT_ID`          | 必須                       | Firebase プロジェクト ID                                                                  | `daily-routine-xxxx`                                      |
+| `NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET`      | 任意                       | Cloud Storage バケット名                                                                  | `<project-id>.appspot.com`                                |
+| `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID` | 必須                       | FCM 送信者 ID（プロジェクト番号）                                                         | `123456789012`                                            |
+| `NEXT_PUBLIC_FIREBASE_APP_ID`              | 必須                       | Firebase Web アプリ ID                                                                    | `1:123456:web:abcdef`                                     |
+| `NEXT_PUBLIC_FIREBASE_VAPID_KEY`           | 任意                       | Web Push (FCM) 通知用 VAPID 公開鍵                                                        | `BEl62v...`                                               |
+| `NEXT_PUBLIC_FUNCTIONS_URL`                | 任意                       | Cloud Functions のベース URL（通知同期用）                                                | `https://asia-northeast1-<project-id>.cloudfunctions.net` |
+| `NEXT_PUBLIC_APP_VERSION`                  | 自動                       | アプリケーションのバージョン（`next.config.ts` で `package.json` から自動注入）           | `0.1.0`                                                   |
+| `GITHUB_TOKEN`                             | Functions Secret           | 不具合報告の GitHub Issue 自動起票用トークン                                              | Secret Manager に登録                                     |
+| `ANTHROPIC_API_KEY`                        | Functions Secret           | 不具合報告の Issue を Claude で整形するための Anthropic API キー（使わない場合は `none`） | Secret Manager に登録                                     |
+| `GITHUB_REPO`                              | Functions 文字列パラメータ | 不具合報告の起票先 GitHub リポジトリ（デフォルト: `poteto317/daily-routine`）             | firebase-functions/.env.<project-id> に設定               |
 
 設定方法:
 
