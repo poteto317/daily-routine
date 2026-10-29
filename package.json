@@ -24,7 +24,8 @@
     "build-storybook": "storybook build",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
-    "verify:fast": "npm run tailwind:scan && npm run lint && npm run typecheck && npm test -- --runInBand",
+    "typecheck:functions": "tsc --noEmit -p firebase-functions",
+    "verify:fast": "npm run tailwind:scan && npm run lint && npm run typecheck && npm run typecheck:functions && npm test -- --runInBand",
     "verify": "npm run verify:fast && npm run build"
   },
   "dependencies": {

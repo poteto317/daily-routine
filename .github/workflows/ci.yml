@@ -56,12 +56,18 @@ jobs:
       #    - node-version: 使用する Node.js のバージョン
       #    - cache: npm のキャッシュを有効化し、
       #      毎回 npm ci が走る時間を短縮
+      #    - cache-dependency-path: ルートと Cloud Functions の
+      #      両方の lock ファイルをキャッシュキーに使う
+      #      （指定するとルートの既定値が使われなくなるため両方書く）
       # ──────────────────────────────────────────────────────
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
           cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            firebase-functions/package-lock.json
 
       # ──────────────────────────────────────────────────────
       # 3. 依存パッケージのインストール
@@ -72,7 +78,16 @@ jobs:
         run: npm ci
 
       # ──────────────────────────────────────────────────────
-      # 4. アイコンアセットの同期チェック
+      # 4. Cloud Functions の依存パッケージのインストール
+      #    - ルートの jest が firebase-functions/src のテストも実行し、
+      #      firebase-functions 側の依存（Anthropic SDK など）を
+      #      import するため
+      # ──────────────────────────────────────────────────────
+      - name: Install Cloud Functions dependencies
+        run: npm ci --prefix firebase-functions
+
+      # ──────────────────────────────────────────────────────
+      # 5. アイコンアセットの同期チェック
       #    - public/icon.svg から再生成したピクセルデータと
       #      コミット済みPNGのピクセルデータを比較し、
       #      icon.svg 編集時の再生成忘れを検知する
@@ -84,28 +99,36 @@ jobs:
         run: npm run verify:icons
 
       # ──────────────────────────────────────────────────────
-      # 5. Tailwind 短縮記法チェック
+      # 6. Tailwind 短縮記法チェック
       #    - tools/tailwind/check-shorthand.mjs によるカスタムチェック
       # ──────────────────────────────────────────────────────
       - name: Tailwind shorthand scan
         run: npm run tailwind:scan
 
       # ──────────────────────────────────────────────────────
-      # 6. ESLint による静的解析
+      # 7. ESLint による静的解析
       #    - --max-warnings 0: 警告も許容しない厳格モード
       # ──────────────────────────────────────────────────────
       - name: Lint
         run: npm run lint
 
       # ──────────────────────────────────────────────────────
-      # 7. TypeScript 型チェック
+      # 8. TypeScript 型チェック
       #    - tsconfig.json と tsconfig.test.json の両方をチェック
       # ──────────────────────────────────────────────────────
       - name: Type check
         run: npm run typecheck
 
       # ──────────────────────────────────────────────────────
-      # 8. Jest テスト実行
+      # 9. Cloud Functions の型チェック
+      #    - ルートの typecheck は firebase-functions を除外しているため、
+      #      Cloud Functions 側の tsconfig で別にチェックする
+      # ──────────────────────────────────────────────────────
+      - name: Type check Cloud Functions
+        run: npm run typecheck:functions
+
+      # ──────────────────────────────────────────────────────
+      # 10. Jest テスト実行
       #    - --runInBand: シリアル実行（CI 環境での安定性向上）
       #    - --forceExit: テスト完了後にプロセスを強制終了
       # ──────────────────────────────────────────────────────
@@ -113,7 +136,7 @@ jobs:
         run: npm test -- --runInBand
 
       # ──────────────────────────────────────────────────────
-      # 9. Next.js プロダクションビルド
+      # 11. Next.js プロダクションビルド
       #    - ビルドが通ることを検証
       #    - Firebase の環境変数はダミー値を設定（ビルド通過用）
       # ──────────────────────────────────────────────────────
