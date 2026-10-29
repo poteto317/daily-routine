@@ -30,7 +30,8 @@ export interface ProcessBugReportDeps {
 
 /**
  * 整形結果を取得する。未指定なら null。
- * 例外は null として扱う（保険）。失敗理由のログは呼び出し側のラッパーが出す。
+ * 例外は null として扱う（保険）。通常の失敗は呼び出し側のラッパーが warn を出して null を返すため、
+ * ここに来るのはラッパーが捕まえなかった想定外の例外だけで、ログは出さない。
  */
 const resolveDraft = async (
   report: ProcessableBugReport,

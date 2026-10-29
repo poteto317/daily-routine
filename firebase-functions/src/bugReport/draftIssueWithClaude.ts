@@ -12,7 +12,7 @@ export const CLAUDE_MODEL = "claude-opus-5-5";
 /** 思考のトークンも含む上限。長めの報告でも日本語の本文が打ち切られない余裕を持たせる */
 export const CLAUDE_MAX_TOKENS = 8000;
 /** 1 回の Claude 呼び出しの上限。再試行はしない（関数のタイムアウト 120 秒に収める） */
-const CLAUDE_TIMEOUT_MS = 45_000;
+export const CLAUDE_TIMEOUT_MS = 45_000;
 
 /** Claude に返させる構造化出力の形 */
 export const IssueDraftSchema = z.object({

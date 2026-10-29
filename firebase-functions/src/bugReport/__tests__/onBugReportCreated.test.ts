@@ -5,6 +5,8 @@ jest.mock("../handleBugReport", () => ({
 import { onBugReportCreated } from "../onBugReportCreated";
 import { handleBugReport } from "../handleBugReport";
 import { PROCESSING_LOCK_TIMEOUT_MS } from "../constants";
+import { CLAUDE_TIMEOUT_MS } from "../draftIssueWithClaude";
+import { GITHUB_TIMEOUT_MS } from "../createGithubIssue";
 
 /** onDocumentCreated が返す関数に付く、デプロイ設定（エンドポイント）の一部 */
 type EndpointLike = {
@@ -18,8 +20,12 @@ const endpointOf = () =>
   (onBugReportCreated({} as never) as unknown as EndpointLike).__endpoint;
 
 describe("onBugReportCreated のトリガー設定", () => {
-  it("Claude（最大 45 秒）と GitHub（最大 30 秒）を待てるタイムアウトを指定する", () => {
-    expect(endpointOf().timeoutSeconds).toBe(120);
+  it("Claude と GitHub の呼び出しの上限を合わせても収まるタイムアウトを指定する", () => {
+    const timeoutSeconds = endpointOf().timeoutSeconds;
+    expect(timeoutSeconds).toBe(120);
+    expect((timeoutSeconds ?? 0) * 1000).toBeGreaterThan(
+      CLAUDE_TIMEOUT_MS + GITHUB_TIMEOUT_MS,
+    );
   });
 
   it("関数のタイムアウトは処理ロックの期限より短い（打ち切り後の再実行で二重に起票しない）", () => {

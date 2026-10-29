@@ -1,7 +1,7 @@
 import type { GithubIssueContent } from "./buildIssueContent";
 
 /** GitHub API 呼び出しの上限。fetch の signal は応答本文の読み込みも含めて打ち切る */
-const GITHUB_TIMEOUT_MS = 30_000;
+export const GITHUB_TIMEOUT_MS = 30_000;
 
 /** Issue 作成結果 */
 export interface GithubIssueResult {
