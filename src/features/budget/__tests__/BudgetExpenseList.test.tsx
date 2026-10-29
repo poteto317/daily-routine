@@ -331,4 +331,41 @@ describe("BudgetExpenseList", () => {
     expect(onSaveEdit).toHaveBeenCalledTimes(1);
     expect(onCancelEdit).toHaveBeenCalledTimes(1);
   });
+
+  it("同じ日付・同じ分に追加された支出でも、時間（記録日時）の降順で描画する", () => {
+    render(
+      <BudgetExpenseList
+        {...createProps({
+          expenses: [
+            {
+              id: "first-added",
+              date: "2026-09-06",
+              amount: 500,
+              createdAt: "2026-09-06T05:08:10.000Z",
+              usedTime: "14:08",
+            },
+            {
+              id: "second-added",
+              date: "2026-09-06",
+              amount: 1200,
+              createdAt: "2026-09-06T05:08:40.000Z",
+              usedTime: "14:08",
+            },
+            {
+              id: "previous-day",
+              date: "2026-09-05",
+              amount: 300,
+              createdAt: "2026-09-05T12:00:00.000Z",
+              usedTime: "21:00",
+            },
+          ],
+        })}
+      />,
+    );
+
+    const amounts = screen
+      .getAllByText(/[¥￥]/)
+      .map((element) => element.textContent);
+    expect(amounts).toEqual(["￥1,200", "￥500", "￥300"]);
+  });
 });

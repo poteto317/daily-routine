@@ -195,5 +195,203 @@ describe("budgetExpenseListSort", () => {
       // 14:00（フォールバック） > 09:00 なので cleared が上に来る。
       expect(result.map((e) => e.id)).toEqual(["cleared", "explicit"]);
     });
+
+    it("resolveExpenseUsedTimeはusedTimeが未設定・空文字でcreatedAtが不正な日時文字列の場合に'00:00'へフォールバックする", () => {
+      expect(
+        resolveExpenseUsedTime({
+          id: "invalid-unset",
+          date: "2026-03-03",
+          amount: 100,
+          createdAt: "invalid-date",
+        }),
+      ).toBe("00:00");
+      expect(
+        resolveExpenseUsedTime({
+          id: "invalid-empty",
+          date: "2026-03-03",
+          amount: 100,
+          createdAt: "",
+          usedTime: "",
+        }),
+      ).toBe("00:00");
+    });
+
+    it("同日でusedTimeが異なる場合は、createdAtの前後に関わらずusedTimeが優先される", () => {
+      const earlierUsedTimeButRecordedLater = {
+        id: "used-early-recorded-late",
+        date: "2026-03-05",
+        amount: 100,
+        createdAt: "2026-03-05T10:00:00.000Z",
+        usedTime: "08:00",
+      };
+      const laterUsedTimeButRecordedEarlier = {
+        id: "used-late-recorded-early",
+        date: "2026-03-05",
+        amount: 200,
+        createdAt: "2026-03-05T01:00:00.000Z",
+        usedTime: "20:00",
+      };
+
+      expect(
+        sortExpensesByDateDesc([
+          earlierUsedTimeButRecordedLater,
+          laterUsedTimeButRecordedEarlier,
+        ]).map((e) => e.id),
+      ).toEqual(["used-late-recorded-early", "used-early-recorded-late"]);
+      expect(
+        sortExpensesByDateDesc([
+          laterUsedTimeButRecordedEarlier,
+          earlierUsedTimeButRecordedLater,
+        ]).map((e) => e.id),
+      ).toEqual(["used-late-recorded-early", "used-early-recorded-late"]);
+    });
+
+    it("同じ日付・同じusedTime（同じ分）の支出同士は、記録時刻(createdAt)が新しい順に並ぶ", () => {
+      const firstInSameMinute = {
+        id: "first-in-minute",
+        date: "2026-03-05",
+        amount: 100,
+        createdAt: "2026-03-05T05:08:10.100Z",
+        usedTime: "14:08",
+      };
+      const secondInSameMinute = {
+        id: "second-in-minute",
+        date: "2026-03-05",
+        amount: 200,
+        createdAt: "2026-03-05T05:08:45.900Z",
+        usedTime: "14:08",
+      };
+
+      expect(
+        sortExpensesByDateDesc([firstInSameMinute, secondInSameMinute]).map(
+          (e) => e.id,
+        ),
+      ).toEqual(["second-in-minute", "first-in-minute"]);
+      expect(
+        sortExpensesByDateDesc([secondInSameMinute, firstInSameMinute]).map(
+          (e) => e.id,
+        ),
+      ).toEqual(["second-in-minute", "first-in-minute"]);
+    });
+
+    it("usedTime未設定で同じ分に記録された同日の支出同士も、createdAtの秒・ミリ秒が新しい順に並ぶ", () => {
+      const earlierSecond = {
+        id: "earlier-second",
+        date: "2026-03-05",
+        amount: 100,
+        createdAt: "2026-03-05T05:08:05.000Z",
+      };
+      const laterSecond = {
+        id: "later-second",
+        date: "2026-03-05",
+        amount: 200,
+        createdAt: "2026-03-05T05:08:50.000Z",
+      };
+
+      expect(
+        sortExpensesByDateDesc([earlierSecond, laterSecond]).map((e) => e.id),
+      ).toEqual(["later-second", "earlier-second"]);
+      expect(
+        sortExpensesByDateDesc([laterSecond, earlierSecond]).map((e) => e.id),
+      ).toEqual(["later-second", "earlier-second"]);
+    });
+
+    it("同じ日付・同じusedTimeでcreatedAtのタイムゾーン表記が異なる場合でも、実時刻が新しい順に並ぶ", () => {
+      // 2026-03-05T05:08:30.000Z (14:08:30 JST) と 2026-03-05T14:08:10.000+09:00 (05:08:10 UTC)
+      // 文字列比較だと "2026-03-05T14:..." > "2026-03-05T05:..." になるが、実時刻は UTC 05:08:30 の方が新しい。
+      const offsetNotationEarlier = {
+        id: "offset-earlier",
+        date: "2026-03-05",
+        amount: 100,
+        createdAt: "2026-03-05T14:08:10.000+09:00",
+        usedTime: "14:08",
+      };
+      const utcNotationLater = {
+        id: "utc-later",
+        date: "2026-03-05",
+        amount: 200,
+        createdAt: "2026-03-05T05:08:30.000Z",
+        usedTime: "14:08",
+      };
+
+      expect(
+        sortExpensesByDateDesc([offsetNotationEarlier, utcNotationLater]).map(
+          (e) => e.id,
+        ),
+      ).toEqual(["utc-later", "offset-earlier"]);
+      expect(
+        sortExpensesByDateDesc([utcNotationLater, offsetNotationEarlier]).map(
+          (e) => e.id,
+        ),
+      ).toEqual(["utc-later", "offset-earlier"]);
+    });
+
+    it("同じ日付・同じusedTimeでcreatedAtが両方ともパース不能な場合は、createdAt文字列の降順で並ぶ", () => {
+      const invalidA = {
+        id: "invalid-a",
+        date: "2026-03-05",
+        amount: 100,
+        createdAt: "not-a-date-1",
+        usedTime: "14:08",
+      };
+      const invalidB = {
+        id: "invalid-b",
+        date: "2026-03-05",
+        amount: 200,
+        createdAt: "not-a-date-2",
+        usedTime: "14:08",
+      };
+
+      expect(
+        sortExpensesByDateDesc([invalidA, invalidB]).map((e) => e.id),
+      ).toEqual(["invalid-b", "invalid-a"]);
+      expect(
+        sortExpensesByDateDesc([invalidB, invalidA]).map((e) => e.id),
+      ).toEqual(["invalid-b", "invalid-a"]);
+    });
+
+    it("同じ日付・同じusedTime・同じcreatedAtの支出同士は、配列の後方（後からpushされた方）が上に来る", () => {
+      const pushedFirst = {
+        id: "pushed-first",
+        date: "2026-03-05",
+        amount: 100,
+        createdAt: "2026-03-05T05:08:10.000Z",
+        usedTime: "14:08",
+      };
+      const pushedSecond = {
+        id: "pushed-second",
+        date: "2026-03-05",
+        amount: 200,
+        createdAt: "2026-03-05T05:08:10.000Z",
+        usedTime: "14:08",
+      };
+
+      expect(
+        sortExpensesByDateDesc([pushedFirst, pushedSecond]).map((e) => e.id),
+      ).toEqual(["pushed-second", "pushed-first"]);
+    });
+
+    it("元の配列を破壊（ミューテート）しない", () => {
+      const original = [
+        {
+          id: "e1",
+          date: "2026-03-03",
+          amount: 100,
+          createdAt: "2026-03-03T00:00:00.000Z",
+        },
+        {
+          id: "e2",
+          date: "2026-03-05",
+          amount: 200,
+          createdAt: "2026-03-05T00:00:00.000Z",
+        },
+      ];
+      const snapshot = [...original];
+
+      const sorted = sortExpensesByDateDesc(original);
+
+      expect(original).toEqual(snapshot);
+      expect(sorted).not.toBe(original);
+    });
   });
 });
