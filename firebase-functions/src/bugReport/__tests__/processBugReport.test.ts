@@ -1,3 +1,4 @@
+/** @jest-environment node */
 import {
   processBugReport,
   type ProcessableBugReport,
@@ -352,6 +353,80 @@ describe("processBugReport", () => {
     expect(updateReport.mock.calls[0][0]).toMatchObject({
       errorMessage: "undefined",
     });
+  });
+});
+
+describe("processBugReport — Claude による整形（draftIssue）", () => {
+  const issueResult = { issueNumber: 1, issueUrl: "u" };
+  const draft = { title: "保存できない", body: "## 不具合の内容\n\n要約本文" };
+
+  const makeDeps = (draftIssue?: jest.Mock) => ({
+    claimProcessing: jest.fn().mockResolvedValue(true),
+    createIssue: jest.fn().mockResolvedValue(issueResult),
+    updateReport: jest.fn().mockResolvedValue(undefined),
+    draftIssue,
+  });
+
+  it("draftIssue が draft を返したら、その内容で Issue を作成する", async () => {
+    const deps = makeDeps(jest.fn().mockResolvedValue(draft));
+
+    await processBugReport(pendingReport, deps);
+
+    expect(deps.draftIssue).toHaveBeenCalledWith(pendingReport);
+    const content = deps.createIssue.mock.calls[0][0];
+    expect(content.title).toBe("[不具合報告] 保存できない");
+    expect(content.body).toContain("要約本文");
+  });
+
+  it("draftIssue が null を返したら従来の内容で Issue を作成する", async () => {
+    const deps = makeDeps(jest.fn().mockResolvedValue(null));
+
+    await processBugReport(pendingReport, deps);
+
+    const content = deps.createIssue.mock.calls[0][0];
+    expect(content.title).toBe("[不具合報告] 不具合の内容");
+    expect(content.body).toContain(
+      "> この Issue はアプリの不具合報告機能から自動生成されました。",
+    );
+  });
+
+  it("draftIssue が例外を投げても従来の内容で Issue を作成し issued を返す", async () => {
+    const deps = makeDeps(jest.fn().mockRejectedValue(new Error("boom")));
+
+    const result = await processBugReport(pendingReport, deps);
+
+    expect(result).toBe("issued");
+    expect(deps.createIssue).toHaveBeenCalledTimes(1);
+    expect(deps.createIssue.mock.calls[0][0].title).toBe(
+      "[不具合報告] 不具合の内容",
+    );
+  });
+
+  it("claimProcessing が false なら draftIssue を呼ばない", async () => {
+    const deps = makeDeps(jest.fn().mockResolvedValue(draft));
+    deps.claimProcessing.mockResolvedValue(false);
+
+    await processBugReport(pendingReport, deps);
+
+    expect(deps.draftIssue).not.toHaveBeenCalled();
+  });
+
+  it("スキップ対象（status が issued）なら draftIssue を呼ばない", async () => {
+    const deps = makeDeps(jest.fn().mockResolvedValue(draft));
+
+    await processBugReport({ ...pendingReport, status: "issued" }, deps);
+
+    expect(deps.draftIssue).not.toHaveBeenCalled();
+  });
+
+  it("draftIssue 未指定なら従来の内容で Issue を作成する", async () => {
+    const deps = makeDeps();
+
+    await processBugReport(pendingReport, deps);
+
+    expect(deps.createIssue.mock.calls[0][0].title).toBe(
+      "[不具合報告] 不具合の内容",
+    );
   });
 });
 

@@ -1,3 +1,4 @@
+/** @jest-environment node */
 import { createGithubIssue } from "../createGithubIssue";
 
 describe("createGithubIssue", () => {
@@ -44,6 +45,43 @@ describe("createGithubIssue", () => {
       body: "本文",
       labels: ["bug"],
     });
+  });
+
+  it("応答本文の読み込みも打ち切れるよう fetch に AbortSignal を渡す", async () => {
+    const fetchMock = jest.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ number: 1, html_url: "u" }),
+    });
+    global.fetch = fetchMock as unknown as typeof fetch;
+
+    await createGithubIssue({
+      token: "t",
+      repo: "o/r",
+      content: { title: "t", body: "b", labels: [] },
+    });
+
+    const [, options] = fetchMock.mock.calls[0];
+    expect(options.signal).toBeInstanceOf(AbortSignal);
+  });
+
+  it("30 秒の AbortSignal.timeout を作り、その signal を fetch に渡す", async () => {
+    const timeoutSpy = jest.spyOn(AbortSignal, "timeout");
+    const fetchMock = jest.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ number: 1, html_url: "u" }),
+    });
+    global.fetch = fetchMock as unknown as typeof fetch;
+
+    await createGithubIssue({
+      token: "t",
+      repo: "o/r",
+      content: { title: "t", body: "b", labels: [] },
+    });
+
+    expect(timeoutSpy).toHaveBeenCalledTimes(1);
+    expect(timeoutSpy).toHaveBeenCalledWith(30_000);
+    const [, options] = fetchMock.mock.calls[0];
+    expect(options.signal).toBe(timeoutSpy.mock.results[0].value);
   });
 
   it("レスポンスが ok でない場合は例外を投げる", async () => {

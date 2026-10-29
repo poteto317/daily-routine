@@ -3,7 +3,7 @@ import * as logger from "firebase-functions/logger";
 import type * as admin from "firebase-admin";
 import { FieldValue, type Timestamp } from "firebase-admin/firestore";
 import { BUG_REPORTS_COLLECTION } from "./constants";
-import { githubToken, githubRepo } from "./config";
+import { anthropicApiKey, githubToken, githubRepo } from "./config";
 import { handleBugReport } from "./handleBugReport";
 import { canClaimProcessing } from "./canClaimProcessing";
 
@@ -16,7 +16,9 @@ export const onBugReportCreated = (db: admin.firestore.Firestore) =>
     {
       document: `${BUG_REPORTS_COLLECTION}/{reportId}`,
       region: "asia-northeast1",
-      secrets: [githubToken],
+      // Claude 最大 45 秒 + GitHub 最大 30 秒 + Firestore の読み書きが収まる長さ
+      timeoutSeconds: 120,
+      secrets: [githubToken, anthropicApiKey],
     },
     async (event) => {
       if (!event.data) {
@@ -57,6 +59,7 @@ export const onBugReportCreated = (db: admin.firestore.Firestore) =>
       await handleBugReport(reportId, db, {
         repo: githubRepo.value(),
         token: githubToken.value(),
+        anthropicApiKey: anthropicApiKey.value(),
         logger,
         now: () => FieldValue.serverTimestamp(),
         claimProcessing,
