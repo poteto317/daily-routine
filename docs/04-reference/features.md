@@ -569,14 +569,15 @@ Firestoreを使用した複数端末間のデータ同期・バックアップ�
 - **GitHub Issue 自動起票連携**
   - クライアントは Firestore `bugReports/{reportId}` へ `status: "pending"` として安全にドキュメント作成
   - Firestore セキュリティルールにより不正入力や serverTimestamp 改ざんを厳格に拒否
-  - Cloud Functions の Firestore トリガー（`onBugReportCreated`）が検知し、GitHub REST API を叩いて `bug` ラベル付き Issue を自動作成
+  - Cloud Functions の Firestore トリガー（`onBugReportCreated`）が検知し、GitHub REST API を叩いて `bug`・`user-report` ラベル付き Issue を自動作成
+  - Issue のタイトルと本文は Claude（Anthropic API）で整形する（`ANTHROPIC_API_KEY` に `none` を登録すると整形しない）。整形に失敗した場合は従来の内容（報告文そのまま）で起票する
   - 起票成功時に Firestore を `status: "issued"`, `issueNumber`, `issueUrl` で更新
 
 **技術仕様**
 
 - ファイル: `src/features/bug-report/`, `firebase-functions/src/bugReport/`
 - 保存先: Firestore `bugReports/{reportId}`
-- 連携: GitHub REST API（Secret: `GITHUB_TOKEN`、文字列パラメータ: `GITHUB_REPO`）
+- 連携: GitHub REST API（Secret: `GITHUB_TOKEN`、文字列パラメータ: `GITHUB_REPO`）、Anthropic Claude API で Issue を整形（Secret: `ANTHROPIC_API_KEY`。失敗時は従来の内容で起票）
 
 ---
 
@@ -851,7 +852,7 @@ Progressive Web App (PWA) 技術と Workbox による Service Worker を活用�
 - **データベース**: Firebase Firestore
 - **通知**: Firebase Cloud Messaging (FCM)
 - **サーバーレス関数**: Firebase Cloud Functions（Node.js 24）
-- **外部連携**: GitHub REST API（不具合報告の Issue 自動起票）
+- **外部連携**: GitHub REST API（不具合報告の Issue 自動起票）、Anthropic Claude API（不具合報告 Issue の整形。失敗時は従来の内容で起票）
 
 ### アーキテクチャ
 

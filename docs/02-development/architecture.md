@@ -29,6 +29,7 @@ graph TD
   subgraph External ["外部システム"]
     Agent["AI エージェント<br/>（Claude / Codex / スクリプト）"]
     GitHub["GitHub REST API<br/>（Issue 自動起票）"]
+    Claude["Anthropic Claude API<br/>（不具合報告 Issue の整形）"]
   end
 
   UI <-->|"手動アップロード/ダウンロード<br/>リアルタイム変更検知"| Firestore
@@ -37,6 +38,7 @@ graph TD
   Functions <-->|"同期データ更新 / APIキー照合"| Firestore
   Firestore -->|"onCreate トリガー"| Functions
   Functions -->|"Issue 作成"| GitHub
+  Functions -->|"Issue の整形"| Claude
 ```
 
 ---
@@ -198,7 +200,7 @@ sequenceDiagram
 ### 5-2. 秘密情報の管理
 
 - **Firebase Functions Secrets**:
-  GitHub REST API 呼び出しに必要な `GITHUB_TOKEN` は Secret Manager で管理します。対象リポジトリ名 `GITHUB_REPO` は `defineString` の通常パラメータで、Functions の `.env.<project-id>` に設定します。未指定時は `poteto317/daily-routine` を使用します。
+  GitHub REST API 呼び出しに必要な `GITHUB_TOKEN` は Secret Manager で管理します。不具合報告の Issue を Claude で整形するための Anthropic API キー `ANTHROPIC_API_KEY` も Secret Manager で管理します（整形を使わない場合は値に `none` を登録）。対象リポジトリ名 `GITHUB_REPO` は `defineString` の通常パラメータで、Functions の `.env.<project-id>` に設定します。未指定時は `poteto317/daily-routine` を使用します。
 - **FCM Service Worker 自動生成**:
   Firebase 設定情報を公開リポジトリに残さないため、ビルド時に `.env.local` から `tools/generate-firebase-messaging-sw.mjs` を通じて動的生成されます。
 

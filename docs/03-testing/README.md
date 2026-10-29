@@ -30,7 +30,7 @@
 
 ### 2. 自動テスト
 
-`npm test` は `TZ=Asia/Tokyo` 環境下でフロントエンド（`src/`）、Cloud Functions（`firebase-functions/src/`）、および補助ツール（`tools/`）のすべてのユニットテストを一括実行します。
+`npm test` は `TZ=Asia/Tokyo` 環境下でフロントエンド（`src/`）、Cloud Functions（`firebase-functions/src/`）、および補助ツール（`tools/`）のすべてのユニットテストを一括実行します。Cloud Functions のテストは functions 側の依存を import するため、事前に `npm install --prefix firebase-functions`（CI では `npm ci --prefix firebase-functions`）が必要です。
 
 ```bash
 # ユニットテスト実行 (TZ=Asia/Tokyo)
@@ -88,7 +88,7 @@ npm run tailwind:scan
 # プロダクションビルドテスト
 npm run build
 
-# 高速一括検証（tailwind:scan + lint + typecheck + test）
+# 高速一括検証（tailwind:scan + lint + typecheck + typecheck:functions + test）
 npm run verify:fast
 
 # フル一括検証（verify:fast + build）

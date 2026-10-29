@@ -10,12 +10,14 @@
 
 ## 1. 一覧
 
-| 名前           | 種別                          | 用途                                                                 | 使用フェーズ |
-| -------------- | ----------------------------- | -------------------------------------------------------------------- | ------------ |
-| `GITHUB_TOKEN` | Secret                        | GitHub Issue 作成（fetch）                                           | Phase 2〜    |
-| `GITHUB_REPO`  | 環境変数 / パラメータ         | Issue 作成先リポジトリ `owner/repo`（例: `poteto317/daily-routine`） | Phase 2〜    |
-| `AI_API_KEY`   | Secret                        | AI による本文整形                                                    | Phase 3〜    |
-| `AI_MODEL`     | 環境変数 / パラメータ（任意） | 使用モデル名（プロバイダ確定後に指定）                               | Phase 3〜    |
+| 名前                | 種別                  | 用途                                                                 | 使用フェーズ |
+| ------------------- | --------------------- | -------------------------------------------------------------------- | ------------ |
+| `GITHUB_TOKEN`      | Secret                | GitHub Issue 作成（fetch）                                           | Phase 2〜    |
+| `GITHUB_REPO`       | 環境変数 / パラメータ | Issue 作成先リポジトリ `owner/repo`（例: `poteto317/daily-routine`） | Phase 2〜    |
+| `ANTHROPIC_API_KEY` | Secret                | Claude API による Issue のタイトル・本文の整形（`none` で無効化）    | Phase 3〜    |
+
+- 整形に使うモデルは `claude-opus-5-5` でコードに固定している（`draftIssueWithClaude.ts`）。
+- 月の利用上限は Anthropic Console のワークスペースの利用上限で設定する。上限超過などで Claude API が失敗した場合は、従来の内容で Issue を作成する。
 
 - **Secret**: 値が機密。Firebase Secret Manager（`defineSecret`）で管理。
 - **環境変数 / パラメータ**: 機密でない設定値。`defineString` などのパラメータ、
@@ -41,8 +43,8 @@
 # GitHub トークン（Phase 2 以降）
 firebase functions:secrets:set GITHUB_TOKEN
 
-# AI API キー（Phase 3 以降）
-firebase functions:secrets:set AI_API_KEY
+# Claude API キー（Phase 3 以降。デプロイ前に必ず登録する。使わない場合は none を登録）
+firebase functions:secrets:set ANTHROPIC_API_KEY
 ```
 
 実行するとプロンプトに値の入力を求められる（履歴やソースに残さない）。
@@ -53,7 +55,7 @@ firebase functions:secrets:set AI_API_KEY
 import { defineSecret, defineString } from "firebase-functions/params";
 
 const githubToken = defineSecret("GITHUB_TOKEN");
-const aiApiKey = defineSecret("AI_API_KEY");
+const anthropicApiKey = defineSecret("ANTHROPIC_API_KEY");
 const githubRepo = defineString("GITHUB_REPO", {
   default: "poteto317/daily-routine",
 });
@@ -62,7 +64,9 @@ export const onBugReportCreated = onDocumentCreated(
   {
     document: "bugReports/{reportId}",
     region: "asia-northeast1",
-    secrets: [githubToken /*, aiApiKey */],
+    // Claude（最大 45 秒）と GitHub（最大 30 秒）を待てるよう既定の 60 秒から延ばす
+    timeoutSeconds: 120,
+    secrets: [githubToken, anthropicApiKey],
   },
   async (event) => {
     const token = githubToken.value();
@@ -87,6 +91,7 @@ firebase deploy --only functions
 - エミュレータでは `firebase-functions/.secret.local` に `GITHUB_TOKEN=...` の形式で記載するか、`functions:secrets:access` を利用する。
   `firebase-functions/.gitignore` に `*.local` が含まれているため `.secret.local` は追跡対象外だが、
   ルート `.gitignore` には含まれないので `firebase-functions/` 直下への配置を徹底すること。
+- エミュレータでは `.secret.local` に `ANTHROPIC_API_KEY=none` も記載する（記載が無いと Secret Manager の本番の値が使われ、ローカルの動作確認でも Claude API が呼ばれて課金されうる）。実 API で試すときだけ実キーにする。
 - 実際の GitHub への Issue 作成を避けたい場合は、テスト用リポジトリを `GITHUB_REPO`
   に指定するか、`createGithubIssue` をモックする。
 
