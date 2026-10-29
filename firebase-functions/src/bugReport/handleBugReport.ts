@@ -2,6 +2,8 @@ import { processBugReport } from "./processBugReport";
 import type { ProcessableBugReport } from "./types";
 import { createGithubIssue } from "./createGithubIssue";
 import { BUG_REPORTS_COLLECTION } from "./constants";
+import { createIssueDrafter } from "./createIssueDrafter";
+import type { DraftRequester } from "./draftIssueWithClaude";
 
 /**
  * firebase-admin/firestore の型に依存しない最小限の構造型。
@@ -20,8 +22,13 @@ type DbLike = {
 type HandleBugReportDeps = {
   repo: string;
   token: string;
+  /** Claude の API キー。空または none なら Claude を使わない */
+  anthropicApiKey: string;
+  /** API キーから整形の依頼関数を作る（テスト用。既定は createClaudeDraftRequester） */
+  createDraftRequester?: (apiKey: string) => DraftRequester;
   logger: {
     info(message: string): void;
+    warn(message: string): void;
     error(message: string, data?: object): void;
   };
   now?: () => unknown;
@@ -35,6 +42,8 @@ type HandleBugReportDeps = {
  * - Cloud Functions リトライ時の stale スナップショット対策として、
  *   reportId から最新ドキュメントを読み直してから processBugReport に渡す。
  * - ドキュメントが存在しない場合は早期リターン。
+ * - Claude による整形は createIssueDrafter に任せ、失敗したら従来の内容で起票する。
+ *   整形できたかどうかは info ログの content=claude|fallback|none に出す。
  */
 export const handleBugReport = async (
   reportId: string,
@@ -51,9 +60,18 @@ export const handleBugReport = async (
 
   const report = latestSnap.data() as ProcessableBugReport;
 
+  // 整形が呼ばれなければ（スキップ・ロック取得失敗）content=none のまま
+  const drafter = createIssueDrafter({
+    reportId,
+    anthropicApiKey: deps.anthropicApiKey,
+    createDraftRequester: deps.createDraftRequester,
+    logger: deps.logger,
+  });
+
   try {
     const result = await processBugReport(report, {
       claimProcessing: deps.claimProcessing,
+      draftIssue: drafter.draftIssue,
       createIssue: (content) =>
         createGithubIssue({ token: deps.token, repo: deps.repo, content }),
       updateReport: async (fields) => {
@@ -65,7 +83,7 @@ export const handleBugReport = async (
       now: deps.now,
     });
     deps.logger.info(
-      `Bug report ${reportId} processed: ${result} (repo=${deps.repo})`,
+      `Bug report ${reportId} processed: ${result} (repo=${deps.repo}, content=${drafter.contentSource()})`,
     );
   } catch (error) {
     deps.logger.error(`Bug report ${reportId} processing threw an exception`, {

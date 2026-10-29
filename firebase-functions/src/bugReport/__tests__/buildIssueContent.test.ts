@@ -1,11 +1,14 @@
+/** @jest-environment node */
 import {
   buildIssueBody,
   buildIssueContent,
   buildIssueTitle,
   sanitizeMention,
+  stripTitlePrefix,
   ZERO_WIDTH_SPACE,
   DEFAULT_BUG_REPORT_LABELS,
   type BugReportContentSource,
+  type IssueDraft,
 } from "../buildIssueContent";
 
 const baseReport: BugReportContentSource = {
@@ -20,6 +23,10 @@ const baseReport: BugReportContentSource = {
     createdAtClient: "2026-06-01T00:00:00.000Z",
   },
 };
+
+/** 対になっていない（孤立した）サロゲート */
+const LONE_SURROGATE_PATTERN =
+  /[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]/;
 
 describe("buildIssueTitle", () => {
   it("ユーザー入力タイトルがあればそれを使う", () => {
@@ -77,6 +84,15 @@ describe("buildIssueTitle — スニペット長", () => {
     const longDescription = "あ".repeat(60);
     const title = buildIssueTitle({ uid: "u", description: longDescription });
     expect(title).toBe(`[不具合報告] ${"あ".repeat(50)}`);
+  });
+
+  it("50 文字目がサロゲートペアの途中でも孤立サロゲートを残さない", () => {
+    const title = buildIssueTitle({
+      uid: "u",
+      description: "a".repeat(49) + "😀後",
+    });
+    expect(title).not.toMatch(LONE_SURROGATE_PATTERN);
+    expect(title).toBe(`[不具合報告] ${"a".repeat(49)}😀`);
   });
 });
 
@@ -241,5 +257,136 @@ describe("buildIssueTitle — @ メンション無害化", () => {
     expect(
       buildIssueTitle({ uid: "u", description: "@user バグ", title: "   " }),
     ).toBe(`[不具合報告] @${ZERO_WIDTH_SPACE}user バグ`);
+  });
+});
+
+describe("stripTitlePrefix", () => {
+  it.each([
+    ["[不具合報告] 保存できない", "保存できない"],
+    ["[不具合報告]保存できない", "保存できない"],
+    ["[不具合報告]  保存できない", "保存できない"],
+    ["[不具合報告]", ""],
+    ["[不具合報告]  ", ""],
+    ["保存 [不具合報告] 再発", "保存 [不具合報告] 再発"],
+    ["保存できない", "保存できない"],
+  ])("先頭の [不具合報告] と続く空白だけを取り除く (%s)", (title, expected) => {
+    expect(stripTitlePrefix(title)).toBe(expected);
+  });
+  it.each([
+    ["［不具合報告］ 保存できない", "保存できない"],
+    ["【不具合報告】保存できない", "保存できない"],
+    ["[不具合報告] [不具合報告] 保存できない", "保存できない"],
+    ["[不具合報告]【不具合報告】", ""],
+  ])("全角括弧の接頭辞も取り除く (%s)", (title, expected) => {
+    expect(stripTitlePrefix(title)).toBe(expected);
+  });
+});
+
+describe("buildIssueContent — Claude の整形結果（draft）あり", () => {
+  const draft: IssueDraft = {
+    title: "保存ボタンが反応しない",
+    body: "## 不具合の内容\n\n押しても保存されない",
+  };
+
+  it("タイトルは draft のタイトルに [不具合報告] を前置する", () => {
+    expect(buildIssueContent(baseReport, draft).title).toBe(
+      "[不具合報告] 保存ボタンが反応しない",
+    );
+  });
+
+  it("本文は draft の本文で始まり、元の説明を含まず、環境情報と整形の注記を付ける", () => {
+    const body = buildIssueContent(baseReport, draft).body;
+    expect(body.startsWith(draft.body)).toBe(true);
+    expect(body).not.toContain(baseReport.description);
+    expect(body).toContain("## 環境情報");
+    expect(body).toContain("> 報告者 uid: user-1");
+    expect(body).toContain(
+      "> この Issue はアプリの不具合報告機能から自動生成され、Claude で整形されました。",
+    );
+    expect(body).not.toContain(
+      "> この Issue はアプリの不具合報告機能から自動生成されました。",
+    );
+  });
+
+  it("ラベルは既定ラベルを使う", () => {
+    expect(buildIssueContent(baseReport, draft).labels).toEqual(
+      DEFAULT_BUG_REPORT_LABELS,
+    );
+  });
+
+  it("draft のタイトル中の改行・連続空白を 1 つの空白にまとめる", () => {
+    const content = buildIssueContent(baseReport, {
+      ...draft,
+      title: "保存\nボタンが   反応しない",
+    });
+    expect(content.title).toBe("[不具合報告] 保存 ボタンが 反応しない");
+  });
+
+  it.each([
+    "[不具合報告] 保存ボタンが反応しない",
+    "[不具合報告]保存ボタンが反応しない",
+    "  [不具合報告]  保存ボタンが反応しない",
+  ])("draft のタイトル先頭の [不具合報告] は二重に付けない (%s)", (title) => {
+    expect(buildIssueContent(baseReport, { ...draft, title }).title).toBe(
+      "[不具合報告] 保存ボタンが反応しない",
+    );
+  });
+
+  it("draft のタイトル途中の [不具合報告] は残す", () => {
+    expect(
+      buildIssueContent(baseReport, {
+        ...draft,
+        title: "保存 [不具合報告] 再発",
+      }).title,
+    ).toBe("[不具合報告] 保存 [不具合報告] 再発");
+  });
+
+  it("draft のタイトル・本文の @ をゼロ幅スペース付きに置換する", () => {
+    const content = buildIssueContent(baseReport, {
+      title: "@admin 宛て",
+      body: "@user が押すと失敗する",
+    });
+    expect(content.title).toBe(`[不具合報告] @${ZERO_WIDTH_SPACE}admin 宛て`);
+    expect(content.body).toContain(`@${ZERO_WIDTH_SPACE}user が押すと失敗する`);
+    expect(content.body).not.toMatch(/@admin|@user/);
+  });
+
+  it("@ を多く含むタイトルでもサニタイズ後に 256 文字以内に切り詰める", () => {
+    const content = buildIssueContent(baseReport, {
+      ...draft,
+      title: "@".repeat(200),
+    });
+    expect(Array.from(content.title).length).toBeLessThanOrEqual(256);
+    expect(content.title.startsWith("[不具合報告] ")).toBe(true);
+  });
+
+  it("長い本文は 60,000 コードポイントに切り詰め、環境情報は残す", () => {
+    const content = buildIssueContent(baseReport, {
+      ...draft,
+      body: "あ".repeat(70_000),
+    });
+    const [draftPart] = content.body.split("\n\n## 環境情報");
+    expect(Array.from(draftPart).length).toBe(60_000);
+    expect(content.body).toContain("## 環境情報");
+  });
+
+  it("サロゲートペアの多いタイトル・本文も途中で切らずに上限へ切り詰める", () => {
+    const content = buildIssueContent(baseReport, {
+      title: "😀".repeat(300),
+      body: "😀".repeat(70_000),
+    });
+    const [draftPart] = content.body.split("\n\n## 環境情報");
+    expect(Array.from(content.title).length).toBeLessThanOrEqual(256);
+    expect(Array.from(draftPart).length).toBe(60_000);
+    expect(content.title).not.toMatch(LONE_SURROGATE_PATTERN);
+    expect(content.body).not.toMatch(LONE_SURROGATE_PATTERN);
+  });
+
+  it("draft が null なら従来の内容を返す", () => {
+    const content = buildIssueContent(baseReport, null);
+    expect(content.title).toBe("[不具合報告] 通知が表示されない");
+    expect(content.body).toContain(
+      "> この Issue はアプリの不具合報告機能から自動生成されました。",
+    );
   });
 });

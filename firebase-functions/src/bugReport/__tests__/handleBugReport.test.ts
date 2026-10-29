@@ -1,3 +1,4 @@
+/** @jest-environment node */
 import { handleBugReport } from "../handleBugReport";
 import { processBugReport } from "../processBugReport";
 
@@ -29,8 +30,10 @@ const makeDb = (docData: Record<string, unknown> | null) => {
 const makeDeps = () => ({
   repo: "owner/repo",
   token: "fake-token",
+  anthropicApiKey: "none",
   logger: {
     info: jest.fn(),
+    warn: jest.fn(),
     error: jest.fn(),
   },
   claimProcessing: jest.fn().mockResolvedValue(true),
