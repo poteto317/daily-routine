@@ -9,7 +9,6 @@ import texts from "../locales/ja.json";
 type UseBugReportFormOptions = {
   /** 送信処理（テスト差し替え用）。 */
   submit?: (input: {
-    title: string;
     description: string;
     stepsToReproduce: string;
   }) => Promise<string>;
@@ -27,7 +26,6 @@ export const useBugReportForm = ({
 
   const handleSubmit = async () => {
     const validationError = validateBugReportInput({
-      title: input.title,
       description: input.description,
       stepsToReproduce: input.stepsToReproduce,
     });
@@ -41,7 +39,6 @@ export const useBugReportForm = ({
     submitStatus.setErrorMessage("");
     try {
       await submit({
-        title: input.title,
         description: input.description,
         stepsToReproduce: input.stepsToReproduce,
       });
@@ -54,8 +51,6 @@ export const useBugReportForm = ({
   };
 
   return {
-    title: input.title,
-    setTitle: input.setTitle,
     description: input.description,
     setDescription: input.setDescription,
     stepsToReproduce: input.stepsToReproduce,

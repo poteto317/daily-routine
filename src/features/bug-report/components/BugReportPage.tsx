@@ -20,8 +20,6 @@ export const BugReportPage = () => {
             {texts.page.description}
           </p>
           <BugReportForm
-            title={form.title}
-            setTitle={form.setTitle}
             description={form.description}
             setDescription={form.setDescription}
             stepsToReproduce={form.stepsToReproduce}

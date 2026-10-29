@@ -23,7 +23,6 @@ describe("useBugReportForm", () => {
     const { result } = renderHook(() => useBugReportForm({ submit }));
 
     act(() => {
-      result.current.setTitle("件名");
       result.current.setDescription("不具合の内容");
       result.current.setStepsToReproduce("手順");
     });
@@ -33,12 +32,10 @@ describe("useBugReportForm", () => {
     });
 
     expect(submit).toHaveBeenCalledWith({
-      title: "件名",
       description: "不具合の内容",
       stepsToReproduce: "手順",
     });
     expect(result.current.status).toBe("success");
-    expect(result.current.title).toBe("");
     expect(result.current.description).toBe("");
     expect(result.current.stepsToReproduce).toBe("");
   });
@@ -85,24 +82,6 @@ describe("useBugReportForm", () => {
       resolveSubmit("id");
     });
     expect(result.current.status).toBe("success");
-  });
-
-  it("タイトルが101文字以上ならバリデーションエラーになる", async () => {
-    const submit = jest.fn();
-    const { result } = renderHook(() => useBugReportForm({ submit }));
-
-    act(() => {
-      result.current.setTitle("あ".repeat(101));
-      result.current.setDescription("本文");
-    });
-
-    await act(async () => {
-      await result.current.handleSubmit();
-    });
-
-    expect(submit).not.toHaveBeenCalled();
-    expect(result.current.status).toBe("error");
-    expect(result.current.errorMessage).toBe(texts.validation.titleTooLong);
   });
 
   it("説明が2001文字以上ならバリデーションエラーになる", async () => {

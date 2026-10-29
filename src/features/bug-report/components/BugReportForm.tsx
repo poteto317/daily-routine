@@ -3,8 +3,6 @@ import { BugReportFeedback } from "./BugReportFeedback";
 import texts from "../locales/ja.json";
 
 type Props = {
-  title: string;
-  setTitle: (value: string) => void;
   description: string;
   setDescription: (value: string) => void;
   stepsToReproduce: string;
@@ -22,8 +20,6 @@ const inputClassName =
  * フィードバックメッセージは BugReportFeedback に委譲する。
  */
 export const BugReportForm = ({
-  title,
-  setTitle,
   description,
   setDescription,
   stepsToReproduce,
@@ -45,23 +41,6 @@ export const BugReportForm = ({
       onSubmit={onSubmit}
       aria-label={texts.form.formAriaLabel}
     >
-      <div>
-        <label
-          htmlFor="bug-title"
-          className="block text-sm font-medium text-gray-700 dark:text-gray-800 mb-1"
-        >
-          {texts.form.titleLabel}
-        </label>
-        <input
-          id="bug-title"
-          type="text"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          placeholder={texts.form.titlePlaceholder}
-          className={inputClassName}
-        />
-      </div>
-
       <div>
         <label
           htmlFor="bug-description"

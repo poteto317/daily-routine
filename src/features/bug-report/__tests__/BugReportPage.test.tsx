@@ -23,6 +23,9 @@ describe("BugReportPage", () => {
   it("ページのタイトルとフォームを表示する", () => {
     render(<BugReportPage />);
     expect(screen.getByText(texts.page.title)).toBeInTheDocument();
+    expect(
+      screen.queryByRole("textbox", { name: /タイトル/ }),
+    ).not.toBeInTheDocument();
     expect(screen.getByText(texts.page.description)).toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: texts.form.submitLabel }),
@@ -55,7 +58,6 @@ describe("BugReportPage", () => {
 
     await waitFor(() => {
       expect(mockedSubmit).toHaveBeenCalledWith({
-        title: "",
         description: "通知が表示されない",
         stepsToReproduce: "",
       });
@@ -110,9 +112,6 @@ describe("BugReportPage", () => {
     mockedSubmit.mockResolvedValue("report-clear");
     render(<BugReportPage />);
 
-    fireEvent.change(screen.getByLabelText(texts.form.titleLabel), {
-      target: { value: "件名" },
-    });
     fireEvent.change(screen.getByLabelText(texts.form.descriptionLabel), {
       target: { value: "不具合の内容" },
     });
@@ -124,7 +123,6 @@ describe("BugReportPage", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByLabelText(texts.form.titleLabel)).toHaveValue("");
       expect(screen.getByLabelText(texts.form.descriptionLabel)).toHaveValue(
         "",
       );
@@ -132,13 +130,10 @@ describe("BugReportPage", () => {
     });
   });
 
-  it("タイトルと再現手順を入力して送信すると submitBugReport に正しく渡る", async () => {
+  it("内容と再現手順を入力して送信すると submitBugReport に正しく渡る", async () => {
     mockedSubmit.mockResolvedValue("report-2");
     render(<BugReportPage />);
 
-    fireEvent.change(screen.getByLabelText(texts.form.titleLabel), {
-      target: { value: "件名テスト" },
-    });
     fireEvent.change(screen.getByLabelText(texts.form.descriptionLabel), {
       target: { value: "不具合の内容" },
     });
@@ -151,7 +146,6 @@ describe("BugReportPage", () => {
 
     await waitFor(() => {
       expect(mockedSubmit).toHaveBeenCalledWith({
-        title: "件名テスト",
         description: "不具合の内容",
         stepsToReproduce: "1. 操作する",
       });
