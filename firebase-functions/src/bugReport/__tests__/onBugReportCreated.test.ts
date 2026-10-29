@@ -1,5 +1,9 @@
 /** @jest-environment node */
+jest.mock("../handleBugReport", () => ({
+  handleBugReport: jest.fn().mockResolvedValue(undefined),
+}));
 import { onBugReportCreated } from "../onBugReportCreated";
+import { handleBugReport } from "../handleBugReport";
 import { PROCESSING_LOCK_TIMEOUT_MS } from "../constants";
 
 /** onDocumentCreated が返す関数に付く、デプロイ設定（エンドポイント）の一部 */
@@ -30,5 +34,38 @@ describe("onBugReportCreated のトリガー設定", () => {
     expect(keys).toEqual(
       expect.arrayContaining(["GITHUB_TOKEN", "ANTHROPIC_API_KEY"]),
     );
+  });
+
+  describe("Secret とパラメータの受け渡し", () => {
+    const ENV_KEYS = ["ANTHROPIC_API_KEY", "GITHUB_TOKEN", "GITHUB_REPO"];
+    const originalEnv = Object.fromEntries(
+      ENV_KEYS.map((key) => [key, process.env[key]]),
+    );
+
+    afterEach(() => {
+      for (const key of ENV_KEYS) {
+        const value = originalEnv[key];
+        if (value === undefined) delete process.env[key];
+        else process.env[key] = value;
+      }
+      jest.clearAllMocks();
+    });
+
+    it("各 Secret の値を取り違えずに handleBugReport へ渡す", async () => {
+      process.env.ANTHROPIC_API_KEY = "anthropic-key";
+      process.env.GITHUB_TOKEN = "github-token";
+      process.env.GITHUB_REPO = "owner/repo";
+      const fn = onBugReportCreated({
+        collection: () => ({ doc: () => ({}) }),
+      } as never) as unknown as { run(event: unknown): Promise<void> };
+
+      await fn.run({ data: {}, params: { reportId: "r1" } });
+
+      const [reportId, , deps] = (handleBugReport as jest.Mock).mock.calls[0];
+      expect(reportId).toBe("r1");
+      expect(deps.anthropicApiKey).toBe("anthropic-key");
+      expect(deps.token).toBe("github-token");
+      expect(deps.repo).toBe("owner/repo");
+    });
   });
 });
