@@ -182,4 +182,73 @@ describe("TestMatrixPage", () => {
       screen.queryByText("📋 機能テストマトリクス"),
     ).not.toBeInTheDocument();
   });
+
+  describe("サマリー・ツールバー・凡例", () => {
+    it("進捗の割合と ok / ng / 未確認 / 全件を表示し、バーの幅に反映する", () => {
+      localStorage.setItem(
+        "test-matrix-data",
+        JSON.stringify([
+          {
+            id: "auth",
+            items: [
+              { id: "1-1", pc: "ok", sp: "ok", note: "" },
+              { id: "1-2", pc: "unchecked", sp: "unchecked", note: "" },
+            ],
+          },
+        ]),
+      );
+
+      const { container } = render(<TestMatrixPage />);
+
+      expect(screen.getByText("進捗:")).toBeInTheDocument();
+      expect(screen.getByText("50%")).toBeInTheDocument();
+      expect(screen.getByText("✅ 1")).toBeInTheDocument();
+      expect(screen.getByText("❌ 0")).toBeInTheDocument();
+      expect(screen.getByText("⬜ 1")).toBeInTheDocument();
+      expect(screen.getByText("/ 2 項目")).toBeInTheDocument();
+      const bar = container.querySelector(".bg-blue-500") as HTMLElement;
+      expect(bar.style.width).toBe("50%");
+    });
+
+    it("フィルターの変更が表示に届き、select の値が選択中のフィルターになる", () => {
+      localStorage.setItem(
+        "test-matrix-data",
+        JSON.stringify([
+          {
+            id: "auth",
+            items: [
+              { id: "1-1", pc: "ok", sp: "ok", note: "" },
+              { id: "1-2", pc: "unchecked", sp: "unchecked", note: "" },
+            ],
+          },
+        ]),
+      );
+
+      render(<TestMatrixPage />);
+      const select = screen.getByRole("combobox") as HTMLSelectElement;
+      expect(select.value).toBe("all");
+      expect(screen.getByText("ログイン")).toBeInTheDocument();
+
+      fireEvent.change(select, { target: { value: "ng" } });
+
+      expect(select.value).toBe("ng");
+      expect(screen.queryByText("ログイン")).toBeNull();
+
+      fireEvent.change(select, { target: { value: "ok" } });
+
+      expect(select.value).toBe("ok");
+      expect(screen.getByText("ログイン")).toBeInTheDocument();
+      expect(screen.queryByText("新規登録")).toBeNull();
+    });
+
+    it("ステータス凡例の 4 つの文言を表示する", () => {
+      render(<TestMatrixPage />);
+
+      expect(screen.getByText("ステータス:")).toBeInTheDocument();
+      expect(screen.getByText("✅ OK")).toBeInTheDocument();
+      expect(screen.getByText("❌ NG")).toBeInTheDocument();
+      expect(screen.getByText("➖ 対象外")).toBeInTheDocument();
+      expect(screen.getByText("⬜ 未確認")).toBeInTheDocument();
+    });
+  });
 });

@@ -1,7 +1,7 @@
 import type { DetailTestCase } from "./detailedTestCases";
 import testMatrixTexts from "./locales/ja.json";
-import { getTotalCasesLabel, getDeviceTitleText } from "./helpers";
-import { STATUS_DISPLAY } from "./statusHelpers";
+import { DetailCaseRow } from "./DetailCaseRow";
+import { DetailPanelHeader } from "./DetailPanelHeader";
 import type { TestField } from "./types";
 import { useCloseOnEscape } from "@/hooks/useCloseOnEscape";
 
@@ -29,17 +29,6 @@ export const DetailPanel = ({
   onToggleStatus,
   onUpdateNote,
 }: DetailPanelProps) => {
-  const allCases = cases.length;
-  const okCases = cases.filter(
-    (caseItem) => caseItem.pc === "ok" && caseItem.sp === "ok",
-  ).length;
-  const ngCases = cases.filter(
-    (caseItem) => caseItem.pc === "ng" || caseItem.sp === "ng",
-  ).length;
-  const uncheckedCases = cases.filter(
-    (caseItem) => caseItem.pc === "unchecked" || caseItem.sp === "unchecked",
-  ).length;
-
   // aria-modal を宣言している以上、Escape で閉じられる必要がある
   useCloseOnEscape({ isActive: true, onClose });
 
@@ -64,42 +53,13 @@ export const DetailPanel = ({
             animation: slideInRight 0.2s ease-out;
           }
         `}</style>
-        <div className="sticky top-0 z-10 bg-white border-b border-gray-200 px-4 py-3">
-          <div className="flex items-center gap-3 mb-2">
-            <button
-              type="button"
-              onClick={onClose}
-              className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors text-gray-500"
-              title={testMatrixTexts.detailPanel.closeTitle}
-              aria-label={testMatrixTexts.detailPanel.closeTitle}
-            >
-              <span aria-hidden="true">✕</span>
-            </button>
-            <div className="flex-1 min-w-0">
-              <div className="text-xs text-gray-400 font-mono">{itemId}</div>
-              <h2
-                id={DETAIL_PANEL_TITLE_ID}
-                className="text-lg font-bold text-gray-800 truncate"
-              >
-                {itemLabel}
-              </h2>
-            </div>
-          </div>
-          <div className="flex items-center gap-3 text-xs">
-            <span className="px-2 py-0.5 rounded bg-green-100 text-green-700 font-medium">
-              ✅ {okCases}
-            </span>
-            <span className="px-2 py-0.5 rounded bg-red-100 text-red-700 font-medium">
-              ❌ {ngCases}
-            </span>
-            <span className="px-2 py-0.5 rounded bg-gray-100 text-gray-500 font-medium">
-              ⬜ {uncheckedCases}
-            </span>
-            <span className="text-gray-400">
-              {getTotalCasesLabel(allCases)}
-            </span>
-          </div>
-        </div>
+        <DetailPanelHeader
+          itemId={itemId}
+          itemLabel={itemLabel}
+          titleId={DETAIL_PANEL_TITLE_ID}
+          cases={cases}
+          onClose={onClose}
+        />
 
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
@@ -127,55 +87,13 @@ export const DetailPanel = ({
             </thead>
             <tbody>
               {cases.map((caseItem, index) => (
-                <tr
+                <DetailCaseRow
                   key={caseItem.id}
-                  className="border-b border-gray-100 hover:bg-blue-50/30 transition-colors"
-                >
-                  <td className="px-3 py-2 text-gray-400 text-xs font-mono">
-                    {index + 1}
-                  </td>
-                  <td className="px-3 py-2 text-gray-800">
-                    {caseItem.scenario}
-                  </td>
-                  <td className="px-3 py-2 text-gray-600 text-xs">
-                    {caseItem.expected}
-                  </td>
-                  <td className="px-2 py-2 text-center">
-                    <button
-                      onClick={() => onToggleStatus(caseItem.id, "pc")}
-                      className={`inline-flex items-center justify-center w-10 h-8 rounded-md text-lg font-bold transition-all cursor-pointer select-none ${STATUS_DISPLAY[caseItem.pc].color}`}
-                      title={getDeviceTitleText(
-                        testMatrixTexts.detailPanel.deviceHeaders.pc,
-                        STATUS_DISPLAY[caseItem.pc].label,
-                      )}
-                    >
-                      {STATUS_DISPLAY[caseItem.pc].emoji}
-                    </button>
-                  </td>
-                  <td className="px-2 py-2 text-center">
-                    <button
-                      onClick={() => onToggleStatus(caseItem.id, "sp")}
-                      className={`inline-flex items-center justify-center w-10 h-8 rounded-md text-lg font-bold transition-all cursor-pointer select-none ${STATUS_DISPLAY[caseItem.sp].color}`}
-                      title={getDeviceTitleText(
-                        testMatrixTexts.detailPanel.deviceHeaders.sp,
-                        STATUS_DISPLAY[caseItem.sp].label,
-                      )}
-                    >
-                      {STATUS_DISPLAY[caseItem.sp].emoji}
-                    </button>
-                  </td>
-                  <td className="px-3 py-2">
-                    <input
-                      type="text"
-                      value={caseItem.note}
-                      onChange={(event) =>
-                        onUpdateNote(caseItem.id, event.target.value)
-                      }
-                      placeholder={testMatrixTexts.detailPanel.notePlaceholder}
-                      className="w-full px-2 py-1 text-xs border border-gray-200 rounded focus:ring-1 focus:ring-blue-400 focus:border-blue-400 bg-transparent"
-                    />
-                  </td>
-                </tr>
+                  caseItem={caseItem}
+                  index={index}
+                  onToggleStatus={onToggleStatus}
+                  onUpdateNote={onUpdateNote}
+                />
               ))}
             </tbody>
           </table>
