@@ -20,8 +20,8 @@ export const useStorageWriteFailure = () => {
   );
 
   useEffect(() => {
-    const handleFailure = (event: Event) => {
-      const detail = (event as CustomEvent<StorageWriteFailureDetail>).detail;
+    const handleFailure = (event: CustomEvent<StorageWriteFailureDetail>) => {
+      const { detail } = event;
       setFailure((current) => {
         // 同じ失敗が続く間は状態を据え置き、再描画を起こさない。
         // 再描画をきっかけに別の書き込みが失敗すると連鎖が始まるため。

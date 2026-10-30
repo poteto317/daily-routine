@@ -5,139 +5,107 @@ import {
   signOut as firebaseSignOut,
 } from "firebase/auth";
 import { appConfig } from "@/config";
-import {
-  buildLocalAuthUser,
-  isLocalAuthEnabled,
-  readLocalAuthSnapshot,
-  subscribeLocalAuthSnapshot,
-  type LocalAuthSnapshot,
-  writeLocalAuthSnapshot,
-} from "@/features/auth/storage";
 import { getAuthInstance, isFirebaseConfigured } from "@/lib/firebase";
 import { setCurrentUserId } from "@/lib/storage/core";
+import {
+  shouldUseLocalAuth,
+  signInLocalAnonymousUser,
+  signInLocalEmailUser,
+  signInLocalTestUser,
+  signOutLocalUser,
+} from "./localAuthService";
 import texts from "./locales/ja.json";
+
+/*
+ * 認証の窓口。Firebase Auth を使い、Firebase 未設定でローカル認証が有効な
+ * 開発環境ではローカル擬似認証（localAuthService.ts）に切り替える。
+ */
+
+export { getLocalAuthUser, subscribeLocalAuthUser } from "./localAuthService";
 
 const TEST_ACCOUNT = {
   email: appConfig.auth.testAccount.email,
   password: appConfig.auth.testAccount.password,
 };
 
-const createLocalAuthUid = (prefix: string, value?: string) => {
-  if (!value) {
-    return `local-${prefix}`;
-  }
+/** テストアカウントがまだ作られていないとみなす Firebase のエラーコード */
+const TEST_ACCOUNT_MISSING_CODES = new Set([
+  "auth/user-not-found",
+  "auth/invalid-credential",
+]);
 
-  return `local-${prefix}-${value
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")}`;
-};
-
-const signInWithLocalSnapshot = async (snapshot: LocalAuthSnapshot) => {
-  writeLocalAuthSnapshot(snapshot);
-};
-
-export const getLocalAuthUser = () => {
-  const snapshot = readLocalAuthSnapshot();
-  return snapshot ? buildLocalAuthUser(snapshot) : null;
-};
-
-export const subscribeLocalAuthUser = (
-  listener: (user: ReturnType<typeof getLocalAuthUser>) => void,
-): (() => void) => {
-  return subscribeLocalAuthSnapshot((snapshot) => {
-    listener(snapshot ? buildLocalAuthUser(snapshot) : null);
-  });
-};
-
-const assertFirebaseConfigured = (message: string) => {
+/** Firebase が設定済みなら Auth を返し、未設定なら message のエラーを投げる */
+const requireFirebaseAuth = (message: string) => {
   if (!isFirebaseConfigured) throw new Error(message);
+  return getAuthInstance();
 };
+
+const isTestAccountMissingError = (error: unknown): boolean =>
+  !!error &&
+  typeof error === "object" &&
+  "code" in error &&
+  TEST_ACCOUNT_MISSING_CODES.has((error as { code: string }).code);
 
 export const signInWithEmail = async (email: string, password: string) => {
-  if (!isFirebaseConfigured && isLocalAuthEnabled) {
-    await signInWithLocalSnapshot({
-      uid: createLocalAuthUid("user", email),
-      email,
-      isAnonymous: false,
-    });
+  if (shouldUseLocalAuth()) {
+    signInLocalEmailUser(email);
     return;
   }
 
-  assertFirebaseConfigured(texts.authService.firebaseNotConfigured);
-  const auth = getAuthInstance();
+  const auth = requireFirebaseAuth(texts.authService.firebaseNotConfigured);
   await signInWithEmailAndPassword(auth, email, password);
 };
 
 export const signUpWithEmail = async (email: string, password: string) => {
-  if (!isFirebaseConfigured && isLocalAuthEnabled) {
-    await signInWithLocalSnapshot({
-      uid: createLocalAuthUid("user", email),
-      email,
-      isAnonymous: false,
-    });
+  if (shouldUseLocalAuth()) {
+    signInLocalEmailUser(email);
     return;
   }
 
-  assertFirebaseConfigured(texts.authService.firebaseNotConfigured);
-  const auth = getAuthInstance();
+  const auth = requireFirebaseAuth(texts.authService.firebaseNotConfigured);
   await createUserWithEmailAndPassword(auth, email, password);
 };
 
 export const signOutUser = async () => {
-  if (!isFirebaseConfigured && isLocalAuthEnabled) {
-    writeLocalAuthSnapshot(null);
-    setCurrentUserId(null);
+  if (shouldUseLocalAuth()) {
+    signOutLocalUser();
     return;
   }
 
+  // Firebase の設定有無は確かめず、取得できない場合は getAuthInstance のエラーになる
   const auth = getAuthInstance();
   setCurrentUserId(null);
   await firebaseSignOut(auth);
 };
 
 export const signInAnonymousUser = async () => {
-  if (!isFirebaseConfigured && isLocalAuthEnabled) {
-    await signInWithLocalSnapshot({
-      uid: createLocalAuthUid("anonymous"),
-      email: null,
-      isAnonymous: true,
-    });
+  if (shouldUseLocalAuth()) {
+    signInLocalAnonymousUser();
     return;
   }
 
-  assertFirebaseConfigured(texts.authService.cloudNotConfigured);
-  const auth = getAuthInstance();
+  const auth = requireFirebaseAuth(texts.authService.cloudNotConfigured);
   await signInAnonymously(auth);
 };
 
+/**
+ * テストアカウントでログインする。
+ * アカウントがまだ無い（user-not-found / invalid-credential）ときは作成してログインする。
+ */
 export const signInAsTestUser = async () => {
-  if (!isFirebaseConfigured && isLocalAuthEnabled) {
-    await signInWithLocalSnapshot({
-      uid: createLocalAuthUid("test", TEST_ACCOUNT.email),
-      email: TEST_ACCOUNT.email,
-      isAnonymous: false,
-    });
+  if (shouldUseLocalAuth()) {
+    signInLocalTestUser(TEST_ACCOUNT.email);
     return;
   }
 
-  assertFirebaseConfigured(texts.authService.cloudNotConfigured);
+  if (!isFirebaseConfigured) {
+    throw new Error(texts.authService.cloudNotConfigured);
+  }
 
   try {
     await signInWithEmail(TEST_ACCOUNT.email, TEST_ACCOUNT.password);
   } catch (error: unknown) {
-    if (error && typeof error === "object" && "code" in error) {
-      const firebaseError = error as { code: string };
-      if (
-        firebaseError.code === "auth/user-not-found" ||
-        firebaseError.code === "auth/invalid-credential"
-      ) {
-        await signUpWithEmail(TEST_ACCOUNT.email, TEST_ACCOUNT.password);
-        return;
-      }
-    }
-
-    throw error;
+    if (!isTestAccountMissingError(error)) throw error;
+    await signUpWithEmail(TEST_ACCOUNT.email, TEST_ACCOUNT.password);
   }
 };

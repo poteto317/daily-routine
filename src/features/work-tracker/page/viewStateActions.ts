@@ -5,10 +5,25 @@ type InitialWorkTrackerPageStateArgs = {
   templates: WorkTemplate[];
 };
 
+/**
+ * 画面の初期状態。戻り値型として宣言し、selectedMood・selectedTemplate を
+ * as で広げずに検査する（as だと綴り違いの文字列も通ってしまうため）。
+ */
+type InitialWorkTrackerPageState = InitialWorkTrackerPageStateArgs & {
+  isRunning: boolean;
+  elapsedTime: number;
+  showInputForm: boolean;
+  showTemplateDropdown: boolean;
+  workName: string;
+  notes: string;
+  selectedMood: MoodType;
+  selectedTemplate: WorkTemplate | null;
+};
+
 export const createInitialWorkTrackerPageState = ({
   sessions,
   templates,
-}: InitialWorkTrackerPageStateArgs) => {
+}: InitialWorkTrackerPageStateArgs): InitialWorkTrackerPageState => {
   return {
     sessions,
     templates,
@@ -18,8 +33,8 @@ export const createInitialWorkTrackerPageState = ({
     showTemplateDropdown: false,
     workName: "",
     notes: "",
-    selectedMood: "normal" as MoodType,
-    selectedTemplate: null as WorkTemplate | null,
+    selectedMood: "normal",
+    selectedTemplate: null,
   };
 };
 
