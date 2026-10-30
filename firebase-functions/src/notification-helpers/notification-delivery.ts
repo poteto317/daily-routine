@@ -1,5 +1,6 @@
 import * as logger from "firebase-functions/logger";
 import * as admin from "firebase-admin";
+import { abbreviateTokenForLog } from "../token-log";
 import { type Routine } from "../types";
 import { createNotificationId } from "./notification-id";
 import {
@@ -8,6 +9,11 @@ import {
 } from "./notification-history";
 import { buildRoutineNotificationMessage } from "./notification-message";
 
+/**
+ * ルーティンの通知を 1 件送信する。
+ * 同じ日に送信済みなら送らない。送信に成功したら送信履歴を記録して true を返す。
+ * 送信・記録の失敗はログに残して false を返す（送信済み確認の失敗は呼び出し元へ伝わる）。
+ */
 export const sendRoutineNotification = async (
   fcmToken: string,
   routine: Routine,
@@ -29,7 +35,7 @@ export const sendRoutineNotification = async (
     await recordSentNotification(db, notificationId, routine);
 
     logger.info(
-      `Sent notification: ${routine.title} to token: ${fcmToken.substring(0, 20)}...`,
+      `Sent notification: ${routine.title} to token: ${abbreviateTokenForLog(fcmToken)}`,
     );
     return true;
   } catch (error) {

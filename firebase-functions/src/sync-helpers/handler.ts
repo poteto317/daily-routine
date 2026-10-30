@@ -15,7 +15,12 @@ import {
   sendSyncSuccess,
 } from "./response";
 import { saveUserData } from "./storage";
+import { abbreviateTokenForLog } from "../token-log";
 
+/**
+ * POST /syncRoutines の処理本体。
+ * CORS → メソッド確認 → ボディ検証 → users/{FCM トークン} への保存、の順に処理する。
+ */
 export const handleSyncRoutinesRequest = async (
   req: Request,
   res: Response,
@@ -45,7 +50,7 @@ export const handleSyncRoutinesRequest = async (
     await saveUserData(db, token, routines);
 
     logger.info(
-      `Synced ${routines.length} routines for token: ${token.substring(0, 20)}...`,
+      `Synced ${routines.length} routines for token: ${abbreviateTokenForLog(token)}`,
     );
 
     sendSyncSuccess(res, routines.length);

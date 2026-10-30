@@ -1,4 +1,5 @@
 import type * as admin from "firebase-admin";
+import { USERS_COLLECTION } from "../constants";
 import { resolveUidByApiKey } from "./apiKeyLookup";
 import type { HandlerDeps } from "./handlerDeps";
 import type { SyncDocData } from "./syncDoc";
@@ -11,7 +12,7 @@ export const createFirestoreHandlerDeps = (
 ): HandlerDeps => ({
   resolveUid: (key) => resolveUidByApiKey(db, key),
   readData: async (uid) => {
-    const snapshot = await db.collection("users").doc(uid).get();
+    const snapshot = await db.collection(USERS_COLLECTION).doc(uid).get();
     return snapshot.exists ? (snapshot.data() as SyncDocData) : null;
   },
   runWrite: (uid, build) => applyChanges(db, uid, build, writeDeps),

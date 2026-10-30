@@ -1,4 +1,5 @@
 import * as admin from "firebase-admin";
+import { USERS_COLLECTION } from "../constants";
 
 /**
  * FCMトークンとルーティン一覧をユーザードキュメントに保存する
@@ -9,7 +10,7 @@ export const saveUserData = async (
   fcmToken: string,
   routines: unknown[],
 ): Promise<void> => {
-  await db.collection("users").doc(fcmToken).set({
+  await db.collection(USERS_COLLECTION).doc(fcmToken).set({
     fcmToken,
     routines,
     updatedAt: admin.firestore.FieldValue.serverTimestamp(),

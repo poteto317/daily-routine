@@ -1,4 +1,5 @@
 import type * as admin from "firebase-admin";
+import { NOTIFICATIONS_SENT_COLLECTION } from "../constants";
 
 /**
  * 閾値日付より古い通知履歴を Firestore から一括削除する
@@ -8,7 +9,7 @@ export const deleteOldNotifications = async (
   thresholdDate: Date,
 ): Promise<number> => {
   const snapshot = await db
-    .collection("notifications_sent")
+    .collection(NOTIFICATIONS_SENT_COLLECTION)
     .where("sentAt", "<", thresholdDate)
     .get();
 

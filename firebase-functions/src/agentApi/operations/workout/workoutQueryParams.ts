@@ -1,17 +1,18 @@
 import { ApiError } from "../../errors";
+import { isOneOf } from "../../validation/enumField";
 import { WORKOUT_LABELS, type WorkoutLabel } from "./workoutTypes";
 
 export const parseWorkoutLabelQuery = (
   value: string | undefined,
 ): WorkoutLabel | undefined => {
   if (value === undefined) return undefined;
-  if (!(WORKOUT_LABELS as readonly string[]).includes(value))
+  if (!isOneOf(WORKOUT_LABELS, value))
     throw new ApiError(
       400,
       "invalid_query",
       "label は strength または running を指定してください",
     );
-  return value as WorkoutLabel;
+  return value;
 };
 export const parseExerciseIdQuery = (
   value: string | undefined,
