@@ -2,16 +2,24 @@ import { ApiError } from "../errors";
 
 export type JsonObject = Record<string, unknown>;
 
+/**
+ * value が JSON オブジェクト（配列・null 以外のオブジェクト）なら true。
+ * true のとき value を JsonObject に絞り込む。各フィールドは unknown のままなので、
+ * 中身は読み取る側で検査する。
+ */
+export const isJsonObject = (value: unknown): value is JsonObject =>
+  typeof value === "object" && value !== null && !Array.isArray(value);
+
 /** リクエストボディが JSON オブジェクト（配列・null 以外）であることを保証する */
 export const asJsonObject = (value: unknown): JsonObject => {
-  if (typeof value !== "object" || value === null || Array.isArray(value)) {
+  if (!isJsonObject(value)) {
     throw new ApiError(
       400,
       "invalid_body",
       "リクエストボディは JSON オブジェクトで指定してください",
     );
   }
-  return value as JsonObject;
+  return value;
 };
 
 /** 許可されていないキーが含まれていれば 400 unknown_field にする */

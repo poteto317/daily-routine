@@ -1,4 +1,5 @@
 import type * as admin from "firebase-admin";
+import { USERS_COLLECTION } from "../constants";
 import { type NotificationContext } from "../date-utils";
 import { processUserNotifications } from "./process-user-notifications";
 
@@ -9,7 +10,7 @@ export const processAllUsersNotifications = async (
   db: admin.firestore.Firestore,
   context: NotificationContext,
 ): Promise<void> => {
-  const usersSnapshot = await db.collection("users").get();
+  const usersSnapshot = await db.collection(USERS_COLLECTION).get();
 
   for (const userDoc of usersSnapshot.docs) {
     await processUserNotifications({

@@ -1,4 +1,5 @@
 import type * as admin from "firebase-admin";
+import { USERS_COLLECTION } from "../constants";
 import { noSyncData, outdatedSyncData } from "./errors";
 import { nextLastModified } from "./lastModified";
 import { saveApiSnapshot } from "./snapshotWriter";
@@ -21,7 +22,7 @@ export const applyChanges = <T extends { changes?: SyncDocData }>(
   deps: WriteDeps,
 ): Promise<T> =>
   db.runTransaction(async (transaction) => {
-    const userRef = db.collection("users").doc(uid);
+    const userRef = db.collection(USERS_COLLECTION).doc(uid);
     const snapshotsRef = userRef.collection("syncSnapshots");
 
     // Firestore トランザクションは読み取りを書き込みより先に済ませる必要がある

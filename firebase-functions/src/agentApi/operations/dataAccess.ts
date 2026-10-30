@@ -1,4 +1,5 @@
 import type { SyncDocData } from "../syncDoc";
+import { isJsonObject } from "../validation/body";
 
 export const readArray = <T>(data: SyncDocData, field: string): T[] => {
   const value = data[field];
@@ -10,7 +11,5 @@ export const readObject = (
   field: string,
 ): Record<string, unknown> => {
   const value = data[field];
-  return typeof value === "object" && value !== null && !Array.isArray(value)
-    ? (value as Record<string, unknown>)
-    : {};
+  return isJsonObject(value) ? value : {};
 };
