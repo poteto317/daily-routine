@@ -36,9 +36,13 @@ describe("PomodoroPage", () => {
       screen.getByText(POMODORO_PAGE_TEXT.todayCompletedLabel),
     ).toBeInTheDocument();
     expect(screen.getByText("3")).toBeInTheDocument();
-    expect(screen.getByText(POMODORO_PAGE_TEXT.focusTimeLabel)).toBeInTheDocument();
+    expect(
+      screen.getByText(POMODORO_PAGE_TEXT.focusTimeLabel),
+    ).toBeInTheDocument();
     expect(screen.getByText("25")).toBeInTheDocument();
-    expect(screen.getByText(POMODORO_PAGE_TEXT.breakTimeLabel)).toBeInTheDocument();
+    expect(
+      screen.getByText(POMODORO_PAGE_TEXT.breakTimeLabel),
+    ).toBeInTheDocument();
     expect(screen.getByText("5")).toBeInTheDocument();
     expect(screen.getByText(POMODORO_PAGE_TEXT.hint)).toBeInTheDocument();
   });

@@ -12,12 +12,14 @@ import { type WorkTemplate } from "@/types/routine";
 jest.mock("../storageData");
 jest.mock("@/lib/storage/core");
 
-const mockGetWorkTemplates = storageData.getWorkTemplates as jest.MockedFunction<
-  typeof storageData.getWorkTemplates
->;
-const mockSaveWorkTemplates = storageData.saveWorkTemplates as jest.MockedFunction<
-  typeof storageData.saveWorkTemplates
->;
+const mockGetWorkTemplates =
+  storageData.getWorkTemplates as jest.MockedFunction<
+    typeof storageData.getWorkTemplates
+  >;
+const mockSaveWorkTemplates =
+  storageData.saveWorkTemplates as jest.MockedFunction<
+    typeof storageData.saveWorkTemplates
+  >;
 const mockGenerateId = coreStorage.generateId as jest.MockedFunction<
   typeof coreStorage.generateId
 >;

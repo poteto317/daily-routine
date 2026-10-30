@@ -21,7 +21,9 @@ describe("HeaderMenuFooter", () => {
 
     expect(screen.queryByText("👤")).not.toBeInTheDocument();
     expect(
-      screen.getByRole("menuitem", { name: new RegExp(uiTextConfig.auth.logout.button) }),
+      screen.getByRole("menuitem", {
+        name: new RegExp(uiTextConfig.auth.logout.button),
+      }),
     ).toBeInTheDocument();
   });
 
@@ -33,7 +35,9 @@ describe("HeaderMenuFooter", () => {
 
     render(<HeaderMenuFooter {...defaultProps} user={anonymousUser} />);
 
-    expect(screen.getByText(uiTextConfig.auth.anonymousUserFull)).toBeInTheDocument();
+    expect(
+      screen.getByText(uiTextConfig.auth.anonymousUserFull),
+    ).toBeInTheDocument();
   });
 
   it("メールアドレスを持つユーザーの場合はメールアドレスを表示する", () => {

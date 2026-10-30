@@ -6,9 +6,10 @@ import * as storageData from "../storageData";
 
 jest.mock("../storageData");
 
-const mockGetWeightHistory = storageData.getWeightHistory as jest.MockedFunction<
-  typeof storageData.getWeightHistory
->;
+const mockGetWeightHistory =
+  storageData.getWeightHistory as jest.MockedFunction<
+    typeof storageData.getWeightHistory
+  >;
 
 describe("weight-tracker storageQueries", () => {
   beforeEach(() => {

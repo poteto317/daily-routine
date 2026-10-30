@@ -31,6 +31,8 @@ describe("WeightTrackerPage", () => {
   it("ページタイトル、今日のカード、履歴リストをレンダリングする", () => {
     render(<WeightTrackerPage />);
 
-    expect(screen.getByText(WEIGHT_TRACKER_PAGE_TEXT.title)).toBeInTheDocument();
+    expect(
+      screen.getByText(WEIGHT_TRACKER_PAGE_TEXT.title),
+    ).toBeInTheDocument();
   });
 });

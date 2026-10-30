@@ -7,9 +7,10 @@ import { type JournalEntry } from "@/types/routine";
 
 jest.mock("../storageData");
 
-const mockGetJournalHistory = storageData.getJournalHistory as jest.MockedFunction<
-  typeof storageData.getJournalHistory
->;
+const mockGetJournalHistory =
+  storageData.getJournalHistory as jest.MockedFunction<
+    typeof storageData.getJournalHistory
+  >;
 
 describe("journal storageQueries", () => {
   beforeEach(() => {

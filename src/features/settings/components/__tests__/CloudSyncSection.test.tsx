@@ -97,7 +97,9 @@ describe("CloudSyncSection", () => {
 
     render(<CloudSyncSection {...defaultProps} syncStatus={complexStatus} />);
 
-    expect(screen.getByText(new RegExp(texts.cloudSync.lastSyncPrefix))).toBeInTheDocument();
+    expect(
+      screen.getByText(new RegExp(texts.cloudSync.lastSyncPrefix)),
+    ).toBeInTheDocument();
     expect(
       screen.getByText(texts.cloudSync.remoteChangesMessage),
     ).toBeInTheDocument();

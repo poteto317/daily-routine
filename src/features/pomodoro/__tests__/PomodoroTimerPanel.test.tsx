@@ -27,15 +27,17 @@ describe("PomodoroTimerPanel", () => {
     ).toBeInTheDocument();
     expect(screen.getByText("15:00")).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: POMODORO_TIMER_PANEL_TEXT.startLabel }),
+      screen.getByRole("button", {
+        name: POMODORO_TIMER_PANEL_TEXT.startLabel,
+      }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: POMODORO_TIMER_PANEL_TEXT.resetLabel }),
+      screen.getByRole("button", {
+        name: POMODORO_TIMER_PANEL_TEXT.resetLabel,
+      }),
     ).toBeInTheDocument();
 
-    const progressBar = container.querySelector(
-      'div[style*="width: 40%"]',
-    );
+    const progressBar = container.querySelector('div[style*="width: 40%"]');
     expect(progressBar).toBeInTheDocument();
   });
 
@@ -43,7 +45,9 @@ describe("PomodoroTimerPanel", () => {
     render(<PomodoroTimerPanel {...defaultProps} isRunning={false} />);
 
     fireEvent.click(
-      screen.getByRole("button", { name: POMODORO_TIMER_PANEL_TEXT.startLabel }),
+      screen.getByRole("button", {
+        name: POMODORO_TIMER_PANEL_TEXT.startLabel,
+      }),
     );
     expect(defaultProps.onStart).toHaveBeenCalledTimes(1);
     expect(defaultProps.onPause).not.toHaveBeenCalled();
@@ -53,7 +57,9 @@ describe("PomodoroTimerPanel", () => {
     render(<PomodoroTimerPanel {...defaultProps} isRunning={true} />);
 
     fireEvent.click(
-      screen.getByRole("button", { name: POMODORO_TIMER_PANEL_TEXT.pauseLabel }),
+      screen.getByRole("button", {
+        name: POMODORO_TIMER_PANEL_TEXT.pauseLabel,
+      }),
     );
     expect(defaultProps.onPause).toHaveBeenCalledTimes(1);
     expect(defaultProps.onStart).not.toHaveBeenCalled();
@@ -63,18 +69,15 @@ describe("PomodoroTimerPanel", () => {
     render(<PomodoroTimerPanel {...defaultProps} />);
 
     fireEvent.click(
-      screen.getByRole("button", { name: POMODORO_TIMER_PANEL_TEXT.resetLabel }),
+      screen.getByRole("button", {
+        name: POMODORO_TIMER_PANEL_TEXT.resetLabel,
+      }),
     );
     expect(defaultProps.onReset).toHaveBeenCalledTimes(1);
   });
 
   it("showSkipToBreakがtrueの場合、スキップボタンが表示されクリックするとonSkipToBreakが呼ばれる", () => {
-    render(
-      <PomodoroTimerPanel
-        {...defaultProps}
-        showSkipToBreak={true}
-      />,
-    );
+    render(<PomodoroTimerPanel {...defaultProps} showSkipToBreak={true} />);
 
     const skipButton = screen.getByRole("button", {
       name: POMODORO_TIMER_PANEL_TEXT.skipBreakLabel,
@@ -86,12 +89,7 @@ describe("PomodoroTimerPanel", () => {
   });
 
   it("showSkipToBreakがfalseの場合、スキップボタンは表示されない", () => {
-    render(
-      <PomodoroTimerPanel
-        {...defaultProps}
-        showSkipToBreak={false}
-      />,
-    );
+    render(<PomodoroTimerPanel {...defaultProps} showSkipToBreak={false} />);
 
     expect(
       screen.queryByRole("button", {

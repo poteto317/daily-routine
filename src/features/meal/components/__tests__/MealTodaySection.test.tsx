@@ -47,7 +47,9 @@ describe("MealTodaySection", () => {
   it("食事一覧を時間順でレンダリングする", () => {
     render(<MealTodaySection {...defaultProps} />);
 
-    expect(screen.getByText(new RegExp(MEAL_TODAY_TITLE_LABEL))).toBeInTheDocument();
+    expect(
+      screen.getByText(new RegExp(MEAL_TODAY_TITLE_LABEL)),
+    ).toBeInTheDocument();
     expect(screen.getByText("トーストとコーヒー")).toBeInTheDocument();
     expect(screen.getByText(/ブラックコーヒー/)).toBeInTheDocument();
     expect(screen.getByText("ラーメン")).toBeInTheDocument();
@@ -59,9 +61,7 @@ describe("MealTodaySection", () => {
   it("追加ボタンをクリックするとonOpenFormが呼ばれる", () => {
     render(<MealTodaySection {...defaultProps} />);
 
-    fireEvent.click(
-      screen.getByRole("button", { name: MEAL_TODAY_ADD_LABEL }),
-    );
+    fireEvent.click(screen.getByRole("button", { name: MEAL_TODAY_ADD_LABEL }));
     expect(defaultProps.onOpenForm).toHaveBeenCalledTimes(1);
   });
 
