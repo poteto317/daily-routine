@@ -1,7 +1,7 @@
 import { useBudgetCategoryManagementFormState } from "./useBudgetCategoryManagementFormState";
-import { useBudgetCategoryManagementFormFocus } from "./useBudgetCategoryManagementFormFocus";
+import { useFormOpenAutoFocus } from "@/hooks/useFormOpenAutoFocus";
 import { useBudgetCategoryManagementDataState } from "./useBudgetCategoryManagementDataState";
-import { useBudgetCategoryManagementNameEditing } from "./useBudgetCategoryManagementNameEditing";
+import { useCategoryNameEditing } from "@/hooks/useCategoryNameEditing";
 
 export const useBudgetCategoryManagementPageState = () => {
   const { inputRef, nameInput, showForm, setNameInput, openForm, closeForm } =
@@ -17,9 +17,9 @@ export const useBudgetCategoryManagementPageState = () => {
     startEditCategoryName,
     commitEditCategoryName,
     cancelEditCategoryName,
-  } = useBudgetCategoryManagementNameEditing({ handleRename });
+  } = useCategoryNameEditing({ handleRename });
 
-  useBudgetCategoryManagementFormFocus({ inputRef, showForm });
+  useFormOpenAutoFocus({ inputRef, showForm });
 
   return {
     categories,

@@ -1,7 +1,7 @@
 import { useBudgetIncomeItemManagementFormState } from "./useBudgetIncomeItemManagementFormState";
-import { useBudgetIncomeItemManagementFormFocus } from "./useBudgetIncomeItemManagementFormFocus";
+import { useFormOpenAutoFocus } from "@/hooks/useFormOpenAutoFocus";
 import { useBudgetIncomeItemManagementDataState } from "./useBudgetIncomeItemManagementDataState";
-import { useBudgetIncomeItemEditState } from "./useBudgetIncomeItemEditState";
+import { useBudgetItemEditState } from "./useBudgetItemEditState";
 import { parsePositiveAmount } from "./budgetPageStateHelpers";
 import { normalizeCategoryName } from "./budgetCategoryNameNormalization";
 
@@ -32,7 +32,7 @@ export const useBudgetIncomeItemManagementPageState = () => {
     setEditingItemAmount,
     startEditItem,
     cancelEditItem,
-  } = useBudgetIncomeItemEditState();
+  } = useBudgetItemEditState();
 
   const commitEditItem = () => {
     if (!editingItemId) return;
@@ -48,7 +48,7 @@ export const useBudgetIncomeItemManagementPageState = () => {
     cancelEditItem();
   };
 
-  useBudgetIncomeItemManagementFormFocus({ inputRef, showForm });
+  useFormOpenAutoFocus({ inputRef, showForm });
 
   return {
     items,

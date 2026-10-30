@@ -1,25 +1,7 @@
 import { useCallback, useState } from "react";
-import {
-  KeyboardSensor,
-  PointerSensor,
-  TouchSensor,
-  useSensor,
-  useSensors,
-  type DragEndEvent,
-  type DragStartEvent,
-} from "@dnd-kit/core";
-import { sortableKeyboardCoordinates } from "@dnd-kit/sortable";
+import type { DragEndEvent, DragStartEvent } from "@dnd-kit/core";
 import type { TodoCategory } from "./types";
-
-// useTodoListDragAndDrop.ts と同じ理由で、センサーoptionsはモジュール
-// スコープの定数として固定する（参照の安定性を保ちメモ化を効かせるため）。
-const POINTER_SENSOR_OPTIONS = { activationConstraint: { distance: 8 } };
-const TOUCH_SENSOR_OPTIONS = {
-  activationConstraint: { delay: 300, tolerance: 5 },
-};
-const KEYBOARD_SENSOR_OPTIONS = {
-  coordinateGetter: sortableKeyboardCoordinates,
-};
+import { useTodoDndSensors } from "./useTodoDndSensors";
 
 type UseTodoCategoryDragAndDropParams = {
   categories: TodoCategory[];
@@ -38,11 +20,7 @@ export const useTodoCategoryDragAndDrop = ({
 }: UseTodoCategoryDragAndDropParams) => {
   const [activeId, setActiveId] = useState<string | null>(null);
 
-  const sensors = useSensors(
-    useSensor(PointerSensor, POINTER_SENSOR_OPTIONS),
-    useSensor(TouchSensor, TOUCH_SENSOR_OPTIONS),
-    useSensor(KeyboardSensor, KEYBOARD_SENSOR_OPTIONS),
-  );
+  const sensors = useTodoDndSensors();
 
   const handleDragStart = useCallback((event: DragStartEvent) => {
     setActiveId(String(event.active.id));

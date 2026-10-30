@@ -1,7 +1,7 @@
 import { useTodoCategoryManagementFormState } from "./useTodoCategoryManagementFormState";
-import { useTodoCategoryManagementFormFocus } from "./useTodoCategoryManagementFormFocus";
+import { useFormOpenAutoFocus } from "@/hooks/useFormOpenAutoFocus";
 import { useTodoCategoryManagementDataState } from "./useTodoCategoryManagementDataState";
-import { useTodoCategoryManagementNameEditing } from "./useTodoCategoryManagementNameEditing";
+import { useCategoryNameEditing } from "@/hooks/useCategoryNameEditing";
 import { useTodoCategoryDragAndDrop } from "./useTodoCategoryDragAndDrop";
 import { useColorPickerController } from "./useColorPickerController";
 
@@ -38,7 +38,7 @@ export const useTodoCategoryManagementPageState = () => {
     startEditCategoryName,
     commitEditCategoryName,
     cancelEditCategoryName,
-  } = useTodoCategoryManagementNameEditing({ handleRename });
+  } = useCategoryNameEditing({ handleRename });
 
   // 各カテゴリ行の色編集ポップオーバーの開閉状態管理は、Todo詳細画面の
   // アイテム色ピッカーと同じ useColorPickerController を再利用する
@@ -50,7 +50,7 @@ export const useTodoCategoryManagementPageState = () => {
     closeItemColorPicker: closeCategoryColorPicker,
   } = useColorPickerController();
 
-  useTodoCategoryManagementFormFocus({ inputRef, showForm });
+  useFormOpenAutoFocus({ inputRef, showForm });
 
   return {
     categories,

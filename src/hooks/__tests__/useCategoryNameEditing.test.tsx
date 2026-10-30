@@ -1,11 +1,11 @@
 import { act, renderHook } from "@testing-library/react";
-import { useTodoCategoryManagementNameEditing } from "../useTodoCategoryManagementNameEditing";
+import { useCategoryNameEditing } from "../useCategoryNameEditing";
 
-describe("useTodoCategoryManagementNameEditing", () => {
+describe("useCategoryNameEditing", () => {
   it("初期状態では編集中のカテゴリがない", () => {
     const handleRename = jest.fn();
     const { result } = renderHook(() =>
-      useTodoCategoryManagementNameEditing({ handleRename }),
+      useCategoryNameEditing({ handleRename }),
     );
 
     expect(result.current.editingCategoryId).toBeNull();
@@ -15,44 +15,44 @@ describe("useTodoCategoryManagementNameEditing", () => {
   it("startEditCategoryNameで編集状態になる", () => {
     const handleRename = jest.fn();
     const { result } = renderHook(() =>
-      useTodoCategoryManagementNameEditing({ handleRename }),
+      useCategoryNameEditing({ handleRename }),
     );
 
     act(() => {
-      result.current.startEditCategoryName("cat-1", "仕事");
+      result.current.startEditCategoryName("cat-1", "食料品");
     });
 
     expect(result.current.editingCategoryId).toBe("cat-1");
-    expect(result.current.editingCategoryNameValue).toBe("仕事");
+    expect(result.current.editingCategoryNameValue).toBe("食料品");
   });
 
   it("commitEditCategoryNameでhandleRenameを呼び編集状態を終える", () => {
     const handleRename = jest.fn();
     const { result } = renderHook(() =>
-      useTodoCategoryManagementNameEditing({ handleRename }),
+      useCategoryNameEditing({ handleRename }),
     );
 
     act(() => {
-      result.current.startEditCategoryName("cat-1", "仕事");
-      result.current.setEditingCategoryNameValue("業務");
+      result.current.startEditCategoryName("cat-1", "食料品");
+      result.current.setEditingCategoryNameValue("食費");
     });
 
     act(() => {
       result.current.commitEditCategoryName();
     });
 
-    expect(handleRename).toHaveBeenCalledWith("cat-1", "業務");
+    expect(handleRename).toHaveBeenCalledWith("cat-1", "食費");
     expect(result.current.editingCategoryId).toBeNull();
   });
 
   it("cancelEditCategoryNameではhandleRenameを呼ばず編集状態を終える", () => {
     const handleRename = jest.fn();
     const { result } = renderHook(() =>
-      useTodoCategoryManagementNameEditing({ handleRename }),
+      useCategoryNameEditing({ handleRename }),
     );
 
     act(() => {
-      result.current.startEditCategoryName("cat-1", "仕事");
+      result.current.startEditCategoryName("cat-1", "食料品");
     });
 
     act(() => {
@@ -66,7 +66,7 @@ describe("useTodoCategoryManagementNameEditing", () => {
   it("編集中でない状態でcommitしてもhandleRenameを呼ばない", () => {
     const handleRename = jest.fn();
     const { result } = renderHook(() =>
-      useTodoCategoryManagementNameEditing({ handleRename }),
+      useCategoryNameEditing({ handleRename }),
     );
 
     act(() => {
