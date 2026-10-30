@@ -1,145 +1,44 @@
-import type { Routine } from "@/types/routine";
-
 import {
-  migrateMultiDayRoutinesWithGroup,
+  groupRoutinesByGroupId,
   repairCorruptedGroupRoutines,
 } from "../routineGroupRepairModel";
-
-const FIXED_NOW = "2026-04-13T00:31:00.000Z";
-const CREATED_AT = "2026-02-13T00:00:00.000Z";
-
-type Uuid = `${string}-${string}-${string}-${string}-${string}`;
-
-const makeRoutine = (overrides: Partial<Routine>): Routine => ({
-  id: "r",
-  title: "朝活",
-  startTime: "08:00",
-  duration: 30,
-  category: "health",
-  daysOfWeek: [1],
-  isCompleted: false,
-  sortOrder: 0,
-  createdAt: CREATED_AT,
-  updatedAt: CREATED_AT,
-  ...overrides,
-});
-
-/** 結果のうち検証したい項目だけを取り出す */
-const pick = <K extends keyof Routine>(routines: Routine[], keys: K[]) =>
-  routines.map((routine) =>
-    Object.fromEntries(keys.map((key) => [key, routine[key]])),
-  );
+import {
+  CREATED_AT,
+  FIXED_NOW,
+  makeRoutine,
+  pick,
+  setupFixedClockAndSequentialUuid,
+} from "./routineGroup.test-utils";
 
 describe("routineGroupRepairModel", () => {
-  let randomUuidSpy: jest.SpyInstance;
-  let uuidCounter: number;
+  const { randomUuidSpy } = setupFixedClockAndSequentialUuid();
 
-  beforeEach(() => {
-    jest.useFakeTimers().setSystemTime(new Date(FIXED_NOW));
-    uuidCounter = 0;
-    randomUuidSpy = jest
-      .spyOn(crypto, "randomUUID")
-      .mockImplementation(() => `generated-${++uuidCounter}` as Uuid);
-  });
+  describe("groupRoutinesByGroupId", () => {
+    it("groupId ごとに最初に現れた順でまとめ、groupId が無い（空文字を含む）ものは別に分ける", () => {
+      const a1 = makeRoutine({ id: "a1", groupId: "a" });
+      const b1 = makeRoutine({ id: "b1", groupId: "b" });
+      const a2 = makeRoutine({ id: "a2", groupId: "a" });
+      const free = makeRoutine({ id: "free" });
+      const emptyGroup = makeRoutine({ id: "empty", groupId: "" });
 
-  afterEach(() => {
-    randomUuidSpy.mockRestore();
-    jest.useRealTimers();
-  });
-
-  describe("migrateMultiDayRoutinesWithGroup", () => {
-    it("空配列は空配列を返す", () => {
-      expect(migrateMultiDayRoutinesWithGroup([])).toEqual([]);
-    });
-
-    it("単一曜日のルーティンは groupId を自身の id で補い、他の値は変えない", () => {
-      const routine = makeRoutine({
-        id: "single",
-        isCompleted: true,
-        sortOrder: 4,
-      });
-
-      expect(migrateMultiDayRoutinesWithGroup([routine])).toEqual([
-        { ...routine, groupId: "single" },
-      ]);
-      expect(randomUuidSpy).not.toHaveBeenCalled();
-    });
-
-    it("曜日が空のルーティンも分割せず groupId だけ補う", () => {
-      const routine = makeRoutine({ id: "empty", daysOfWeek: [] });
-
-      expect(migrateMultiDayRoutinesWithGroup([routine])).toEqual([
-        { ...routine, groupId: "empty" },
-      ]);
-    });
-
-    it("既存の groupId があればそれを使う", () => {
-      const routine = makeRoutine({ id: "single", groupId: "g-existing" });
-
-      expect(migrateMultiDayRoutinesWithGroup([routine])[0]?.groupId).toBe(
-        "g-existing",
-      );
-    });
-
-    it("複数曜日は曜日ごとに分割し、2 件目以降は新しい id と全体の最大値に続く sortOrder を持つ", () => {
-      const routines = [
-        makeRoutine({
-          id: "multi",
-          daysOfWeek: [1, 3, 5],
-          sortOrder: 2,
-          isCompleted: true,
-        }),
-        makeRoutine({ id: "other", daysOfWeek: [2], sortOrder: 7 }),
-      ];
-
-      const migrated = migrateMultiDayRoutinesWithGroup(routines);
-
-      expect(
-        pick(migrated, [
-          "id",
-          "groupId",
-          "daysOfWeek",
-          "sortOrder",
-          "isCompleted",
-        ]),
-      ).toEqual([
-        {
-          id: "multi",
-          groupId: "multi",
-          daysOfWeek: [1],
-          sortOrder: 2,
-          isCompleted: false,
-        },
-        {
-          id: "generated-1",
-          groupId: "multi",
-          daysOfWeek: [3],
-          sortOrder: 8,
-          isCompleted: false,
-        },
-        {
-          id: "generated-2",
-          groupId: "multi",
-          daysOfWeek: [5],
-          sortOrder: 9,
-          isCompleted: false,
-        },
-        {
-          id: "other",
-          groupId: "other",
-          daysOfWeek: [2],
-          sortOrder: 7,
-          isCompleted: false,
-        },
-      ]);
-    });
-
-    it("sortOrder が負でも採番は 0 を下限にする", () => {
-      const migrated = migrateMultiDayRoutinesWithGroup([
-        makeRoutine({ id: "m", daysOfWeek: [1, 2], sortOrder: -5 }),
+      const { groups, nonGrouped } = groupRoutinesByGroupId([
+        a1,
+        free,
+        b1,
+        a2,
+        emptyGroup,
       ]);
 
-      expect(migrated.map((routine) => routine.sortOrder)).toEqual([-5, 1]);
+      expect([...groups.keys()]).toEqual(["a", "b"]);
+      expect(groups.get("a")).toEqual([a1, a2]);
+      expect(groups.get("b")).toEqual([b1]);
+      expect(nonGrouped).toEqual([free, emptyGroup]);
+    });
+
+    it("空配列なら空の結果を返す", () => {
+      const { groups, nonGrouped } = groupRoutinesByGroupId([]);
+      expect(groups.size).toBe(0);
+      expect(nonGrouped).toEqual([]);
     });
   });
 
@@ -260,7 +159,7 @@ describe("routineGroupRepairModel", () => {
           updatedAt: FIXED_NOW,
         },
       ]);
-      expect(randomUuidSpy).not.toHaveBeenCalled();
+      expect(randomUuidSpy()).not.toHaveBeenCalled();
     });
 
     it("再利用する複数曜日メンバーは今日の完了済みを優先し、次に sortOrder の小さい順で選ぶ", () => {
@@ -333,6 +232,144 @@ describe("routineGroupRepairModel", () => {
         { id: "y", groupId: "gy", daysOfWeek: [0], sortOrder: 0 },
         { id: "generated-1", groupId: "gy", daysOfWeek: [6], sortOrder: 1 },
         { id: "x", groupId: "gx", daysOfWeek: [6], sortOrder: 2 },
+      ]);
+    });
+
+    it("全メンバーが同じ複数曜日を持つグループは、曜日ごとに 1 件へ正規化し groupId を保つ", () => {
+      const routines = [
+        makeRoutine({ id: "r1", groupId: "g1", daysOfWeek: [1, 3, 5] }),
+        makeRoutine({ id: "r2", groupId: "g1", daysOfWeek: [1, 3, 5] }),
+        makeRoutine({ id: "r3", groupId: "g1", daysOfWeek: [1, 3, 5] }),
+      ];
+
+      const repaired = repairCorruptedGroupRoutines(routines);
+
+      expect(pick(repaired, ["id", "groupId", "daysOfWeek"])).toEqual([
+        { id: "r1", groupId: "g1", daysOfWeek: [1] },
+        { id: "r2", groupId: "g1", daysOfWeek: [3] },
+        { id: "r3", groupId: "g1", daysOfWeek: [5] },
+      ]);
+    });
+
+    it("再利用する複数曜日メンバーは sortOrder が小さいものを、id の順に関わらず先に使う", () => {
+      const routines = [
+        makeRoutine({
+          id: "r1",
+          groupId: "g1",
+          daysOfWeek: [1, 3],
+          sortOrder: 5,
+        }),
+        makeRoutine({
+          id: "r2",
+          groupId: "g1",
+          daysOfWeek: [1, 3],
+          sortOrder: 2,
+        }),
+      ];
+
+      const repaired = repairCorruptedGroupRoutines(routines);
+
+      expect(pick(repaired, ["id", "daysOfWeek"])).toEqual([
+        { id: "r2", daysOfWeek: [1] },
+        { id: "r1", daysOfWeek: [3] },
+      ]);
+    });
+
+    it("再利用する複数曜日メンバーの completed と sortOrder が同値なら id の辞書順で割り当てる", () => {
+      const routines = [
+        makeRoutine({
+          id: "r_b",
+          groupId: "g1",
+          daysOfWeek: [1, 3],
+          sortOrder: 2,
+        }),
+        makeRoutine({
+          id: "r_a",
+          groupId: "g1",
+          daysOfWeek: [1, 3],
+          sortOrder: 2,
+        }),
+      ];
+
+      const repaired = repairCorruptedGroupRoutines(routines);
+
+      expect(pick(repaired, ["id", "daysOfWeek"])).toEqual([
+        { id: "r_a", daysOfWeek: [1] },
+        { id: "r_b", daysOfWeek: [3] },
+      ]);
+    });
+
+    it("sortOrder が未定義や NaN の複数曜日メンバーでも例外なく、sortOrder は 0 からの連番になる", () => {
+      const routines = [
+        makeRoutine({
+          id: "r1",
+          groupId: "g1",
+          daysOfWeek: [1, 3],
+          sortOrder: undefined as unknown as number,
+        }),
+        makeRoutine({
+          id: "r2",
+          groupId: "g1",
+          daysOfWeek: [1, 3],
+          sortOrder: NaN,
+        }),
+      ];
+
+      const repaired = repairCorruptedGroupRoutines(routines);
+
+      expect(pick(repaired, ["id", "daysOfWeek", "sortOrder"])).toEqual([
+        { id: "r1", daysOfWeek: [1], sortOrder: 0 },
+        { id: "r2", daysOfWeek: [3], sortOrder: 1 },
+      ]);
+    });
+
+    it("テンプレートの sortOrder が未定義でも、新規に作る曜日の sortOrder は有限の連番になる", () => {
+      const routines = [
+        makeRoutine({
+          id: "r1",
+          groupId: "g1",
+          daysOfWeek: [1, 3, 5],
+          sortOrder: undefined as unknown as number,
+        }),
+      ];
+
+      const repaired = repairCorruptedGroupRoutines(routines);
+
+      expect(pick(repaired, ["daysOfWeek", "sortOrder"])).toEqual([
+        { daysOfWeek: [1], sortOrder: 0 },
+        { daysOfWeek: [3], sortOrder: 1 },
+        { daysOfWeek: [5], sortOrder: 2 },
+      ]);
+    });
+
+    it("最終の並び替えで sortOrder が同値なら id の辞書順で連番を振る", () => {
+      const routines = [
+        makeRoutine({
+          id: "z_clean",
+          groupId: "g1",
+          daysOfWeek: [3],
+          sortOrder: 0,
+        }),
+        makeRoutine({
+          id: "a_clean",
+          groupId: "g1",
+          daysOfWeek: [1],
+          sortOrder: 0,
+        }),
+        makeRoutine({
+          id: "dirty_1",
+          groupId: "g1",
+          daysOfWeek: [1, 3, 5],
+          sortOrder: 99,
+        }),
+      ];
+
+      const repaired = repairCorruptedGroupRoutines(routines);
+
+      expect(pick(repaired, ["id", "sortOrder"])).toEqual([
+        { id: "a_clean", sortOrder: 0 },
+        { id: "z_clean", sortOrder: 1 },
+        { id: "dirty_1", sortOrder: 2 },
       ]);
     });
   });

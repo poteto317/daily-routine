@@ -1,47 +1,22 @@
 import type { Routine } from "@/types/routine";
 
 import { repairGroupMembers } from "../routineGroupDayRepair";
+import {
+  FIXED_NOW,
+  makeRoutine as makeBaseRoutine,
+  setupFixedClockAndSequentialUuid,
+} from "./routineGroup.test-utils";
 
-const FIXED_NOW = "2026-04-13T00:31:00.000Z";
-const CREATED_AT = "2026-02-13T00:00:00.000Z";
-
-type Uuid = `${string}-${string}-${string}-${string}-${string}`;
-
-const makeRoutine = (overrides: Partial<Routine>): Routine => ({
-  id: "r",
-  groupId: "g",
-  title: "朝活",
-  startTime: "08:00",
-  duration: 30,
-  category: "health",
-  daysOfWeek: [1],
-  isCompleted: false,
-  sortOrder: 0,
-  createdAt: CREATED_AT,
-  updatedAt: CREATED_AT,
-  ...overrides,
-});
+/** このテストのメンバーは全員同じグループ "g" に属する */
+const makeRoutine = (overrides: Partial<Routine>): Routine =>
+  makeBaseRoutine({ groupId: "g", ...overrides });
 
 describe("repairGroupMembers", () => {
-  let randomUuidSpy: jest.SpyInstance;
-  let uuidCounter: number;
-
-  beforeEach(() => {
-    jest.useFakeTimers().setSystemTime(new Date(FIXED_NOW));
-    uuidCounter = 0;
-    randomUuidSpy = jest
-      .spyOn(crypto, "randomUUID")
-      .mockImplementation(() => `generated-${++uuidCounter}` as Uuid);
-  });
-
-  afterEach(() => {
-    randomUuidSpy.mockRestore();
-    jest.useRealTimers();
-  });
+  const { randomUuidSpy } = setupFixedClockAndSequentialUuid();
 
   it("メンバーが空なら空配列を返し、id を生成しない", () => {
     expect(repairGroupMembers([], undefined)).toEqual([]);
-    expect(randomUuidSpy).not.toHaveBeenCalled();
+    expect(randomUuidSpy()).not.toHaveBeenCalled();
   });
 
   it("曜日が 1 つも無いメンバーだけなら空配列を返す", () => {

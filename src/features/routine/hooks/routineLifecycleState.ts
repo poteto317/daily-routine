@@ -9,10 +9,10 @@ import { getTodayString } from "@/lib/storage/core";
 import {
   applyDailyProgressToRoutines,
   createDailyResetProgress,
-  migrateMultiDayRoutinesWithGroup,
   repairCorruptedGroupRoutines,
   stripCompletionState,
 } from "./routineStateModel";
+import { migrateMultiDayRoutinesWithGroup } from "./routineGroupMultiDayMigration";
 
 const shouldMigrateMultiDayRoutines = (routines: Routine[]): boolean => {
   // groupId 付きルーティンの daysOfWeek.length > 1 は汚染データであり、
