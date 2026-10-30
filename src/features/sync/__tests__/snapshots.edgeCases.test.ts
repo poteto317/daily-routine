@@ -157,7 +157,7 @@ describe("sync snapshots の境界と失敗時の扱い", () => {
       });
     });
 
-    it("適用に成功したら、ローカル・リモートの変更ありの表示と前のエラーを解除する", async () => {
+    it("適用に成功したら、ローカル・リモートの変更ありの表示を解除し、エラーが残らない", async () => {
       setSyncStatus({
         hasRemoteChanges: true,
         hasLocalChanges: true,

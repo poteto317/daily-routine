@@ -14,12 +14,20 @@ import { setCurrentUserId } from "../userScope";
 const SCOPED_KEY = `user:u1:${LOCAL_DATA_UPDATED_AT_KEY}`;
 
 describe("localDataUpdatedAt", () => {
+  // テストが途中で失敗してもリスナーが残らないよう afterEach でまとめて解除する
+  const removers: Array<() => void> = [];
+  const listen = (type: string, listener: EventListener) => {
+    window.addEventListener(type, listener);
+    removers.push(() => window.removeEventListener(type, listener));
+  };
+
   beforeEach(() => {
     localStorage.clear();
     setCurrentUserId("u1");
   });
 
   afterEach(() => {
+    removers.splice(0).forEach((remove) => remove());
     setCurrentUserId(null);
     jest.restoreAllMocks();
     // 取りこぼし用のバッファがテスト間で持ち越されないようにする
@@ -71,7 +79,7 @@ describe("localDataUpdatedAt", () => {
   describe("setLocalDataUpdatedAt", () => {
     it("ユーザーごとのキーに保存し、変更イベントを発火する", () => {
       const listener = jest.fn();
-      window.addEventListener(LOCAL_DATA_UPDATED_AT_EVENT, listener);
+      listen(LOCAL_DATA_UPDATED_AT_EVENT, listener);
 
       setLocalDataUpdatedAt(1761800000000);
 
@@ -80,7 +88,6 @@ describe("localDataUpdatedAt", () => {
       expect((listener.mock.calls[0][0] as CustomEvent).detail).toEqual({
         timestamp: 1761800000000,
       });
-      window.removeEventListener(LOCAL_DATA_UPDATED_AT_EVENT, listener);
     });
 
     it("保存した値を getLocalDataUpdatedAt で読み戻せる", () => {
@@ -98,8 +105,8 @@ describe("localDataUpdatedAt", () => {
       const onFailure = (event: Event) => {
         failures.push((event as CustomEvent<StorageWriteFailureDetail>).detail);
       };
-      window.addEventListener(LOCAL_DATA_UPDATED_AT_EVENT, changed);
-      window.addEventListener(STORAGE_WRITE_FAILED_EVENT, onFailure);
+      listen(LOCAL_DATA_UPDATED_AT_EVENT, changed);
+      listen(STORAGE_WRITE_FAILED_EVENT, onFailure);
 
       expect(() => setLocalDataUpdatedAt(1)).not.toThrow();
 
@@ -107,8 +114,6 @@ describe("localDataUpdatedAt", () => {
       expect(failures).toEqual([
         expect.objectContaining({ key: LOCAL_DATA_UPDATED_AT_KEY }),
       ]);
-      window.removeEventListener(LOCAL_DATA_UPDATED_AT_EVENT, changed);
-      window.removeEventListener(STORAGE_WRITE_FAILED_EVENT, onFailure);
     });
   });
 });

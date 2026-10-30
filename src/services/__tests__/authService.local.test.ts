@@ -57,6 +57,7 @@ describe("authService local fallback", () => {
     await mod.signInAsTestUser();
 
     const user = mod.getLocalAuthUser() as User;
+    expect(user.uid).toBe("local-test-test-example-com");
     expect(user.email).toBe("test@example.com");
     expect(user.isAnonymous).toBe(false);
   });
