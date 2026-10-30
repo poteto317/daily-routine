@@ -174,9 +174,11 @@ describe("statusStore", () => {
           throw new DOMException("QuotaExceededError");
         });
 
-      expect(() => setSyncStatus({ isSyncing: true })).not.toThrow();
-
-      spy.mockRestore();
+      try {
+        expect(() => setSyncStatus({ isSyncing: true })).not.toThrow();
+      } finally {
+        spy.mockRestore();
+      }
     });
 
     it("localStorage.setItem が例外をスローしても resetStaleSyncingState はエラーを投げない", () => {
@@ -190,9 +192,11 @@ describe("statusStore", () => {
           throw new DOMException("SecurityError");
         });
 
-      expect(() => resetStaleSyncingState()).not.toThrow();
-
-      spy.mockRestore();
+      try {
+        expect(() => resetStaleSyncingState()).not.toThrow();
+      } finally {
+        spy.mockRestore();
+      }
     });
   });
 });
