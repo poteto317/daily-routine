@@ -80,10 +80,12 @@ describe("statusStore", () => {
       const handler = jest.fn();
       window.addEventListener("sync-status-changed", handler);
 
-      setSyncStatus({ isSyncing: true });
-
-      expect(handler).toHaveBeenCalledTimes(1);
-      window.removeEventListener("sync-status-changed", handler);
+      try {
+        setSyncStatus({ isSyncing: true });
+        expect(handler).toHaveBeenCalledTimes(1);
+      } finally {
+        window.removeEventListener("sync-status-changed", handler);
+      }
     });
 
     it("イベントの detail には保存後の状態全体が入る", () => {
