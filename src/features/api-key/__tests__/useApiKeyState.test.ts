@@ -6,10 +6,25 @@ import texts from "../locales/ja.json";
 jest.mock("../apiKeyService");
 const mockedService = jest.mocked(service);
 
+const originalClipboard = Object.getOwnPropertyDescriptor(
+  navigator,
+  "clipboard",
+);
+let confirmSpy: jest.SpyInstance;
+
 beforeEach(() => {
   jest.clearAllMocks();
   mockedService.hasApiKey.mockResolvedValue(false);
-  jest.spyOn(window, "confirm").mockReturnValue(true);
+  confirmSpy = jest.spyOn(window, "confirm").mockReturnValue(true);
+});
+
+afterEach(() => {
+  confirmSpy.mockRestore();
+  if (originalClipboard) {
+    Object.defineProperty(navigator, "clipboard", originalClipboard);
+  } else {
+    delete (navigator as { clipboard?: unknown }).clipboard;
+  }
 });
 
 describe("useApiKeyState", () => {

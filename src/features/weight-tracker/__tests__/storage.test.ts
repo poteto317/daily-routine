@@ -21,9 +21,16 @@ const mockGenerateId = coreStorage.generateId as jest.MockedFunction<
 >;
 
 describe("weight storage", () => {
+  let toISOStringSpy: jest.SpyInstance | undefined;
+
   beforeEach(() => {
     jest.clearAllMocks();
     mockGetStorageItem.mockReturnValue({} as never);
+  });
+
+  afterEach(() => {
+    toISOStringSpy?.mockRestore();
+    toISOStringSpy = undefined;
   });
 
   it("getWeightHistoryは履歴を取得する", () => {
@@ -79,7 +86,7 @@ describe("weight storage", () => {
 
   it("saveWeightRecordは新規記録を作成して保存する", () => {
     mockGenerateId.mockReturnValue("new-weight-id");
-    jest
+    toISOStringSpy = jest
       .spyOn(Date.prototype, "toISOString")
       .mockReturnValue("2026-02-12T10:00:00.000Z");
 
@@ -126,7 +133,7 @@ describe("weight storage", () => {
       },
     };
     mockGetStorageItem.mockReturnValue(existing as never);
-    jest
+    toISOStringSpy = jest
       .spyOn(Date.prototype, "toISOString")
       .mockReturnValue("2026-02-12T12:00:00.000Z");
 

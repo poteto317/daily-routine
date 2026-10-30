@@ -10,8 +10,14 @@ import { useThemeInitializationEffect } from "../useThemeInitializationEffect";
 const mockGetSettings = getSettings as jest.MockedFunction<typeof getSettings>;
 
 describe("useThemeInitializationEffect", () => {
+  const originalMatchMedia = window.matchMedia;
+
   beforeEach(() => {
     document.documentElement.className = "";
+  });
+
+  afterEach(() => {
+    window.matchMedia = originalMatchMedia;
   });
 
   it("dark theme を適用する", () => {

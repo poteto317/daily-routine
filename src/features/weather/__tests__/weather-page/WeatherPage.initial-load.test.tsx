@@ -3,12 +3,17 @@ import {
   WeatherPage,
   mockFetchWeatherData,
   mockGetPreferredWeatherLocation,
+  restoreGeolocation,
   setupWeatherPageMocks,
 } from "./WeatherPage.test-setup";
 
 describe("WeatherPage initial load", () => {
   beforeEach(() => {
     setupWeatherPageMocks();
+  });
+
+  afterEach(() => {
+    restoreGeolocation();
   });
 
   it("初期表示では位置情報を要求せず東京の天気を読み込む", async () => {

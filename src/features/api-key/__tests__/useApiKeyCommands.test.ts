@@ -18,11 +18,17 @@ const setup = (hasKey: boolean | null) => {
   return { args, ...hook };
 };
 
+let confirmSpy: jest.SpyInstance;
+
 beforeEach(() => {
   jest.clearAllMocks();
-  jest.spyOn(window, "confirm").mockReturnValue(true);
+  confirmSpy = jest.spyOn(window, "confirm").mockReturnValue(true);
   mockedService.issueApiKey.mockResolvedValue("drk_new");
   mockedService.revokeApiKeys.mockResolvedValue(undefined);
+});
+
+afterEach(() => {
+  confirmSpy.mockRestore();
 });
 
 describe("handleIssue", () => {

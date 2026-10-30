@@ -10,8 +10,14 @@ import { useThemeAutoListenerEffect } from "../useThemeAutoListenerEffect";
 const mockGetSettings = getSettings as jest.MockedFunction<typeof getSettings>;
 
 describe("useThemeAutoListenerEffect", () => {
+  const originalMatchMedia = window.matchMedia;
+
   beforeEach(() => {
     document.documentElement.className = "";
+  });
+
+  afterEach(() => {
+    window.matchMedia = originalMatchMedia;
   });
 
   it("auto theme のときだけ media query change を反映する", () => {

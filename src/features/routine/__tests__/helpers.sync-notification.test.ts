@@ -11,7 +11,22 @@ import {
 } from "./helpers.test.setup";
 
 describe("helpers sync and notification", () => {
+  const originalFetch = global.fetch;
+  const originalNotification = Object.getOwnPropertyDescriptor(
+    window,
+    "Notification",
+  );
+
   beforeEach(setupHelpersDefaults);
+
+  afterEach(() => {
+    global.fetch = originalFetch;
+    if (originalNotification) {
+      Object.defineProperty(window, "Notification", originalNotification);
+    } else {
+      delete (window as { Notification?: unknown }).Notification;
+    }
+  });
 
   it("syncRoutinesToFirebaseの失敗/成功を判定する", async () => {
     mockGetFCMToken.mockResolvedValueOnce(null as never);

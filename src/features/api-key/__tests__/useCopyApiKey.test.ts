@@ -10,6 +10,19 @@ const mockClipboard = (writeText: jest.Mock | undefined) => {
 };
 
 describe("useCopyApiKey", () => {
+  const originalClipboard = Object.getOwnPropertyDescriptor(
+    navigator,
+    "clipboard",
+  );
+
+  afterEach(() => {
+    if (originalClipboard) {
+      Object.defineProperty(navigator, "clipboard", originalClipboard);
+    } else {
+      delete (navigator as { clipboard?: unknown }).clipboard;
+    }
+  });
+
   it("キーをクリップボードへ書き込み、copied を true にする", async () => {
     const writeText = jest.fn().mockResolvedValue(undefined);
     mockClipboard(writeText);

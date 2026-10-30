@@ -18,9 +18,15 @@ const mockHasNotificationPermission =
   >;
 
 describe("routine helpers sync", () => {
+  const originalFetch = global.fetch;
+
   beforeEach(() => {
     setupRoutineHelpersDefaults();
     mockHasNotificationPermission.mockReturnValue(true);
+  });
+
+  afterEach(() => {
+    global.fetch = originalFetch;
   });
 
   it("通知未許可ならトークン取得と送信を行わずfalseを返す", async () => {

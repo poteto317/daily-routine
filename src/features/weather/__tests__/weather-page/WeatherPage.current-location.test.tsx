@@ -6,12 +6,17 @@ import {
   mockFetchWeatherData,
   mockGetPreferredWeatherLocation,
   mockSavePreferredWeatherLocation,
+  restoreGeolocation,
   setupWeatherPageMocks,
 } from "./WeatherPage.test-setup";
 
 describe("WeatherPage current location", () => {
   beforeEach(() => {
     setupWeatherPageMocks();
+  });
+
+  afterEach(() => {
+    restoreGeolocation();
   });
 
   it("現在地を使用ボタン押下時のみ位置情報を要求する", async () => {

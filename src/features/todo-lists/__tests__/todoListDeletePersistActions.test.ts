@@ -24,8 +24,15 @@ const createList = (overrides: Partial<TodoList> = {}): TodoList => ({
   ...overrides,
 });
 
+let confirmSpy: jest.SpyInstance | undefined;
+
 beforeEach(() => {
   jest.clearAllMocks();
+});
+
+afterEach(() => {
+  confirmSpy?.mockRestore();
+  confirmSpy = undefined;
 });
 
 describe("deleteTodoItemAndPersist", () => {
@@ -94,7 +101,7 @@ describe("deleteTodoItemAndPersist", () => {
   it("confirmDelete を省略すると window.confirm をデフォルトで使う（呼び出し確認）", () => {
     const lists = [createList({ items: [createItem()] })];
     const persist = jest.fn();
-    jest.spyOn(window, "confirm").mockReturnValue(false);
+    confirmSpy = jest.spyOn(window, "confirm").mockReturnValue(false);
     // 渡された confirmDelete を実際に呼び出すよう mock を設定
     (confirmAndDeleteTodoItem as jest.Mock).mockImplementation(
       ({

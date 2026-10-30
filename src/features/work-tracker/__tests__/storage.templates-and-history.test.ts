@@ -15,7 +15,14 @@ import {
 jest.mock("@/lib/storage/core");
 
 describe("work-tracker storage templates/history", () => {
+  let toISOStringSpy: jest.SpyInstance | undefined;
+
   beforeEach(() => setupDefaultStorageMocks());
+
+  afterEach(() => {
+    toISOStringSpy?.mockRestore();
+    toISOStringSpy = undefined;
+  });
 
   it("getWorkTemplates/saveWorkTemplatesがテンプレートを入出力する", () => {
     const templates = [{ id: "t1", name: "開発" }];
@@ -34,7 +41,7 @@ describe("work-tracker storage templates/history", () => {
 
   it("addWorkTemplateがIDと日時付きで追加保存する", () => {
     mockGenerateId.mockReturnValue("wt-1");
-    jest
+    toISOStringSpy = jest
       .spyOn(Date.prototype, "toISOString")
       .mockReturnValue("2026-02-12T10:00:00.000Z");
 
