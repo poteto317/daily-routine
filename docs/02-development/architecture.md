@@ -128,7 +128,7 @@ LocalStorage の容量制限（QuotaExceededError）やブラウザのプライ�
 | **Components**     | `src/components/`           | ドメイン知識を持たない汎用 UI 部品（`CardPanel`, `ToggleSwitch`, `ProgressBar`, `LoadingIndicator`, `ErrorAlert`, `FieldGroup`, `LabeledField`, `PeriodNavButton` 等）と、ルートで使う `ClientProviders`・`RootErrorBoundary`・保存失敗バナー。                                                                                                             |
 | **Hooks**          | `src/hooks/`                | 画面をまたいで使うフック。汎用 UI フック（`useCloseOnEscape`, `useLongPress`, `useBodyScrollLock`, `useDismissKeyboardOnSubmit`, `useFormOpenAutoFocus`, `useCategoryNameEditing`）と、ヘッダーのメニュー・同期操作、認証状態と同期の購読、ルーティン通知の予約、保存失敗の購読（`useStorageWriteFailure`）、PWA・Service Worker 登録、テーマ適用のフック。 |
 | **Lib**            | `src/lib/`                  | Firebase の初期化と Auth/Firestore/Messaging の取得（`firebase-modules/`）、LocalStorage の読み書き基盤（`storage/`）、祝日判定、日付キーの移行、IME 判定などの共通処理。                                                                                                                                                                                   |
-| **Services**       | `src/services/`             | 認証サービス（`authService.ts`）。                                                                                                                                                                                                                                                                                                                          |
+| **Services**       | `src/services/`             | 認証サービス（`authService.ts`）とローカル擬似認証（`localAuthService.ts`）。                                                                                                                                                                                                                                                                               |
 | **Config / Types** | `src/config/`, `src/types/` | アプリ設定の定数と、ルーティンなど複数機能で共有する型定義。                                                                                                                                                                                                                                                                                                |
 
 > 注意: コーディング規約（[coding-standards.md](./coding-standards.md)）では components と hooks は features を参照しないことになっていますが、現状は `src/hooks/` のヘッダー・認証同期・通知関連のフックと `src/components/AuthGuard.tsx` が `@/features/*` を参照しています。また、`src/lib/` は規約の依存ルールに挙がっていませんが、`src/lib/storage/exports/*.ts`（各機能の `storage.ts` の再公開）と `src/lib/dateKeyMigration.ts` が `@/features/*` を参照しています。
@@ -182,7 +182,7 @@ src/features/{feature-name}/
 
 ### 3-5. 責務ごとに分けたモジュール
 
-公開している関数の名前・引数・戻り値はそのままにして、中身を責務ごとのファイルに分けたモジュールです。呼び出し側は従来どおり公開窓口のファイルから import します。
+公開している関数の名前・引数・戻り値はそのままにして、中身を責務ごとのファイルに分けたモジュールです。呼び出し側は原則として公開窓口のファイルから import します（ルーティンの移行関数は下の表のとおり直接 import します）。
 
 **認証サービス（`src/services/`、公開窓口は `authService.ts`）**
 

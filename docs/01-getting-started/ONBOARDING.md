@@ -26,7 +26,7 @@ npm install --prefix firebase-functions # Cloud Functions のテストも npm te
 cp .env.local.example .env.local
 ```
 
-`.env.local` の `NEXT_PUBLIC_ENABLE_LOCAL_AUTH` を `true` にし、Firebase の値は空のままにします。
+`.env.local` の `NEXT_PUBLIC_ENABLE_LOCAL_AUTH` を `true` にし、`NEXT_PUBLIC_FIREBASE_API_KEY`・`NEXT_PUBLIC_FIREBASE_PROJECT_ID`・`NEXT_PUBLIC_FIREBASE_APP_ID` の値を消して空にします。`your-api-key` などのプレースホルダーが残っていると Firebase 設定済みとみなされ、ローカル擬似認証は使われません。
 
 ```bash
 npm run dev    # http://localhost:3000 を開き、「匿名」または「テストアカウント」でログイン
@@ -106,8 +106,8 @@ npm run dev    # http://localhost:3000 を開き、「匿名」または「テ�
 
 ### 4-4. 後始末
 
-- `jest.spyOn` したものは `afterEach` か `try / finally` で `mockRestore()` する。
-- `global.fetch` などグローバルを差し替えたら、元の値を保存して `afterEach` で戻す。
+- `window` などのグローバルのスパイは `afterEach` か `try / finally` で `mockRestore()` する。そのテストの中だけで作ったオブジェクトのスパイは戻さなくてよい。
+- `global.fetch` などグローバルを差し替えたら、元の値を保存して `afterEach` で戻す。`Object.defineProperty` の差し替えの戻し方は [テストガイドの「テストの後片付け」](../03-testing/README.md#2-自動テスト) を参照する。
 - `jest.useFakeTimers()` を使ったら `afterEach` で `jest.useRealTimers()`。`setInterval` の ID は保持してクリアする（`.github/copilot-instructions.md` の「8. テスト」）。
 - `console.error` を出す経路をテストするときは、`jest.spyOn(console, "error").mockImplementation(() => {})` で出力を抑え、呼ばれたことを確かめる。
 
