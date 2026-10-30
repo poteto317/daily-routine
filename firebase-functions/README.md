@@ -11,8 +11,8 @@
 | `agentApi`             | HTTPS          | `/agentApi/*`                  | AI エージェント・外部ツール向け CRUD REST API     |
 | `onBugReportCreated`   | Firestore      | `bugReports/{reportId}` 作成時 | アプリ内不具合報告から GitHub Issue を自動起票    |
 | `syncRoutines`         | HTTPS          | `/syncRoutines`                | クライアントの通知用ルーティンデータ同期受付      |
-| `checkNotifications`   | スケジューラー | 毎分 (`every 1 minutes`)       | 設定時刻を過ぎたルーティンの FCM プッシュ通知配信 |
-| `cleanupNotifications` | スケジューラー | 毎日 00:00 JST (`0 0 * * *`)   | 期限切れ通知データのクリーンアップ                |
+| `checkNotifications`   | スケジューラー | 毎分 (`every 1 minutes`)       | 通知時刻になったルーティンの FCM プッシュ通知配信 |
+| `cleanupNotifications` | スケジューラー | 毎日 00:00 JST (`0 0 * * *`)   | 古い通知送信履歴のクリーンアップ                  |
 
 ---
 
@@ -25,32 +25,48 @@ firebase-functions/
 └── src/
     ├── index.ts               # Cloud Functions エクスポートのエントリーポイント
     ├── firebase-init.ts       # Firebase Admin SDK の初期化
-    ├── constants.ts           # 共通定数
-    ├── types.ts               # 共通型定義
+    ├── constants.ts           # 共通定数（祝日の曜日値、users / notifications_sent のコレクション名）
+    ├── types.ts               # 共通型定義（通知で使う Routine）
+    ├── token-log.ts           # FCM トークンをログ用に短縮する（先頭 20 文字だけ残す）
     ├── agentApi/              # AI エージェント向け REST API
     │   ├── agentApi.ts        # HTTPS エンドポイント定義
+    │   ├── handler.ts         # 認証 → ルーティング → 操作の実行 → 応答をつなぐ
     │   ├── authenticate.ts    # Bearer トークン認証・API キー検証
     │   ├── apiKey.ts          # API キー形式・ハッシュ計算
     │   ├── apiKeyLookup.ts    # Firestore apiKeys コレクション照会
     │   ├── bearerToken.ts     # Authorization ヘッダー解析
     │   ├── router.ts          # エンドポイントルーティング
-    │   ├── executeOperation.ts# 操作ディスパッチャ
+    │   ├── executeOperation.ts# 操作ディスパッチャ（一覧は読み取りのみ、それ以外はトランザクションで書き込み）
+    │   ├── errors.ts          # ApiError と共通エラー
+    │   ├── errorResponse.ts   # エラーの JSON 応答への変換
+    │   ├── firestoreDeps.ts   # ハンドラーが使う Firestore 依存の組み立て
+    │   ├── syncWriter.ts      # users/{uid} の更新（トランザクション）
+    │   ├── snapshotWriter.ts  # 更新後の同期スナップショット保存
     │   ├── operations/        # リソース別操作ロジック
-    │   │   ├── budget/        # 家計簿 CRUD
-    │   │   ├── journal/       # ジャーナル CRUD
-    │   │   ├── todo/          # Todo リスト・アイテム・カテゴリ CRUD
-    │   │   └── workout/       # 運動種目・運動記録 CRUD
-    │   └── validation/        # 各リソースの入力バリデーション
+    │   │   ├── index.ts       # リソース名と操作・許可クエリの対応表
+    │   │   ├── budgetCollections.ts # 家計簿のカテゴリ・収入項目・支出項目
+    │   │   ├── simpleCollection.ts  # 配列 1 つを CRUD する共通実装
+    │   │   ├── expenses/      # 家計簿の支出記録
+    │   │   ├── journal/       # ジャーナル
+    │   │   ├── todo/          # Todo リスト・アイテム・カテゴリ
+    │   │   └── workout/       # 運動種目・運動記録
+    │   └── validation/        # 入力値の型・形式チェック（文字列・金額・日付・列挙値・クエリなど）
     ├── bugReport/             # 不具合報告 GitHub Issue 起票
-    │   └── onBugReportCreated.ts
+    │   ├── onBugReportCreated.ts # Firestore トリガーと Secret の宣言
+    │   ├── handleBugReport.ts    # 最新の報告を読み直し、起票処理を実行して結果を記録する
+    │   ├── processBugReport.ts   # 処理ロック → 整形 → 起票 → 状態更新の手順
+    │   ├── draftIssueWithClaude.ts # Claude による Issue の整形
+    │   └── createGithubIssue.ts  # GitHub REST API の呼び出し
     ├── notifications.ts       # 通知チェックスケジューラー (毎分)
-    ├── notificationCleanup.ts # 通知データ定期クリーンアップ (毎日 00:00 JST)
-    ├── notification-helpers/  # 通知配信・FCM 補助ユーティリティ
-    ├── cleanup-helpers/       # 通知ログクリーンアップ補助
+    ├── notificationCleanup.ts # 通知送信履歴の定期クリーンアップ (毎日 00:00 JST)
+    ├── notification-helpers/  # 通知対象の判定と FCM 送信・送信履歴の記録
+    ├── cleanup-helpers/       # 削除の閾値日時の計算と送信履歴の一括削除
     ├── sync.ts                # 通知用ルーティン同期エンドポイント
-    ├── sync-helpers/          # 同期補助ユーティリティ
-    └── date-utils/            # JST 日時計算ユーティリティ
+    ├── sync-helpers/          # syncRoutines のリクエスト検証・CORS・保存・応答
+    └── date-utils/            # 曜日・日本の祝日判定と通知判定用の現在時刻コンテキスト
 ```
+
+テストは各ディレクトリの `__tests__/` にあり、ルートの `npm test` で一緒に実行されます。Firestore や FCM はモックやフェイク（`agentApi/__tests__/fakeFirestore.ts`）に置き換えて検証します。
 
 ---
 
@@ -96,9 +112,17 @@ firebase-functions/
 
 ### 3. 通知系関数 (`syncRoutines`, `checkNotifications`, `cleanupNotifications`)
 
-- **`syncRoutines`**: クライアントが設定したルーティンとその通知設定を Firestore `routines/{userId}` へ同期
-- **`checkNotifications`**: Cloud Scheduler により毎分起動（JST、リージョン asia-northeast1）。現在時刻に通知すべきルーティンを検索し、FCM 経由でブラウザ・PWA へプッシュ通知を送信
-- **`cleanupNotifications`**: 毎日午前0時 (JST) に実行され、不要となった古い通知履歴レコードをパージ
+- **`syncRoutines`**（`POST /syncRoutines`）: クライアントから `{ token: FCM トークン, routines: ルーティン配列 }` を受け取り、Firestore `users/{FCM トークン}` に `fcmToken`・`routines`・`updatedAt` を上書き保存する
+  - 応答: 成功 `200 { success: true, routinesCount }`、`token` が空でない文字列でない・`routines` が配列でない場合 `400`、POST 以外 `405`、保存失敗 `500`。`OPTIONS`（プリフライト）は `204`
+  - CORS は全オリジンからの `POST`（`Content-Type` ヘッダー）を許可する。認証は行わない
+  - `users` コレクションには、同期データ（`users/{uid}`、agentApi やアプリの同期が使う）と、この通知用ドキュメント（`users/{FCM トークン}`）が混在する
+- **`checkNotifications`**: Cloud Scheduler により毎分起動（スケジュールは JST、リージョン asia-northeast1）。`users` の全ドキュメントを読み、`fcmToken` とルーティンを持つものについて次の条件をすべて満たすルーティンを FCM で通知する
+  - 曜日: 祝日なら `daysOfWeek` に `7`（祝日）を含むもの、祝日でなければ今日の曜日（0=日〜6=土）を含むもの。旧形式の `holidayMode`（`only` / `include`）は `daysOfWeek` に読み替える
+  - 時刻: `startTime`（HH:mm）に `notificationMinutes`（開始の何分後か。未設定は 0）を足した時・分が現在の時・分と一致する
+  - 重複防止: `notifications_sent/{FCM トークン}_{ルーティン ID}_{日付}` が既にあれば送らない。送信に成功したら記録する
+  - 祝日判定（`date-utils`）は固定祝日・ハッピーマンデー・春分/秋分の日（概算式）に対応する。振替休日と国民の休日は判定しない
+  - 時・分・曜日は `Date` のローカル時刻（関数の実行環境のタイムゾーン）で求める。`onSchedule` の `timeZone` は起動スケジュールにだけ効く。重複防止に使う日付は UTC の日付になる
+- **`cleanupNotifications`**: 毎日午前0時 (JST) に実行され、`sentAt` が現在から 1 日より前の `notifications_sent` ドキュメントを 1 つのバッチでまとめて削除する
 
 ---
 

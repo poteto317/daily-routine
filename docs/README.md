@@ -10,6 +10,7 @@
 
 プロジェクトを始めるための初期セットアップドキュメント。
 
+- **[ONBOARDING.md](./01-getting-started/ONBOARDING.md)** - 新しく参加する開発者向けガイド（読む順番・Firebase なしでのセットアップ・主要な流れ・テストの書き方・よくある落とし穴）
 - **[SETUP_CHECKLIST.md](./01-getting-started/SETUP_CHECKLIST.md)** - プロジェクトのセットアップ手順チェックリスト
 - **[SYNC_SETUP.md](./01-getting-started/SYNC_SETUP.md)** - クラウド同期機能のセットアップガイド
 - **[vscode_extensions.md](./01-getting-started/vscode_extensions.md)** - 推奨VSCode拡張機能リスト
@@ -46,9 +47,10 @@
 
 ### 新規メンバーの方
 
-1. **[セットアップガイド](./01-getting-started/)** でまず環境構築
-2. **[機能リファレンス](./04-reference/features.md)** でアプリの全体像を把握
-3. **[開発ガイドライン](./02-development/)** でコーディング規約を確認
+1. **[新しく参加する開発者向けガイド](./01-getting-started/ONBOARDING.md)** で読む順番と全体の流れを把握
+2. **[セットアップガイド](./01-getting-started/)** で環境構築
+3. **[機能リファレンス](./04-reference/features.md)** でアプリの全体像を把握
+4. **[開発ガイドライン](./02-development/)** でコーディング規約を確認
 
 ### 開発者の方
 

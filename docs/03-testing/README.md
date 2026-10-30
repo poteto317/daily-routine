@@ -43,6 +43,61 @@ npm run test:ci
 npm run test:watch
 ```
 
+**git worktree（`.worktrees/` 配下）で実行する場合の注意**
+
+`jest.config.ts` の `testPathIgnorePatterns` は、メインの作業ツリーから worktree 内のテストを重複して拾わないように `/.worktrees/` を除外しています。このため worktree の中で `npm test` を実行すると、テストが 1 件も見つかりません。worktree の中では次のように除外パターンを上書きして実行してください。
+
+```bash
+npx cross-env TZ=Asia/Tokyo jest --forceExit --runInBand \
+  --testPathIgnorePatterns "/node_modules/" "/firebase-functions/lib/" "/e2e/"
+```
+
+`--testPathIgnorePatterns` は後ろに続く引数をすべてパターンとして受け取ります。特定のファイルだけを実行するときは、パターンを `=` でつないで 1 つの引数にし、ファイルは `--runTestsByPath` で指定してください（そうしないとファイルのパスまで除外パターンになり、`e2e/` を含む全テストが実行されます）。
+
+```bash
+npx cross-env TZ=Asia/Tokyo jest --forceExit \
+  --testPathIgnorePatterns=/node_modules/ \
+  --runTestsByPath src/features/routine/__tests__/storageMigration.test.ts
+```
+
+**結合テスト（`*.integration.test.ts`）**
+
+複数のモジュールをまたぐ流れは、ファイル名を `*.integration.test.ts(x)` にした結合テストで確かめます。単体テストと違い、原則として各機能の `storage.ts` はモックせず、jsdom の localStorage に実際に読み書きさせます（`groupRoutineConflictCheck` はフォームの元データの取得だけをモックしています）。
+
+| ファイル                                                                          | 確かめる流れ                                                                                                                                                                                                                                            |
+| --------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/features/sync/__tests__/snapshotRoundTrip.integration.test.ts`               | ローカル保存 → アップロード → 履歴の一覧・復元・削除 → ダウンロード。ログイン前データのユーザー別キーへの移行、復元で変更ありの表示が消えること、最新の履歴を削除すると 1 つ前の内容がダウンロードされること、履歴が新しい 5 件だけ残ることを確かめる。 |
+| `src/features/routine/__tests__/routineInitialization.integration.test.ts`        | 保存済みルーティン → 旧形式の移行・グループ修復 → 今日の完了状態の反映 → 保存し直し。保存データに完了状態が残らないこと、2 回目の起動では何もしないこと、他のユーザーのキーに触れないことを確かめる。                                                   |
+| `src/features/routine/__tests__/repairCorruptedGroupRoutines.integration.test.ts` | 汚染されたグループデータが起動時に修復されること。                                                                                                                                                                                                      |
+| `src/features/routine/__tests__/groupRoutineConflictCheck.integration.test.tsx`   | ルーティン編集フォームで、グループルーティンの曜日を変えたときの時刻の重なりの判定。                                                                                                                                                                    |
+| `src/features/sync/__tests__/workoutExercises.integration.test.ts`                | 運動の種目データの同期・バックアップ・復元。                                                                                                                                                                                                            |
+
+Firestore を使う流れでは、`snapshotRoundTrip.integration.test.ts` のように `firebase/firestore` をメモリ上の Map で動くフェイクに置き換え、`@/lib/firebase` の `getOrCreateUser` は固定のユーザーを返すようにします。実際の Firebase には接続しません。
+
+**外部から入るデータの失敗経路のテスト**
+
+localStorage・Firestore・fetch の応答・Service Worker のメッセージを扱う関数は、成功だけでなく、例外・拒否された Promise・JSON として読めない本文・JSON としては正しいが形が違う値（`null`、配列とオブジェクトの取り違え、必須フィールドの欠落）のテストも書きます。
+
+| ファイル                                                                       | 確かめる失敗経路                                                                                         |
+| ------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------- |
+| `src/features/weather/__tests__/weather-api/fetchWeatherData.failures.test.ts` | 天気 API の通信失敗・HTTP エラー・読めない本文・`daily` / `hourly` の欠落                                |
+| `src/features/weather/__tests__/weather-api/getLocationName.test.ts`           | 地名 API の失敗時に座標の表示へ戻ること、地名の項目の優先順位                                            |
+| `src/features/sync/__tests__/remoteStatus.refresh.test.ts`                     | リモートの同期状態の確認で、ユーザー・ドキュメントの取得失敗や不正な `lastModified` を握りつぶすこと     |
+| `src/features/sync/__tests__/statusStore.test.ts`                              | 保存された同期状態が壊れている・オブジェクトでない・読み出しが例外になるときにデフォルト値へ戻ること     |
+| `src/features/test-matrix/__tests__/storage.test.ts`                           | テストマトリクスの保存データの形が違うときに初期値へ戻ること                                             |
+| `src/features/routine/__tests__/routineHelpers.sync.test.ts`                   | ルーティンのサーバー送信で、通信失敗・読めない本文・`success` が厳密に `true` でない応答を失敗とすること |
+| `firebase-functions/src/agentApi/__tests__/operations/dataAccess.test.ts`      | 同期ドキュメントのフィールドが想定と違う形のとき、空の配列・オブジェクトとして読むこと                   |
+
+検証が無く例外になる箇所は、テストで現状の振る舞いを固定し、その旨をコメントに残します。検証を足すと振る舞いが変わる場合は、テストの追加とは分けて扱います。テストの書き方の全体は [新しく参加する開発者向けガイド](../01-getting-started/ONBOARDING.md#4-テストの書き方) にまとめています。
+
+**サーバー側（`window` が無い環境）の分岐のテスト**
+
+フロントエンドのテストは既定で jsdom 環境で動きます。`typeof window === "undefined"` の分岐を確かめるときは、ファイル先頭に `@jest-environment node` を書いた別ファイル（例: `src/lib/firebase-modules/__tests__/auth.server.test.ts`、`src/lib/storage/core-modules/__tests__/storageWrite.server.test.ts`）に分けます。
+
+**Cloud Functions のテスト**
+
+`firebase-functions/src/**/__tests__/` のテストは `@jest-environment node` で実行します。Firestore・FCM・ロガーは `jest.mock` やフェイク（`firebase-functions/src/agentApi/__tests__/fakeFirestore.ts`）に置き換え、実際の Firebase には接続しません。
+
 ### 3. E2Eテスト
 
 Playwrightで、実際にブラウザを操作する主要フローを検証します（`e2e/`配下）。

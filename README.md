@@ -48,7 +48,7 @@ Firebase 匿名認証 / Firestore 同期（スナップショット履歴・復�
 
 ### 前提環境
 
-- Node.js 20 以上を推奨
+- Node.js 22 または 24（CI はこの 2 つで検証しています。`.nvmrc` の推奨は 24）
 - npm 最新版を推奨
 - Firebase Functions は `firebase-functions/package.json` で Node 24 を指定
 
@@ -85,11 +85,13 @@ NEXT_PUBLIC_FIREBASE_VAPID_KEY=
 NEXT_PUBLIC_FUNCTIONS_URL=
 ```
 
-`NEXT_PUBLIC_ENABLE_LOCAL_AUTH=true` を設定すると、`development` 環境でのみ Firebase 未設定時のローカル擬似認証を有効化できます。
+`NEXT_PUBLIC_ENABLE_LOCAL_AUTH=true` を設定すると、Firebase を用意しなくてもローカル擬似認証（匿名・テストアカウント・メールアドレス）でログインできます。有効になるのは次の 3 つがそろったときだけです（`src/features/auth/storage.ts` の `isLocalAuthEnabled` と `src/services/localAuthService.ts` の `shouldUseLocalAuth`）。
 
-- 既定値は `false` です
-- `production` では有効になりません
-- 共有の開発環境や検証環境では有効化しないでください
+- `NEXT_PUBLIC_ENABLE_LOCAL_AUTH` が `"true"`（既定値は `false`）
+- Firebase が未設定（API キー・プロジェクト ID・アプリ ID のどれかが空。設定済みならこのフラグは無視され、Firebase 認証を使います）
+- ブラウザで開いているホスト名が `localhost` / `127.0.0.1` / `::1`
+
+判定は `NODE_ENV` ではなくホスト名で行うため、本番ビルド（`npm start`）でも localhost で開けば有効になります。公開 URL からは有効になりませんが、共有の開発環境や検証環境では有効化しないでください。
 
 通知を使う場合は Firebase Cloud Messaging の設定も必要です。
 
@@ -131,25 +133,28 @@ npm run build
 npm start
 npm run lint
 npm run typecheck
+npm run typecheck:functions
 npm run test -- --runInBand
+npm run verify:fast
 npm run verify
 npm run <private-ops> -- <command>
 npm run storybook
 npm run test:e2e
 ```
 
-`npm run verify` は以下を順に実行します。
+`npm run verify` は以下を順に実行します（1〜5 は `npm run verify:fast` と同じ）。
 
 1. Tailwind shorthand チェック
 2. ESLint
-3. TypeScript 型検査
-4. Jest
-5. Next.js production build
+3. TypeScript 型検査（本体 + テスト用 tsconfig）
+4. Cloud Functions の TypeScript 型検査
+5. Jest（`--runInBand`）
+6. Next.js production build
 
 ## テスト
 
 - テストフレームワークは Jest + React Testing Library です。
-- 各機能のテストは `src/**/__tests__/` にあります。
+- 各機能のテストは `src/**/__tests__/` にあります。Cloud Functions のテストは `firebase-functions/src/**/__tests__/`、補助スクリプトのテストは `tools/` にあり、`npm test` でまとめて実行されます。
 - ブラウザ操作の E2E テストは Playwright（`e2e/`）で実行できます。
 - CI 相当の確認は `npm run verify` を使ってください。
 
