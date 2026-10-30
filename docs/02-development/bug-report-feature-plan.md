@@ -23,18 +23,20 @@ GitHub Issue を自動作成する**までを段階的に実装する。
 ## 全体パイプライン（最終形）
 
 ```
-[アプリ: 設定画面]
-   │  ① ユーザーが不具合を報告（説明＋自動収集メタ）
+[アプリ: 不具合を報告画面]
+   │  ① 画像がある場合は Firebase Storage (bugReports/{uid}/{reportId}/{fileName}) に先行アップロード
+   │  ② ユーザーが不具合を報告（説明＋再現手順＋画像参照＋自動収集メタ）
    ▼
 [Firestore: bugReports/{id}]  status: "pending"
-   │  ② onDocumentCreated トリガ（Cloud Functions, asia-northeast1）
+   │  ③ onDocumentCreated トリガ（Cloud Functions, asia-northeast1）
    ▼
 [Cloud Functions]
-   │  ③ AI で本文整形（title / body(再現手順含む) / labels[]）
-   │  ④ GitHub REST API（fetch）で Issue 作成
+   │  ④ 添付画像を Storage から取得・検証（サイズ・マジックナンバー判定・ダウンロードトークン URL 取得）
+   │  ⑤ AI で本文整形（title / body(再現手順含む) / 添付画像も Claude に渡して状況把握）
+   │  ⑥ GitHub REST API（fetch）で Issue 作成（本文にスクリーンショット節の URL を埋め込み）
    ▼
 [GitHub: Issue 作成]  ← 自動化はここまで
-   │  ⑤ issueNumber / issueUrl を Firestore に書き戻し  status: "issued"
+   │  ⑦ issueNumber / issueUrl を Firestore に書き戻し  status: "issued"
    ▼
 （対応時）Issue に対応 → 必要なら Copilot 等で PR 作成（手動トリガ・将来フェーズ）
 ```
@@ -44,11 +46,9 @@ GitHub Issue を自動作成する**までを段階的に実装する。
 ## アーキテクチャ調査メモ（統合ポイント）
 
 - **フロント**: Next.js 16 App Router / Feature-based Architecture（`src/features/<feature>/`）。
-- **設定画面**: `src/features/settings/SettingsPage.tsx` が `XxxSection` コンポーネントを
-  並べる構成（`DataManagementSection`, `PrivacyNoteSection` など）。
-  → ここに `BugReportSection` を追加するのが自然。
-- **Firebase**: 匿名認証（`useAuth` の `user.uid`）でユーザー識別。Firestore 利用。
-  ルールは `firestore.rules`。
+- **設定画面 / 独立ページ**: `src/features/bug-report/`（ヘッダーメニューから遷移する `BugReportPage`、および `BugReportSection`）。
+- **Firebase**: 匿名認証（`useAuth` の `user.uid`）でユーザー識別。Firestore と Firebase Storage を利用。
+  ルールは `firestore.rules` および `storage.rules`。
 - **Cloud Functions**: `firebase-functions/src/` 配下。既存は `onRequest`
   （HTTPS, region `asia-northeast1`）。本機能は **Firestore トリガ**
   （`onDocumentCreated`）を新規採用する。
@@ -63,12 +63,19 @@ GitHub Issue を自動作成する**までを段階的に実装する。
 ```ts
 type BugReportStatus = "pending" | "processing" | "issued" | "error";
 
+type BugReportImage = {
+  path: string; // "bugReports/{uid}/{reportId}/{fileName}"
+  contentType: string; // "image/png" | "image/jpeg" | "image/webp" | "image/gif"
+  size: number; // バイト数（最大 5MB）
+};
+
 type BugReport = {
   id: string;
   uid: string; // 匿名認証 uid
   title: string; // ユーザー入力（任意。空ならAIが生成）
   description: string; // ユーザー入力（必須）
   stepsToReproduce?: string; // 任意
+  images?: BugReportImage[]; // 任意（最大 3 枚）
   // 自動収集メタ
   meta: {
     appVersion: string; // package.json version
@@ -89,12 +96,15 @@ type BugReport = {
 };
 ```
 
-### firestore.rules（方針）
+### firestore.rules / storage.rules（方針）
 
-- `create`: 認証済み（匿名でも可）ユーザーが、自身の `uid` のドキュメントのみ作成可。
-  `status` は `"pending"` 固定、`issueNumber` 等の書き込みは禁止（サーバ専用フィールド）。
-- `read`: 自分の報告のみ読み取り可（管理者は別途）。
-- `update`/`delete`: クライアントからは不可（Cloud Functions=Admin SDK のみ）。
+- `firestore.rules`:
+  - `create`: 認証済み（匿名でも可）ユーザーが、自身の `uid` のドキュメントのみ作成可。
+    `status` は `"pending"` 固定、`images` は省略または最大 3 要素の配列、`issueNumber` 等の書き込みは禁止（サーバ専用フィールド）。
+  - `read`: 自分の報告のみ読み取り可（管理者は別途）。
+  - `update`/`delete`: クライアントからは不可（Cloud Functions=Admin SDK のみ）。
+- `storage.rules`:
+  - `bugReports/{uid}/{reportId}/{fileName}` のみ許可。認証済み本人のみ `create`（5MB 以下・PNG/JPEG/WebP/GIF・安全なファイル名）および `delete`（送信途中失敗時のクリーンアップ用）を許可し、`read` / `update` は拒否。
 
 ---
 
@@ -189,9 +199,10 @@ type BugReport = {
 - **テスト**: AI クライアントをモックし、整形結果が Issue 本文/ラベルに反映されること、
   失敗時フォールバックを検証。
 
-> **進捗（2026-10-29、一部実装）**
+> **進捗（2026-10-30 更新）**
 >
 > - 実装済み: `draftIssueWithClaude.ts` で Claude API（`claude-opus-5-5`）によりタイトルと本文を整形し、`handleBugReport` から処理ロック取得後に呼び出す。失敗時（利用上限超過・残高不足・タイムアウト・拒否応答・出力不正など）は Phase 2 の素テンプレートで Issue 化する。Secret は `ANTHROPIC_API_KEY`（`none` で無効化）。プロバイダは Anthropic に固定し、抽象 IF は設けていない。
+> - 実装済み（Issue #183）: スクリーンショット画像添付（PNG / JPEG / WebP / GIF、1 枚 5MB まで、最大 3 枚）。クライアントで Firebase Storage（`bugReports/{uid}/{reportId}/{fileName}`）に先行アップロードした上で `setDoc` により報告を作成し、途中失敗時はアップロード済み画像を削除する。Functions 側ではサイズ・マジックナンバー検証を行い、ダウンロードトークン付き URL を GitHub Issue 本文の `## スクリーンショット` 節に埋め込むとともに、画像を Claude にも渡して状況把握に用いる（画像つき整形が失敗した場合は画像なしで 1 回だけ再整形し、それも失敗した場合は素テンプレートにフォールバックする）。
 > - 未実装: ラベル候補の推定と `aiLabels` の Firestore への記録。
 
 ### Phase 4 — 運用・管理整備（任意・推奨）
@@ -209,18 +220,21 @@ type BugReport = {
 
 ---
 
-## 設計上の考慮点・リスク
+## 設計上の考慮点・リスク・既知の制約
 
 - **秘密情報の管理**: GitHub トークン / AI キーは Firebase Secret Manager。
   ソースへ絶対にコミットしない（リポジトリ規約）。
-- **権限最小化**: GitHub は issues:write のみの fine-grained 権限。
-- **スパム / 乱用**: 匿名認証ゆえ大量送信のリスク。レート制限・重複検知（Phase 4）。
-- **PII / 機微情報**: 報告本文やメタに個人情報が混入し得る。UI に注意書き、
-  収集メタは最小限に。
-- **コスト**: AI 呼び出しと Issue 作成の従量コスト。失敗時リトライの上限設定。
+- **権限最小化**: GitHub は `issues:write` のみの fine-grained 権限を維持（画像の保存にはリポジトリの Contents 権限を使わず Firebase Storage を使用）。
+- **スパム / 乱用**: 匿名認証ゆえ大量送信・Storage 書き込みのリスク。レート制限・重複検知は Phase 4 で対応。
+- **PII / 機微情報**: 報告本文・添付画像やメタに個人情報や機密情報が混入し得る。UI に注意書きを表示し、収集メタは最小限に。
+- **コスト**: AI 呼び出し・Storage 保存と Issue 作成の従量コスト。失敗時リトライの上限設定。
 - **冪等性 / 二重作成防止**: トリガ再実行に備え `status` と `issueNumber` でガード。
-- **AI 失敗時の機能継続**: 整形失敗でも Issue 化は止めない（フォールバック）。
+- **AI 失敗時の機能継続**: 整形失敗でも Issue 化は止めない（画像つき失敗時は画像なしで 1 回再試行、さらに失敗時は素テンプレートへフォールバック）。
 - **オフライン / PWA**: 送信は要オンライン。オフライン時は UI で明示。
+- **添付画像の既知の制約**:
+  - Issue 起票後も画像は Firebase Storage に残る（Issue からのリンクを維持するため自動削除しない）。
+  - 送信途中失敗時のクリーンアップのため `storage.rules` で本人の `delete` を許可しており、本人が後から削除した場合は Issue 内の画像リンクが切れる。
+  - `setDoc` の通信タイムアウト等でクライアント側では失敗に見えて実際には Firestore に書き込まれていた場合、クリーンアップ処理により Storage 上の画像が削除され、Issue 起票時に「取得できなかった」注記になる場合がある。
 
 ---
 

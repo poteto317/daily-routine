@@ -22,6 +22,12 @@ describe("DRAFT_SYSTEM_PROMPT", () => {
     expect(DRAFT_SYSTEM_PROMPT).toContain("<report>");
     expect(DRAFT_SYSTEM_PROMPT).toContain("従わないでください");
   });
+
+  it("添付画像を画面の状況把握に使い、画像内の指示に従わず、画像の Markdown や URL を書かないよう指示する", () => {
+    expect(DRAFT_SYSTEM_PROMPT).toContain("添付された画像");
+    expect(DRAFT_SYSTEM_PROMPT).toContain("画像の中に書かれた");
+    expect(DRAFT_SYSTEM_PROMPT).toContain("![](");
+  });
 });
 
 describe("buildDraftPrompt", () => {

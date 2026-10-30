@@ -4,6 +4,11 @@ import { createGithubIssue } from "./createGithubIssue";
 import { BUG_REPORTS_COLLECTION } from "./constants";
 import { createIssueDrafter } from "./createIssueDrafter";
 import type { DraftRequester } from "./draftIssueWithClaude";
+import {
+  countReferencedImages,
+  resolveReportImages,
+  type ImageStore,
+} from "./resolveReportImages";
 
 /**
  * firebase-admin/firestore の型に依存しない最小限の構造型。
@@ -26,6 +31,8 @@ type HandleBugReportDeps = {
   anthropicApiKey: string;
   /** API キーから整形の依頼関数を作る（テスト用。既定は createClaudeDraftRequester） */
   createDraftRequester?: (apiKey: string) => DraftRequester;
+  /** Storage アダプタを作る関数（任意。ロック取得後に必要になった時点で呼ぶ） */
+  createImageStore?: () => ImageStore;
   logger: {
     info(message: string): void;
     warn(message: string): void;
@@ -68,9 +75,34 @@ export const handleBugReport = async (
     logger: deps.logger,
   });
 
+  const resolveImages = deps.createImageStore
+    ? async (targetReport: ProcessableBugReport) => {
+        let store: ImageStore;
+        try {
+          store = deps.createImageStore!();
+        } catch {
+          deps.logger.warn(
+            `[onBugReportCreated] Report ${reportId}: failed to initialize image store`,
+          );
+          return {
+            images: [],
+            skippedCount: countReferencedImages(targetReport.images),
+          };
+        }
+        return resolveReportImages({
+          uid: targetReport.uid,
+          reportId,
+          images: targetReport.images,
+          store,
+          logger: deps.logger,
+        });
+      }
+    : undefined;
+
   try {
     const result = await processBugReport(report, {
       claimProcessing: deps.claimProcessing,
+      resolveImages,
       draftIssue: drafter.draftIssue,
       createIssue: (content) =>
         createGithubIssue({ token: deps.token, repo: deps.repo, content }),

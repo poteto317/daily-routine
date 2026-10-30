@@ -15,9 +15,17 @@ jest.mock("../api", () => ({
 
 const mockedSubmit = submitBugReport as jest.Mock;
 
+const createFile = (name: string, type = "image/png"): File =>
+  new File([new Uint8Array(8)], name, { type });
+
 describe("BugReportPage", () => {
+  let urlCounter = 0;
+
   beforeEach(() => {
     jest.clearAllMocks();
+    urlCounter = 0;
+    URL.createObjectURL = jest.fn(() => `blob:page-${++urlCounter}`);
+    URL.revokeObjectURL = jest.fn();
   });
 
   it("ページのタイトルとフォームを表示する", () => {
@@ -57,10 +65,13 @@ describe("BugReportPage", () => {
     );
 
     await waitFor(() => {
-      expect(mockedSubmit).toHaveBeenCalledWith({
-        description: "通知が表示されない",
-        stepsToReproduce: "",
-      });
+      expect(mockedSubmit).toHaveBeenCalledWith(
+        {
+          description: "通知が表示されない",
+          stepsToReproduce: "",
+        },
+        [],
+      );
     });
     expect(await screen.findByText(texts.status.success)).toBeInTheDocument();
   });
@@ -145,10 +156,54 @@ describe("BugReportPage", () => {
     );
 
     await waitFor(() => {
-      expect(mockedSubmit).toHaveBeenCalledWith({
-        description: "不具合の内容",
-        stepsToReproduce: "1. 操作する",
-      });
+      expect(mockedSubmit).toHaveBeenCalledWith(
+        {
+          description: "不具合の内容",
+          stepsToReproduce: "1. 操作する",
+        },
+        [],
+      );
+    });
+  });
+
+  it("画像を選択して外し、残った画像とともに送信すると submitBugReport の第2引数に渡り、成功後にサムネイルが消える", async () => {
+    mockedSubmit.mockResolvedValue("report-with-images");
+    render(<BugReportPage />);
+
+    const f1 = createFile("first.png");
+    const f2 = createFile("second.jpg", "image/jpeg");
+
+    fireEvent.change(screen.getByLabelText(texts.form.imagesLabel), {
+      target: { files: [f1, f2] },
+    });
+
+    expect(screen.getByAltText("添付画像 1")).toBeInTheDocument();
+    expect(screen.getByAltText("添付画像 2")).toBeInTheDocument();
+
+    // 1枚目を外す
+    fireEvent.click(screen.getByRole("button", { name: "添付画像 1 を外す" }));
+    expect(screen.queryByAltText("添付画像 2")).not.toBeInTheDocument();
+    expect(screen.getByAltText("添付画像 1")).toBeInTheDocument();
+
+    fireEvent.change(screen.getByLabelText(texts.form.descriptionLabel), {
+      target: { value: "画面が崩れる" },
+    });
+    fireEvent.click(
+      screen.getByRole("button", { name: texts.form.submitLabel }),
+    );
+
+    await waitFor(() => {
+      expect(mockedSubmit).toHaveBeenCalledWith(
+        {
+          description: "画面が崩れる",
+          stepsToReproduce: "",
+        },
+        [f2],
+      );
+    });
+
+    await waitFor(() => {
+      expect(screen.queryByAltText("添付画像 1")).not.toBeInTheDocument();
     });
   });
 });

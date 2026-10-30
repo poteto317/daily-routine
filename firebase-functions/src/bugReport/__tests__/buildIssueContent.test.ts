@@ -390,3 +390,108 @@ describe("buildIssueContent — Claude の整形結果（draft）あり", () => 
     );
   });
 });
+
+describe("buildIssueContent — スクリーンショットセクション (IssueImageSection)", () => {
+  const draft: IssueDraft = {
+    title: "保存ボタンが反応しない",
+    body: "## 不具合の内容\n\n押しても保存されない",
+  };
+
+  it("画像セクション未指定または { images: [], skippedCount: 0 } の場合は従来と完全に同じ本文になる", () => {
+    const baseline = buildIssueContent(baseReport);
+    const withEmptySection = buildIssueContent(baseReport, null, {
+      images: [],
+      skippedCount: 0,
+    });
+    expect(withEmptySection.body).toBe(baseline.body);
+    expect(withEmptySection.body).not.toContain("## スクリーンショット");
+  });
+
+  it("従来の本文（draft なし）で画像 2 件がある場合、再現手順の後・環境情報の前に順番通り含まれる", () => {
+    const reportWithSteps: BugReportContentSource = {
+      ...baseReport,
+      stepsToReproduce: "1. 設定を開く\n2. 保存を押す",
+    };
+    const content = buildIssueContent(reportWithSteps, null, {
+      images: [
+        { url: "https://example.test/img1.png" },
+        { url: "https://example.test/img2.jpg" },
+      ],
+      skippedCount: 0,
+    });
+
+    const stepsIdx = content.body.indexOf("## 再現手順");
+    const shotsIdx = content.body.indexOf("## スクリーンショット");
+    const img1Idx = content.body.indexOf(
+      "![スクリーンショット 1](https://example.test/img1.png)",
+    );
+    const img2Idx = content.body.indexOf(
+      "![スクリーンショット 2](https://example.test/img2.jpg)",
+    );
+    const envIdx = content.body.indexOf("## 環境情報");
+
+    expect(stepsIdx).toBeGreaterThanOrEqual(0);
+    expect(shotsIdx).toBeGreaterThan(stepsIdx);
+    expect(img1Idx).toBeGreaterThan(shotsIdx);
+    expect(img2Idx).toBeGreaterThan(img1Idx);
+    expect(envIdx).toBeGreaterThan(img2Idx);
+    expect(content.body).not.toContain("取得できなかったため");
+  });
+
+  it("整形後の本文（draft あり）で画像 1 件がある場合、整形本文の後・環境情報の前にスクリーンショット節が入る", () => {
+    const content = buildIssueContent(baseReport, draft, {
+      images: [{ url: "https://example.test/shot.png" }],
+      skippedCount: 0,
+    });
+
+    expect(content.body.startsWith(draft.body)).toBe(true);
+    expect(content.body).not.toContain(baseReport.description);
+    const shotsIdx = content.body.indexOf("## スクリーンショット");
+    const envIdx = content.body.indexOf("## 環境情報");
+    expect(shotsIdx).toBeGreaterThan(0);
+    expect(envIdx).toBeGreaterThan(shotsIdx);
+    expect(content.body).toContain(
+      "![スクリーンショット 1](https://example.test/shot.png)",
+    );
+  });
+
+  it("skippedCount が 1 以上で画像 0 件の場合は取得失敗の注記のみを含める", () => {
+    const content = buildIssueContent(baseReport, null, {
+      images: [],
+      skippedCount: 2,
+    });
+
+    expect(content.body).toContain("## スクリーンショット");
+    expect(content.body).toContain(
+      "（添付された画像 2 枚を取得できなかったため掲載していません）",
+    );
+    expect(content.body).not.toContain("![スクリーンショット");
+  });
+
+  it("画像 1 件 + skippedCount 2 の場合は画像と注記の両方を含める", () => {
+    const content = buildIssueContent(baseReport, draft, {
+      images: [{ url: "https://example.test/ok.png" }],
+      skippedCount: 2,
+    });
+
+    expect(content.body).toContain("## スクリーンショット");
+    expect(content.body).toContain(
+      "![スクリーンショット 1](https://example.test/ok.png)",
+    );
+    expect(content.body).toContain(
+      "（添付された画像 2 枚を取得できなかったため掲載していません）",
+    );
+  });
+
+  it("画像 URL に @ が含まれる場合は sanitizeMention でゼロ幅スペースが挿入される", () => {
+    const content = buildIssueContent(baseReport, null, {
+      images: [{ url: "https://example.test/@evil/shot.png" }],
+      skippedCount: 0,
+    });
+
+    expect(content.body).toContain(
+      `![スクリーンショット 1](https://example.test/@${ZERO_WIDTH_SPACE}evil/shot.png)`,
+    );
+    expect(content.body).not.toMatch(/@evil/);
+  });
+});

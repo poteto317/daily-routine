@@ -2,11 +2,21 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { BugReportForm } from "../components/BugReportForm";
 import texts from "../locales/ja.json";
 
+const defaultImageAttachments = {
+  images: [] as File[],
+  previews: [] as string[],
+  errors: [] as ("unsupportedType" | "tooLarge" | "tooMany")[],
+  addImages: jest.fn(),
+  removeImage: jest.fn(),
+  clearImages: jest.fn(),
+};
+
 const defaultProps = {
   description: "",
   setDescription: jest.fn(),
   stepsToReproduce: "",
   setStepsToReproduce: jest.fn(),
+  imageAttachments: defaultImageAttachments,
   status: "idle" as const,
   errorMessage: "",
   handleSubmit: jest.fn().mockResolvedValue(undefined),
@@ -23,6 +33,7 @@ describe("BugReportForm", () => {
       screen.getByLabelText(texts.form.descriptionLabel),
     ).toBeInTheDocument();
     expect(screen.getByLabelText(texts.form.stepsLabel)).toBeInTheDocument();
+    expect(screen.getByLabelText(texts.form.imagesLabel)).toBeInTheDocument();
   });
 
   it("props の値を各フィールドに反映する", () => {
@@ -93,18 +104,36 @@ describe("BugReportForm", () => {
     expect(handleSubmit).toHaveBeenCalledTimes(1);
   });
 
-  it("status が idle のときボタンは enabled で送信ラベルを表示する", () => {
+  it("status が idle のときボタンとファイル入力は enabled になる", () => {
     render(<BugReportForm {...defaultProps} status="idle" />);
     const button = screen.getByRole("button", { name: texts.form.submitLabel });
     expect(button).not.toBeDisabled();
+    expect(screen.getByLabelText(texts.form.imagesLabel)).not.toBeDisabled();
   });
 
-  it("status が submitting のときボタンは disabled で送信中ラベルを表示する", () => {
-    render(<BugReportForm {...defaultProps} status="submitting" />);
+  it("status が submitting のとき説明・再現手順・画像ピッカー・ボタンがすべて disabled になる", () => {
+    const file = new File([new Uint8Array(8)], "1.png", { type: "image/png" });
+    render(
+      <BugReportForm
+        {...defaultProps}
+        status="submitting"
+        imageAttachments={{
+          ...defaultImageAttachments,
+          images: [file],
+          previews: ["blob:1"],
+        }}
+      />,
+    );
+    expect(screen.getByLabelText(texts.form.descriptionLabel)).toBeDisabled();
+    expect(screen.getByLabelText(texts.form.stepsLabel)).toBeDisabled();
     const button = screen.getByRole("button", {
       name: texts.form.submittingLabel,
     });
     expect(button).toBeDisabled();
+    expect(screen.getByLabelText(texts.form.imagesLabel)).toBeDisabled();
+    expect(
+      screen.getByRole("button", { name: "添付画像 1 を外す" }),
+    ).toBeDisabled();
   });
 
   it("privacyNote を表示する", () => {
@@ -132,5 +161,9 @@ describe("BugReportForm", () => {
     expect(
       screen.getByRole("textbox", { name: texts.form.stepsLabel }),
     ).toHaveAttribute("id", "bug-steps");
+    expect(screen.getByLabelText(texts.form.imagesLabel)).toHaveAttribute(
+      "id",
+      "bug-images",
+    );
   });
 });

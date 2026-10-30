@@ -143,4 +143,37 @@ describe("buildBugReportPayload", () => {
     expect(payload).not.toHaveProperty("createdAt");
     expect(payload).not.toHaveProperty("updatedAt");
   });
+
+  it("images が未指定または空配列のとき payload に images キーを含めない", () => {
+    const payload1 = buildBugReportPayload(
+      { description: "説明" },
+      "uid",
+      meta,
+    );
+    const payload2 = buildBugReportPayload(
+      { description: "説明" },
+      "uid",
+      meta,
+      [],
+    );
+    expect(payload1).not.toHaveProperty("images");
+    expect(payload2).not.toHaveProperty("images");
+  });
+
+  it("images が 1 件以上指定されたとき payload.images に設定する", () => {
+    const imgs = [
+      {
+        path: "bugReports/uid/r1/a.png",
+        contentType: "image/png",
+        size: 100,
+      },
+    ];
+    const payload = buildBugReportPayload(
+      { description: "説明" },
+      "uid",
+      meta,
+      imgs,
+    );
+    expect(payload.images).toEqual(imgs);
+  });
 });

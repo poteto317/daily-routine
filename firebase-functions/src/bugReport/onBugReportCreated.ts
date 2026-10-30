@@ -2,10 +2,12 @@ import { onDocumentCreated } from "firebase-functions/v2/firestore";
 import * as logger from "firebase-functions/logger";
 import type * as admin from "firebase-admin";
 import { FieldValue, type Timestamp } from "firebase-admin/firestore";
+import { getStorage } from "firebase-admin/storage";
 import { BUG_REPORTS_COLLECTION } from "./constants";
 import { anthropicApiKey, githubToken, githubRepo } from "./config";
 import { handleBugReport } from "./handleBugReport";
 import { canClaimProcessing } from "./canClaimProcessing";
+import { createStorageImageStore } from "./storageImageStore";
 
 /**
  * bugReports ドキュメント作成時に GitHub Issue を自動作成する Firestore トリガ。
@@ -16,8 +18,9 @@ export const onBugReportCreated = (db: admin.firestore.Firestore) =>
     {
       document: `${BUG_REPORTS_COLLECTION}/{reportId}`,
       region: "asia-northeast1",
-      // Claude 最大 45 秒 + GitHub 最大 30 秒 + Firestore の読み書きが収まる長さ
-      timeoutSeconds: 120,
+      // Claude 最大 45 秒（画像つきの失敗後に画像なしで再整形して最大 45 秒）+ GitHub 最大 30 秒 + 画像の取得・Firestore の読み書きが収まる長さ
+      timeoutSeconds: 180,
+      memory: "512MiB",
       secrets: [githubToken, anthropicApiKey],
     },
     async (event) => {
@@ -60,6 +63,7 @@ export const onBugReportCreated = (db: admin.firestore.Firestore) =>
         repo: githubRepo.value(),
         token: githubToken.value(),
         anthropicApiKey: anthropicApiKey.value(),
+        createImageStore: () => createStorageImageStore(getStorage().bucket()),
         logger,
         now: () => FieldValue.serverTimestamp(),
         claimProcessing,

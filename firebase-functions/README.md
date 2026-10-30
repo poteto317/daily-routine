@@ -54,8 +54,11 @@ firebase-functions/
     ├── bugReport/             # 不具合報告 GitHub Issue 起票
     │   ├── onBugReportCreated.ts # Firestore トリガーと Secret の宣言
     │   ├── handleBugReport.ts    # 最新の報告を読み直し、起票処理を実行して結果を記録する
-    │   ├── processBugReport.ts   # 処理ロック → 整形 → 起票 → 状態更新の手順
-    │   ├── draftIssueWithClaude.ts # Claude による Issue の整形
+    │   ├── processBugReport.ts   # 処理ロック → 画像解決 → 整形 → 起票 → 状態更新の手順
+    │   ├── resolveReportImages.ts# Storage から添付画像を検証・取得し URL を発行する
+    │   ├── storageImageStore.ts  # Firebase Storage Bucket アダプタ（ダウンロードトークン URL 生成）
+    │   ├── imageFormats.ts       # 許可画像形式とマジックナンバー判定
+    │   ├── draftIssueWithClaude.ts # Claude による Issue の整形（画像入力対応）
     │   └── createGithubIssue.ts  # GitHub REST API の呼び出し
     ├── notifications.ts       # 通知チェックスケジューラー (毎分)
     ├── notificationCleanup.ts # 通知送信履歴の定期クリーンアップ (毎日 00:00 JST)
@@ -95,19 +98,20 @@ firebase-functions/
 - **トリガー**: `bugReports/{reportId}` ドキュメントの新規作成（Firestore `onCreate`）
 - **動作フロー**:
   1. クライアントが作成した報告ドキュメント（`status: "pending"`）を検知
-  2. 処理ロックを取得した後、Claude（`claude-opus-5-5`）で Issue のタイトルと本文を整形（下記「Claude による整形」）
-  3. Secret に設定された GitHub Personal Access Token を使用して GitHub REST API を呼び出し、リポジトリに `bug`・`user-report` ラベル付き Issue を自動起票
-  4. 成功時: ドキュメントを `status: "issued"`, `issueNumber`, `issueUrl`, `updatedAt` で更新
-  5. 失敗時: `status: "error"`, `errorMessage` を記録。GitHub の応答が 30 秒以内に返らず打ち切った場合、Issue が作られていても `status: "error"`（`issueNumber` なし）になることがある。手で起票し直す前に、同じ時刻・同じ報告者 uid の `user-report` Issue が GitHub に無いか確認する（二重起票を防ぐため）
+  2. 処理ロックを取得した後、添付画像（`images`）がある場合は Firebase Storage から取得してサイズ・マジックナンバー検証を行い、ダウンロードトークン付き URL を発行する
+  3. Claude（`claude-opus-5-5`）で Issue のタイトルと本文を整形（下記「Claude による整形」）。添付画像がある場合は画像も Claude に渡す
+  4. Secret に設定された GitHub Personal Access Token を使用して GitHub REST API を呼び出し、リポジトリに `bug`・`user-report` ラベル付き Issue を自動起票（添付画像は本文の `## スクリーンショット` 節に埋め込む）
+  5. 成功時: ドキュメントを `status: "issued"`, `issueNumber`, `issueUrl`, `updatedAt` で更新
+  6. 失敗時: `status: "error"`, `errorMessage` を記録。GitHub の応答が 30 秒以内に返らず打ち切った場合、Issue が作られていても `status: "error"`（`issueNumber` なし）になることがある。手で起票し直す前に、同じ時刻・同じ報告者 uid の `user-report` Issue が GitHub に無いか確認する（二重起票を防ぐため）
 - **設定値**:
-  - `GITHUB_TOKEN`（Secret）: GitHub 個人アクセストークン（`repo` スコープ）
+  - `GITHUB_TOKEN`（Secret）: GitHub 個人アクセストークン（`issues:write` 権限）
   - `GITHUB_REPO`（文字列パラメータ）: 対象リポジトリ名（例: `poteto317/daily-routine`。未設定時はデフォルト値を使用）
   - `ANTHROPIC_API_KEY`（Secret）: Claude による整形に使う Anthropic の API キー。Claude を使わない場合は `none` を登録する（Secret の値を変えたら関数の再デプロイが必要。Functions v2 はデプロイ時点の Secret のバージョンを使うため）。止め方・再開の仕方とトラブル対応は「6. Claude による整形の停止・再開とトラブル対応」を参照
   - 設定手順の詳細は `docs/02-development/bug-report-secrets-config.md` を参照
 - **Claude による整形**:
-  - 説明・再現手順・入力タイトル・画面の URL を Claude に渡し、要約したタイトル（`[不具合報告] ` を前置）と Markdown の本文を作る。uid や User-Agent は渡さない。環境情報と報告者 uid は今までどおり本文の末尾に付き、注記は「Claude で整形されました」になる
-  - 失敗した場合（利用上限への到達・残高不足・障害・タイムアウト・無効なキー・拒否応答・空の出力など）は、従来の内容（入力タイトル、無ければ説明の先頭から作るタイトルと、報告文そのままの本文）で起票する。再試行はしない（Claude 最大 45 秒、GitHub 最大 30 秒、関数のタイムアウトは 120 秒）
-  - 関数ログの info `Bug report <id> processed: ... (repo=..., content=<値>)` で結果が分かる。`content=claude` は整形できた、`content=fallback` は従来の内容で起票した（失敗、`none`、または説明が空白だけ）、`content=none` はスキップ・ロック取得失敗で整形を試みなかったことを表す（`content` は整形の結果だけを表す。起票の成否は `processed:` の値 `issued` / `error` / `skipped` で判断する）。失敗時は warn `Claude による整形に失敗したため従来の内容で起票します (<理由>)` に理由が出る（API キー・報告本文・エラーメッセージ本文は出さない）。理由は API 呼び出しの失敗（`api_error(status=<HTTP ステータス>)`・`timeout`・`connection_error`）か、応答を採用できなかったこと（`refusal`: 拒否応答、`max_tokens`: 出力が上限で打ち切られた、`no_text_output`: テキストの出力が無い、`invalid_output`: JSON でない・形式が合わない、`empty_output`: タイトル（先頭の `[不具合報告]` を除く）か本文が空）のどれか。それ以外の例外は `unknown(<クラス名>)`（SDK の想定外のエラーは `parse_failed`）。理由ごとの対処は「6. Claude による整形の停止・再開とトラブル対応」を参照
+  - 説明・再現手順・入力タイトル・画面の URL（および有効な添付画像）を Claude に渡し、要約したタイトル（`[不具合報告] ` を前置）と Markdown の本文を作る。uid や User-Agent は渡さない。環境情報と報告者 uid は今までどおり本文の末尾に付き、注記は「Claude で整形されました」になる
+  - 画像つきの整形が失敗した場合は、画像なしで 1 回だけ再整形を試みる。それでも失敗した場合（または画像なしで失敗した場合）は、従来の内容（入力タイトル、無ければ説明の先頭から作るタイトルと、報告文そのままの本文）で起票する（Claude 最大 45 秒 × 最大 2 回、GitHub 最大 30 秒、関数のタイムアウトは 180 秒、メモリは 512MiB）
+  - 関数ログの info `Bug report <id> processed: ... (repo=..., content=<値>)` で結果が分かる。`content=claude` は整形できた、`content=fallback` は従来の内容で起票した（失敗、`none`、または説明が空白だけ）、`content=none` はスキップ・ロック取得失敗で整形を試みなかったことを表す（`content` は整形の結果だけを表す。起票の成否は `processed:` の値 `issued` / `error` / `skipped` で判断する）。失敗時は warn `Claude による整形に失敗したため従来の内容で起票します (<理由>)`（画像つき失敗時は `画像つきの整形に失敗したため画像なしで再整形します (<理由>)`）に理由が出る（API キー・報告本文・エラーメッセージ本文は出さない）。理由は API 呼び出しの失敗（`api_error(status=<HTTP ステータス>)`・`timeout`・`connection_error`）か、応答を採用できなかったこと（`refusal`: 拒否応答、`max_tokens`: 出力が上限で打ち切られた、`no_text_output`: テキストの出力が無い、`invalid_output`: JSON でない・形式が合わない、`empty_output`: タイトル（先頭の `[不具合報告]` を除く）か本文が空）のどれか。それ以外の例外は `unknown(<クラス名>)`（SDK の想定外のエラーは `parse_failed`）。理由ごとの対処は「6. Claude による整形の停止・再開とトラブル対応」を参照
   - 注意: ログインユーザーが連投すると、Anthropic 側の月の利用上限を使い切りうる（その後は従来の内容で起票される）。報告のレート制限は未実装
 
 ### 3. 通知系関数 (`syncRoutines`, `checkNotifications`, `cleanupNotifications`)

@@ -31,6 +31,7 @@ const useAuthState = (auth: Auth | null) => {
     app: null,
     messaging: null,
     firestore: null,
+    storage: null,
     auth,
   });
 };

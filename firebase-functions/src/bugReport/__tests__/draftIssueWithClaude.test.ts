@@ -4,7 +4,9 @@ import {
   CLAUDE_MAX_TOKENS,
   CLAUDE_MODEL,
   IssueDraftError,
+  buildDraftRequest,
   draftIssueWithClaude,
+  type DraftImage,
   type DraftRequest,
   type DraftResponse,
 } from "../draftIssueWithClaude";
@@ -46,8 +48,7 @@ const capturedRequest = (requestDraft: jest.Mock): DraftRequest =>
   requestDraft.mock.calls[0][0] as DraftRequest;
 
 /** user メッセージの本文を取り出す */
-const userContent = (request: DraftRequest): string =>
-  request.messages[0].content;
+const userContent = (request: DraftRequest) => request.messages[0].content;
 
 /** 指定の reason の IssueDraftError で reject されることを確かめる */
 const expectDraftError = async (
@@ -112,6 +113,78 @@ describe("draftIssueWithClaude", () => {
     const request = capturedRequest(requestDraft);
     expect(request.system).toBe(DRAFT_SYSTEM_PROMPT);
     expect(userContent(request)).toBe(buildDraftPrompt(report));
+  });
+
+  it("画像なしまたは空配列のとき buildDraftRequest の content は文字列になる", () => {
+    expect(buildDraftRequest(report).messages[0].content).toBe(
+      buildDraftPrompt(report),
+    );
+    expect(buildDraftRequest(report, []).messages[0].content).toBe(
+      buildDraftPrompt(report),
+    );
+  });
+
+  it("画像があるとき buildDraftRequest は先頭に base64 画像ブロック、末尾にテキストブロックを並べる", () => {
+    const img1: DraftImage = {
+      mediaType: "image/png",
+      data: Buffer.from("png-bytes-1"),
+    };
+    const img2: DraftImage = {
+      mediaType: "image/jpeg",
+      data: Buffer.from("jpeg-bytes-2"),
+    };
+
+    const req = buildDraftRequest(report, [img1, img2]);
+    expect(req.messages[0].content).toEqual([
+      {
+        type: "image",
+        source: {
+          type: "base64",
+          media_type: "image/png",
+          data: Buffer.from("png-bytes-1").toString("base64"),
+        },
+      },
+      {
+        type: "image",
+        source: {
+          type: "base64",
+          media_type: "image/jpeg",
+          data: Buffer.from("jpeg-bytes-2").toString("base64"),
+        },
+      },
+      {
+        type: "text",
+        text: buildDraftPrompt(report),
+      },
+    ]);
+  });
+
+  it("draftIssueWithClaude に images を渡すと requestDraft へ画像付きリクエストを渡す", async () => {
+    const requestDraft = jest
+      .fn()
+      .mockResolvedValue(okResponse({ title: "要約", body: "本文" }));
+    const img: DraftImage = {
+      mediaType: "image/webp",
+      data: Buffer.from("webp-bytes"),
+    };
+
+    await draftIssueWithClaude(report, requestDraft, [img]);
+
+    const request = capturedRequest(requestDraft);
+    expect(request.messages[0].content).toEqual([
+      {
+        type: "image",
+        source: {
+          type: "base64",
+          media_type: "image/webp",
+          data: Buffer.from("webp-bytes").toString("base64"),
+        },
+      },
+      {
+        type: "text",
+        text: buildDraftPrompt(report),
+      },
+    ]);
   });
 
   it("stop_reason が refusal なら、JSON でない拒否の文面でも IssueDraftError(refusal) を投げる", async () => {

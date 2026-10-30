@@ -2,6 +2,7 @@ import { getApps, initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getMessaging, isSupported } from "firebase/messaging";
+import { getStorage } from "firebase/storage";
 import { initializeFirebaseIfConfigured } from "../initialize";
 import { getFirebaseState, setFirebaseState } from "../state";
 
@@ -18,6 +19,9 @@ jest.mock("firebase/auth", () => ({
 }));
 jest.mock("firebase/firestore", () => ({
   getFirestore: jest.fn(() => ({ id: "firestore" })),
+}));
+jest.mock("firebase/storage", () => ({
+  getStorage: jest.fn(() => ({ id: "storage" })),
 }));
 jest.mock("firebase/messaging", () => ({
   getMessaging: jest.fn(() => ({ id: "messaging" })),
@@ -44,6 +48,7 @@ describe("initializeFirebaseIfConfigured", () => {
       app: null,
       auth: null,
       firestore: null,
+      storage: null,
       messaging: null,
     });
   });
@@ -57,7 +62,7 @@ describe("initializeFirebaseIfConfigured", () => {
     expect(getFirebaseState().app).toBeNull();
   });
 
-  it("App・Firestore・Auth を初期化して状態に保存する", () => {
+  it("App・Firestore・Auth・Storage を初期化して状態に保存する", () => {
     mockIsSupported.mockResolvedValue(false);
 
     initializeFirebaseIfConfigured();
@@ -66,8 +71,10 @@ describe("initializeFirebaseIfConfigured", () => {
     expect(state.app).toBe(mockApp);
     expect(getFirestore).toHaveBeenCalledWith(mockApp);
     expect(getAuth).toHaveBeenCalledWith(mockApp);
+    expect(getStorage).toHaveBeenCalledWith(mockApp);
     expect(state.firestore).toEqual({ id: "firestore" });
     expect(state.auth).toEqual({ id: "auth" });
+    expect(state.storage).toEqual({ id: "storage" });
   });
 
   it("ブラウザが Messaging に対応していれば Messaging も初期化する", async () => {

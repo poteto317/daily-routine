@@ -39,6 +39,7 @@ describe("getFCMToken", () => {
       app: null,
       auth: null,
       firestore: null,
+      storage: null,
       messaging,
     });
   });
@@ -55,6 +56,7 @@ describe("getFCMToken", () => {
       app: null,
       auth: null,
       firestore: null,
+      storage: null,
       messaging: null,
     });
 

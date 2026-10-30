@@ -31,6 +31,15 @@ export interface BugReportInput {
 }
 
 /**
+ * Storage へアップロードした添付画像の参照情報。
+ */
+export interface BugReportImage {
+  path: string;
+  contentType: string;
+  size: number;
+}
+
+/**
  * クライアントが Firestore へ書き込むペイロード。
  * サーバ専用フィールド（issueNumber 等）は含めない。
  * createdAt / updatedAt は serverTimestamp() を渡すため FieldValue を許容する。
@@ -41,6 +50,7 @@ export interface BugReportCreatePayload extends Required<
   uid: string;
   title: string;
   stepsToReproduce: string;
+  images?: BugReportImage[];
   meta: BugReportMeta;
   status: Extract<BugReportStatus, "pending">;
   createdAt: FieldValue;
@@ -57,6 +67,7 @@ export interface BugReport {
   title: string;
   description: string;
   stepsToReproduce?: string;
+  images?: BugReportImage[];
   meta: BugReportMeta;
   status: BugReportStatus;
   issueNumber?: number;
