@@ -6,11 +6,26 @@ import { useBudgetExpenseItemManagementPageState } from "../useBudgetExpenseItem
 import { BudgetAllowanceItemForm } from "./BudgetAllowanceItemForm";
 import { BudgetAllowanceItemRow } from "./BudgetAllowanceItemRow";
 import { BudgetAllowanceSectionEmptyState } from "./BudgetAllowanceSectionEmptyState";
+import { BudgetAllowanceSectionHeader } from "./BudgetAllowanceSectionHeader";
+import { BudgetExpenseItemSection } from "./BudgetExpenseItemSection";
 import texts from "../locales/ja.json";
 
 export const BudgetAllowanceSettingsPage = () => {
   const income = useBudgetIncomeItemManagementPageState();
   const expense = useBudgetExpenseItemManagementPageState();
+  const expenseSectionProps = {
+    showForm: expense.showForm,
+    editingItemId: expense.editingItemId,
+    editingItemName: expense.editingItemName,
+    editingItemAmount: expense.editingItemAmount,
+    onToggleKind: expense.toggleItemKind,
+    onChangeEditingName: expense.setEditingItemName,
+    onChangeEditingAmount: expense.setEditingItemAmount,
+    onCommitEdit: expense.commitEditItem,
+    onCancelEdit: expense.cancelEditItem,
+    onStartEdit: expense.startEditItem,
+    onDelete: expense.handleDelete,
+  };
 
   return (
     <div className="min-h-screen bg-linear-to-br from-green-50 to-emerald-100 dark:from-slate-400 dark:to-slate-300">
@@ -24,20 +39,11 @@ export const BudgetAllowanceSettingsPage = () => {
           </p>
 
           <section className="mb-8">
-            <div className="flex items-center justify-between gap-3 mb-3">
-              <h2 className="text-lg font-bold text-gray-800 dark:text-gray-900">
-                {texts.allowanceSettings.incomeSectionTitle}
-              </h2>
-              {!income.showForm && (
-                <button
-                  type="button"
-                  onClick={income.openForm}
-                  className="text-sm bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg font-medium transition-colors"
-                >
-                  {texts.allowanceSettings.addButton}
-                </button>
-              )}
-            </div>
+            <BudgetAllowanceSectionHeader
+              title={texts.allowanceSettings.incomeSectionTitle}
+              showAddButton={!income.showForm}
+              onAdd={income.openForm}
+            />
 
             {income.showForm && (
               <BudgetAllowanceItemForm
@@ -75,21 +81,16 @@ export const BudgetAllowanceSettingsPage = () => {
           </section>
 
           <section>
-            <div className="flex items-center justify-between gap-3 mb-3">
-              <h2 className="text-lg font-bold text-gray-800 dark:text-gray-900">
-                {texts.allowanceSettings.fixedExpenseSectionTitle} /{" "}
-                {texts.allowanceSettings.variableExpenseSectionTitle}
-              </h2>
-              {!expense.showForm && (
-                <button
-                  type="button"
-                  onClick={() => expense.openForm("fixed")}
-                  className="text-sm bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg font-medium transition-colors"
-                >
-                  {texts.allowanceSettings.addButton}
-                </button>
-              )}
-            </div>
+            <BudgetAllowanceSectionHeader
+              title={
+                <>
+                  {texts.allowanceSettings.fixedExpenseSectionTitle} /{" "}
+                  {texts.allowanceSettings.variableExpenseSectionTitle}
+                </>
+              }
+              showAddButton={!expense.showForm}
+              onAdd={() => expense.openForm("fixed")}
+            />
 
             {expense.showForm && (
               <BudgetAllowanceItemForm
@@ -105,59 +106,19 @@ export const BudgetAllowanceSettingsPage = () => {
               />
             )}
 
-            <h3 className="text-sm font-bold text-gray-600 dark:text-gray-700 mb-2">
-              {texts.allowanceSettings.fixedExpenseSectionTitle}
-            </h3>
-            {expense.fixedItems.length === 0 && !expense.showForm ? (
-              <BudgetAllowanceSectionEmptyState />
-            ) : (
-              <div className="space-y-2 mb-4">
-                {expense.fixedItems.map((item) => (
-                  <BudgetAllowanceItemRow
-                    key={item.id}
-                    item={item}
-                    kind={item.kind}
-                    onToggleKind={expense.toggleItemKind}
-                    isEditing={expense.editingItemId === item.id}
-                    editingName={expense.editingItemName}
-                    editingAmount={expense.editingItemAmount}
-                    onChangeEditingName={expense.setEditingItemName}
-                    onChangeEditingAmount={expense.setEditingItemAmount}
-                    onCommitEdit={expense.commitEditItem}
-                    onCancelEdit={expense.cancelEditItem}
-                    onStartEdit={expense.startEditItem}
-                    onDelete={expense.handleDelete}
-                  />
-                ))}
-              </div>
-            )}
+            <BudgetExpenseItemSection
+              title={texts.allowanceSettings.fixedExpenseSectionTitle}
+              items={expense.fixedItems}
+              listClassName="space-y-2 mb-4"
+              {...expenseSectionProps}
+            />
 
-            <h3 className="text-sm font-bold text-gray-600 dark:text-gray-700 mb-2">
-              {texts.allowanceSettings.variableExpenseSectionTitle}
-            </h3>
-            {expense.variableItems.length === 0 && !expense.showForm ? (
-              <BudgetAllowanceSectionEmptyState />
-            ) : (
-              <div className="space-y-2">
-                {expense.variableItems.map((item) => (
-                  <BudgetAllowanceItemRow
-                    key={item.id}
-                    item={item}
-                    kind={item.kind}
-                    onToggleKind={expense.toggleItemKind}
-                    isEditing={expense.editingItemId === item.id}
-                    editingName={expense.editingItemName}
-                    editingAmount={expense.editingItemAmount}
-                    onChangeEditingName={expense.setEditingItemName}
-                    onChangeEditingAmount={expense.setEditingItemAmount}
-                    onCommitEdit={expense.commitEditItem}
-                    onCancelEdit={expense.cancelEditItem}
-                    onStartEdit={expense.startEditItem}
-                    onDelete={expense.handleDelete}
-                  />
-                ))}
-              </div>
-            )}
+            <BudgetExpenseItemSection
+              title={texts.allowanceSettings.variableExpenseSectionTitle}
+              items={expense.variableItems}
+              listClassName="space-y-2"
+              {...expenseSectionProps}
+            />
           </section>
         </CardPanel>
       </main>

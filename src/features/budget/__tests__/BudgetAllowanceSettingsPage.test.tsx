@@ -223,4 +223,101 @@ describe("BudgetAllowanceSettingsPage", () => {
 
     expect(incomeState.handleDelete).toHaveBeenCalledWith(incomeItem);
   });
+
+  it("固定費の一覧は space-y-2 mb-4、変動費の一覧は space-y-2 で、それぞれの項目だけを含む", () => {
+    render(<BudgetAllowanceSettingsPage />);
+
+    const fixedList = screen.getByText("家賃").closest(".space-y-2");
+    const variableList = screen.getByText("食費").closest(".space-y-2");
+
+    expect(fixedList).toHaveAttribute("class", "space-y-2 mb-4");
+    expect(variableList).toHaveAttribute("class", "space-y-2");
+    expect(fixedList).not.toBe(variableList);
+    expect(fixedList).not.toHaveTextContent("食費");
+    expect(variableList).not.toHaveTextContent("家賃");
+  });
+
+  it("固定費・変動費が空のときは一覧を出さず空状態（mb-4なし）を表示し、フォームを開くと消える", () => {
+    const empty = { items: [], fixedItems: [], variableItems: [] };
+    mockUseIncomeState.mockReturnValue(
+      createIncomeState({ showForm: true }) as never,
+    );
+    mockUseExpenseState.mockReturnValue(createExpenseState(empty) as never);
+
+    const { container, rerender } = render(<BudgetAllowanceSettingsPage />);
+
+    const emptyViews = screen.getAllByText("項目はまだありません");
+    expect(emptyViews).toHaveLength(2);
+    emptyViews.forEach((view) => {
+      expect(view.parentElement).not.toHaveClass("mb-4");
+    });
+    const expenseSection = container.querySelectorAll("section")[1];
+    expect(expenseSection.querySelector(".space-y-2")).toBeNull();
+
+    mockUseExpenseState.mockReturnValue(
+      createExpenseState({ ...empty, showForm: true }) as never,
+    );
+    rerender(<BudgetAllowanceSettingsPage />);
+
+    expect(screen.queryByText("項目はまだありません")).not.toBeInTheDocument();
+    expect(
+      container.querySelectorAll("section")[1].querySelectorAll(".space-y-2"),
+    ).toHaveLength(2);
+  });
+
+  it("固定費・変動費の見出しを順に表示する", () => {
+    render(<BudgetAllowanceSettingsPage />);
+
+    const headings = screen
+      .getAllByRole("heading", { level: 3 })
+      .map((h) => h.textContent);
+    expect(headings).toEqual(["固定費", "変動費"]);
+  });
+
+  it("編集中の項目は固定費・変動費のどちらでも編集欄になり、コールバックが届く", () => {
+    const expenseState = createExpenseState({
+      editingItemId: "expense-1",
+      editingItemName: "家賃改",
+      editingItemAmount: "81000",
+    });
+    mockUseExpenseState.mockReturnValue(expenseState as never);
+
+    const { rerender } = render(<BudgetAllowanceSettingsPage />);
+
+    const nameInput = screen.getByLabelText("項目名");
+    expect(nameInput).toHaveValue("家賃改");
+    expect(screen.getByLabelText("金額")).toHaveValue(81000);
+    fireEvent.change(nameInput, { target: { value: "X" } });
+    expect(expenseState.setEditingItemName).toHaveBeenCalledWith("X");
+    fireEvent.change(screen.getByLabelText("金額"), {
+      target: { value: "5" },
+    });
+    expect(expenseState.setEditingItemAmount).toHaveBeenCalledWith("5");
+    fireEvent.click(screen.getByText("保存"));
+    expect(expenseState.commitEditItem).toHaveBeenCalledTimes(1);
+    fireEvent.click(screen.getAllByText("キャンセル")[0]);
+    expect(expenseState.cancelEditItem).toHaveBeenCalledTimes(1);
+    fireEvent.click(screen.getByLabelText("食費を編集"));
+    expect(expenseState.startEditItem).toHaveBeenCalledWith(variableItem);
+    fireEvent.click(screen.getByLabelText("食費を削除"));
+    expect(expenseState.handleDelete).toHaveBeenCalledWith(variableItem);
+    fireEvent.click(screen.getByLabelText("食費の分類を切り替える"));
+    expect(expenseState.toggleItemKind).toHaveBeenCalledWith("expense-2");
+
+    const variableEditing = createExpenseState({
+      editingItemId: "expense-2",
+      editingItemName: "食費改",
+      editingItemAmount: "31000",
+    });
+    mockUseExpenseState.mockReturnValue(variableEditing as never);
+    rerender(<BudgetAllowanceSettingsPage />);
+
+    expect(screen.getByLabelText("項目名")).toHaveValue("食費改");
+    fireEvent.click(screen.getByText("保存"));
+    expect(variableEditing.commitEditItem).toHaveBeenCalledTimes(1);
+    fireEvent.click(screen.getByLabelText("家賃を編集"));
+    expect(variableEditing.startEditItem).toHaveBeenCalledWith(fixedItem);
+    fireEvent.click(screen.getByLabelText("家賃を削除"));
+    expect(variableEditing.handleDelete).toHaveBeenCalledWith(fixedItem);
+  });
 });
