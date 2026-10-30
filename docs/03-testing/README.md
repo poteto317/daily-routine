@@ -74,6 +74,15 @@ npx cross-env TZ=Asia/Tokyo jest --forceExit \
 
 Firestore を使う流れでは、`snapshotRoundTrip.integration.test.ts` のように `firebase/firestore` をメモリ上の Map で動くフェイクに置き換え、`@/lib/firebase` の `getOrCreateUser` は固定のユーザーを返すようにします。実際の Firebase には接続しません。
 
+**テストの後片付け**
+
+`jest.config.ts` は `restoreMocks` を設定していないため、差し替えたものはテストファイルの中で戻します。戻さないと、同じファイルの後続のテストが差し替えられた値のまま動き、順序によって結果が変わります。
+
+- `global` / `window` / `navigator` / `document` の値の差し替えと、それらのオブジェクトのスパイ（`jest.spyOn(window, "confirm")` など）は、`afterEach` で戻します。`Date.prototype` などのプロトタイプのスパイも同じです。
+- `Object.defineProperty` で差し替えるときは、先に `Object.getOwnPropertyDescriptor` で元の定義を控えて `afterEach` で戻します。元の定義が無ければ `delete` します。差し替えには `configurable: true` を付けます。
+- `jest.useFakeTimers()` を使ったら `afterEach` で `jest.useRealTimers()` に戻します。
+- そのテストの中だけで作ったオブジェクト（DOM 要素やイベント）のスパイは、戻さなくてかまいません。
+
 **外部から入るデータの失敗経路のテスト**
 
 localStorage・Firestore・fetch の応答・Service Worker のメッセージを扱う関数は、成功だけでなく、例外・拒否された Promise・JSON として読めない本文・JSON としては正しいが形が違う値（`null`、配列とオブジェクトの取り違え、必須フィールドの欠落）のテストも書きます。
