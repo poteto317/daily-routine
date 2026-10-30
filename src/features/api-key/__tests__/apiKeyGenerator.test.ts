@@ -2,6 +2,12 @@ import { createHash, webcrypto } from "crypto";
 import { TextEncoder } from "util";
 import { API_KEY_PREFIX, generateApiKey, hashApiKey } from "../apiKeyGenerator";
 
+const originalCrypto = Object.getOwnPropertyDescriptor(globalThis, "crypto");
+const originalTextEncoder = Object.getOwnPropertyDescriptor(
+  globalThis,
+  "TextEncoder",
+);
+
 beforeAll(() => {
   // jsdom には crypto.subtle が無いため Node の webcrypto を使う
   Object.defineProperty(globalThis, "crypto", {
@@ -13,6 +19,19 @@ beforeAll(() => {
     value: TextEncoder,
     configurable: true,
   });
+});
+
+afterAll(() => {
+  if (originalCrypto) {
+    Object.defineProperty(globalThis, "crypto", originalCrypto);
+  } else {
+    delete (globalThis as { crypto?: unknown }).crypto;
+  }
+  if (originalTextEncoder) {
+    Object.defineProperty(globalThis, "TextEncoder", originalTextEncoder);
+  } else {
+    delete (globalThis as { TextEncoder?: unknown }).TextEncoder;
+  }
 });
 
 describe("generateApiKey", () => {

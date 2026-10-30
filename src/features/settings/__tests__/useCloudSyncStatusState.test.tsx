@@ -30,6 +30,9 @@ describe("useCloudSyncStatusState", () => {
     error: null,
   };
 
+  let addEventListenerSpy: jest.SpyInstance | undefined;
+  let removeEventListenerSpy: jest.SpyInstance | undefined;
+
   beforeEach(() => {
     jest.clearAllMocks();
     (getSyncStatus as jest.Mock).mockReturnValue(baseStatus);
@@ -39,8 +42,15 @@ describe("useCloudSyncStatusState", () => {
     );
   });
 
+  afterEach(() => {
+    addEventListenerSpy?.mockRestore();
+    removeEventListenerSpy?.mockRestore();
+    addEventListenerSpy = undefined;
+    removeEventListenerSpy = undefined;
+  });
+
   it("初期状態を同期 status から作り、イベント購読を登録する", () => {
-    const addEventListenerSpy = jest.spyOn(window, "addEventListener");
+    addEventListenerSpy = jest.spyOn(window, "addEventListener");
 
     const { result } = renderHook(() => useCloudSyncStatusState());
 
@@ -84,7 +94,7 @@ describe("useCloudSyncStatusState", () => {
 
   it("unmount 時にイベント購読と remote watcher を解除する", () => {
     const unsubscribe = jest.fn();
-    const removeEventListenerSpy = jest.spyOn(window, "removeEventListener");
+    removeEventListenerSpy = jest.spyOn(window, "removeEventListener");
 
     (watchRemoteChanges as jest.Mock).mockReturnValue(unsubscribe);
 

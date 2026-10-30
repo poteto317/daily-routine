@@ -12,7 +12,24 @@ import {
 } from "./useRoutines.test.setup";
 
 describe("useRoutines initial and mutations", () => {
+  const originalVisibilityState = Object.getOwnPropertyDescriptor(
+    document,
+    "visibilityState",
+  );
+
   beforeEach(setupUseRoutinesDefaults);
+
+  afterEach(() => {
+    if (originalVisibilityState) {
+      Object.defineProperty(
+        document,
+        "visibilityState",
+        originalVisibilityState,
+      );
+    } else {
+      delete (document as { visibilityState?: unknown }).visibilityState;
+    }
+  });
 
   it("初期化時に空配列とisLoaded=trueを返す", () => {
     const { result } = renderHook(() => useRoutines());
@@ -50,6 +67,7 @@ describe("useRoutines initial and mutations", () => {
       Object.defineProperty(document, "visibilityState", {
         value: "visible",
         writable: true,
+        configurable: true,
       });
       document.dispatchEvent(new Event("visibilitychange"));
     });
