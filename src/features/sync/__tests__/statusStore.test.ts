@@ -1,4 +1,4 @@
-import { SYNC_STATUS_KEY } from "../sync/constants";
+import { DEFAULT_SYNC_STATUS, SYNC_STATUS_KEY } from "../sync/constants";
 import {
   getSyncStatus,
   setSyncStatus,
@@ -33,6 +33,38 @@ describe("statusStore", () => {
       localStorage.setItem(SYNC_STATUS_KEY, "invalid-json{{{");
       expect(getSyncStatus()).toMatchObject({ isSyncing: false });
     });
+
+    it.each(["null", "123", "true"])(
+      "JSON として正しくてもオブジェクトでない値 %s ならデフォルト値を返す",
+      (stored) => {
+        localStorage.setItem(SYNC_STATUS_KEY, stored);
+        expect(getSyncStatus()).toEqual(DEFAULT_SYNC_STATUS);
+      },
+    );
+
+    it("保存値に無い項目はデフォルト値で補う", () => {
+      localStorage.setItem(
+        SYNC_STATUS_KEY,
+        JSON.stringify({ lastSyncTime: 42 }),
+      );
+      expect(getSyncStatus()).toEqual({
+        ...DEFAULT_SYNC_STATUS,
+        lastSyncTime: 42,
+      });
+    });
+
+    it("localStorage の読み出しが例外を投げてもデフォルト値を返す", () => {
+      const getItemSpy = jest
+        .spyOn(Storage.prototype, "getItem")
+        .mockImplementation(() => {
+          throw new DOMException("denied", "SecurityError");
+        });
+      try {
+        expect(getSyncStatus()).toEqual(DEFAULT_SYNC_STATUS);
+      } finally {
+        getItemSpy.mockRestore();
+      }
+    });
   });
 
   describe("setSyncStatus", () => {
@@ -52,6 +84,20 @@ describe("statusStore", () => {
 
       expect(handler).toHaveBeenCalledTimes(1);
       window.removeEventListener("sync-status-changed", handler);
+    });
+
+    it("イベントの detail には保存後の状態全体が入る", () => {
+      const details: unknown[] = [];
+      // WindowEventMap の宣言により、event は CustomEvent<SyncStatus> として受け取れる
+      const handler = (event: WindowEventMap["sync-status-changed"]) => {
+        details.push(event.detail);
+      };
+      window.addEventListener("sync-status-changed", handler);
+
+      setSyncStatus({ error: "失敗" });
+
+      window.removeEventListener("sync-status-changed", handler);
+      expect(details).toEqual([{ ...DEFAULT_SYNC_STATUS, error: "失敗" }]);
     });
   });
 

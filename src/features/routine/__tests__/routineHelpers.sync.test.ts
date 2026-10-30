@@ -60,3 +60,83 @@ describe("routine helpers sync", () => {
     ).resolves.toBe(true);
   });
 });
+
+describe("syncRoutinesToFirebase の失敗経路と応答の検証", () => {
+  const originalFetch = global.fetch;
+  let mockFetch: jest.Mock;
+
+  beforeEach(() => {
+    setupRoutineHelpersDefaults();
+    mockHasNotificationPermission.mockReturnValue(true);
+    mockGetFCMToken.mockResolvedValue("token");
+    mockFetch = jest.fn();
+    global.fetch = mockFetch;
+  });
+
+  afterEach(() => {
+    global.fetch = originalFetch;
+  });
+
+  /** ok な応答で、本文として body を返す */
+  const respondWith = (body: unknown) =>
+    mockFetch.mockResolvedValueOnce({ ok: true, json: async () => body });
+
+  it("トークンとルーティンを JSON で POST する", async () => {
+    respondWith({ success: true });
+
+    await syncRoutinesToFirebase([baseRoutine], "http://test.com");
+
+    expect(mockFetch).toHaveBeenCalledWith("http://test.com/syncRoutines", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token: "token", routines: [baseRoutine] }),
+    });
+  });
+
+  it("トークンが空文字なら送信せずに false を返す", async () => {
+    mockGetFCMToken.mockResolvedValueOnce("");
+
+    await expect(
+      syncRoutinesToFirebase([baseRoutine], "http://test.com"),
+    ).resolves.toBe(false);
+    expect(mockFetch).not.toHaveBeenCalled();
+  });
+
+  it("通信に失敗したら拒否せず false を返す", async () => {
+    mockFetch.mockRejectedValueOnce(new TypeError("Failed to fetch"));
+
+    await expect(
+      syncRoutinesToFirebase([baseRoutine], "http://test.com"),
+    ).resolves.toBe(false);
+  });
+
+  it("本文が JSON として読めなければ false を返す", async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => {
+        throw new SyntaxError("Unexpected token <");
+      },
+    });
+
+    await expect(
+      syncRoutinesToFirebase([baseRoutine], "http://test.com"),
+    ).resolves.toBe(false);
+  });
+
+  it.each([
+    ["success が文字列の true", { success: "true" }],
+    ["success が 1", { success: 1 }],
+    ["success が false", { success: false }],
+    ["success が無い", {}],
+    ["本文が null", null],
+  ])(
+    "%s なら false を返す（厳密に true のときだけ成功）",
+    async (_label, body) => {
+      respondWith(body);
+
+      await expect(
+        syncRoutinesToFirebase([baseRoutine], "http://test.com"),
+      ).resolves.toBe(false);
+    },
+  );
+});

@@ -102,6 +102,52 @@ describe("authService firebase integration", () => {
     await expect(mod.signInAsTestUser()).rejects.toThrow("Network error");
   });
 
+  it("code を持たないオブジェクト以外の失敗（文字列など）はサインアップせずそのまま throw する", async () => {
+    const mod = await import("../authService");
+    (signInWithEmailAndPassword as jest.Mock).mockRejectedValueOnce("失敗");
+
+    await expect(mod.signInAsTestUser()).rejects.toBe("失敗");
+    expect(createUserWithEmailAndPassword).not.toHaveBeenCalled();
+  });
+
+  it("自動サインアップの対象外のエラーコードはサインアップせずそのまま throw する", async () => {
+    const mod = await import("../authService");
+    const wrongPassword = { code: "auth/wrong-password" };
+    (signInWithEmailAndPassword as jest.Mock).mockRejectedValueOnce(
+      wrongPassword,
+    );
+
+    await expect(mod.signInAsTestUser()).rejects.toBe(wrongPassword);
+    expect(createUserWithEmailAndPassword).not.toHaveBeenCalled();
+  });
+
+  it("自動サインアップも失敗したらそのエラーを throw する", async () => {
+    const mod = await import("../authService");
+    const signUpError = new Error("email-already-in-use");
+    (signInWithEmailAndPassword as jest.Mock).mockRejectedValueOnce({
+      code: "auth/user-not-found",
+    });
+    (createUserWithEmailAndPassword as jest.Mock).mockRejectedValueOnce(
+      signUpError,
+    );
+
+    await expect(mod.signInAsTestUser()).rejects.toBe(signUpError);
+  });
+
+  it("ログアウトは Firebase のサインアウトより先に現在のユーザー ID を解除する", async () => {
+    const mod = await import("../authService");
+    const core = await import("@/lib/storage/core");
+    core.setCurrentUserId("user-1");
+    let userIdAtSignOut: string | null | undefined;
+    (firebaseSignOut as jest.Mock).mockImplementationOnce(async () => {
+      userIdAtSignOut = core.getCurrentUserId();
+    });
+
+    await mod.signOutUser();
+
+    expect(userIdAtSignOut).toBeNull();
+  });
+
   it("subscribeLocalAuthUser でスナップショット変更を購読できる", async () => {
     const mod = await import("../authService");
     const listener = jest.fn();

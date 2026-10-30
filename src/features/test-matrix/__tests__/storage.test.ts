@@ -152,6 +152,53 @@ describe("test matrix storage", () => {
     expect(getStoredTestMatrixCategories()[0].id).toBe("auth");
     expect(getStoredTestMatrixDetailData()).toEqual({ ...DETAILED_TEST_CASES });
   });
+
+  // JSON.parse の結果は as TestCategory[] / as StoredDetailData で受けているだけで、形は検証していない。
+  // 形が違うときはマージ中の例外を catch して初期値に戻る、という現状の振る舞いを固定する。
+  it.each([
+    ["null", "null"],
+    ["オブジェクト", JSON.stringify({ id: "auth" })],
+    ["数値", "1"],
+    ["items の無いカテゴリ", JSON.stringify([{ id: "auth" }])],
+  ])(
+    "カテゴリの保存値が%sなら初期カテゴリへフォールバックする",
+    (_label, stored) => {
+      localStorage.setItem("test-matrix-data", stored);
+
+      expect(getStoredTestMatrixCategories()).toEqual([
+        expect.objectContaining({
+          id: "auth",
+          items: [expect.objectContaining({ id: "1-1", pc: "unchecked" })],
+        }),
+      ]);
+    },
+  );
+
+  it("カテゴリの保存値が空配列なら初期カテゴリのまま返す", () => {
+    localStorage.setItem("test-matrix-data", "[]");
+
+    expect(getStoredTestMatrixCategories()[0].items[0].pc).toBe("unchecked");
+  });
+
+  it.each([
+    ["null", "null"],
+    ["ケースが配列でない", JSON.stringify({ [detailItemId]: "broken" })],
+  ])(
+    "詳細の保存値が%sなら定義の初期値へフォールバックする",
+    (_label, stored) => {
+      localStorage.setItem("test-matrix-detail-data", stored);
+
+      expect(getStoredTestMatrixDetailData()).toEqual({
+        ...DETAILED_TEST_CASES,
+      });
+    },
+  );
+
+  it("保存値が無い・壊れているときの戻り値は定義そのものではなく複製", () => {
+    expect(getStoredTestMatrixDetailData()).not.toBe(DETAILED_TEST_CASES);
+    localStorage.setItem("test-matrix-detail-data", "{");
+    expect(getStoredTestMatrixDetailData()).not.toBe(DETAILED_TEST_CASES);
+  });
 });
 
 describe("legacy ID migration", () => {
