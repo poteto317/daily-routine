@@ -224,7 +224,7 @@ Vercel で本番運用する場合は、`.env.local` に設定した Firebase �
 
 | 環境変数名                                 | 必須/任意                  | 説明                                                                                      | 設定例・既定値                                            |
 | :----------------------------------------- | :------------------------- | :---------------------------------------------------------------------------------------- | :-------------------------------------------------------- |
-| `NEXT_PUBLIC_ENABLE_LOCAL_AUTH`            | 任意                       | Firebase未設定環境での開発用ローカル擬似認証フラグ。`localhost` でのみ有効                | `false`（開発時のみ `true`）                              |
+| `NEXT_PUBLIC_ENABLE_LOCAL_AUTH`            | 任意                       | Firebase未設定環境での開発用ローカル擬似認証フラグ。`localhost` / `127.0.0.1` でのみ有効  | `false`（開発時のみ `true`）                              |
 | `NEXT_PUBLIC_FIREBASE_API_KEY`             | 必須                       | Firebase Web API キー                                                                     | `your-api-key`                                               |
 | `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN`         | 必須                       | Firebase Authentication ドメイン                                                          | `<project-id>.firebaseapp.com`                            |
 | `NEXT_PUBLIC_FIREBASE_PROJECT_ID`          | 必須                       | Firebase プロジェクト ID                                                                  | `daily-routine-xxxx`                                      |
