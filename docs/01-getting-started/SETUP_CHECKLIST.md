@@ -2,7 +2,7 @@
 
 このチェックリストを使用して、プロジェクトのセットアップが完了しているか確認してください。
 
-> 💡 詳細なセットアップ手順は [README.md](../README.md) を参照してください。
+> 💡 詳細なセットアップ手順はリポジトリ直下の [README.md](../../README.md) を参照してください。初めて参加する場合は [新しく参加する開発者向けガイド](./ONBOARDING.md) から読むと全体を把握しやすくなります。
 
 ## ✅ 完了済み
 
@@ -42,12 +42,13 @@ firebase projects:webapp:sdkconfig --json
 
 ### 開発用ローカル認証の扱い
 
-Firebase をまだ用意していないローカル開発では、必要に応じて `.env.local` に `NEXT_PUBLIC_ENABLE_LOCAL_AUTH=true` を設定すると、`development` 環境でのみローカル擬似認証を使えます。
+Firebase をまだ用意していないローカル開発では、必要に応じて `.env.local` に `NEXT_PUBLIC_ENABLE_LOCAL_AUTH=true` を設定すると、ローカル擬似認証を使えます。
 
 注意点:
 
 - 既定値は `false` のままです
-- `production` では有効になりません
+- 有効になるのは、Firebase が未設定（API キー・プロジェクト ID・アプリ ID のどれかが空）で、かつブラウザのホスト名が `localhost` / `127.0.0.1` / `::1` のときだけです。Firebase を設定済みなら、このフラグは無視されます
+- 判定は `NODE_ENV` ではなくホスト名で行うため、本番ビルド（`npm start`）でも localhost で開けば有効になります（公開 URL からは有効になりません）
 - shared 開発環境、staging、プレビュー環境では有効化しないでください
 - Firebase 認証や Firestore 連携の本番同等確認をしたい場合は、このフラグを使わず Firebase 設定を行ってください
 
