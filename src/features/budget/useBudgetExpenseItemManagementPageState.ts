@@ -1,7 +1,7 @@
 import { useBudgetExpenseItemManagementFormState } from "./useBudgetExpenseItemManagementFormState";
-import { useBudgetExpenseItemManagementFormFocus } from "./useBudgetExpenseItemManagementFormFocus";
+import { useFormOpenAutoFocus } from "@/hooks/useFormOpenAutoFocus";
 import { useBudgetExpenseItemManagementDataState } from "./useBudgetExpenseItemManagementDataState";
-import { useBudgetExpenseItemEditState } from "./useBudgetExpenseItemEditState";
+import { useBudgetItemEditState } from "./useBudgetItemEditState";
 import { groupBudgetExpenseItemsByKind } from "./budgetExpenseItemKindGroups";
 import { parsePositiveAmount } from "./budgetPageStateHelpers";
 import { normalizeCategoryName } from "./budgetCategoryNameNormalization";
@@ -41,7 +41,7 @@ export const useBudgetExpenseItemManagementPageState = () => {
     setEditingItemAmount,
     startEditItem,
     cancelEditItem,
-  } = useBudgetExpenseItemEditState();
+  } = useBudgetItemEditState();
 
   const commitEditItem = () => {
     if (!editingItemId) return;
@@ -57,7 +57,7 @@ export const useBudgetExpenseItemManagementPageState = () => {
     cancelEditItem();
   };
 
-  useBudgetExpenseItemManagementFormFocus({ inputRef, showForm });
+  useFormOpenAutoFocus({ inputRef, showForm });
 
   const { fixedItems, variableItems } = groupBudgetExpenseItemsByKind(items);
 

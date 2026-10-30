@@ -1,23 +1,23 @@
 import { renderHook } from "@testing-library/react";
 import { useTodoCategoryManagementPageState } from "../useTodoCategoryManagementPageState";
 import { useTodoCategoryManagementFormState } from "../useTodoCategoryManagementFormState";
-import { useTodoCategoryManagementFormFocus } from "../useTodoCategoryManagementFormFocus";
+import { useFormOpenAutoFocus } from "@/hooks/useFormOpenAutoFocus";
 import { useTodoCategoryManagementDataState } from "../useTodoCategoryManagementDataState";
-import { useTodoCategoryManagementNameEditing } from "../useTodoCategoryManagementNameEditing";
+import { useCategoryNameEditing } from "@/hooks/useCategoryNameEditing";
 import { useTodoCategoryDragAndDrop } from "../useTodoCategoryDragAndDrop";
 import { useColorPickerController } from "../useColorPickerController";
 
 jest.mock("../useTodoCategoryManagementFormState", () => ({
   useTodoCategoryManagementFormState: jest.fn(),
 }));
-jest.mock("../useTodoCategoryManagementFormFocus", () => ({
-  useTodoCategoryManagementFormFocus: jest.fn(),
+jest.mock("@/hooks/useFormOpenAutoFocus", () => ({
+  useFormOpenAutoFocus: jest.fn(),
 }));
 jest.mock("../useTodoCategoryManagementDataState", () => ({
   useTodoCategoryManagementDataState: jest.fn(),
 }));
-jest.mock("../useTodoCategoryManagementNameEditing", () => ({
-  useTodoCategoryManagementNameEditing: jest.fn(),
+jest.mock("@/hooks/useCategoryNameEditing", () => ({
+  useCategoryNameEditing: jest.fn(),
 }));
 jest.mock("../useTodoCategoryDragAndDrop", () => ({
   useTodoCategoryDragAndDrop: jest.fn(),
@@ -30,18 +30,16 @@ const mockUseFormState =
   useTodoCategoryManagementFormState as jest.MockedFunction<
     typeof useTodoCategoryManagementFormState
   >;
-const mockUseFormFocus =
-  useTodoCategoryManagementFormFocus as jest.MockedFunction<
-    typeof useTodoCategoryManagementFormFocus
-  >;
+const mockUseFormFocus = useFormOpenAutoFocus as jest.MockedFunction<
+  typeof useFormOpenAutoFocus
+>;
 const mockUseDataState =
   useTodoCategoryManagementDataState as jest.MockedFunction<
     typeof useTodoCategoryManagementDataState
   >;
-const mockUseNameEditing =
-  useTodoCategoryManagementNameEditing as jest.MockedFunction<
-    typeof useTodoCategoryManagementNameEditing
-  >;
+const mockUseNameEditing = useCategoryNameEditing as jest.MockedFunction<
+  typeof useCategoryNameEditing
+>;
 const mockUseDragAndDrop = useTodoCategoryDragAndDrop as jest.MockedFunction<
   typeof useTodoCategoryDragAndDrop
 >;

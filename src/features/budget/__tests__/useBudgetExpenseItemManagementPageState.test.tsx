@@ -1,37 +1,36 @@
 import { act, renderHook } from "@testing-library/react";
 import { useBudgetExpenseItemManagementPageState } from "../useBudgetExpenseItemManagementPageState";
 import { useBudgetExpenseItemManagementFormState } from "../useBudgetExpenseItemManagementFormState";
-import { useBudgetExpenseItemManagementFormFocus } from "../useBudgetExpenseItemManagementFormFocus";
+import { useFormOpenAutoFocus } from "@/hooks/useFormOpenAutoFocus";
 import { useBudgetExpenseItemManagementDataState } from "../useBudgetExpenseItemManagementDataState";
-import { useBudgetExpenseItemEditState } from "../useBudgetExpenseItemEditState";
+import { useBudgetItemEditState } from "../useBudgetItemEditState";
 
 jest.mock("../useBudgetExpenseItemManagementFormState", () => ({
   useBudgetExpenseItemManagementFormState: jest.fn(),
 }));
-jest.mock("../useBudgetExpenseItemManagementFormFocus", () => ({
-  useBudgetExpenseItemManagementFormFocus: jest.fn(),
+jest.mock("@/hooks/useFormOpenAutoFocus", () => ({
+  useFormOpenAutoFocus: jest.fn(),
 }));
 jest.mock("../useBudgetExpenseItemManagementDataState", () => ({
   useBudgetExpenseItemManagementDataState: jest.fn(),
 }));
-jest.mock("../useBudgetExpenseItemEditState", () => ({
-  useBudgetExpenseItemEditState: jest.fn(),
+jest.mock("../useBudgetItemEditState", () => ({
+  useBudgetItemEditState: jest.fn(),
 }));
 
 const mockUseFormState =
   useBudgetExpenseItemManagementFormState as jest.MockedFunction<
     typeof useBudgetExpenseItemManagementFormState
   >;
-const mockUseFormFocus =
-  useBudgetExpenseItemManagementFormFocus as jest.MockedFunction<
-    typeof useBudgetExpenseItemManagementFormFocus
-  >;
+const mockUseFormFocus = useFormOpenAutoFocus as jest.MockedFunction<
+  typeof useFormOpenAutoFocus
+>;
 const mockUseDataState =
   useBudgetExpenseItemManagementDataState as jest.MockedFunction<
     typeof useBudgetExpenseItemManagementDataState
   >;
-const mockUseEditState = useBudgetExpenseItemEditState as jest.MockedFunction<
-  typeof useBudgetExpenseItemEditState
+const mockUseEditState = useBudgetItemEditState as jest.MockedFunction<
+  typeof useBudgetItemEditState
 >;
 
 const fixedItem = {

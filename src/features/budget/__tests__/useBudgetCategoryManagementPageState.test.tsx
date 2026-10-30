@@ -1,39 +1,37 @@
 import { renderHook } from "@testing-library/react";
 import { useBudgetCategoryManagementPageState } from "../useBudgetCategoryManagementPageState";
 import { useBudgetCategoryManagementFormState } from "../useBudgetCategoryManagementFormState";
-import { useBudgetCategoryManagementFormFocus } from "../useBudgetCategoryManagementFormFocus";
+import { useFormOpenAutoFocus } from "@/hooks/useFormOpenAutoFocus";
 import { useBudgetCategoryManagementDataState } from "../useBudgetCategoryManagementDataState";
-import { useBudgetCategoryManagementNameEditing } from "../useBudgetCategoryManagementNameEditing";
+import { useCategoryNameEditing } from "@/hooks/useCategoryNameEditing";
 
 jest.mock("../useBudgetCategoryManagementFormState", () => ({
   useBudgetCategoryManagementFormState: jest.fn(),
 }));
-jest.mock("../useBudgetCategoryManagementFormFocus", () => ({
-  useBudgetCategoryManagementFormFocus: jest.fn(),
+jest.mock("@/hooks/useFormOpenAutoFocus", () => ({
+  useFormOpenAutoFocus: jest.fn(),
 }));
 jest.mock("../useBudgetCategoryManagementDataState", () => ({
   useBudgetCategoryManagementDataState: jest.fn(),
 }));
-jest.mock("../useBudgetCategoryManagementNameEditing", () => ({
-  useBudgetCategoryManagementNameEditing: jest.fn(),
+jest.mock("@/hooks/useCategoryNameEditing", () => ({
+  useCategoryNameEditing: jest.fn(),
 }));
 
 const mockUseFormState =
   useBudgetCategoryManagementFormState as jest.MockedFunction<
     typeof useBudgetCategoryManagementFormState
   >;
-const mockUseFormFocus =
-  useBudgetCategoryManagementFormFocus as jest.MockedFunction<
-    typeof useBudgetCategoryManagementFormFocus
-  >;
+const mockUseFormFocus = useFormOpenAutoFocus as jest.MockedFunction<
+  typeof useFormOpenAutoFocus
+>;
 const mockUseDataState =
   useBudgetCategoryManagementDataState as jest.MockedFunction<
     typeof useBudgetCategoryManagementDataState
   >;
-const mockUseNameEditing =
-  useBudgetCategoryManagementNameEditing as jest.MockedFunction<
-    typeof useBudgetCategoryManagementNameEditing
-  >;
+const mockUseNameEditing = useCategoryNameEditing as jest.MockedFunction<
+  typeof useCategoryNameEditing
+>;
 
 describe("useBudgetCategoryManagementPageState composition", () => {
   beforeEach(() => {

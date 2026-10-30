@@ -1,13 +1,13 @@
 import { useCallback, useState } from "react";
 
-type UseTodoCategoryManagementNameEditingParams = {
+type UseCategoryNameEditingParams = {
   handleRename: (categoryId: string, name: string) => void;
 };
 
 /** カテゴリ名のインライン編集状態を管理する。 */
-export const useTodoCategoryManagementNameEditing = ({
+export const useCategoryNameEditing = ({
   handleRename,
-}: UseTodoCategoryManagementNameEditingParams) => {
+}: UseCategoryNameEditingParams) => {
   const [editingCategoryId, setEditingCategoryId] = useState<string | null>(
     null,
   );
