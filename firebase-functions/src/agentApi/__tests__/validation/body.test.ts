@@ -2,9 +2,23 @@
 import {
   asJsonObject,
   assertKnownKeys,
+  isJsonObject,
   parseBody,
 } from "../../validation/body";
 import { expectApiError } from "../testUtils";
+
+describe("isJsonObject", () => {
+  it.each([{}, { a: 1 }, Object.create(null)])("%p は true", (value) => {
+    expect(isJsonObject(value)).toBe(true);
+  });
+
+  it.each([null, undefined, [], [{ a: 1 }], "x", 1, true])(
+    "%p は false",
+    (value) => {
+      expect(isJsonObject(value)).toBe(false);
+    },
+  );
+});
 
 describe("asJsonObject", () => {
   it("オブジェクトはそのまま返す", () => {

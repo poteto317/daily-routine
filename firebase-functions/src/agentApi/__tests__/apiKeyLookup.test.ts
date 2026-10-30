@@ -50,4 +50,14 @@ describe("resolveUidByApiKey", () => {
       await expect(resolveUidByApiKey(db, VALID_KEY)).resolves.toBeNull();
     },
   );
+
+  it("ドキュメントは存在するが data() が undefined なら null", async () => {
+    const collection = jest.fn(() => ({
+      doc: () => ({
+        get: async () => ({ exists: true, data: () => undefined }),
+      }),
+    }));
+    const db = { collection } as unknown as admin.firestore.Firestore;
+    await expect(resolveUidByApiKey(db, VALID_KEY)).resolves.toBeNull();
+  });
 });
