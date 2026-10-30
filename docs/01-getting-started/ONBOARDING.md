@@ -20,7 +20,7 @@ AI アシスタント向けの規約は `.github/copilot-instructions.md` にあ
 Firebase のプロジェクトが無くても、ローカル疑似認証で画面を一通り動かせます。
 
 ```bash
-nvm use                                 # .nvmrc の Node 24 を使う（22 でも可）
+nvm use                                 # .nvmrc の Node 24 を使う
 npm install
 npm install --prefix firebase-functions # Cloud Functions のテストも npm test で動くため必須
 cp .env.local.example .env.local
