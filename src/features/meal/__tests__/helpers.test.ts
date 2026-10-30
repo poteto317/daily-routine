@@ -7,6 +7,7 @@ import {
   getMealRecentItemClassName,
   formatMealRecentMemo,
 } from "../helpers";
+import type { MealType } from "@/types/routine";
 
 describe("meal helpers", () => {
   it("MEAL_PAGE_MESSAGES.confirmDeleteMeal formats message with date", () => {
@@ -35,5 +36,19 @@ describe("meal helpers", () => {
     expect(MEAL_HEADER_TEXT.title).toBeDefined();
     expect(MEAL_TODAY_TITLE_LABEL).toBeDefined();
     expect(MEAL_TYPE_OPTIONS.length).toBeGreaterThan(0);
+  });
+
+  it("MEAL_TYPE_OPTIONS の value は MealType の全値と過不足なく一致する", () => {
+    // locales/ja.json の値を as MealType[] で受けているため、
+    // 綴り違いや追加漏れは型では見つからない。ここで実際の値を確かめる。
+    const mealTypes: readonly MealType[] = [
+      "breakfast",
+      "lunch",
+      "dinner",
+      "snack",
+    ];
+
+    expect(MEAL_TYPE_OPTIONS.map(({ value }) => value)).toEqual(mealTypes);
+    expect(MEAL_TYPE_OPTIONS.every(({ label }) => label.length > 0)).toBe(true);
   });
 });

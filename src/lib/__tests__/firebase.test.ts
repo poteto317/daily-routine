@@ -1,39 +1,68 @@
-function withFirebaseEnv(values: {
-  apiKey: string;
-  projectId: string;
-  appId: string;
-}) {
-  let origApiKey: string | undefined;
-  let origProjectId: string | undefined;
-  let origAppId: string | undefined;
+/** テスト中だけ差し替える Firebase の環境変数 */
+const FIREBASE_ENV_KEYS = {
+  apiKey: "NEXT_PUBLIC_FIREBASE_API_KEY",
+  projectId: "NEXT_PUBLIC_FIREBASE_PROJECT_ID",
+  appId: "NEXT_PUBLIC_FIREBASE_APP_ID",
+} as const;
+
+type FirebaseEnvValues = Record<keyof typeof FIREBASE_ENV_KEYS, string>;
+
+/** 各テストの前に環境変数を設定し、後で元の値（未設定を含む）に戻す */
+function withFirebaseEnv(values: FirebaseEnvValues) {
+  const envNames = Object.values(FIREBASE_ENV_KEYS);
+  let originals: Record<string, string | undefined> = {};
 
   beforeEach(() => {
-    origApiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
-    origProjectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
-    origAppId = process.env.NEXT_PUBLIC_FIREBASE_APP_ID;
-
-    process.env.NEXT_PUBLIC_FIREBASE_API_KEY = values.apiKey;
-    process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID = values.projectId;
-    process.env.NEXT_PUBLIC_FIREBASE_APP_ID = values.appId;
+    originals = Object.fromEntries(
+      envNames.map((name) => [name, process.env[name]]),
+    );
+    for (const [field, name] of Object.entries(FIREBASE_ENV_KEYS)) {
+      process.env[name] = values[field as keyof FirebaseEnvValues];
+    }
   });
 
   afterEach(() => {
-    if (origApiKey === undefined) {
-      delete process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
-    } else {
-      process.env.NEXT_PUBLIC_FIREBASE_API_KEY = origApiKey;
-    }
-    if (origProjectId === undefined) {
-      delete process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
-    } else {
-      process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID = origProjectId;
-    }
-    if (origAppId === undefined) {
-      delete process.env.NEXT_PUBLIC_FIREBASE_APP_ID;
-    } else {
-      process.env.NEXT_PUBLIC_FIREBASE_APP_ID = origAppId;
+    for (const name of envNames) {
+      const original = originals[name];
+      if (original === undefined) {
+        delete process.env[name];
+      } else {
+        process.env[name] = original;
+      }
     }
   });
+}
+
+type FirebaseAppMock = {
+  initializeApp: jest.Mock;
+  getApps: jest.Mock;
+  getApp: jest.Mock;
+};
+
+/**
+ * lib/firebase が読み込む Firebase SDK 4 モジュールをまとめてモックする。
+ * firebase/app だけはテストごとに振る舞いを変えるため引数で受け取る。
+ * jest.doMock は巻き上げられないので、import より前に呼ぶこと。
+ */
+function mockFirebaseSdk(
+  appMock: FirebaseAppMock = {
+    initializeApp: jest.fn(),
+    getApps: jest.fn(() => []),
+    getApp: jest.fn(),
+  },
+) {
+  jest.doMock("firebase/app", () => appMock);
+  jest.doMock("firebase/messaging", () => ({
+    getMessaging: jest.fn(),
+    getToken: jest.fn(),
+    onMessage: jest.fn(),
+    isSupported: jest.fn(async () => false),
+  }));
+  jest.doMock("firebase/firestore", () => ({ getFirestore: jest.fn() }));
+  jest.doMock("firebase/auth", () => ({
+    getAuth: jest.fn(),
+    signInAnonymously: jest.fn(),
+  }));
 }
 
 describe("lib/firebase", () => {
@@ -45,22 +74,7 @@ describe("lib/firebase", () => {
   });
 
   it("設定不足時はisFirebaseConfiguredがfalseになる", async () => {
-    jest.doMock("firebase/app", () => ({
-      initializeApp: jest.fn(),
-      getApps: jest.fn(() => []),
-      getApp: jest.fn(),
-    }));
-    jest.doMock("firebase/messaging", () => ({
-      getMessaging: jest.fn(),
-      getToken: jest.fn(),
-      onMessage: jest.fn(),
-      isSupported: jest.fn(async () => false),
-    }));
-    jest.doMock("firebase/firestore", () => ({ getFirestore: jest.fn() }));
-    jest.doMock("firebase/auth", () => ({
-      getAuth: jest.fn(),
-      signInAnonymously: jest.fn(),
-    }));
+    mockFirebaseSdk();
 
     const mod = await import("../firebase");
 
@@ -68,22 +82,7 @@ describe("lib/firebase", () => {
   });
 
   it("設定不足時のgetOrCreateUserはconfiguration-not-foundを投げる", async () => {
-    jest.doMock("firebase/app", () => ({
-      initializeApp: jest.fn(),
-      getApps: jest.fn(() => []),
-      getApp: jest.fn(),
-    }));
-    jest.doMock("firebase/messaging", () => ({
-      getMessaging: jest.fn(),
-      getToken: jest.fn(),
-      onMessage: jest.fn(),
-      isSupported: jest.fn(async () => false),
-    }));
-    jest.doMock("firebase/firestore", () => ({ getFirestore: jest.fn() }));
-    jest.doMock("firebase/auth", () => ({
-      getAuth: jest.fn(),
-      signInAnonymously: jest.fn(),
-    }));
+    mockFirebaseSdk();
 
     const mod = await import("../firebase");
 
@@ -94,22 +93,7 @@ describe("lib/firebase", () => {
   });
 
   it("設定不足時のgetFirestoreInstanceはfirestore-not-availableを投げる", async () => {
-    jest.doMock("firebase/app", () => ({
-      initializeApp: jest.fn(),
-      getApps: jest.fn(() => []),
-      getApp: jest.fn(),
-    }));
-    jest.doMock("firebase/messaging", () => ({
-      getMessaging: jest.fn(),
-      getToken: jest.fn(),
-      onMessage: jest.fn(),
-      isSupported: jest.fn(async () => false),
-    }));
-    jest.doMock("firebase/firestore", () => ({ getFirestore: jest.fn() }));
-    jest.doMock("firebase/auth", () => ({
-      getAuth: jest.fn(),
-      signInAnonymously: jest.fn(),
-    }));
+    mockFirebaseSdk();
 
     const mod = await import("../firebase");
 
@@ -119,22 +103,7 @@ describe("lib/firebase", () => {
   });
 
   it("messaging未初期化時のonForegroundMessageはnullを返す", async () => {
-    jest.doMock("firebase/app", () => ({
-      initializeApp: jest.fn(),
-      getApps: jest.fn(() => []),
-      getApp: jest.fn(),
-    }));
-    jest.doMock("firebase/messaging", () => ({
-      getMessaging: jest.fn(),
-      getToken: jest.fn(),
-      onMessage: jest.fn(),
-      isSupported: jest.fn(async () => false),
-    }));
-    jest.doMock("firebase/firestore", () => ({ getFirestore: jest.fn() }));
-    jest.doMock("firebase/auth", () => ({
-      getAuth: jest.fn(),
-      signInAnonymously: jest.fn(),
-    }));
+    mockFirebaseSdk();
 
     const mod = await import("../firebase");
 
@@ -160,22 +129,11 @@ describe("initializeFirebaseIfConfigured の分岐", () => {
     const mockGetApp = jest.fn();
     const mockGetApps = jest.fn(() => []);
 
-    jest.doMock("firebase/app", () => ({
+    mockFirebaseSdk({
       initializeApp: mockInitializeApp,
       getApps: mockGetApps,
       getApp: mockGetApp,
-    }));
-    jest.doMock("firebase/messaging", () => ({
-      getMessaging: jest.fn(),
-      getToken: jest.fn(),
-      onMessage: jest.fn(),
-      isSupported: jest.fn(async () => false),
-    }));
-    jest.doMock("firebase/firestore", () => ({ getFirestore: jest.fn() }));
-    jest.doMock("firebase/auth", () => ({
-      getAuth: jest.fn(),
-      signInAnonymously: jest.fn(),
-    }));
+    });
 
     await import("../firebase");
 
@@ -189,22 +147,11 @@ describe("initializeFirebaseIfConfigured の分岐", () => {
     const mockGetApp = jest.fn(() => mockApp);
     const mockGetApps = jest.fn(() => [mockApp]);
 
-    jest.doMock("firebase/app", () => ({
+    mockFirebaseSdk({
       initializeApp: mockInitializeApp,
       getApps: mockGetApps,
       getApp: mockGetApp,
-    }));
-    jest.doMock("firebase/messaging", () => ({
-      getMessaging: jest.fn(),
-      getToken: jest.fn(),
-      onMessage: jest.fn(),
-      isSupported: jest.fn(async () => false),
-    }));
-    jest.doMock("firebase/firestore", () => ({ getFirestore: jest.fn() }));
-    jest.doMock("firebase/auth", () => ({
-      getAuth: jest.fn(),
-      signInAnonymously: jest.fn(),
-    }));
+    });
 
     await import("../firebase");
 
@@ -221,22 +168,11 @@ describe("initializeFirebaseIfConfigured の分岐", () => {
       .mockReturnValueOnce([])
       .mockReturnValue([mockApp]);
 
-    jest.doMock("firebase/app", () => ({
+    mockFirebaseSdk({
       initializeApp: mockInitializeApp,
       getApps: mockGetApps,
       getApp: mockGetApp,
-    }));
-    jest.doMock("firebase/messaging", () => ({
-      getMessaging: jest.fn(),
-      getToken: jest.fn(),
-      onMessage: jest.fn(),
-      isSupported: jest.fn(async () => false),
-    }));
-    jest.doMock("firebase/firestore", () => ({ getFirestore: jest.fn() }));
-    jest.doMock("firebase/auth", () => ({
-      getAuth: jest.fn(),
-      signInAnonymously: jest.fn(),
-    }));
+    });
 
     const { initializeFirebaseIfConfigured } =
       await import("../firebase-modules/initialize");

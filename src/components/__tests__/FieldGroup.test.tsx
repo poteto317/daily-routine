@@ -72,4 +72,32 @@ describe("FieldGroup", () => {
       "grid-cols-3",
     );
   });
+
+  it("見出しには既定のクラスを付ける", () => {
+    render(
+      <FieldGroup label="カテゴリ">
+        <button type="button">仕事</button>
+      </FieldGroup>,
+    );
+
+    expect(screen.getByText("カテゴリ")).toHaveClass(
+      "block",
+      "text-sm",
+      "mb-2",
+    );
+  });
+
+  it("見出しのクラスを差し替えられる", () => {
+    render(
+      <FieldGroup label="カテゴリ" labelClassName="sr-only">
+        <button type="button">仕事</button>
+      </FieldGroup>,
+    );
+
+    const heading = screen.getByText("カテゴリ");
+    expect(heading).toHaveClass("sr-only");
+    expect(heading).not.toHaveClass("mb-2");
+    // 見た目を変えてもグループの名前は見出しから引ける
+    expect(screen.getByRole("group", { name: "カテゴリ" })).toBeInTheDocument();
+  });
 });
