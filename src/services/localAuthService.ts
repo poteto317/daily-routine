@@ -10,8 +10,9 @@ import { setCurrentUserId } from "@/lib/storage/core";
 
 /*
  * 開発用のローカル擬似認証。
- * Firebase が未設定で、かつローカル認証が有効（NEXT_PUBLIC_ENABLE_LOCAL_AUTH=true の
- * localhost）のときだけ、Firebase の代わりに使う。
+ * Firebase が未設定で、かつローカル認証が有効（NEXT_PUBLIC_ENABLE_LOCAL_AUTH=true で、
+ * ローカル開発用のホスト。判定は features/auth/storage.ts の isLocalAuthEnabled）のときだけ、
+ * Firebase の代わりに使う。
  */
 
 /** Firebase の代わりにローカル擬似認証を使うか */
