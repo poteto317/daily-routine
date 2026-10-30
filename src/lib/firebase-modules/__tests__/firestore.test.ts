@@ -15,6 +15,7 @@ const useFirestoreState = (firestore: Firestore | null) => {
     app: null,
     messaging: null,
     auth: null,
+    storage: null,
     firestore,
   });
 };

@@ -4,6 +4,11 @@ import {
   type IssueDraft,
 } from "./buildIssueContent";
 import type { GithubIssueResult } from "./createGithubIssue";
+import {
+  countReferencedImages,
+  type ResolvedImage,
+  type ResolveReportImagesResult,
+} from "./resolveReportImages";
 import { shouldSkipProcessing } from "./shouldSkipProcessing";
 import type { ProcessableBugReport } from "./types";
 
@@ -22,11 +27,42 @@ export interface ProcessBugReportDeps {
   /** updatedAt 等に使うサーバ時刻（任意・注入） */
   now?: () => unknown;
   /**
+   * 添付画像の検証・取得・URL 発行を行う（任意・注入）。
+   * 例外を投げても起票は続行し、参照されていた枚数分の取得失敗注記を出す。
+   */
+  resolveImages?: (
+    report: ProcessableBugReport,
+  ) => Promise<ResolveReportImagesResult>;
+  /**
    * Issue のタイトルと本文を整形する（任意・注入）。
    * 失敗時は null を返す。例外を投げても従来の内容で起票する。
    */
-  draftIssue?: (report: ProcessableBugReport) => Promise<IssueDraft | null>;
+  draftIssue?: (
+    report: ProcessableBugReport,
+    images: ResolvedImage[],
+  ) => Promise<IssueDraft | null>;
 }
+
+/**
+ * 添付画像を解決する。未指定なら空。
+ * 例外時は参照されていた枚数（上限 3）を skippedCount として扱う（保険）。
+ */
+const safeResolveImages = async (
+  report: ProcessableBugReport,
+  resolveImages: ProcessBugReportDeps["resolveImages"],
+): Promise<ResolveReportImagesResult> => {
+  if (!resolveImages) {
+    return { images: [], skippedCount: 0 };
+  }
+  try {
+    return await resolveImages(report);
+  } catch {
+    return {
+      images: [],
+      skippedCount: countReferencedImages(report.images),
+    };
+  }
+};
 
 /**
  * 整形結果を取得する。未指定なら null。
@@ -35,11 +71,12 @@ export interface ProcessBugReportDeps {
  */
 const resolveDraft = async (
   report: ProcessableBugReport,
+  images: ResolvedImage[],
   draftIssue: ProcessBugReportDeps["draftIssue"],
 ): Promise<IssueDraft | null> => {
   if (!draftIssue) return null;
   try {
-    return await draftIssue(report);
+    return await draftIssue(report, images);
   } catch {
     return null;
   }
@@ -57,11 +94,12 @@ const resolveDraft = async (
  *    - true: ロック取得成功。処理続行。
  *    - false: 他の実行が fresh な processing 中、または競合状態。スキップ。
  *    - 例外: Cloud Functions にリトライを委ねる。
- * 3. 整形（任意）: draftIssue があれば Issue のタイトルと本文を整形する。
+ * 3. 画像の解決（任意）: resolveImages があれば添付画像を検証・取得する。
+ * 4. 整形（任意）: draftIssue があれば Issue のタイトルと本文を整形する。
  *    null または例外なら従来の内容で起票する。ロック取得後に呼ぶため、スキップや
  *    ロック取得失敗の実行では呼ばれない。
- * 4. createIssue 失敗: status="error" + errorMessage を書き戻して "error" を返す。
- * 5. issued 書き戻し失敗: issueNumber/issueUrl を含む status="error" の書き戻しを試みた
+ * 5. createIssue 失敗: status="error" + errorMessage を書き戻して "error" を返す。
+ * 6. issued 書き戻し失敗: issueNumber/issueUrl を含む status="error" の書き戻しを試みた
  *    上で例外を再 throw。再実行時に shouldSkipProcessing が issueNumber 既存で
  *    スキップし二重作成を防ぐ。
  */
@@ -83,12 +121,13 @@ export const processBugReport = async (
     return "skipped";
   }
 
-  const draft = await resolveDraft(report, deps.draftIssue);
+  const imageResult = await safeResolveImages(report, deps.resolveImages);
+  const draft = await resolveDraft(report, imageResult.images, deps.draftIssue);
 
   // Phase 1: Issue 作成
   let issueResult!: GithubIssueResult;
   try {
-    const content = buildIssueContent(report, draft);
+    const content = buildIssueContent(report, draft, imageResult);
     issueResult = await deps.createIssue(content);
   } catch (createError) {
     const errorMessage =

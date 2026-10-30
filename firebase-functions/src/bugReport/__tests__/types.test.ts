@@ -35,4 +35,24 @@ describe("BugReport / ProcessableBugReport 型契約", () => {
     const hasProcessingAt: HasProcessingAt = false;
     expect(hasProcessingAt).toBe(false);
   });
+
+  it("BugReport.images は省略可能で ProcessableBugReport にそのまま代入できる", () => {
+    const withImages: Pick<
+      BugReport,
+      "uid" | "description" | "status" | "images"
+    > = {
+      uid: "u1",
+      description: "desc",
+      status: "pending",
+      images: [
+        {
+          path: "bugReports/u1/r1/a.png",
+          contentType: "image/png",
+          size: 123,
+        },
+      ],
+    };
+    const processable: ProcessableBugReport = withImages;
+    expect(processable.images).toEqual(withImages.images);
+  });
 });

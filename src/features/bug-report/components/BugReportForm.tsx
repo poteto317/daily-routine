@@ -1,5 +1,7 @@
+import type { BugReportImageAttachments } from "../hooks/useBugReportImages";
 import type { BugReportSubmitStatus } from "../hooks/useBugReportSubmitStatus";
 import { BugReportFeedback } from "./BugReportFeedback";
+import { BugReportImagePicker } from "./BugReportImagePicker";
 import texts from "../locales/ja.json";
 
 type Props = {
@@ -7,23 +9,28 @@ type Props = {
   setDescription: (value: string) => void;
   stepsToReproduce: string;
   setStepsToReproduce: (value: string) => void;
+  imageAttachments: Pick<
+    BugReportImageAttachments,
+    "images" | "previews" | "errors" | "addImages" | "removeImage"
+  >;
   status: BugReportSubmitStatus;
   errorMessage: string;
   handleSubmit: () => Promise<void>;
 };
 
 const inputClassName =
-  "w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-400 bg-white dark:bg-slate-50 text-gray-900 dark:text-black focus:outline-none focus:ring-2 focus:ring-blue-500";
+  "w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-400 bg-white dark:bg-slate-50 text-gray-900 dark:text-black focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed";
 
 /**
  * 不具合報告の入力フォーム（プレゼンテーション）。状態は親から受け取る。
- * フィードバックメッセージは BugReportFeedback に委譲する。
+ * 画像選択は BugReportImagePicker に、フィードバックメッセージは BugReportFeedback に委譲する。
  */
 export const BugReportForm = ({
   description,
   setDescription,
   stepsToReproduce,
   setStepsToReproduce,
+  imageAttachments,
   status,
   errorMessage,
   handleSubmit,
@@ -54,6 +61,7 @@ export const BugReportForm = ({
           onChange={(e) => setDescription(e.target.value)}
           placeholder={texts.form.descriptionPlaceholder}
           rows={4}
+          disabled={isSubmitting}
           className={inputClassName}
         />
       </div>
@@ -71,9 +79,19 @@ export const BugReportForm = ({
           onChange={(e) => setStepsToReproduce(e.target.value)}
           placeholder={texts.form.stepsPlaceholder}
           rows={3}
+          disabled={isSubmitting}
           className={inputClassName}
         />
       </div>
+
+      <BugReportImagePicker
+        images={imageAttachments.images}
+        previews={imageAttachments.previews}
+        errors={imageAttachments.errors}
+        disabled={isSubmitting}
+        onAdd={imageAttachments.addImages}
+        onRemove={imageAttachments.removeImage}
+      />
 
       <p className="text-xs text-gray-500 dark:text-gray-600">
         {texts.form.privacyNote}

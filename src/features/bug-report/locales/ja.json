@@ -8,16 +8,23 @@
     "descriptionPlaceholder": "発生している不具合の内容を具体的に記入してください",
     "stepsLabel": "再現手順（任意）",
     "stepsPlaceholder": "1. 〇〇画面を開く\n2. △△ボタンを押す\n3. ...",
+    "imagesLabel": "スクリーンショット（任意）",
+    "imagesHint": "PNG・JPEG・WebP・GIF、1 枚 5MB まで、最大 3 枚",
+    "imageAlt": "添付画像 {n}",
+    "imageRemove": "添付画像 {n} を外す",
     "submitLabel": "報告を送信",
     "submittingLabel": "送信中...",
-    "privacyNote": "報告にはアプリのバージョンや端末情報（ブラウザ種別・言語など）が自動的に含まれます。氏名やパスワードなどの個人情報は入力しないでください。報告内容は Issue 作成のため、外部の AI サービス（Anthropic の Claude）で整形されることがあります。",
+    "privacyNote": "報告にはアプリのバージョンや端末情報（ブラウザ種別・言語など）が自動的に含まれます。添付した画像は GitHub Issue に掲載され、リポジトリの閲覧権限を持つメンバーが確認できます。報告内容や添付画像は Issue 作成のため、外部の AI サービス（Anthropic の Claude）に送信・整形されることがあります。氏名・パスワード・API キーなどの個人情報や機密情報が写り込まないようご注意ください。",
     "formAriaLabel": "不具合報告フォーム"
   },
   "validation": {
     "descriptionRequired": "不具合の内容を入力してください",
     "descriptionTooLong": "不具合の内容が長すぎます（2000文字以内で入力してください）",
     "titleTooLong": "タイトルが長すぎます（100文字以内で入力してください）",
-    "stepsTooLong": "再現手順が長すぎます（2000文字以内で入力してください）"
+    "stepsTooLong": "再現手順が長すぎます（2000文字以内で入力してください）",
+    "imageUnsupportedType": "PNG・JPEG・WebP・GIF 形式の画像を選択してください",
+    "imageTooLarge": "画像のサイズは 1 枚あたり 5MB 以下にしてください",
+    "imageTooMany": "画像は最大 3 枚まで添付できます"
   },
   "status": {
     "success": "報告を送信しました。ご協力ありがとうございます。",

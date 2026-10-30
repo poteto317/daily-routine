@@ -7,6 +7,9 @@
   "firebaseFirestore": {
     "notInitialized": "データベースが初期化されていません"
   },
+  "firebaseStorage": {
+    "notInitialized": "ストレージが初期化されていません"
+  },
   "firebaseMessaging": {
     "notInitialized": "通知機能が初期化されていません",
     "tokenFailed": "通知トークンの取得に失敗しました",

@@ -29,13 +29,13 @@
 
 - **最小権限**: Fine-grained Personal Access Token もしくは GitHub App を使用し、
   対象リポジトリに対して **Issues: Read and write** のみ許可する。
-  （Contents / PR などの権限は付与しない。）
+  （Contents / PR などの権限は付与しない。添付画像は Firebase Storage に保存し、ダウンロードトークン付き URL を Issue 本文に埋め込むため、GitHub PAT の権限変更は不要。）
 - 失効・ローテーションを想定し、コード側はトークンを直接参照せず
   Secret 経由でのみ取得する。
 
 ---
 
-## 3. 設定手順（Cloud Functions / Firebase Secret Manager）
+## 3. 設定手順（Cloud Functions / Firebase Secret Manager / Firebase Storage）
 
 ### 3.1 Secret の登録
 
@@ -49,7 +49,7 @@ firebase functions:secrets:set ANTHROPIC_API_KEY
 
 実行するとプロンプトに値の入力を求められる（履歴やソースに残さない）。
 
-### 3.2 関数コードでの宣言（参考・Phase 2 で実装）
+### 3.2 関数コードでの宣言（参考・Phase 2〜3 で実装）
 
 ```ts
 import { defineSecret, defineString } from "firebase-functions/params";
@@ -64,25 +64,35 @@ export const onBugReportCreated = onDocumentCreated(
   {
     document: "bugReports/{reportId}",
     region: "asia-northeast1",
-    // Claude（最大 45 秒）と GitHub（最大 30 秒）を待てるよう既定の 60 秒から延ばす
-    timeoutSeconds: 120,
+    // Claude 最大 45 秒（画像つきの失敗後に画像なしで再整形して最大 45 秒）
+    // + GitHub 最大 30 秒 + 画像の取得・Firestore の読み書きが収まる長さ
+    timeoutSeconds: 180,
+    memory: "512MiB",
     secrets: [githubToken, anthropicApiKey],
   },
   async (event) => {
     const token = githubToken.value();
     const repo = githubRepo.value();
-    // ... fetch で GitHub REST API を呼び出し Issue 作成（createGithubIssue）
+    // ... 画像解決・Claude 整形・fetch で GitHub REST API を呼び出し Issue 作成
   },
 );
 ```
 
-### 3.3 デプロイ
+### 3.3 Firebase Storage の有効化とルールのデプロイ
+
+添付画像の保存には Firebase Storage の既定バケットを使用する。
+
+1. Firebase コンソール（Blaze プランが必要）の「Storage」から既定バケットを作成・有効化する。
+   - クライアントの `NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET` は既存の環境変数設定をそのまま使用する。
+   - Cloud Functions の実行サービスアカウントは同一プロジェクトの既定バケットを読み書きできる。
+2. Storage ルール（`storage.rules`）、Firestore ルール（`firestore.rules`）、および Functions をデプロイする。
 
 ```bash
-firebase deploy --only functions
+firebase deploy --only storage,firestore:rules,functions
 ```
 
 - Secret を新規追加・更新した場合は、その Secret を使う関数の再デプロイが必要。
+- **ダウンロードトークン URL の性質**: Functions（Admin SDK）が `firebaseStorageDownloadTokens` に UUID トークンを設定し、`https://firebasestorage.googleapis.com/v0/b/<bucket>/o/<encodedPath>?alt=media&token=<token>` 形式の URL を GitHub Issue 本文の `## スクリーンショット` 節に埋め込む。`storage.rules` では `allow read: if false` としているが、ダウンロードトークン付き URL は推測不可能なトークン自体が認可として機能するため、URL を知る人（Issue の閲覧権限を持つメンバーや GitHub の画像プロキシ）は画像を閲覧できる。
 
 ---
 
@@ -104,6 +114,7 @@ firebase deploy --only functions
 
 - 機能全体プラン: [bug-report-feature-plan.md](./bug-report-feature-plan.md)
 - Firestore ルール: リポジトリルート `firestore.rules` の `bugReports` セクション
+- Storage ルール: リポジトリルート `storage.rules` の `bugReports/{uid}/{reportId}/{fileName}` セクション
 
 ## 6. 起票先の変更
 

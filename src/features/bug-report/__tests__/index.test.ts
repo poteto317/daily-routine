@@ -8,5 +8,8 @@ describe("bug-report/index", () => {
     expect(typeof bugReport.validateBugReportInput).toBe("function");
     expect(typeof bugReport.buildBugReportPayload).toBe("function");
     expect(typeof bugReport.useBugReportInputState).toBe("function");
+    expect(typeof bugReport.selectBugReportImages).toBe("function");
+    expect(typeof bugReport.uploadBugReportImages).toBe("function");
+    expect(typeof bugReport.deleteBugReportImages).toBe("function");
   });
 });

@@ -5,6 +5,7 @@ import { getFirebaseState } from "./firebase-modules/state";
 import { getFCMToken, onForegroundMessage } from "./firebase-modules/messaging";
 import { getOrCreateUser, getAuthInstance } from "./firebase-modules/auth";
 import { getFirestoreInstance } from "./firebase-modules/firestore";
+import { getStorageInstance } from "./firebase-modules/storage";
 
 initializeFirebaseIfConfigured();
 
@@ -15,6 +16,7 @@ export {
   onForegroundMessage,
   getOrCreateUser,
   getFirestoreInstance,
+  getStorageInstance,
   getAuthInstance,
 };
 

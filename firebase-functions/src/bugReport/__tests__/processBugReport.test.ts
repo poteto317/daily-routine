@@ -372,7 +372,7 @@ describe("processBugReport — Claude による整形（draftIssue）", () => {
 
     await processBugReport(pendingReport, deps);
 
-    expect(deps.draftIssue).toHaveBeenCalledWith(pendingReport);
+    expect(deps.draftIssue).toHaveBeenCalledWith(pendingReport, []);
     const content = deps.createIssue.mock.calls[0][0];
     expect(content.title).toBe("[不具合報告] 保存できない");
     expect(content.body).toContain("要約本文");
@@ -426,6 +426,135 @@ describe("processBugReport — Claude による整形（draftIssue）", () => {
 
     expect(deps.createIssue.mock.calls[0][0].title).toBe(
       "[不具合報告] 不具合の内容",
+    );
+  });
+});
+
+describe("processBugReport — 画像の解決と埋め込み（resolveImages）", () => {
+  const issueResult = { issueNumber: 1, issueUrl: "u" };
+  const resolvedImg = {
+    mediaType: "image/png" as const,
+    data: Buffer.from("png"),
+    url: "https://example.test/shot1.png",
+  };
+
+  it("resolveImages がある場合、ロック取得後に呼ばれ、結果が draftIssue と Issue 本文に渡る", async () => {
+    const resolveImages = jest.fn().mockResolvedValue({
+      images: [resolvedImg],
+      skippedCount: 0,
+    });
+    const draftIssue = jest.fn().mockResolvedValue({
+      title: "整形タイトル",
+      body: "## 不具合の内容\n\n整形本文",
+    });
+    const createIssue = jest.fn().mockResolvedValue(issueResult);
+
+    const result = await processBugReport(pendingReport, {
+      claimProcessing: jest.fn().mockResolvedValue(true),
+      resolveImages,
+      draftIssue,
+      createIssue,
+      updateReport: jest.fn().mockResolvedValue(undefined),
+    });
+
+    expect(result).toBe("issued");
+    expect(resolveImages).toHaveBeenCalledWith(pendingReport);
+    expect(draftIssue).toHaveBeenCalledWith(pendingReport, [resolvedImg]);
+    const content = createIssue.mock.calls[0][0];
+    expect(content.body).toContain("## スクリーンショット");
+    expect(content.body).toContain(
+      "![スクリーンショット 1](https://example.test/shot1.png)",
+    );
+  });
+
+  it("resolveImages の skippedCount が本文の注記に反映される", async () => {
+    const resolveImages = jest.fn().mockResolvedValue({
+      images: [resolvedImg],
+      skippedCount: 2,
+    });
+    const createIssue = jest.fn().mockResolvedValue(issueResult);
+
+    await processBugReport(pendingReport, {
+      claimProcessing: jest.fn().mockResolvedValue(true),
+      resolveImages,
+      createIssue,
+      updateReport: jest.fn().mockResolvedValue(undefined),
+    });
+
+    const content = createIssue.mock.calls[0][0];
+    expect(content.body).toContain(
+      "![スクリーンショット 1](https://example.test/shot1.png)",
+    );
+    expect(content.body).toContain(
+      "（添付された画像 2 枚を取得できなかったため掲載していません）",
+    );
+  });
+
+  it("claimProcessing が false または shouldSkipProcessing が true の場合は resolveImages を呼ばない", async () => {
+    const resolveImages = jest.fn();
+    await processBugReport(pendingReport, {
+      claimProcessing: jest.fn().mockResolvedValue(false),
+      resolveImages,
+      createIssue: jest.fn(),
+      updateReport: jest.fn(),
+    });
+    expect(resolveImages).not.toHaveBeenCalled();
+
+    await processBugReport(
+      { ...pendingReport, status: "issued" },
+      {
+        claimProcessing: jest.fn().mockResolvedValue(true),
+        resolveImages,
+        createIssue: jest.fn(),
+        updateReport: jest.fn(),
+      },
+    );
+    expect(resolveImages).not.toHaveBeenCalled();
+  });
+
+  it("resolveImages が例外を投げた場合でも起票は続行し、参照されていた枚数分の取得失敗注記を出す", async () => {
+    const resolveImages = jest
+      .fn()
+      .mockRejectedValue(new Error("storage error"));
+    const createIssue = jest.fn().mockResolvedValue(issueResult);
+    const reportWithImages: ProcessableBugReport = {
+      ...pendingReport,
+      images: [{ path: "a" }, { path: "b" }],
+    };
+
+    const result = await processBugReport(reportWithImages, {
+      claimProcessing: jest.fn().mockResolvedValue(true),
+      resolveImages,
+      createIssue,
+      updateReport: jest.fn().mockResolvedValue(undefined),
+    });
+
+    expect(result).toBe("issued");
+    expect(createIssue.mock.calls[0][0].body).toContain(
+      "（添付された画像 2 枚を取得できなかったため掲載していません）",
+    );
+  });
+
+  it("draftIssue が画像つきでも null を返した場合は従来の本文にスクリーンショット節を載せて起票する", async () => {
+    const resolveImages = jest.fn().mockResolvedValue({
+      images: [resolvedImg],
+      skippedCount: 0,
+    });
+    const draftIssue = jest.fn().mockResolvedValue(null);
+    const createIssue = jest.fn().mockResolvedValue(issueResult);
+
+    await processBugReport(pendingReport, {
+      claimProcessing: jest.fn().mockResolvedValue(true),
+      resolveImages,
+      draftIssue,
+      createIssue,
+      updateReport: jest.fn().mockResolvedValue(undefined),
+    });
+
+    const content = createIssue.mock.calls[0][0];
+    expect(content.title).toBe("[不具合報告] 不具合の内容");
+    expect(content.body).toContain(
+      "![スクリーンショット 1](https://example.test/shot1.png)",
     );
   });
 });

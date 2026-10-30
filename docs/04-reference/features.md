@@ -552,12 +552,13 @@ Firestoreを使用した複数端末間のデータ同期・バックアップ�
 
 **主な機能**
 
-- **報告モーダルUI**
+- **報告フォームUI**
   - ヘッダーメニューの「🐛 不具合を報告」からいつでも起動可能
   - 入力項目:
     - 不具合の詳細（必須、1〜2000文字）
-    - タイトル（任意、最大100文字）
+    - タイトル（任意、最大100文字。UI省略時はAIが生成）
     - 再現手順（任意、最大2000文字）
+    - スクリーンショット画像（任意、PNG・JPEG・WebP・GIF、1枚5MB以下、最大3枚、サムネイルプレビュー・個別削除対応）
 - **環境情報の自動収集**
   - 端末情報・再現に必要なコンテキストを自動付与（個人情報は収集しない）
   - アプリバージョン (`appVersion`)
@@ -567,16 +568,16 @@ Firestoreを使用した複数端末間のデータ同期・バックアップ�
   - タイムゾーン (`timezone`)
   - クライアント時刻 (`createdAtClient`)
 - **GitHub Issue 自動起票連携**
-  - クライアントは Firestore `bugReports/{reportId}` へ `status: "pending"` として安全にドキュメント作成
-  - Firestore セキュリティルールにより不正入力や serverTimestamp 改ざんを厳格に拒否
-  - Cloud Functions の Firestore トリガー（`onBugReportCreated`）が検知し、GitHub REST API を叩いて `bug`・`user-report` ラベル付き Issue を自動作成
-  - Issue のタイトルと本文は Claude（Anthropic API）で整形する（`ANTHROPIC_API_KEY` に `none` を登録すると整形しない）。整形に失敗した場合は従来の内容（報告文そのまま）で起票する
+  - 画像が添付されている場合は、クライアントが先に Firebase Storage（`bugReports/{uid}/{reportId}/{fileName}`）へアップロードしてから、Firestore `bugReports/{reportId}` へ `status: "pending"` としてドキュメントを作成（途中失敗時はアップロード済み画像を自動削除）
+  - Firestore セキュリティルールおよび Storage セキュリティルールにより不正入力・形式外やサイズ超過の画像・serverTimestamp 改ざんを厳格に拒否
+  - Cloud Functions の Firestore トリガー（`onBugReportCreated`）が検知し、添付画像のサイズ・マジックナンバー検証およびダウンロードトークン付き URL の取得を行った上で、GitHub REST API を叩いて `bug`・`user-report` ラベル付き Issue を自動作成（本文の `## スクリーンショット` 節に画像を埋め込み）
+  - Issue のタイトルと本文は Claude（Anthropic API）で整形し、添付画像がある場合は画像も Claude に渡して状況把握に活用する（`ANTHROPIC_API_KEY` に `none` を登録すると整形しない）。画像つき整形が失敗した場合は画像なしで1回だけ再整形し、それも失敗した場合は従来の内容（報告文そのまま）で起票する
   - 起票成功時に Firestore を `status: "issued"`, `issueNumber`, `issueUrl` で更新
 
 **技術仕様**
 
 - ファイル: `src/features/bug-report/`, `firebase-functions/src/bugReport/`
-- 保存先: Firestore `bugReports/{reportId}`
+- 保存先: Firestore `bugReports/{reportId}`, Firebase Storage `bugReports/{uid}/{reportId}/{fileName}`
 - 連携: GitHub REST API（Secret: `GITHUB_TOKEN`、文字列パラメータ: `GITHUB_REPO`）、Anthropic Claude API で Issue を整形（Secret: `ANTHROPIC_API_KEY`。失敗時は従来の内容で起票）
 
 ---
@@ -850,6 +851,7 @@ Progressive Web App (PWA) 技術と Workbox による Service Worker を活用�
 
 - **認証**: Firebase Authentication（メール/パスワード、匿名認証、カスタムクレーム）
 - **データベース**: Firebase Firestore
+- **ファイルストレージ**: Firebase Storage（不具合報告のスクリーンショット画像保存）
 - **通知**: Firebase Cloud Messaging (FCM)
 - **サーバーレス関数**: Firebase Cloud Functions（Node.js 24）
 - **外部連携**: GitHub REST API（不具合報告の Issue 自動起票）、Anthropic Claude API（不具合報告 Issue の整形。失敗時は従来の内容で起票）
@@ -954,7 +956,7 @@ Progressive Web App (PWA) 技術と Workbox による Service Worker を活用�
 | `user:<uid>:_migrated`          | ユーザースコープストレージ移行完了マーカー           | ストレージ基盤   |
 | `user:<uid>:_date-key-migrated` | JST 日付キー補正移行完了マーカー                     | ストレージ基盤   |
 
-### Firestore コレクション構造
+### Firestore コレクション構造 / Firebase Storage パス構造
 
 ```
 users/{userId}                         # ユーザー同期データ本体ドキュメント（単一ドキュメントに全機能の最新データを集約）
@@ -992,6 +994,7 @@ bugReports/{reportId}                  # 不具合報告コレクション（ク
   ├─ title: string
   ├─ description: string
   ├─ stepsToReproduce: string
+  ├─ images?: { path: string; contentType: string; size: number }[]
   ├─ meta: { appVersion, userAgent, url, locale, timezone, createdAtClient }
   ├─ issueNumber?: number
   ├─ issueUrl?: string
@@ -1001,6 +1004,9 @@ bugReports/{reportId}                  # 不具合報告コレクション（ク
 apiKeys/{keyHash}                      # AI エージェント用 API キー（キーの SHA-256 ハッシュを ID として保存）
   ├─ uid: string
   └─ createdAt: Timestamp
+
+# Firebase Storage
+bugReports/{uid}/{reportId}/{fileName} # 不具合報告の添付スクリーンショット（最大3枚、各5MB以下、PNG/JPEG/WebP/GIF）
 ```
 
 ---
@@ -1033,7 +1039,7 @@ daily-routine/
 │   │   ├── api-key/                  # API キー管理 UI
 │   │   ├── auth/                     # 認証・セッション管理
 │   │   ├── budget/                   # 家計簿
-│   │   ├── bug-report/               # 不具合報告モーダル
+│   │   ├── bug-report/               # 不具合報告フォーム・ページ
 │   │   ├── calendar/                 # 達成カレンダー
 │   │   ├── journal/                  # ジャーナル（日記）
 │   │   ├── meal/                     # 食事記録
@@ -1061,6 +1067,7 @@ daily-routine/
 │   └── tailwind/                     # Tailwind ユーティリティチェック
 ├── e2e/                              # Playwright E2E テスト
 ├── firestore.rules                   # Firestore セキュリティルール
+├── storage.rules                     # Firebase Storage セキュリティルール
 └── package.json
 ```
 

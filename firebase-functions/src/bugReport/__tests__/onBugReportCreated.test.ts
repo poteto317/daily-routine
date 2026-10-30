@@ -2,16 +2,36 @@
 jest.mock("../handleBugReport", () => ({
   handleBugReport: jest.fn().mockResolvedValue(undefined),
 }));
+
+const mockBucket = { name: "default-bucket", file: jest.fn() };
+const mockBucketFn = jest.fn().mockReturnValue(mockBucket);
+jest.mock("firebase-admin/storage", () => ({
+  getStorage: jest.fn(() => ({
+    bucket: mockBucketFn,
+  })),
+}));
+
+const mockCreatedStore = {
+  getSize: jest.fn(),
+  download: jest.fn(),
+  getDownloadUrl: jest.fn(),
+};
+jest.mock("../storageImageStore", () => ({
+  createStorageImageStore: jest.fn(() => mockCreatedStore),
+}));
+
 import { onBugReportCreated } from "../onBugReportCreated";
 import { handleBugReport } from "../handleBugReport";
 import { PROCESSING_LOCK_TIMEOUT_MS } from "../constants";
 import { CLAUDE_TIMEOUT_MS } from "../draftIssueWithClaude";
 import { GITHUB_TIMEOUT_MS } from "../createGithubIssue";
+import { createStorageImageStore } from "../storageImageStore";
 
 /** onDocumentCreated が返す関数に付く、デプロイ設定（エンドポイント）の一部 */
 type EndpointLike = {
   __endpoint: {
     timeoutSeconds?: number;
+    availableMemoryMb?: number;
     secretEnvironmentVariables?: { key: string }[];
   };
 };
@@ -20,12 +40,16 @@ const endpointOf = () =>
   (onBugReportCreated({} as never) as unknown as EndpointLike).__endpoint;
 
 describe("onBugReportCreated のトリガー設定", () => {
-  it("Claude と GitHub の呼び出しの上限を合わせても収まるタイムアウトを指定する", () => {
+  it("Claude（再整形を含む最大 2 回）と GitHub の呼び出しの上限を合わせても収まるタイムアウト（180秒）を指定する", () => {
     const timeoutSeconds = endpointOf().timeoutSeconds;
-    expect(timeoutSeconds).toBe(120);
+    expect(timeoutSeconds).toBe(180);
     expect((timeoutSeconds ?? 0) * 1000).toBeGreaterThan(
-      CLAUDE_TIMEOUT_MS + GITHUB_TIMEOUT_MS,
+      CLAUDE_TIMEOUT_MS * 2 + GITHUB_TIMEOUT_MS,
     );
+  });
+
+  it("画像を扱うためメモリ上限を 512MiB（availableMemoryMb: 512）に設定する", () => {
+    expect(endpointOf().availableMemoryMb).toBe(512);
   });
 
   it("関数のタイムアウトは処理ロックの期限より短い（打ち切り後の再実行で二重に起票しない）", () => {
@@ -57,7 +81,7 @@ describe("onBugReportCreated のトリガー設定", () => {
       jest.clearAllMocks();
     });
 
-    it("各 Secret の値を取り違えずに handleBugReport へ渡す", async () => {
+    it("各 Secret の値と createImageStore を handleBugReport へ渡す", async () => {
       process.env.ANTHROPIC_API_KEY = "anthropic-key";
       process.env.GITHUB_TOKEN = "github-token";
       process.env.GITHUB_REPO = "owner/repo";
@@ -72,6 +96,12 @@ describe("onBugReportCreated のトリガー設定", () => {
       expect(deps.anthropicApiKey).toBe("anthropic-key");
       expect(deps.token).toBe("github-token");
       expect(deps.repo).toBe("owner/repo");
+      expect(typeof deps.createImageStore).toBe("function");
+
+      const store = deps.createImageStore();
+      expect(mockBucketFn).toHaveBeenCalledTimes(1);
+      expect(createStorageImageStore).toHaveBeenCalledWith(mockBucket);
+      expect(store).toBe(mockCreatedStore);
     });
   });
 });

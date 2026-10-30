@@ -59,6 +59,7 @@ function mockFirebaseSdk(
     isSupported: jest.fn(async () => false),
   }));
   jest.doMock("firebase/firestore", () => ({ getFirestore: jest.fn() }));
+  jest.doMock("firebase/storage", () => ({ getStorage: jest.fn() }));
   jest.doMock("firebase/auth", () => ({
     getAuth: jest.fn(),
     signInAnonymously: jest.fn(),
@@ -99,6 +100,16 @@ describe("lib/firebase", () => {
 
     expect(() => mod.getFirestoreInstance()).toThrow(
       "データベースが初期化されていません",
+    );
+  });
+
+  it("設定不足時のgetStorageInstanceはstorage-not-availableを投げる", async () => {
+    mockFirebaseSdk();
+
+    const mod = await import("../firebase");
+
+    expect(() => mod.getStorageInstance()).toThrow(
+      "ストレージが初期化されていません",
     );
   });
 

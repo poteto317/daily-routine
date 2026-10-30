@@ -1,0 +1,21 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /bugReports/{uid}/{reportId}/{fileName} {
+      allow create: if request.auth != null
+        && request.auth.uid == uid
+        && reportId.size() >= 1 && reportId.size() <= 64
+        && fileName.matches('^[A-Za-z0-9_-]{1,64}\\.(png|jpg|webp|gif)$')
+        && request.resource.size > 0
+        && request.resource.size <= 5 * 1024 * 1024
+        && request.resource.contentType.matches('^image/(png|jpeg|webp|gif)$');
+      allow delete: if request.auth != null && request.auth.uid == uid;
+      allow read, update: if false;
+    }
+
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -7,6 +7,7 @@ export interface BugReportContentSource {
   title?: string;
   description: string;
   stepsToReproduce?: string;
+  images?: unknown;
   meta?: {
     appVersion: string;
     userAgent: string;
@@ -15,6 +16,12 @@ export interface BugReportContentSource {
     timezone: string;
     createdAtClient: string;
   };
+}
+
+/** Issue 本文に埋め込むスクリーンショット節の情報 */
+export interface IssueImageSection {
+  readonly images: ReadonlyArray<{ readonly url: string }>;
+  readonly skippedCount: number;
 }
 
 /** GitHub Issue 作成に渡す内容 */
@@ -82,9 +89,41 @@ export const buildIssueTitle = (report: BugReportContentSource): string => {
 };
 
 /**
- * Issue 本文を Markdown で生成する（不具合内容・再現手順・環境情報）。
+ * スクリーンショット節の行を組み立てる（末尾に空行を含む）。
+ * 埋め込む画像も飛ばされた画像も無ければ空配列を返す。
  */
-export const buildIssueBody = (report: BugReportContentSource): string => {
+const buildScreenshotLines = (imageSection?: IssueImageSection): string[] => {
+  if (!imageSection) {
+    return [];
+  }
+  const { images, skippedCount } = imageSection;
+  if (images.length === 0 && skippedCount <= 0) {
+    return [];
+  }
+
+  const lines: string[] = ["## スクリーンショット", ""];
+  images.forEach((img, index) => {
+    lines.push(
+      `![スクリーンショット ${index + 1}](${sanitizeMention(img.url)})`,
+      "",
+    );
+  });
+  if (skippedCount > 0) {
+    lines.push(
+      `（添付された画像 ${skippedCount} 枚を取得できなかったため掲載していません）`,
+      "",
+    );
+  }
+  return lines;
+};
+
+/**
+ * Issue 本文を Markdown で生成する（不具合内容・再現手順・スクリーンショット・環境情報）。
+ */
+export const buildIssueBody = (
+  report: BugReportContentSource,
+  imageSection?: IssueImageSection,
+): string => {
   const lines: string[] = [];
 
   lines.push(
@@ -99,6 +138,7 @@ export const buildIssueBody = (report: BugReportContentSource): string => {
     lines.push("## 再現手順", "", steps, "");
   }
 
+  lines.push(...buildScreenshotLines(imageSection));
   lines.push(...buildEnvironmentLines(report, FOOTER_NOTE));
 
   return lines.join("\n");
@@ -156,12 +196,13 @@ const buildDraftIssueTitle = (draft: IssueDraft): string => {
 };
 
 /**
- * Claude が整形した本文に環境情報と整形の注記を付けて Issue 本文を作る。
+ * Claude が整形した本文にスクリーンショット節・環境情報・整形の注記を付けて Issue 本文を作る。
  * 元の説明文・再現手順は draft の本文に置き換わるため含めない。
  */
 const buildDraftIssueBody = (
   report: BugReportContentSource,
   draft: IssueDraft,
+  imageSection?: IssueImageSection,
 ): string =>
   [
     truncateCodePoints(
@@ -169,6 +210,7 @@ const buildDraftIssueBody = (
       DRAFT_BODY_MAX_LENGTH,
     ),
     "",
+    ...buildScreenshotLines(imageSection),
     ...buildEnvironmentLines(report, DRAFT_FOOTER_NOTE),
   ].join("\n");
 
@@ -180,8 +222,11 @@ const buildDraftIssueBody = (
 export const buildIssueContent = (
   report: BugReportContentSource,
   draft?: IssueDraft | null,
+  imageSection?: IssueImageSection,
 ): GithubIssueContent => ({
   title: draft ? buildDraftIssueTitle(draft) : buildIssueTitle(report),
-  body: draft ? buildDraftIssueBody(report, draft) : buildIssueBody(report),
+  body: draft
+    ? buildDraftIssueBody(report, draft, imageSection)
+    : buildIssueBody(report, imageSection),
   labels: [...DEFAULT_BUG_REPORT_LABELS],
 });

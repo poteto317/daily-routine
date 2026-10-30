@@ -24,6 +24,7 @@ export const BugReportPage = () => {
             setDescription={form.setDescription}
             stepsToReproduce={form.stepsToReproduce}
             setStepsToReproduce={form.setStepsToReproduce}
+            imageAttachments={form.imageAttachments}
             status={form.status}
             errorMessage={form.errorMessage}
             handleSubmit={form.handleSubmit}

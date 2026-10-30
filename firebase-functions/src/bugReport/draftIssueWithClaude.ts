@@ -7,11 +7,17 @@ import {
   type IssueDraft,
 } from "./buildIssueContent";
 import { DRAFT_SYSTEM_PROMPT, buildDraftPrompt } from "./buildDraftPrompt";
+import type { ImageMediaType } from "./imageFormats";
+
+export interface DraftImage {
+  readonly mediaType: ImageMediaType;
+  readonly data: Buffer;
+}
 
 export const CLAUDE_MODEL = "claude-opus-5-5";
 /** 思考のトークンも含む上限。長めの報告でも日本語の本文が打ち切られない余裕を持たせる */
 export const CLAUDE_MAX_TOKENS = 8000;
-/** 1 回の Claude 呼び出しの上限。再試行はしない（関数のタイムアウト 120 秒に収める） */
+/** 1 回の Claude 呼び出しの上限。再試行はしない（関数のタイムアウト 180 秒に収める） */
 export const CLAUDE_TIMEOUT_MS = 45_000;
 
 /** Claude に返させる構造化出力の形 */
@@ -40,16 +46,37 @@ export class IssueDraftError extends Error {
 }
 
 /** Claude への整形依頼（messages.create に渡すリクエスト）を組み立てる */
-export const buildDraftRequest = (report: BugReportContentSource) => ({
-  model: CLAUDE_MODEL,
-  max_tokens: CLAUDE_MAX_TOKENS,
-  system: DRAFT_SYSTEM_PROMPT,
-  messages: [{ role: "user" as const, content: buildDraftPrompt(report) }],
-  output_config: {
-    effort: "low" as const,
-    format: DRAFT_OUTPUT_FORMAT,
-  },
-});
+export const buildDraftRequest = (
+  report: BugReportContentSource,
+  images?: readonly DraftImage[],
+) => {
+  const promptText = buildDraftPrompt(report);
+  const content =
+    images && images.length > 0
+      ? [
+          ...images.map((img) => ({
+            type: "image" as const,
+            source: {
+              type: "base64" as const,
+              media_type: img.mediaType,
+              data: img.data.toString("base64"),
+            },
+          })),
+          { type: "text" as const, text: promptText },
+        ]
+      : promptText;
+
+  return {
+    model: CLAUDE_MODEL,
+    max_tokens: CLAUDE_MAX_TOKENS,
+    system: DRAFT_SYSTEM_PROMPT,
+    messages: [{ role: "user" as const, content }],
+    output_config: {
+      effort: "low" as const,
+      format: DRAFT_OUTPUT_FORMAT,
+    },
+  };
+};
 
 export type DraftRequest = ReturnType<typeof buildDraftRequest>;
 
@@ -105,8 +132,9 @@ const parseDraftOutput = (text: string): z.infer<typeof IssueDraftSchema> => {
 export const draftIssueWithClaude = async (
   report: BugReportContentSource,
   requestDraft: DraftRequester,
+  images?: readonly DraftImage[],
 ): Promise<IssueDraft> => {
-  const response = await requestDraft(buildDraftRequest(report));
+  const response = await requestDraft(buildDraftRequest(report, images));
   if (response.stop_reason === "refusal") {
     throw new IssueDraftError("refusal");
   }

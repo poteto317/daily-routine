@@ -23,6 +23,15 @@ export interface BugReportMeta {
 }
 
 /**
+ * Firestore `bugReports/{reportId}` ドキュメントの `images` 要素の型（サーバ側）。
+ */
+export interface BugReportImageRef {
+  path: string;
+  contentType: string;
+  size: number;
+}
+
+/**
  * Firestore `bugReports/{reportId}` ドキュメントの型（サーバ側）。
  * issueNumber 以降は Cloud Functions が書き戻すフィールド。
  * createdAt / updatedAt / processingAt は読み取り時 Timestamp、書き込み時 FieldValue。
@@ -32,6 +41,7 @@ export interface BugReport {
   title: string;
   description: string;
   stepsToReproduce?: string;
+  images?: BugReportImageRef[];
   meta: BugReportMeta;
   status: BugReportStatus;
   issueNumber?: number;
