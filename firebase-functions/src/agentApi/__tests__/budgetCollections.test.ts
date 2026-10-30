@@ -136,6 +136,50 @@ describe("incomeItemOperations", () => {
       incomeItemOperations.create(context({ body: { name: "給与" } })),
     ).toThrow(ApiError);
   });
+
+  describe("update", () => {
+    const existing = {
+      id: "budget-income-item-1",
+      name: "給与",
+      amount: 300000,
+      createdAt: "2026-01-01T00:00:00.000Z",
+    };
+    const update = (body: Record<string, unknown>) =>
+      incomeItemOperations.update(
+        context({
+          data: { budgetIncomeItems: [existing] },
+          id: existing.id,
+          body,
+        }),
+      );
+
+    it("name と amount をそれぞれ単独で変更できる", () => {
+      expect(update({ name: "賞与" }).changes).toEqual({
+        budgetIncomeItems: [{ ...existing, name: "賞与" }],
+      });
+      expect(update({ amount: 310000 }).changes).toEqual({
+        budgetIncomeItems: [{ ...existing, amount: 310000 }],
+      });
+    });
+
+    it("空のボディは 400 empty_patch", () => {
+      expect(() => update({})).toThrow(
+        expect.objectContaining({ status: 400, code: "empty_patch" }),
+      );
+    });
+
+    it("許可されていないキーは 400", () => {
+      expect(() => update({ kind: "fixed" })).toThrow(
+        expect.objectContaining({ status: 400 }),
+      );
+    });
+
+    it("空文字の name は 400", () => {
+      expect(() => update({ name: "" })).toThrow(
+        expect.objectContaining({ status: 400 }),
+      );
+    });
+  });
 });
 
 describe("expenseItemOperations", () => {
@@ -173,5 +217,30 @@ describe("expenseItemOperations", () => {
     expect(outcome.changes).toEqual({
       budgetExpenseItems: [{ ...existing, amount: 82000 }],
     });
+  });
+
+  it("update でも kind は fixed / variable のみ", () => {
+    const existing = {
+      id: "budget-expense-item-1",
+      name: "家賃",
+      amount: 80000,
+      kind: "fixed",
+      createdAt: "2026-01-01T00:00:00.000Z",
+    };
+    const update = (kind: string) =>
+      expenseItemOperations.update(
+        context({
+          data: { budgetExpenseItems: [existing] },
+          id: existing.id,
+          body: { kind },
+        }),
+      );
+
+    expect(update("variable").changes).toEqual({
+      budgetExpenseItems: [{ ...existing, kind: "variable" }],
+    });
+    expect(() => update("other")).toThrow(
+      expect.objectContaining({ status: 400 }),
+    );
   });
 });
