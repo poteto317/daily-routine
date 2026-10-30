@@ -1,173 +1,97 @@
-import {
-  collection,
-  deleteDoc,
-  doc,
-  getDoc,
-  getDocs,
-  orderBy,
-  query,
-  serverTimestamp,
-  setDoc,
-} from "firebase/firestore";
-import {
-  FirebaseError,
-  getFirestoreInstance,
-  getOrCreateUser,
-} from "@/lib/firebase";
-import { getSyncErrorMessage } from "./errorMessage";
+import { FirebaseError, getOrCreateUser } from "@/lib/firebase";
 import { saveSyncDataToLocal } from "./localData";
+import {
+  createSnapshot,
+  deleteLatestSyncData,
+  deleteSnapshot,
+  listSnapshotsNewestFirst,
+  readSnapshot,
+  saveLatestSyncData,
+} from "./snapshotStore";
+import { runSnapshotTask } from "./snapshotTaskStatus";
 import { createSyncPayload } from "./syncPayload";
-import { setSyncStatus } from "./statusStore";
-import type { SyncData, SyncPayload, SyncSnapshot } from "./types";
+import type { SyncData, SyncSnapshot } from "./types";
 import texts from "../locales/ja.json";
 
 const MAX_SYNC_SNAPSHOTS = 5;
 
-const getSyncSnapshotsCollectionRef = (userId: string) => {
-  return collection(getFirestoreInstance(), "users", userId, "syncSnapshots");
-};
-
-const mapSnapshotDoc = (snapshotDoc: {
-  id: string;
-  data: () => Omit<SyncSnapshot, "id">;
-}): SyncSnapshot => {
-  return {
-    id: snapshotDoc.id,
-    ...snapshotDoc.data(),
-  };
-};
-
-const getSnapshotQuery = (userId: string) => {
-  return query(
-    getSyncSnapshotsCollectionRef(userId),
-    orderBy("uploadedAt", "desc"),
-  );
-};
-
-const getOrderedSnapshots = async (userId: string): Promise<SyncSnapshot[]> => {
-  const snapshotDocs = await getDocs(getSnapshotQuery(userId));
-  return snapshotDocs.docs.map((snapshotDoc) =>
-    mapSnapshotDoc(snapshotDoc as never),
-  );
-};
-
-const saveLatestSyncData = async (
-  userId: string,
-  data: SyncPayload,
-  uploadedAt: number,
-  deviceId: string,
-): Promise<void> => {
-  const docRef = doc(getFirestoreInstance(), "users", userId);
-  await setDoc(docRef, {
-    ...data,
-    lastModified: uploadedAt,
-    deviceId,
-    updatedAt: serverTimestamp(),
-  });
-};
-
+/**
+ * アップロードしたデータを履歴に積む。
+ * 新しい 1 件を足しても最大件数に収まるよう、古い履歴から削除する。
+ */
 export const saveSyncSnapshot = async (data: SyncData): Promise<void> => {
   const user = await getOrCreateUser();
-  const existingSnapshots = await getOrderedSnapshots(user.uid);
+  const existingSnapshots = await listSnapshotsNewestFirst(user.uid);
 
   await Promise.all(
     existingSnapshots
       .slice(MAX_SYNC_SNAPSHOTS - 1)
-      .map((snapshot) =>
-        deleteDoc(doc(getSyncSnapshotsCollectionRef(user.uid), snapshot.id)),
-      ),
+      .map((snapshot) => deleteSnapshot(user.uid, snapshot.id)),
   );
 
-  const payload = createSyncPayload(data);
-  const uploadedAt = data.lastModified;
-  const snapshotRef = doc(getSyncSnapshotsCollectionRef(user.uid));
-
-  await setDoc(snapshotRef, {
-    id: snapshotRef.id,
-    uploadedAt,
+  await createSnapshot(user.uid, {
+    uploadedAt: data.lastModified,
     deviceId: data.deviceId,
-    data: payload,
-    updatedAt: serverTimestamp(),
+    data: createSyncPayload(data),
   });
 };
 
-export const getSyncSnapshots = async (): Promise<SyncSnapshot[]> => {
-  try {
-    setSyncStatus({ isSyncing: true, error: null });
+/** 履歴を新しい順で取得する */
+export const getSyncSnapshots = (): Promise<SyncSnapshot[]> =>
+  runSnapshotTask(
+    async () => {
+      const user = await getOrCreateUser();
+      return listSnapshotsNewestFirst(user.uid);
+    },
+    {
+      fallbackMessage: texts.syncError.downloadFailed,
+      errorCode: "snapshot-list-failed",
+    },
+  );
 
-    const user = await getOrCreateUser();
-    const snapshots = await getOrderedSnapshots(user.uid);
+/** 履歴の内容をローカルへ復元し、変更ありの表示を解除する */
+export const applySyncSnapshot = (snapshotId: string): Promise<void> =>
+  runSnapshotTask(
+    async () => {
+      const user = await getOrCreateUser();
+      const snapshot = await readSnapshot(user.uid, snapshotId);
+      if (!snapshot) {
+        throw new FirebaseError(texts.syncError.noRemoteData, "no-remote-data");
+      }
+      saveSyncDataToLocal(snapshot.data);
+    },
+    {
+      fallbackMessage: texts.syncError.downloadFailed,
+      errorCode: "snapshot-apply-failed",
+      successStatus: () => ({
+        isSyncing: false,
+        lastSyncTime: Date.now(),
+        hasRemoteChanges: false,
+        hasLocalChanges: false,
+        error: null,
+      }),
+    },
+  );
 
-    setSyncStatus({ isSyncing: false, error: null });
-    return snapshots;
-  } catch (error) {
-    const errorMessage = getSyncErrorMessage(
-      error,
-      texts.syncError.downloadFailed,
-    );
-    setSyncStatus({ isSyncing: false, error: errorMessage });
-    throw new FirebaseError(errorMessage, "snapshot-list-failed");
-  }
-};
+/**
+ * 履歴を削除する。一覧に無い ID なら何もしない。
+ * 最新の履歴を消したときは、次に新しい履歴を最新の同期データにする
+ * （次が無ければ最新の同期データも消す）。
+ */
+export const deleteSyncSnapshot = (snapshotId: string): Promise<void> =>
+  runSnapshotTask(
+    async () => {
+      const user = await getOrCreateUser();
+      const snapshots = await listSnapshotsNewestFirst(user.uid);
+      const deletedIndex = snapshots.findIndex(
+        (snapshot) => snapshot.id === snapshotId,
+      );
+      if (deletedIndex === -1) return;
 
-export const applySyncSnapshot = async (snapshotId: string): Promise<void> => {
-  try {
-    setSyncStatus({ isSyncing: true, error: null });
+      await deleteSnapshot(user.uid, snapshotId);
+      if (deletedIndex !== 0) return;
 
-    const user = await getOrCreateUser();
-    const snapshotRef = doc(
-      getSyncSnapshotsCollectionRef(user.uid),
-      snapshotId,
-    );
-    const snapshotDoc = await getDoc(snapshotRef);
-
-    if (!snapshotDoc.exists()) {
-      throw new FirebaseError(texts.syncError.noRemoteData, "no-remote-data");
-    }
-
-    const snapshot = mapSnapshotDoc({
-      id: snapshotDoc.id,
-      data: () => snapshotDoc.data() as Omit<SyncSnapshot, "id">,
-    });
-
-    saveSyncDataToLocal(snapshot.data);
-    setSyncStatus({
-      isSyncing: false,
-      lastSyncTime: Date.now(),
-      hasRemoteChanges: false,
-      hasLocalChanges: false,
-      error: null,
-    });
-  } catch (error) {
-    const errorMessage = getSyncErrorMessage(
-      error,
-      texts.syncError.downloadFailed,
-    );
-    setSyncStatus({ isSyncing: false, error: errorMessage });
-    throw new FirebaseError(errorMessage, "snapshot-apply-failed");
-  }
-};
-
-export const deleteSyncSnapshot = async (snapshotId: string): Promise<void> => {
-  try {
-    setSyncStatus({ isSyncing: true, error: null });
-
-    const user = await getOrCreateUser();
-    const snapshots = await getOrderedSnapshots(user.uid);
-    const deletedIndex = snapshots.findIndex(
-      (snapshot) => snapshot.id === snapshotId,
-    );
-
-    if (deletedIndex === -1) {
-      setSyncStatus({ isSyncing: false, error: null });
-      return;
-    }
-
-    await deleteDoc(doc(getSyncSnapshotsCollectionRef(user.uid), snapshotId));
-
-    if (deletedIndex === 0) {
       const nextLatest = snapshots[1];
-
       if (nextLatest) {
         await saveLatestSyncData(
           user.uid,
@@ -176,17 +100,11 @@ export const deleteSyncSnapshot = async (snapshotId: string): Promise<void> => {
           nextLatest.deviceId,
         );
       } else {
-        await deleteDoc(doc(getFirestoreInstance(), "users", user.uid));
+        await deleteLatestSyncData(user.uid);
       }
-    }
-
-    setSyncStatus({ isSyncing: false, error: null });
-  } catch (error) {
-    const errorMessage = getSyncErrorMessage(
-      error,
-      texts.syncError.uploadFailed,
-    );
-    setSyncStatus({ isSyncing: false, error: errorMessage });
-    throw new FirebaseError(errorMessage, "snapshot-delete-failed");
-  }
-};
+    },
+    {
+      fallbackMessage: texts.syncError.uploadFailed,
+      errorCode: "snapshot-delete-failed",
+    },
+  );
