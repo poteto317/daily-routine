@@ -1,13 +1,37 @@
 import type { Routine } from "@/types/routine";
 
-import {
-  groupRoutinesByGroupId,
-  isCorruptedGroup,
-} from "./routineGroupCorruption";
+import { isCorruptedGroup } from "./routineGroupCorruption";
 import { repairGroupMembers } from "./routineGroupDayRepair";
 import { assignSortOrder, compareBySortOrderThenId } from "./routineOrderModel";
 
-export { migrateMultiDayRoutinesWithGroup } from "./routineGroupMultiDayMigration";
+/** groupId ごとのメンバーと、groupId を持たないルーティンに分けた結果 */
+type RoutinesByGroup = {
+  groups: Map<string, Routine[]>;
+  nonGrouped: Routine[];
+};
+
+/** ルーティンを groupId ごとにまとめる（グループの順番は最初に現れた順） */
+export const groupRoutinesByGroupId = (
+  routines: Routine[],
+): RoutinesByGroup => {
+  const groups = new Map<string, Routine[]>();
+  const nonGrouped: Routine[] = [];
+
+  for (const routine of routines) {
+    if (!routine.groupId) {
+      nonGrouped.push(routine);
+      continue;
+    }
+    const members = groups.get(routine.groupId);
+    if (members) {
+      members.push(routine);
+    } else {
+      groups.set(routine.groupId, [routine]);
+    }
+  }
+
+  return { groups, nonGrouped };
+};
 
 /**
  * 汚染されたグループデータを修復する。

@@ -10,7 +10,6 @@ export {
   buildUpdatedRoutine,
   createRoutinesForBatchInput,
   createRoutinesForSingleInput,
-  migrateMultiDayRoutinesWithGroup,
   repairCorruptedGroupRoutines,
   sortRoutinesByOrder,
   type RoutineBatchCreateInput,
