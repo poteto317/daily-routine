@@ -18,6 +18,19 @@ type InitialPomodoroViewStateArgs = {
   completedToday: number;
 };
 
+/**
+ * 画面の初期状態。戻り値型として宣言し、timerState を as で広げずに検査する
+ * （as だと綴り違いの文字列も通ってしまうため）。
+ */
+type InitialPomodoroViewState = {
+  focusMinutes: number;
+  breakMinutes: number;
+  timerState: TimerState;
+  timeLeft: number;
+  isRunning: boolean;
+  completedToday: number;
+};
+
 type ApplyTimerControlStateArgs = {
   nextState: TimerControlState;
   setIsRunning: SetBoolean;
@@ -42,11 +55,11 @@ export const createInitialPomodoroViewState = ({
   focusMinutes,
   breakMinutes,
   completedToday,
-}: InitialPomodoroViewStateArgs) => {
+}: InitialPomodoroViewStateArgs): InitialPomodoroViewState => {
   return {
     focusMinutes,
     breakMinutes,
-    timerState: "idle" as TimerState,
+    timerState: "idle",
     timeLeft: focusMinutes * 60,
     isRunning: false,
     completedToday,

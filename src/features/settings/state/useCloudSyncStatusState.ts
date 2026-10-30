@@ -18,26 +18,20 @@ export const useCloudSyncStatusState = () => {
       setSyncStatus(event.detail);
     };
 
-    window.addEventListener(
-      "sync-status-changed",
-      handleSyncStatusChange as EventListener,
-    );
+    window.addEventListener("sync-status-changed", handleSyncStatusChange);
     window.addEventListener(
       LOCAL_DATA_UPDATED_AT_EVENT,
-      refreshSyncStatusFromStoredRemote as EventListener,
+      refreshSyncStatusFromStoredRemote,
     );
     const unsubscribe = watchRemoteChanges(() => {
       // Remote changes are reflected via sync status updates.
     });
 
     return () => {
-      window.removeEventListener(
-        "sync-status-changed",
-        handleSyncStatusChange as EventListener,
-      );
+      window.removeEventListener("sync-status-changed", handleSyncStatusChange);
       window.removeEventListener(
         LOCAL_DATA_UPDATED_AT_EVENT,
-        refreshSyncStatusFromStoredRemote as EventListener,
+        refreshSyncStatusFromStoredRemote,
       );
       if (unsubscribe) {
         unsubscribe();

@@ -11,6 +11,13 @@ export type StorageWriteFailureDetail = {
   reason: StorageWriteFailureReason;
 };
 
+declare global {
+  interface WindowEventMap {
+    /** window.addEventListener で受け取るとき、detail の型をキャストなしで得るための宣言 */
+    [STORAGE_WRITE_FAILED_EVENT]: CustomEvent<StorageWriteFailureDetail>;
+  }
+}
+
 // 発火中フラグ。リスナーの中で再び書き込みが失敗したときの連鎖を止める。
 let isDispatching = false;
 

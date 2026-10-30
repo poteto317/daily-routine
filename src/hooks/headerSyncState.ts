@@ -50,9 +50,8 @@ export const registerHeaderSyncListeners = ({
   setSyncStatus,
   recalculateSyncStatus,
 }: RegisterHeaderSyncListenersArgs): (() => void) => {
-  const handleSyncStatusChanged = (event: Event) => {
-    const customEvent = event as CustomEvent<HeaderSyncStatus>;
-    setSyncStatus(customEvent.detail);
+  const handleSyncStatusChanged = (event: CustomEvent<HeaderSyncStatus>) => {
+    setSyncStatus(event.detail);
   };
 
   const handleLocalDataUpdated = () => {

@@ -33,14 +33,16 @@ export const mapDailyForecasts = (
 export const mapHourlyForecasts = (
   data: OpenMeteoResponse,
 ): HourlyWeatherForecast[] | undefined => {
-  if (!data.hourly) return undefined;
+  // コールバックの中でも undefined でないことが型で保たれるよう、ローカル変数に取り出す
+  const { hourly } = data;
+  if (!hourly) return undefined;
 
-  return data.hourly.time.map((timeStr, index) => ({
+  return hourly.time.map((timeStr, index) => ({
     time: timeStr,
-    weather: mapWeatherCodeToType(data.hourly!.weather_code[index]),
-    temperature: Math.round(data.hourly!.temperature_2m[index]),
-    precipitation: data.hourly!.precipitation_probability[index] || 0,
-    humidity: Math.round(data.hourly!.relative_humidity_2m[index]),
-    windSpeed: Math.round(data.hourly!.wind_speed_10m[index]),
+    weather: mapWeatherCodeToType(hourly.weather_code[index]),
+    temperature: Math.round(hourly.temperature_2m[index]),
+    precipitation: hourly.precipitation_probability[index] || 0,
+    humidity: Math.round(hourly.relative_humidity_2m[index]),
+    windSpeed: Math.round(hourly.wind_speed_10m[index]),
   }));
 };
