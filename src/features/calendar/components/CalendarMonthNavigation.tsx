@@ -1,5 +1,6 @@
 import calendarTexts from "../locales/ja.json";
 import { formatCalendarMonthLabel } from "../helpers";
+import { PeriodNavButton } from "@/components";
 
 type CalendarMonthNavigationProps = {
   month: number;
@@ -18,22 +19,12 @@ export const CalendarMonthNavigation = ({
 }: CalendarMonthNavigationProps) => {
   return (
     <div className="flex items-center justify-between">
-      <button
+      <PeriodNavButton
+        direction="previous"
         onClick={onPreviousMonth}
-        className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-200 transition-colors"
-      >
-        <svg
-          className="w-5 h-5 text-gray-700 dark:text-gray-800"
-          fill="none"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth="2"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path d="M15 19l-7-7 7-7" />
-        </svg>
-      </button>
+        ariaLabel={undefined}
+        type={undefined}
+      />
 
       <div className="flex items-center gap-3">
         <h3 className="text-xl font-bold text-gray-900 dark:text-gray-900">
@@ -47,22 +38,12 @@ export const CalendarMonthNavigation = ({
         </button>
       </div>
 
-      <button
+      <PeriodNavButton
+        direction="next"
         onClick={onNextMonth}
-        className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-200 transition-colors"
-      >
-        <svg
-          className="w-5 h-5 text-gray-700 dark:text-gray-800"
-          fill="none"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth="2"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path d="M9 5l7 7-7 7" />
-        </svg>
-      </button>
+        ariaLabel={undefined}
+        type={undefined}
+      />
     </div>
   );
 };
