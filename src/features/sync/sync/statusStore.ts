@@ -1,6 +1,16 @@
 import { DEFAULT_SYNC_STATUS, SYNC_STATUS_KEY } from "./constants";
 import type { SyncStatus } from "./types";
 
+declare global {
+  interface WindowEventMap {
+    /**
+     * setSyncStatus が発火する同期状態の変更通知。
+     * window.addEventListener で受け取るとき、detail の型をキャストなしで得るための宣言。
+     */
+    "sync-status-changed": CustomEvent<SyncStatus>;
+  }
+}
+
 export const getSyncStatus = (): SyncStatus => {
   if (typeof window === "undefined") return DEFAULT_SYNC_STATUS;
 
