@@ -89,7 +89,7 @@ NEXT_PUBLIC_FUNCTIONS_URL=
 
 - `NEXT_PUBLIC_ENABLE_LOCAL_AUTH` が `"true"`（既定値は `false`）
 - Firebase が未設定（API キー・プロジェクト ID・アプリ ID のどれかが空。設定済みならこのフラグは無視され、Firebase 認証を使います）
-- ブラウザで開いているホスト名が `localhost` / `127.0.0.1` / `::1`
+- ブラウザで開いているホスト名が `localhost` / `127.0.0.1`
 
 判定は `NODE_ENV` ではなくホスト名で行うため、本番ビルド（`npm start`）でも localhost で開けば有効になります。公開 URL からは有効になりませんが、共有の開発環境や検証環境では有効化しないでください。
 
