@@ -105,7 +105,7 @@ localStorage・Firestore・fetch の応答・Service Worker のメッセージ�
 
 **Cloud Functions のテスト**
 
-`firebase-functions/src/**/__tests__/` のテストは `@jest-environment node` で実行します。Firestore・FCM・ロガーは `jest.mock` やフェイク（`firebase-functions/src/agentApi/__tests__/fakeFirestore.ts`）に置き換え、実際の Firebase には接続しません。
+`firebase-functions/src/**/__tests__/` のテストは、原則として `@jest-environment node` で実行します。Firestore・FCM・ロガーは `jest.mock` やフェイク（`firebase-functions/src/agentApi/__tests__/fakeFirestore.ts`）に置き換え、実際の Firebase には接続しません。
 
 ### 3. E2Eテスト
 

@@ -51,7 +51,7 @@ npm run dev    # http://localhost:3000 を開き、「匿名」または「テ�
 ### 3-2. ログインとユーザーごとのデータ
 
 - 認証の操作は `src/services/authService.ts`（Firebase）と `src/services/localAuthService.ts`（ローカル疑似認証）。画面からは `useAuth()`（`src/features/auth`）で状態を受け取ります。
-- ログインを検知すると `src/hooks/authSyncStateActions.ts` の `applyAuthenticatedUserState` が、ユーザー ID の設定 → ログイン前データのユーザー別キーへの移行（`migrateToUserStorage`）→ 日付キーの移行、の順に 1 度だけ実行します。
+- ログインを検知すると `src/hooks/authSyncStateActions.ts` の `applyAuthenticatedUserState` が、ユーザー ID の設定 → ログイン前データのユーザー別キーへの移行（`migrateToUserStorage`）→ 日付キーの移行、の順に実行します。ログインを検知するたびに呼ばれますが、移行はユーザーごとのフラグで 1 度だけ行われます。
 - 以降の localStorage のキーは `user:{uid}:{key}` になります（`src/lib/storage/core-modules/userScope.ts`）。
 
 ### 3-3. データの保存（ルーティンを例に）
