@@ -26,6 +26,7 @@ describe("getCurrentNotificationContext", () => {
     expect(getCurrentNotificationContext().isHoliday).toBe(true);
   });
 
+  // 現状の振る舞いを固定している。通知の時刻のずれ（PR #188 の要確認事項）に対応したら更新する。
   it("todayStr は UTC の日付になる（JST の午前 9 時前は前日）", () => {
     jest.useFakeTimers({ now: new Date("2026-10-30T08:59:00+09:00") });
 

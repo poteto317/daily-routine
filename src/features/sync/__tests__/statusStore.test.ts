@@ -94,10 +94,12 @@ describe("statusStore", () => {
       };
       window.addEventListener("sync-status-changed", handler);
 
-      setSyncStatus({ error: "失敗" });
-
-      window.removeEventListener("sync-status-changed", handler);
-      expect(details).toEqual([{ ...DEFAULT_SYNC_STATUS, error: "失敗" }]);
+      try {
+        setSyncStatus({ error: "失敗" });
+        expect(details).toEqual([{ ...DEFAULT_SYNC_STATUS, error: "失敗" }]);
+      } finally {
+        window.removeEventListener("sync-status-changed", handler);
+      }
     });
   });
 
