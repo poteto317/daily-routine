@@ -37,11 +37,7 @@ export const calculateBudgetMetrics = (
   );
   const remaining = monthBudget - totalExpense;
   const dailyBudget = monthBudget > 0 ? monthBudget / currentMonthDays : 0;
-  const unenteredDays = calculateUnenteredMonthDays(
-    currentDate,
-    expenses,
-    now,
-  );
+  const unenteredDays = calculateUnenteredMonthDays(currentDate, expenses, now);
   const dailyRemainingBudget =
     unenteredDays > 0 ? remaining / unenteredDays : 0;
 

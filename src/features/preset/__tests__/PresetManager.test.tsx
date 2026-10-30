@@ -44,12 +44,7 @@ describe("PresetManager", () => {
   });
 
   it("タイトルと説明文をレンダリングする", () => {
-    render(
-      <PresetManager
-        currentRoutines={[]}
-        onApplyPreset={jest.fn()}
-      />,
-    );
+    render(<PresetManager currentRoutines={[]} onApplyPreset={jest.fn()} />);
 
     expect(screen.getByText(PRESET_MANAGER_TEXT.title)).toBeInTheDocument();
     expect(

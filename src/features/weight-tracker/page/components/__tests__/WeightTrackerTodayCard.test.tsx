@@ -38,7 +38,9 @@ describe("WeightTrackerTodayCard", () => {
   it("当日の記録がある場合は体重、メモ、更新日時を表示し、編集ボタンを表示する", () => {
     render(<WeightTrackerTodayCard {...defaultProps} />);
 
-    expect(screen.getByText(new RegExp(WEIGHT_TODAY_TITLE))).toBeInTheDocument();
+    expect(
+      screen.getByText(new RegExp(WEIGHT_TODAY_TITLE)),
+    ).toBeInTheDocument();
     expect(screen.getByText("65.2 kg")).toBeInTheDocument();
     expect(screen.getByText(/体調良好/)).toBeInTheDocument();
     expect(

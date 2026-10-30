@@ -7,9 +7,7 @@ describe("Weather ErrorState", () => {
     const handleRetry = jest.fn();
     render(<ErrorState error="通信エラー" onRetry={handleRetry} />);
 
-    expect(
-      screen.getByText(new RegExp("通信エラー")),
-    ).toBeInTheDocument();
+    expect(screen.getByText(new RegExp("通信エラー"))).toBeInTheDocument();
 
     const retryButton = screen.getByRole("button", {
       name: WEATHER_ERROR_STATE_TEXT.reload,

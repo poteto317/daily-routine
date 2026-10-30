@@ -1,7 +1,4 @@
-import {
-  AUTH_ERROR_MESSAGES,
-  getAuthErrorMessage,
-} from "../authErrorMessage";
+import { AUTH_ERROR_MESSAGES, getAuthErrorMessage } from "../authErrorMessage";
 
 describe("authErrorMessage", () => {
   it("AUTH_ERROR_MESSAGES 定数が定義されている", () => {
@@ -50,28 +47,24 @@ describe("authErrorMessage", () => {
 
     it("auth/weak-password の場合は weakPassword メッセージを返す", () => {
       const error = { code: "auth/weak-password" };
-      expect(getAuthErrorMessage(error)).toBe(
-        AUTH_ERROR_MESSAGES.weakPassword,
-      );
+      expect(getAuthErrorMessage(error)).toBe(AUTH_ERROR_MESSAGES.weakPassword);
     });
 
     it("code に network が含まれる場合は networkError メッセージを返す", () => {
       const error = { code: "auth/network-request-failed" };
-      expect(getAuthErrorMessage(error)).toBe(
-        AUTH_ERROR_MESSAGES.networkError,
-      );
+      expect(getAuthErrorMessage(error)).toBe(AUTH_ERROR_MESSAGES.networkError);
     });
 
     it("未定義のエラーコードの場合はデフォルトの authFailed メッセージを返す", () => {
       const error = { code: "auth/unknown-error" };
-      expect(getAuthErrorMessage(error)).toBe(
-        AUTH_ERROR_MESSAGES.authFailed,
-      );
+      expect(getAuthErrorMessage(error)).toBe(AUTH_ERROR_MESSAGES.authFailed);
     });
 
     it("null や非オブジェクトが渡された場合は authFailed メッセージを返す", () => {
       expect(getAuthErrorMessage(null)).toBe(AUTH_ERROR_MESSAGES.authFailed);
-      expect(getAuthErrorMessage(undefined)).toBe(AUTH_ERROR_MESSAGES.authFailed);
+      expect(getAuthErrorMessage(undefined)).toBe(
+        AUTH_ERROR_MESSAGES.authFailed,
+      );
       expect(getAuthErrorMessage("some error string")).toBe(
         AUTH_ERROR_MESSAGES.authFailed,
       );
