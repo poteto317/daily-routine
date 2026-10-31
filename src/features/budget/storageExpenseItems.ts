@@ -10,6 +10,6 @@ export const getBudgetExpenseItems = (): BudgetExpenseItem[] => {
   );
 };
 
-export const saveBudgetExpenseItems = (items: BudgetExpenseItem[]): void => {
-  setStorageItem(STORAGE_KEY_BUDGET_EXPENSE_ITEMS, items);
+export const saveBudgetExpenseItems = (items: BudgetExpenseItem[]): boolean => {
+  return setStorageItem(STORAGE_KEY_BUDGET_EXPENSE_ITEMS, items);
 };

@@ -173,4 +173,22 @@ describe("useBudgetIncomeItemManagementDataState", () => {
     expect(saveBudgetIncomeItems).toHaveBeenCalledWith(nextItems);
     expect(result.current.items).toEqual(nextItems);
   });
+
+  it("reloadItemsでストレージから読み直し、itemsを更新する", () => {
+    const { result } = renderHook(() =>
+      useBudgetIncomeItemManagementDataState({
+        nameInput: "副業",
+        amountInput: "50000",
+        closeForm: jest.fn(),
+      }),
+    );
+    const reloadedItem = { ...item, id: "reloaded", name: "読み直した項目" };
+    mockGetBudgetIncomeItems.mockReturnValue([reloadedItem]);
+
+    act(() => {
+      result.current.reloadItems();
+    });
+
+    expect(result.current.items).toEqual([reloadedItem]);
+  });
 });

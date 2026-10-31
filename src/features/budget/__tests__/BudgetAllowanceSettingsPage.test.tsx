@@ -1,9 +1,20 @@
 import { createRef } from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
+import { downloadJsonFile } from "@/lib/downloadJsonFile";
+import { buildBudgetAllowanceExport } from "../budgetAllowanceTransfer";
 import { BudgetAllowanceSettingsPage } from "../components/BudgetAllowanceSettingsPage";
 import { useBudgetIncomeItemManagementPageState } from "../useBudgetIncomeItemManagementPageState";
 import { useBudgetExpenseItemManagementPageState } from "../useBudgetExpenseItemManagementPageState";
+import { saveBudgetAllowanceItems } from "../storage";
+import texts from "../locales/ja.json";
 
+jest.mock("@/lib/downloadJsonFile", () => ({
+  downloadJsonFile: jest.fn(),
+}));
+jest.mock("../storage", () => ({
+  ...jest.requireActual("../storage"),
+  saveBudgetAllowanceItems: jest.fn(),
+}));
 jest.mock("../useBudgetIncomeItemManagementPageState", () => ({
   useBudgetIncomeItemManagementPageState: jest.fn(),
 }));
@@ -19,6 +30,15 @@ const mockUseExpenseState =
   useBudgetExpenseItemManagementPageState as jest.MockedFunction<
     typeof useBudgetExpenseItemManagementPageState
   >;
+const mockDownloadJsonFile = downloadJsonFile as jest.MockedFunction<
+  typeof downloadJsonFile
+>;
+const mockSaveBudgetAllowanceItems =
+  saveBudgetAllowanceItems as jest.MockedFunction<
+    typeof saveBudgetAllowanceItems
+  >;
+
+const transferTexts = texts.allowanceSettings.transfer;
 
 const incomeItem = {
   id: "income-1",
@@ -61,6 +81,7 @@ const createIncomeState = (overrides: Record<string, unknown> = {}) => ({
   startEditItem: jest.fn(),
   commitEditItem: jest.fn(),
   cancelEditItem: jest.fn(),
+  reloadItems: jest.fn(),
   ...overrides,
 });
 
@@ -89,6 +110,7 @@ const createExpenseState = (overrides: Record<string, unknown> = {}) => ({
   commitEditItem: jest.fn(),
   cancelEditItem: jest.fn(),
   toggleItemKind: jest.fn(),
+  reloadItems: jest.fn(),
   ...overrides,
 });
 
@@ -319,5 +341,81 @@ describe("BudgetAllowanceSettingsPage", () => {
     expect(variableEditing.startEditItem).toHaveBeenCalledWith(fixedItem);
     fireEvent.click(screen.getByLabelText("家賃を削除"));
     expect(variableEditing.handleDelete).toHaveBeenCalledWith(fixedItem);
+  });
+
+  describe("エクスポート・インポート", () => {
+    const fileText = JSON.stringify(
+      buildBudgetAllowanceExport([incomeItem], [fixedItem, variableItem]),
+    );
+
+    /** jest の jsdom には File#text が無いのでスタブで渡す */
+    const selectFile = async (text: string) => {
+      fireEvent.change(screen.getByLabelText(transferTexts.fileInputLabel), {
+        target: {
+          files: [{ size: text.length, text: () => Promise.resolve(text) }],
+        },
+      });
+    };
+
+    beforeEach(() => {
+      mockSaveBudgetAllowanceItems.mockReturnValue("saved");
+      jest.spyOn(window, "confirm").mockReturnValue(true);
+    });
+
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+
+    it("ファイルを取り込むと、収入と支出の一覧をそれぞれ 1 回読み直し、成功を表示する", async () => {
+      // 片方でも読み直さないと、古い一覧を基にした次の保存で取り込んだ内容が消える
+      const incomeState = createIncomeState();
+      const expenseState = createExpenseState();
+      mockUseIncomeState.mockReturnValue(incomeState as never);
+      mockUseExpenseState.mockReturnValue(expenseState as never);
+
+      render(<BudgetAllowanceSettingsPage />);
+      await selectFile(fileText);
+
+      expect(await screen.findByRole("status")).toHaveTextContent(
+        "収入 1 件・固定費 1 件・変動費 1 件を読み込みました",
+      );
+      expect(mockSaveBudgetAllowanceItems).toHaveBeenCalledTimes(1);
+      expect(incomeState.reloadItems).toHaveBeenCalledTimes(1);
+      expect(expenseState.reloadItems).toHaveBeenCalledTimes(1);
+    });
+
+    it("保存に失敗したら一覧を読み直さず、エラーを表示する", async () => {
+      mockSaveBudgetAllowanceItems.mockReturnValue("failed");
+      const incomeState = createIncomeState();
+      const expenseState = createExpenseState();
+      mockUseIncomeState.mockReturnValue(incomeState as never);
+      mockUseExpenseState.mockReturnValue(expenseState as never);
+
+      render(<BudgetAllowanceSettingsPage />);
+      await selectFile(fileText);
+
+      expect(await screen.findByRole("alert")).toHaveTextContent(
+        transferTexts.errors.saveFailed,
+      );
+      expect(incomeState.reloadItems).not.toHaveBeenCalled();
+      expect(expenseState.reloadItems).not.toHaveBeenCalled();
+    });
+
+    it("エクスポートのボタンで downloadJsonFile が呼ばれる", () => {
+      render(<BudgetAllowanceSettingsPage />);
+
+      fireEvent.click(screen.getByText(transferTexts.exportButton));
+
+      expect(mockDownloadJsonFile).toHaveBeenCalledTimes(1);
+    });
+
+    it("インポートのボタンで隠したファイル入力を開く", () => {
+      const click = jest.spyOn(HTMLInputElement.prototype, "click");
+      render(<BudgetAllowanceSettingsPage />);
+
+      fireEvent.click(screen.getByText(transferTexts.importButton));
+
+      expect(click).toHaveBeenCalledTimes(1);
+    });
   });
 });

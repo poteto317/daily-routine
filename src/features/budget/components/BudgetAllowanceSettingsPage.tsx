@@ -3,16 +3,24 @@
 import { CardPanel } from "@/components";
 import { useBudgetIncomeItemManagementPageState } from "../useBudgetIncomeItemManagementPageState";
 import { useBudgetExpenseItemManagementPageState } from "../useBudgetExpenseItemManagementPageState";
+import { useBudgetAllowanceTransfer } from "../useBudgetAllowanceTransfer";
 import { BudgetAllowanceItemForm } from "./BudgetAllowanceItemForm";
 import { BudgetAllowanceItemRow } from "./BudgetAllowanceItemRow";
 import { BudgetAllowanceSectionEmptyState } from "./BudgetAllowanceSectionEmptyState";
 import { BudgetAllowanceSectionHeader } from "./BudgetAllowanceSectionHeader";
+import { BudgetAllowanceTransferSection } from "./BudgetAllowanceTransferSection";
 import { BudgetExpenseItemSection } from "./BudgetExpenseItemSection";
 import texts from "../locales/ja.json";
 
 export const BudgetAllowanceSettingsPage = () => {
   const income = useBudgetIncomeItemManagementPageState();
   const expense = useBudgetExpenseItemManagementPageState();
+  const transfer = useBudgetAllowanceTransfer({
+    onImported: () => {
+      income.reloadItems();
+      expense.reloadItems();
+    },
+  });
   const expenseSectionProps = {
     showForm: expense.showForm,
     editingItemId: expense.editingItemId,
@@ -120,6 +128,15 @@ export const BudgetAllowanceSettingsPage = () => {
               {...expenseSectionProps}
             />
           </section>
+
+          <BudgetAllowanceTransferSection
+            fileInputRef={transfer.fileInputRef}
+            status={transfer.status}
+            isImporting={transfer.isImporting}
+            onExport={transfer.handleExport}
+            onImportClick={transfer.handleImportClick}
+            onFileChange={transfer.handleFileChange}
+          />
         </CardPanel>
       </main>
     </div>

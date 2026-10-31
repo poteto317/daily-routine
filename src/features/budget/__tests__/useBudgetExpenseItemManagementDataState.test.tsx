@@ -287,4 +287,23 @@ describe("useBudgetExpenseItemManagementDataState", () => {
     expect(saveBudgetExpenseItems).toHaveBeenCalledWith(nextItems);
     expect(result.current.items).toEqual(nextItems);
   });
+
+  it("reloadItemsでストレージから読み直し、itemsを更新する", () => {
+    const { result } = renderHook(() =>
+      useBudgetExpenseItemManagementDataState({
+        nameInput: "食費",
+        amountInput: "30000",
+        kindInput: "variable",
+        closeForm: jest.fn(),
+      }),
+    );
+    const reloadedItem = { ...item, id: "reloaded", name: "読み直した項目" };
+    mockGetBudgetExpenseItems.mockReturnValue([reloadedItem]);
+
+    act(() => {
+      result.current.reloadItems();
+    });
+
+    expect(result.current.items).toEqual([reloadedItem]);
+  });
 });

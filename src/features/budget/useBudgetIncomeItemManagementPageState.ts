@@ -17,12 +17,17 @@ export const useBudgetIncomeItemManagementPageState = () => {
     closeForm,
   } = useBudgetIncomeItemManagementFormState();
 
-  const { items, handleCreate, handleUpdateItem, handleDelete } =
-    useBudgetIncomeItemManagementDataState({
-      nameInput,
-      amountInput,
-      closeForm,
-    });
+  const {
+    items,
+    handleCreate,
+    handleUpdateItem,
+    handleDelete,
+    reloadItems: reloadDataItems,
+  } = useBudgetIncomeItemManagementDataState({
+    nameInput,
+    amountInput,
+    closeForm,
+  });
 
   const {
     editingItemId,
@@ -48,6 +53,13 @@ export const useBudgetIncomeItemManagementPageState = () => {
     cancelEditItem();
   };
 
+  /** 一覧を読み直し、無くなった項目を編集し続けないようフォームと編集行を閉じる。 */
+  const reloadItems = () => {
+    reloadDataItems();
+    closeForm();
+    cancelEditItem();
+  };
+
   useFormOpenAutoFocus({ inputRef, showForm });
 
   return {
@@ -70,5 +82,6 @@ export const useBudgetIncomeItemManagementPageState = () => {
     startEditItem,
     commitEditItem,
     cancelEditItem,
+    reloadItems,
   };
 };

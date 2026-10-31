@@ -33,6 +33,9 @@ export const useBudgetExpenseItemManagementDataState = ({
     saveBudgetExpenseItems(nextItems);
   };
 
+  /** 画面の外でストレージが書き換わったときに一覧を読み直す。 */
+  const reloadItems = () => setItems(getBudgetExpenseItems());
+
   const handleCreate = () => {
     const amount = parsePositiveAmount(amountInput);
     if (amount === null) return;
@@ -87,5 +90,6 @@ export const useBudgetExpenseItemManagementDataState = ({
     handleUpdateKind,
     toggleItemKind,
     handleDelete,
+    reloadItems,
   };
 };

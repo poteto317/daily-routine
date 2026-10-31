@@ -43,6 +43,8 @@ const item = {
 describe("useBudgetIncomeItemManagementPageState composition", () => {
   const handleUpdateItem = jest.fn();
   const cancelEditItem = jest.fn();
+  const closeForm = jest.fn();
+  const reloadDataItems = jest.fn();
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -55,13 +57,14 @@ describe("useBudgetIncomeItemManagementPageState composition", () => {
       setNameInput: jest.fn(),
       setAmountInput: jest.fn(),
       openForm: jest.fn(),
-      closeForm: jest.fn(),
+      closeForm,
     });
     mockUseDataState.mockReturnValue({
       items: [item],
       handleCreate: jest.fn(),
       handleUpdateItem,
       handleDelete: jest.fn(),
+      reloadItems: reloadDataItems,
     });
     mockUseEditState.mockReturnValue({
       editingItemId: "income-1",
@@ -208,5 +211,19 @@ describe("useBudgetIncomeItemManagementPageState composition", () => {
 
     expect(handleUpdateItem).not.toHaveBeenCalled();
     expect(cancelEditItem).not.toHaveBeenCalled();
+  });
+
+  it("reloadItemsは一覧を読み直し、フォームと編集行を閉じる", () => {
+    const { result } = renderHook(() =>
+      useBudgetIncomeItemManagementPageState(),
+    );
+
+    act(() => {
+      result.current.reloadItems();
+    });
+
+    expect(reloadDataItems).toHaveBeenCalledTimes(1);
+    expect(closeForm).toHaveBeenCalledTimes(1);
+    expect(cancelEditItem).toHaveBeenCalledTimes(1);
   });
 });
