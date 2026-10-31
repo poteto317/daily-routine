@@ -33,7 +33,7 @@ export const BudgetAllowanceTransferSection = ({
     <h2 className="text-lg font-bold text-gray-800 dark:text-gray-900 mb-3">
       {transferTexts.title}
     </h2>
-    <div className="flex gap-3">
+    <div className="flex flex-wrap gap-3">
       <button
         type="button"
         onClick={onExport}

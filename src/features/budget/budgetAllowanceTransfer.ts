@@ -26,7 +26,7 @@ export type BudgetAllowanceImportResult =
     }
   | { ok: false; reason: BudgetAllowanceImportFailure };
 
-/** 検証を通った項目の共通の値。raw は種類ごとの追加のキーを読むために持つ */
+/** 検証を通った name と amount。raw は未検証の元の値で、kind・id・createdAt は読む側で確かめる */
 type ItemFields = {
   raw: Record<string, unknown>;
   name: string;
