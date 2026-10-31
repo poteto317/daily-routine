@@ -15,9 +15,19 @@ describe("config exports", () => {
   });
 
   it("家計簿メニューにはベータバッジを設定しない", () => {
-    expect(menuConfig.menuItems.find((item) => item.id === "budget")).not.toHaveProperty(
-      "badge",
+    const budgetItem = menuConfig.menuItems.find(
+      (item) => item.id === "budget",
     );
+    expect(budgetItem).toBeDefined();
+    expect(budgetItem).not.toHaveProperty("badge");
+  });
+
+  it("ジャーナルメニューにはベータバッジを設定しない", () => {
+    const journalItem = menuConfig.menuItems.find(
+      (item) => item.id === "journal",
+    );
+    expect(journalItem).toBeDefined();
+    expect(journalItem).not.toHaveProperty("badge");
   });
 
   it("uiTextConfigが主要文言定義を持つ", () => {

@@ -250,6 +250,7 @@
 - データ保存: LocalStorage（キー: `journal-history`）
 - Firestore同期対応
 - AI エージェント API 対応（`/<redacted-agent-api>/journal/entries`）
+- ステータス: 正式機能
 
 ---
 
