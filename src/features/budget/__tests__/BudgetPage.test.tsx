@@ -119,6 +119,7 @@ describe("BudgetPage", () => {
     render(<BudgetPage />);
 
     expect(screen.getByText("💰 家計簿")).toBeInTheDocument();
+    expect(screen.queryByText("BETA")).not.toBeInTheDocument();
     expect(screen.getByText("2026年 3月")).toBeInTheDocument();
     expect(screen.getByText("￥1,500")).toBeInTheDocument();
     expect(screen.getByText("🏷️ ランチ")).toBeInTheDocument();

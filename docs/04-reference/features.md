@@ -11,7 +11,7 @@
   - [🗓️ 達成カレンダー](#️-達成カレンダー)
   - [📊 統計・レポート](#-統計レポート)
 - [ライフログ機能](#ライフログ機能)
-  - [💰 家計簿 (BETA)](#-家計簿-beta)
+  - [💰 家計簿](#-家計簿)
   - [📔 ジャーナル](#-ジャーナル)
   - [💪 運動記録 (BETA)](#-運動記録-beta)
   - [🍽️ 食事記録 (BETA)](#️-食事記録-beta)
@@ -183,7 +183,7 @@
 
 ## ライフログ機能
 
-### 💰 家計簿 (BETA)
+### 💰 家計簿
 
 日々の支出を記録し、月次予算や固定費・変動費・収入計画と連動してお小遣いを管理する総合家計簿機能です。
 
@@ -217,7 +217,7 @@
 - データ保存: LocalStorage（キー: `budget-data`, `budget-categories`, `budget-income-items`, `budget-expense-items`）
 - Firestore同期対応（フィールド: `budgetData`, `budgetCategories`, `budgetIncomeItems`, `budgetExpenseItems`）
 - AI エージェント API 対応（`/<redacted-agent-api>/budget/expenses`, `/categories`, `/income-items`, `/expense-items`）
-- ステータス: BETA版
+- ステータス: 正式機能
 
 ---
 

@@ -17,13 +17,10 @@ export const BudgetPage = () => {
     <div className="min-h-screen bg-linear-to-br from-green-50 to-emerald-100 dark:from-slate-400 dark:to-slate-300">
       <main className="max-w-4xl mx-auto px-4 py-8">
         <CardPanel className="p-6! sm:p-8! mb-0!">
-          <div className="flex items-center justify-center gap-3 mb-2">
+          <div className="flex items-center justify-center mb-2">
             <h2 className="text-3xl font-bold text-gray-900 dark:text-black text-center">
               {budgetTexts.page.title}
             </h2>
-            <span className="px-3 py-1 bg-orange-500 text-white text-xs font-bold rounded-full">
-              {budgetTexts.page.betaLabel}
-            </span>
           </div>
           <div className="flex justify-end gap-4 mb-2">
             <button
