@@ -13,10 +13,14 @@
 - `src/features/budget/BudgetPage.tsx`
 - `src/features/budget/locales/ja.json`
 - `src/features/budget/__tests__/BudgetPage.test.tsx`
+- `src/config/locales/ja.json`
+- `src/config/__tests__/index.test.ts`
 
 1. 見出し横の `BETA` バッジと、不要になる `page.betaLabel` を削除する。
-2. `BudgetPage` のテストに、家計簿見出しは表示される一方で `BETA` が表示されないことを追加する。
-3. 家計簿の表示・操作・データ保存の既存動作は変更しない。
+2. ヘッダーメニューの家計簿項目から `BETA` バッジを削除する。
+3. `BudgetPage` のテストに、家計簿見出しは表示される一方で `BETA` が表示されないことを追加する。
+4. メニュー設定のテストに、家計簿項目のバッジがないことを追加する。
+5. 家計簿の表示・操作・データ保存の既存動作は変更しない。
 
 ## タスク 2: テストマトリクス画面の家計簿バッジを正式化する
 
