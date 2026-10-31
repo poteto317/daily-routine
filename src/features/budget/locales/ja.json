@@ -101,7 +101,7 @@
       "importSuccessTemplate": "収入 {income} 件・固定費 {fixed} 件・変動費 {variable} 件を読み込みました",
       "confirmImportTemplate": "収入 {income} 件・固定費 {fixed} 件・変動費 {variable} 件を読み込みます。今の項目はすべてファイルの内容に置き換わります。よろしいですか？",
       "errors": {
-        "invalidFormat": "ファイルの形式が正しくありません",
+        "invalidFormat": "読み込めないファイルです。この画面のエクスポートで書き出したファイルを選んでください",
         "tooLarge": "ファイルが大きすぎます（1 MB まで）",
         "empty": "ファイルに項目がありません",
         "readFailed": "ファイルを読み込めませんでした",
