@@ -60,11 +60,7 @@
         "id": "journal",
         "label": "ジャーナル",
         "icon": "📔",
-        "route": "journal",
-        "badge": {
-          "text": "BETA",
-          "color": "bg-orange-500"
-        }
+        "route": "journal"
       },
       {
         "id": "weight-tracker",

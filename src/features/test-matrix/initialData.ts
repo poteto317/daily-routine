@@ -284,7 +284,7 @@ export const buildInitialData = (): TestCategory[] => [
   {
     id: "journal",
     title: "3. ジャーナル（Journal）",
-    badge: { text: "BETA", color: "bg-orange-500" },
+    badge: { text: "実装済", color: "bg-green-500" },
     items: [
       {
         id: "3-1",

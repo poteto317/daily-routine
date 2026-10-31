@@ -56,6 +56,7 @@ describe("JournalPage", () => {
     render(<JournalPage />);
 
     expect(screen.getByText(journalTexts.page.title)).toBeInTheDocument();
+    expect(screen.queryByText(/beta/i)).not.toBeInTheDocument();
   });
 
   it("過去の日記エントリを編集中の場合は JournalEditCard を表示する", () => {

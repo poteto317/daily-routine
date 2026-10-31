@@ -18,6 +18,11 @@ describe("buildInitialData", () => {
         badge: { text: "実装済", color: "bg-green-500" },
       }),
     );
+    expect(data.find((category) => category.id === "journal")).toEqual(
+      expect.objectContaining({
+        badge: { text: "実装済", color: "bg-green-500" },
+      }),
+    );
     expect(
       data
         .flatMap((category) => category.items)
