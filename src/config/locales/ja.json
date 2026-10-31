@@ -120,11 +120,7 @@
         "id": "budget",
         "label": "家計簿",
         "icon": "💰",
-        "route": "budget",
-        "badge": {
-          "text": "BETA",
-          "color": "bg-orange-500"
-        }
+        "route": "budget"
       },
       {
         "id": "weather",
