@@ -571,7 +571,7 @@ export const buildInitialData = (): TestCategory[] => [
   {
     id: "budget",
     title: "8. 家計簿（Budget）",
-    badge: { text: "BETA", color: "bg-orange-500" },
+    badge: { text: "実装済", color: "bg-green-500" },
     items: [
       {
         id: "8-1",

@@ -13,6 +13,11 @@ describe("buildInitialData", () => {
       }),
     );
     expect(data.every((category) => category.items.length > 0)).toBe(true);
+    expect(data.find((category) => category.id === "budget")).toEqual(
+      expect.objectContaining({
+        badge: { text: "実装済", color: "bg-green-500" },
+      }),
+    );
     expect(
       data
         .flatMap((category) => category.items)
