@@ -26,6 +26,7 @@ export const useBudgetExpenseItemManagementPageState = () => {
     handleUpdateItem,
     toggleItemKind,
     handleDelete,
+    reloadItems: reloadDataItems,
   } = useBudgetExpenseItemManagementDataState({
     nameInput,
     amountInput,
@@ -57,6 +58,13 @@ export const useBudgetExpenseItemManagementPageState = () => {
     cancelEditItem();
   };
 
+  /** 一覧を読み直し、無くなった項目を編集し続けないようフォームと編集行を閉じる。 */
+  const reloadItems = () => {
+    reloadDataItems();
+    closeForm();
+    cancelEditItem();
+  };
+
   useFormOpenAutoFocus({ inputRef, showForm });
 
   const { fixedItems, variableItems } = groupBudgetExpenseItemsByKind(items);
@@ -85,6 +93,7 @@ export const useBudgetExpenseItemManagementPageState = () => {
     startEditItem,
     commitEditItem,
     cancelEditItem,
+    reloadItems,
     toggleItemKind,
   };
 };

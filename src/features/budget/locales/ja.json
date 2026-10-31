@@ -90,6 +90,25 @@
     "saveLabel": "保存",
     "kindLabel": "分類",
     "fixedLabel": "固定費",
-    "variableLabel": "変動費"
+    "variableLabel": "変動費",
+    "transfer": {
+      "title": "データの書き出し・読み込み",
+      "exportButton": "エクスポート",
+      "importButton": "インポート",
+      "importingLabel": "読み込み中...",
+      "fileInputLabel": "読み込むファイルを選択",
+      "exportSuccess": "収入・固定費・変動費の項目を書き出しました",
+      "importSuccessTemplate": "収入 {income} 件・固定費 {fixed} 件・変動費 {variable} 件を読み込みました",
+      "confirmImportTemplate": "収入 {income} 件・固定費 {fixed} 件・変動費 {variable} 件を読み込みます。今の項目はすべてファイルの内容に置き換わります。よろしいですか？",
+      "errors": {
+        "invalidFormat": "ファイルの形式が正しくありません",
+        "tooLarge": "ファイルが大きすぎます（1 MB まで）",
+        "empty": "ファイルに項目がありません",
+        "readFailed": "ファイルを読み込めませんでした",
+        "saveFailed": "項目を保存できませんでした",
+        "partiallySaved": "保存が途中で失敗し、収入だけが置き換わった可能性があります。一覧を確認してください",
+        "exportFailed": "書き出しに失敗しました"
+      }
+    }
   }
 }

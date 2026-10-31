@@ -30,6 +30,9 @@ export const useBudgetIncomeItemManagementDataState = ({
     saveBudgetIncomeItems(nextItems);
   };
 
+  /** 画面の外でストレージが書き換わったときに一覧を読み直す。 */
+  const reloadItems = () => setItems(getBudgetIncomeItems());
+
   const handleCreate = () => {
     const amount = parsePositiveAmount(amountInput);
     if (amount === null) return;
@@ -66,5 +69,6 @@ export const useBudgetIncomeItemManagementDataState = ({
     handleCreate,
     handleUpdateItem,
     handleDelete,
+    reloadItems,
   };
 };

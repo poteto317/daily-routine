@@ -52,6 +52,8 @@ describe("useBudgetExpenseItemManagementPageState composition", () => {
   const handleUpdateItem = jest.fn();
   const toggleItemKind = jest.fn();
   const cancelEditItem = jest.fn();
+  const closeForm = jest.fn();
+  const reloadDataItems = jest.fn();
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -66,7 +68,7 @@ describe("useBudgetExpenseItemManagementPageState composition", () => {
       setAmountInput: jest.fn(),
       setKindInput: jest.fn(),
       openForm: jest.fn(),
-      closeForm: jest.fn(),
+      closeForm,
     });
     mockUseDataState.mockReturnValue({
       items: [fixedItem, variableItem],
@@ -75,6 +77,7 @@ describe("useBudgetExpenseItemManagementPageState composition", () => {
       handleUpdateKind: jest.fn(),
       toggleItemKind,
       handleDelete: jest.fn(),
+      reloadItems: reloadDataItems,
     });
     mockUseEditState.mockReturnValue({
       editingItemId: "expense-1",
@@ -200,5 +203,19 @@ describe("useBudgetExpenseItemManagementPageState composition", () => {
       result.current.toggleItemKind("expense-1");
     });
     expect(toggleItemKind).toHaveBeenCalledWith("expense-1");
+  });
+
+  it("reloadItemsは一覧を読み直し、フォームと編集行を閉じる", () => {
+    const { result } = renderHook(() =>
+      useBudgetExpenseItemManagementPageState(),
+    );
+
+    act(() => {
+      result.current.reloadItems();
+    });
+
+    expect(reloadDataItems).toHaveBeenCalledTimes(1);
+    expect(closeForm).toHaveBeenCalledTimes(1);
+    expect(cancelEditItem).toHaveBeenCalledTimes(1);
   });
 });

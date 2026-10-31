@@ -15,3 +15,4 @@ export {
   getBudgetExpenseItems,
   saveBudgetExpenseItems,
 } from "./storageExpenseItems";
+export { saveBudgetAllowanceItems } from "./storageAllowanceItems";

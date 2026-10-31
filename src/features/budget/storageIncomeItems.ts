@@ -10,6 +10,6 @@ export const getBudgetIncomeItems = (): BudgetIncomeItem[] => {
   );
 };
 
-export const saveBudgetIncomeItems = (items: BudgetIncomeItem[]): void => {
-  setStorageItem(STORAGE_KEY_BUDGET_INCOME_ITEMS, items);
+export const saveBudgetIncomeItems = (items: BudgetIncomeItem[]): boolean => {
+  return setStorageItem(STORAGE_KEY_BUDGET_INCOME_ITEMS, items);
 };
