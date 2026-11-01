@@ -30,6 +30,12 @@ describe("config exports", () => {
     expect(journalItem).not.toHaveProperty("badge");
   });
 
+  it("不具合報告メニューのアイコンに📣を設定する", () => {
+    const item = menuConfig.menuItems.find((i) => i.id === "bug-report");
+    expect(item).toBeDefined();
+    expect(item?.icon).toBe("📣");
+  });
+
   it("uiTextConfigが主要文言定義を持つ", () => {
     expect(uiTextConfig).toBeDefined();
     expect(uiTextConfig.auth).toBeDefined();

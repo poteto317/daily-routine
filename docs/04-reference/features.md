@@ -26,7 +26,7 @@
 - [システム機能](#システム機能)
   - [🔐 認証](#-認証)
   - [☁️ クラウド同期](#️-クラウド同期)
-  - [🐛 不具合報告](#-不具合報告)
+  - [📣 不具合報告](#-不具合報告)
   - [🔑 APIキー管理](#-apiキー管理)
   - [🔔 通知機能](#-通知機能)
   - [⚙️ 設定](#️-設定)
@@ -555,14 +555,14 @@ Firestoreを使用した複数端末間のデータ同期・バックアップ�
 
 ---
 
-### 🐛 不具合報告
+### 📣 不具合報告
 
 アプリ内から直接バグや要望を報告し、GitHub Issue へ自動起票する機能です。
 
 **主な機能**
 
 - **報告フォームUI**
-  - ヘッダーメニューの「🐛 不具合を報告」からいつでも起動可能
+  - ヘッダーメニューの「📣 不具合を報告」からいつでも起動可能
   - 入力項目:
     - 不具合の詳細（必須、1〜2000文字）
     - タイトル（任意、最大100文字。UI省略時はAIが生成）
@@ -920,7 +920,7 @@ Progressive Web App (PWA) 技術と Workbox による Service Worker を活用�
 | `todo-category-management`   | Todoカテゴリ管理                     | 📝       | `TodoCategoryManagementPage`   | タスク管理           |
 | `sync-management`            | 同期履歴管理                         | ☁️       | `SyncManagementPage`           | 開発・管理           |
 | `settings`                   | 設定                                 | ⚙️       | `SettingsPage`                 | システム             |
-| `bug-report`                 | 不具合を報告                         | 🐛       | `BugReportPage`                | システム             |
+| `bug-report`                 | 不具合を報告                         | 📣       | `BugReportPage`                | システム             |
 | `test-matrix`                | 機能テストマトリクス                 | 📋       | `TestMatrixPage`               | 開発・管理           |
 | `account-admin`              | アカウント管理                       | 👥       | `AccountAdminPage`             | 開発・管理（管理者） |
 
