@@ -177,7 +177,7 @@
       {
         "id": "bug-report",
         "label": "不具合を報告",
-        "icon": "🐛",
+        "icon": "📣",
         "route": "bug-report"
       },
       {
