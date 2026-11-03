@@ -112,7 +112,7 @@ describe("TodoListManagementSortableList", () => {
     expect(mockDndContextProps.onDragEnd).toBe(onDragEndAction);
   });
 
-  it("DndContext に、行を一覧の枠の中に制限する modifier を渡す（下端までのドラッグでページが伸び続けるのを防ぐ）", () => {
+  it("DndContext に、行の中心を一覧の枠の中に制限する modifier を渡す（下端までのドラッグでページが伸び続けるのを防ぐ）", () => {
     render(<TodoListManagementSortableList {...createProps()} />);
 
     expect(mockDndContextProps.modifiers).toEqual([
