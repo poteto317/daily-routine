@@ -8,7 +8,7 @@ const baseValues = {
   exerciseId: "",
   weightKg: "",
   reps: "",
-  sets: "",
+  sets: "1",
   caloriesBurned: "",
 };
 
@@ -128,5 +128,21 @@ describe("WorkoutRecordForm", () => {
     fireEvent.click(screen.getByRole("button", { name: texts.form.addButton }));
 
     expect(onSubmitAction).toHaveBeenCalledTimes(1);
+  });
+
+  it("セット数を変更するとonChangeSetsActionが呼ばれる", () => {
+    const onChangeSetsAction = jest.fn();
+    render(
+      <WorkoutRecordForm
+        {...defaultProps}
+        onChangeSetsAction={onChangeSetsAction}
+      />,
+    );
+
+    fireEvent.change(screen.getByLabelText(texts.form.setsLabel), {
+      target: { value: "3" },
+    });
+
+    expect(onChangeSetsAction).toHaveBeenCalledWith("3");
   });
 });
