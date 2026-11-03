@@ -14,6 +14,7 @@ describe("todoListManagementPageStateResult", () => {
     const closeForm = jest.fn();
     const commitEditListTitle = jest.fn();
     const cancelEditListTitle = jest.fn();
+    const dnd = { sensors: [], handleDragEnd: jest.fn() };
     const handleCreate = jest.fn();
     const handleDelete = jest.fn();
     const handleToggleVisibility = jest.fn();
@@ -23,32 +24,34 @@ describe("todoListManagementPageStateResult", () => {
     const setTitleInput = jest.fn();
     const startEditListTitle = jest.fn();
 
-    expect(
-      createTodoListManagementPageStateResult({
-        closeForm,
-        commitEditListTitle,
-        cancelEditListTitle,
-        editingListId: "list-1",
-        editingListTitleValue: "Inbox",
-        handleCreate,
-        handleDelete,
-        handleToggleVisibility,
-        inputRef,
-        lists: [list],
-        openForm,
-        openList,
-        setEditingListTitleValue,
-        setTitleInput,
-        showForm: true,
-        startEditListTitle,
-        titleInput: "Inbox",
-      }),
-    ).toEqual({
+    const result = createTodoListManagementPageStateResult({
+      closeForm,
+      commitEditListTitle,
+      cancelEditListTitle,
+      dnd,
+      editingListId: "list-1",
+      editingListTitleValue: "Inbox",
+      handleCreate,
+      handleDelete,
+      handleToggleVisibility,
+      inputRef,
+      lists: [list],
+      openForm,
+      openList,
+      setEditingListTitleValue,
+      setTitleInput,
+      showForm: true,
+      startEditListTitle,
+      titleInput: "Inbox",
+    });
+
+    expect(result).toEqual({
       inputRef,
       lists: [list],
       showForm: true,
       titleInput: "Inbox",
       closeForm,
+      dnd,
       handleCreate,
       handleDelete,
       handleToggleVisibility,
@@ -62,5 +65,6 @@ describe("todoListManagementPageStateResult", () => {
       setEditingListTitleValue,
       startEditListTitle,
     });
+    expect(result.dnd).toBe(dnd);
   });
 });

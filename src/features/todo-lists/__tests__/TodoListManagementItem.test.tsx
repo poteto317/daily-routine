@@ -180,4 +180,24 @@ describe("TodoListManagementItem", () => {
     );
     expect(screen.queryByLabelText("Inbox を編集")).not.toBeInTheDocument();
   });
+
+  it("並び替え用のドラッグハンドルを表示する", () => {
+    render(<TodoListManagementItem {...defaultProps} />);
+    expect(
+      screen.getByRole("button", { name: "並び替え" }),
+    ).toBeInTheDocument();
+  });
+
+  it("タイトルの編集中もドラッグハンドルを表示する", () => {
+    render(
+      <TodoListManagementItem
+        {...defaultProps}
+        editingListId="list-1"
+        editingListTitleValue="テスト"
+      />,
+    );
+    expect(
+      screen.getByRole("button", { name: "並び替え" }),
+    ).toBeInTheDocument();
+  });
 });

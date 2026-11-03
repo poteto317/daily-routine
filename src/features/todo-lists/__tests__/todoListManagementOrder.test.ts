@@ -66,7 +66,7 @@ describe("sortTodoListsByMenuOrder", () => {
 
     const result = sortTodoListsByMenuOrder(lists, menuOrder);
 
-    // menuOrderに載っているb, aが先、menuOrderに無いnewは末尾（menuOrder.length + fallbackIndex）
+    // menuOrderに載っているb, aが先、menuOrderに無いnewは最後に載っているリスト（a）の直後
     expect(result.map((l) => l.id)).toEqual(["b", "a", "new"]);
   });
 

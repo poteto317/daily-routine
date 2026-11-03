@@ -1,6 +1,7 @@
 import { useTodoListManagementFormFocus } from "./useTodoListManagementFormFocus";
 import { useTodoListManagementFormState } from "./useTodoListManagementFormState";
 import { useTodoListManagementDataState } from "./useTodoListManagementDataState";
+import { useTodoListManagementDragAndDrop } from "./useTodoListManagementDragAndDrop";
 import { createTodoListManagementPageStateResult } from "./todoListManagementPageStateResult";
 import { createTodoListManagementTitleEditingBindings } from "./todoListManagementTitleEditingBindings";
 import { useTodoListManagementTitleEditing } from "./useTodoListManagementTitleEditing";
@@ -19,6 +20,9 @@ export const useTodoListManagementPageState = ({
     closeForm,
     navigate,
   });
+  const dnd = useTodoListManagementDragAndDrop({
+    onReorderLists: dataState.handleReorderLists,
+  });
   const titleEditing = useTodoListManagementTitleEditing(
     createTodoListManagementTitleEditingBindings({
       handleRename: dataState.handleRename,
@@ -33,6 +37,7 @@ export const useTodoListManagementPageState = ({
     showForm,
     titleInput,
     closeForm,
+    dnd,
     handleCreate: dataState.handleCreate,
     handleDelete: dataState.handleDelete,
     handleToggleVisibility: dataState.handleToggleVisibility,

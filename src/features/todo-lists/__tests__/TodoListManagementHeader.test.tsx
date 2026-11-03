@@ -22,7 +22,7 @@ describe("TodoListManagementHeader", () => {
     render(<TodoListManagementHeader {...defaultProps} />);
     expect(
       screen.getByText(
-        "ハンバーガーメニューに表示するTodoリストを管理します。各リストの表示・非表示を切り替えられます。",
+        "ハンバーガーメニューに表示するTodoリストを管理します。各リストの表示・非表示の切り替えと、⠿ をドラッグしての並び替えができます。並び順はハンバーガーメニューにも反映されます。",
       ),
     ).toBeInTheDocument();
   });

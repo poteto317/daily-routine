@@ -2,7 +2,7 @@ import type { TodoList } from "../types";
 import { createTodoListManagementDataStateResult } from "../todoListManagementDataStateResult";
 
 describe("createTodoListManagementDataStateResult", () => {
-  it("lists と action handlers の公開 shape を返す", () => {
+  it("lists・action handlers・handleReorderLists の公開 shape を返す", () => {
     const lists: TodoList[] = [
       {
         id: "list-1",
@@ -19,15 +19,19 @@ describe("createTodoListManagementDataStateResult", () => {
       handleToggleVisibility: jest.fn(),
       openList: jest.fn(),
     };
+    const handleReorderLists = jest.fn();
 
-    expect(
-      createTodoListManagementDataStateResult({
-        lists,
-        actionHandlers,
-      }),
-    ).toEqual({
+    const result = createTodoListManagementDataStateResult({
+      lists,
+      actionHandlers,
+      handleReorderLists,
+    });
+
+    expect(result).toEqual({
       lists,
       ...actionHandlers,
+      handleReorderLists,
     });
+    expect(result.handleReorderLists).toBe(handleReorderLists);
   });
 });

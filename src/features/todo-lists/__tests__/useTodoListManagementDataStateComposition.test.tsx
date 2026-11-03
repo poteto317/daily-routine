@@ -12,14 +12,19 @@ jest.mock("../todoListManagementDataStateResult", () => ({
   createTodoListManagementDataStateResult: jest.fn(),
 }));
 
+jest.mock("../useTodoListManagementMenuOrder", () => ({
+  useTodoListManagementMenuOrder: jest.fn(),
+}));
+
 import { getTodoLists } from "../storage";
 import type { TodoList } from "../types";
 import { createTodoListManagementDataStateResult } from "../todoListManagementDataStateResult";
 import { useTodoListManagementActionHandlers } from "../useTodoListManagementActionHandlers";
 import { useTodoListManagementDataState } from "../useTodoListManagementDataState";
+import { useTodoListManagementMenuOrder } from "../useTodoListManagementMenuOrder";
 
 describe("useTodoListManagementDataState composition", () => {
-  it("lists state と action handlers を compose する", () => {
+  it("lists state・action handlers・handleReorderLists を compose する", () => {
     const lists: TodoList[] = [
       {
         id: "list-1",
@@ -36,9 +41,11 @@ describe("useTodoListManagementDataState composition", () => {
       handleToggleVisibility: jest.fn(),
       openList: jest.fn(),
     };
+    const handleReorderLists = jest.fn();
     const builtResult = {
       lists,
       ...actionHandlers,
+      handleReorderLists,
     };
     const closeForm = jest.fn();
     const navigate = jest.fn();
@@ -47,6 +54,10 @@ describe("useTodoListManagementDataState composition", () => {
     (useTodoListManagementActionHandlers as jest.Mock).mockReturnValue(
       actionHandlers,
     );
+    (useTodoListManagementMenuOrder as jest.Mock).mockReturnValue({
+      menuOrder: [],
+      handleReorderLists,
+    });
     (createTodoListManagementDataStateResult as jest.Mock).mockReturnValue(
       builtResult,
     );
@@ -68,8 +79,13 @@ describe("useTodoListManagementDataState composition", () => {
     });
     expect(createTodoListManagementDataStateResult).toHaveBeenCalledWith({
       actionHandlers,
+      handleReorderLists,
       lists,
     });
+    expect(
+      (createTodoListManagementDataStateResult as jest.Mock).mock.calls[0][0]
+        .handleReorderLists,
+    ).toBe(handleReorderLists);
     expect(result.current).toBe(builtResult);
   });
 });
