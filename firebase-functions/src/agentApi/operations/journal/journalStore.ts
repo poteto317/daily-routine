@@ -72,3 +72,21 @@ export const removeEntry = (
   );
   return remaining.length > 0 ? { ...otherDays, [key]: remaining } : otherDays;
 };
+
+/**
+ * 更新後のエントリを履歴に置く。
+ * patchDate が指定され、実際の置き場所（findEntry のキー）と違うときだけ、
+ * 旧バケットから除き（空ならキーを消す）、新しい日付のバケットの末尾へ移す。
+ * それ以外はキーのバケットの中で置き換える。applyJournalPatch が date を既存値で埋めるため、
+ * updated.date ではなく patchDate で判断する（キーと date が食い違うデータで、
+ * date を含まない PATCH がバケットを移さない）。
+ */
+export const replaceOrMoveEntry = (
+  history: JournalHistory,
+  key: string,
+  updated: JournalEntry,
+  patchDate: string | undefined,
+): JournalHistory =>
+  patchDate !== undefined && patchDate !== key
+    ? addEntry(removeEntry(history, key, updated.id), updated)
+    : replaceEntry(history, key, updated);
