@@ -15,13 +15,15 @@ describe("journalFormViewState", () => {
     (resetJournalFormInputs as jest.Mock).mockReturnValue({
       titleInput: "",
       contentInput: "",
+      dateInput: null,
     });
   });
 
-  it("cancel 時の form state を生成する", () => {
+  it("cancel 時の form state を生成する（日付は未操作に戻す）", () => {
     expect(createCanceledJournalFormState()).toEqual({
       titleInput: "",
       contentInput: "",
+      dateInput: null,
       showForm: false,
     });
     expect(resetJournalFormInputs).toHaveBeenCalledWith();
@@ -33,7 +35,7 @@ describe("journalFormViewState", () => {
     });
   });
 
-  it("editing 時の form state をエントリで初期化する", () => {
+  it("editing 時の form state をエントリで初期化する（日付はエントリの日付）", () => {
     const entry = {
       id: "j1",
       date: "2026-01-01",
@@ -45,6 +47,7 @@ describe("journalFormViewState", () => {
     expect(createEditingJournalFormState(entry)).toEqual({
       titleInput: "My Title",
       contentInput: "My Content",
+      dateInput: "2026-01-01",
       editingEntry: entry,
       showForm: true,
     });

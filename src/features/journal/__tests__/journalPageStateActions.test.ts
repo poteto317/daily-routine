@@ -64,11 +64,13 @@ describe("journalPageStateActions", () => {
       todayEntry,
       titleInput: "",
       contentInput: "",
+      dateInput: null,
       recentEntries: [todayEntry],
     };
     const setTodayEntry = jest.fn();
     const setTitleInput = jest.fn();
     const setContentInput = jest.fn();
+    const setDateInput = jest.fn();
     const setRecentEntries = jest.fn();
 
     (getTodayJournalEntry as jest.Mock).mockReturnValue(todayEntry);
@@ -79,6 +81,7 @@ describe("journalPageStateActions", () => {
       setTodayEntry,
       setTitleInput,
       setContentInput,
+      setDateInput,
       setRecentEntries,
     })();
 
@@ -89,6 +92,7 @@ describe("journalPageStateActions", () => {
     expect(setTodayEntry).toHaveBeenCalledWith(todayEntry);
     expect(setTitleInput).toHaveBeenCalledWith("");
     expect(setContentInput).toHaveBeenCalledWith("");
+    expect(setDateInput).toHaveBeenCalledWith(null);
     expect(setRecentEntries).toHaveBeenCalledWith([todayEntry]);
   });
 
@@ -96,10 +100,12 @@ describe("journalPageStateActions", () => {
     const canceledState = {
       titleInput: "",
       contentInput: "",
+      dateInput: null,
       showForm: false,
     };
     const setTitleInput = jest.fn();
     const setContentInput = jest.fn();
+    const setDateInput = jest.fn();
     const setShowForm = jest.fn();
     const setEditingEntry = jest.fn();
 
@@ -110,6 +116,7 @@ describe("journalPageStateActions", () => {
     createCancelJournalFormHandler({
       setTitleInput,
       setContentInput,
+      setDateInput,
       setShowForm,
       setEditingEntry,
     })();
@@ -117,6 +124,7 @@ describe("journalPageStateActions", () => {
     expect(createCanceledJournalFormState).toHaveBeenCalledWith();
     expect(setTitleInput).toHaveBeenCalledWith("");
     expect(setContentInput).toHaveBeenCalledWith("");
+    expect(setDateInput).toHaveBeenCalledWith(null);
     expect(setShowForm).toHaveBeenCalledWith(false);
   });
 
@@ -156,6 +164,7 @@ describe("journalPageStateActions", () => {
 
     const result = createSaveJournalEntryHandler({
       getToday,
+      dateInput: null,
       titleInput: " タイトル ",
       contentInput: " 本文 ",
       reloadData,
@@ -163,13 +172,18 @@ describe("journalPageStateActions", () => {
     })();
 
     expect(result).toBe(true);
-    expect(getToday).toHaveBeenCalledWith();
+    expect(getToday).toHaveBeenCalledTimes(1);
     expect(saveJournalEntryAndReload).toHaveBeenCalledWith({
       today: "2024-01-12",
+      date: "2024-01-12",
       titleInput: " タイトル ",
       contentInput: " 本文 ",
       defaultTitle: journalTexts.page.defaultTitle,
       alertMessage: journalTexts.page.alertMissingContent,
+      dateAlertMessages: {
+        invalid: journalTexts.page.alertInvalidDate,
+        future: journalTexts.page.alertFutureDate,
+      },
       saveEntry: saveJournalEntry,
       reloadData,
       closeForm,
@@ -180,10 +194,12 @@ describe("journalPageStateActions", () => {
     const canceledState = {
       titleInput: "",
       contentInput: "",
+      dateInput: null,
       showForm: false,
     };
     const setTitleInput = jest.fn();
     const setContentInput = jest.fn();
+    const setDateInput = jest.fn();
     const setShowForm = jest.fn();
     const setEditingEntry = jest.fn();
 
@@ -197,6 +213,7 @@ describe("journalPageStateActions", () => {
     createOpenJournalFormAction({
       setTitleInput,
       setContentInput,
+      setDateInput,
       setShowForm,
       setEditingEntry,
     })();
@@ -205,6 +222,7 @@ describe("journalPageStateActions", () => {
     expect(createOpenedJournalFormState).toHaveBeenCalled();
     expect(setTitleInput).toHaveBeenCalledWith("");
     expect(setContentInput).toHaveBeenCalledWith("");
+    expect(setDateInput).toHaveBeenCalledWith(null);
     expect(setEditingEntry).toHaveBeenCalledWith(null);
     expect(setShowForm).toHaveBeenCalledWith(true);
   });

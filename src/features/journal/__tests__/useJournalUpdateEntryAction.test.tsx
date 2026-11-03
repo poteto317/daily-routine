@@ -6,9 +6,10 @@ jest.mock("../journalPageMutationHandlers", () => ({
 
 import { createUpdateJournalEntryHandler } from "../journalPageMutationHandlers";
 import { useJournalUpdateEntryAction } from "../useJournalUpdateEntryAction";
+import { getTodayDateString } from "../utils/journalDate";
 
 describe("useJournalUpdateEntryAction", () => {
-  it("update handler を組み立てて委譲する", () => {
+  it("編集前の日付・日付の入力・今日の取得関数を渡して update handler を組み立て、委譲する", () => {
     const updateAction = jest.fn();
     (createUpdateJournalEntryHandler as jest.Mock).mockReturnValue(
       updateAction,
@@ -19,6 +20,8 @@ describe("useJournalUpdateEntryAction", () => {
     const { result } = renderHook(() =>
       useJournalUpdateEntryAction({
         entryId: "entry-1",
+        originalDate: "2026-03-10",
+        dateInput: "2026-03-08",
         titleInput: "タイトル",
         contentInput: "本文",
         loadData,
@@ -30,15 +33,16 @@ describe("useJournalUpdateEntryAction", () => {
       result.current();
     });
 
-    expect(createUpdateJournalEntryHandler).toHaveBeenCalledWith(
-      expect.objectContaining({
-        entryId: "entry-1",
-        titleInput: "タイトル",
-        contentInput: "本文",
-        reloadData: loadData,
-        closeForm: expect.any(Function),
-      }),
-    );
+    expect(createUpdateJournalEntryHandler).toHaveBeenCalledWith({
+      entryId: "entry-1",
+      originalDate: "2026-03-10",
+      dateInput: "2026-03-08",
+      getToday: getTodayDateString,
+      titleInput: "タイトル",
+      contentInput: "本文",
+      reloadData: loadData,
+      closeForm,
+    });
     expect(updateAction).toHaveBeenCalled();
   });
 });

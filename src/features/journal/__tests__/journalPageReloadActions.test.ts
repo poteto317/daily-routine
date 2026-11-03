@@ -16,7 +16,7 @@ describe("journalPageReloadActions", () => {
     jest.clearAllMocks();
   });
 
-  it("load action が storage と view state をつないで setter に反映する", () => {
+  it("load action が storage と view state をつないで setter に反映する（日付は null に戻す）", () => {
     const todayEntry = {
       id: "today",
       date: "2024-01-12",
@@ -30,11 +30,13 @@ describe("journalPageReloadActions", () => {
       todayEntry,
       titleInput: "",
       contentInput: "",
+      dateInput: null,
       recentEntries: [todayEntry],
     };
     const setTodayEntry = jest.fn();
     const setTitleInput = jest.fn();
     const setContentInput = jest.fn();
+    const setDateInput = jest.fn();
     const setRecentEntries = jest.fn();
 
     (getTodayJournalEntry as jest.Mock).mockReturnValue(todayEntry);
@@ -45,6 +47,7 @@ describe("journalPageReloadActions", () => {
       setTodayEntry,
       setTitleInput,
       setContentInput,
+      setDateInput,
       setRecentEntries,
     })();
 
@@ -55,6 +58,7 @@ describe("journalPageReloadActions", () => {
     expect(setTodayEntry).toHaveBeenCalledWith(todayEntry);
     expect(setTitleInput).toHaveBeenCalledWith("");
     expect(setContentInput).toHaveBeenCalledWith("");
+    expect(setDateInput).toHaveBeenCalledWith(null);
     expect(setRecentEntries).toHaveBeenCalledWith([todayEntry]);
   });
 });

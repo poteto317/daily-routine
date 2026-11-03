@@ -1,61 +1,42 @@
 import { createJournalPageStateResult } from "../journalPageStateResult";
 
 describe("journalPageStateResult", () => {
-  it("journal page の result を組み立てる", () => {
-    const setContentInput = jest.fn();
-    const setTitleInput = jest.fn();
-    const setEditingEntry = jest.fn();
-    const handleCancelForm = jest.fn();
-    const handleDeleteEntry = jest.fn();
-    const handleSaveEntry = jest.fn();
-    const handleUpdateEntry = jest.fn();
-    const openEditForm = jest.fn();
-    const openForm = jest.fn();
-    const entry = {
-      id: "saved",
-      date: "2024-01-12",
-      title: "保存済み",
-      content: "本文",
-      createdAt: "2024-01-12T00:00:00.000Z",
-      updatedAt: "2024-01-12T00:00:00.000Z",
-    };
-
-    expect(
-      createJournalPageStateResult({
-        contentInput: "本文",
-        editingEntry: null,
-        recentEntries: [entry],
-        showForm: true,
-        titleInput: "保存済み",
-        today: "2024-01-12",
-        todayEntry: entry,
-        handleCancelForm,
-        handleDeleteEntry,
-        handleSaveEntry,
-        handleUpdateEntry,
-        openEditForm,
-        openForm,
-        setContentInput,
-        setEditingEntry,
-        setTitleInput,
-      }),
-    ).toEqual({
+  it("journal page の result を組み立てる（UI 用ハンドラを含み、素のセッターは含まない）", () => {
+    const args = {
       contentInput: "本文",
+      dateInput: "2024-01-10",
       editingEntry: null,
-      recentEntries: [entry],
+      recentEntries: [
+        {
+          id: "saved",
+          date: "2024-01-12",
+          title: "保存済み",
+          content: "本文",
+          createdAt: "2024-01-12T00:00:00.000Z",
+          updatedAt: "2024-01-12T00:00:00.000Z",
+        },
+      ],
       showForm: true,
       titleInput: "保存済み",
       today: "2024-01-12",
-      todayEntry: entry,
-      handleCancelForm,
-      handleDeleteEntry,
-      handleSaveEntry,
-      handleUpdateEntry,
-      openEditForm,
-      openForm,
-      setContentInput,
-      setEditingEntry,
-      setTitleInput,
-    });
+      todayEntry: null,
+      handleCancelForm: jest.fn(),
+      handleContentChange: jest.fn(),
+      handleDateChange: jest.fn(),
+      handleDeleteEntry: jest.fn(),
+      handleSaveEntry: jest.fn(),
+      handleTitleChange: jest.fn(),
+      handleUpdateEntry: jest.fn(),
+      openEditForm: jest.fn(),
+      openForm: jest.fn(),
+      setEditingEntry: jest.fn(),
+    };
+
+    const result = createJournalPageStateResult(args);
+
+    expect(result).toEqual(args);
+    expect(result).not.toHaveProperty("setTitleInput");
+    expect(result).not.toHaveProperty("setContentInput");
+    expect(result).not.toHaveProperty("setDateInput");
   });
 });

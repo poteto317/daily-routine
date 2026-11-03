@@ -9,11 +9,13 @@ type SetValue<T> = Dispatch<SetStateAction<T>>;
 type UseJournalPageActionsParams = {
   titleInput: string;
   contentInput: string;
+  dateInput: string | null;
   editingEntry: JournalEntry | null;
   handleCancelForm: () => void;
   setTodayEntry: SetValue<JournalEntry | null>;
   setTitleInput: SetValue<string>;
   setContentInput: SetValue<string>;
+  setDateInput: SetValue<string | null>;
   setRecentEntries: SetValue<JournalEntry[]>;
   setShowForm: SetValue<boolean>;
 };
@@ -21,11 +23,13 @@ type UseJournalPageActionsParams = {
 export const useJournalPageActions = ({
   titleInput,
   contentInput,
+  dateInput,
   editingEntry,
   handleCancelForm,
   setTodayEntry,
   setTitleInput,
   setContentInput,
+  setDateInput,
   setRecentEntries,
   setShowForm,
 }: UseJournalPageActionsParams) => {
@@ -33,12 +37,14 @@ export const useJournalPageActions = ({
     setTodayEntry,
     setTitleInput,
     setContentInput,
+    setDateInput,
     setRecentEntries,
   });
   const { handleDeleteEntry, handleSaveEntry, handleUpdateEntry } =
     useJournalPageMutationActions({
       titleInput,
       contentInput,
+      dateInput,
       editingEntry,
       setShowForm,
       closeForm: handleCancelForm,

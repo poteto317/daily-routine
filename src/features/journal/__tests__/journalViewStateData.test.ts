@@ -26,6 +26,7 @@ describe("journalViewStateData", () => {
       todayEntry: entry,
       titleInput: "",
       contentInput: "",
+      dateInput: null,
       recentEntries: [entry],
     });
   });
@@ -37,6 +38,7 @@ describe("journalViewStateData", () => {
       todayEntry: entry,
       titleInput: "",
       contentInput: "",
+      dateInput: null,
       recentEntries: [entry],
       showForm: false,
     });
@@ -50,6 +52,7 @@ describe("journalViewStateData", () => {
       todayEntry: null,
       titleInput: "",
       contentInput: "",
+      dateInput: null,
       recentEntries: [entry],
     });
 
@@ -59,6 +62,7 @@ describe("journalViewStateData", () => {
       todayEntry: null,
       titleInput: "",
       contentInput: "",
+      dateInput: null,
       recentEntries: [entry],
     });
     expect(createJournalPageData).toHaveBeenCalledWith(null, {

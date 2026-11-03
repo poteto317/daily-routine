@@ -13,10 +13,13 @@ const pastEntry: JournalEntry = {
 
 const baseProps = {
   editingEntry: pastEntry,
+  dateInput: "2024-01-10",
+  today: "2024-01-12",
   titleInput: "先週の日記",
   contentInput: "先週はどうだったか",
   onTitleChange: jest.fn(),
   onContentChange: jest.fn(),
+  onDateChange: jest.fn(),
   onUpdate: jest.fn(),
   onCancel: jest.fn(),
 };
@@ -69,5 +72,39 @@ describe("JournalEditCard", () => {
     expect(
       screen.queryByRole("button", { name: "保存" }),
     ).not.toBeInTheDocument();
+  });
+
+  it("日付欄に dateInput を表示し、min は 1900-01-01、max は今日", () => {
+    render(<JournalEditCard {...baseProps} dateInput="2024-01-05" />);
+
+    const dateField = screen.getByLabelText("日付");
+    expect(dateField).toHaveAttribute("type", "date");
+    expect(dateField).toHaveValue("2024-01-05");
+    expect(dateField).toHaveAttribute("min", "1900-01-01");
+    expect(dateField).toHaveAttribute("max", "2024-01-12");
+  });
+
+  it("dateInput が null（再読み込みで戻ったとき）は、エントリの日付を表示する", () => {
+    render(<JournalEditCard {...baseProps} dateInput={null} />);
+
+    expect(screen.getByLabelText("日付")).toHaveValue("2024-01-10");
+  });
+
+  it("日付欄を変更すると onDateChange が選んだ値で呼ばれる", () => {
+    const onDateChange = jest.fn();
+    render(<JournalEditCard {...baseProps} onDateChange={onDateChange} />);
+
+    fireEvent.change(screen.getByLabelText("日付"), {
+      target: { value: "2024-01-08" },
+    });
+    expect(onDateChange).toHaveBeenCalledWith("2024-01-08");
+  });
+
+  it("日付欄を変えても、見出しは編集前の日付のまま", () => {
+    render(<JournalEditCard {...baseProps} dateInput="2024-01-05" />);
+
+    expect(screen.getByRole("heading", { level: 2 }).textContent).toBe(
+      "2024年1月10日(水) の記録を編集",
+    );
   });
 });

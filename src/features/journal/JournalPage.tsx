@@ -26,10 +26,12 @@ export const JournalPage = () => {
             showForm={state.showForm && !isPastEditing}
             titleInput={state.titleInput}
             contentInput={state.contentInput}
+            dateInput={state.dateInput}
             onOpenForm={state.openForm}
             onEditEntry={state.openEditForm}
-            onTitleChange={state.setTitleInput}
-            onContentChange={state.setContentInput}
+            onTitleChange={state.handleTitleChange}
+            onContentChange={state.handleContentChange}
+            onDateChange={state.handleDateChange}
             onSave={state.handleSaveEntry}
             onUpdate={state.handleUpdateEntry}
             onCancel={state.handleCancelForm}
@@ -39,10 +41,13 @@ export const JournalPage = () => {
         {state.showForm && state.editingEntry && isPastEditing && (
           <JournalEditCard
             editingEntry={state.editingEntry}
+            dateInput={state.dateInput}
+            today={state.today}
             titleInput={state.titleInput}
             contentInput={state.contentInput}
-            onTitleChange={state.setTitleInput}
-            onContentChange={state.setContentInput}
+            onTitleChange={state.handleTitleChange}
+            onContentChange={state.handleContentChange}
+            onDateChange={state.handleDateChange}
             onUpdate={state.handleUpdateEntry}
             onCancel={state.handleCancelForm}
           />

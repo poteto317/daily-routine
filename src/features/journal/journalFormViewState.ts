@@ -18,6 +18,7 @@ export const createEditingJournalFormState = (entry: JournalEntry) => {
   return {
     titleInput: entry.title,
     contentInput: entry.content,
+    dateInput: entry.date,
     editingEntry: entry,
     showForm: true,
   };

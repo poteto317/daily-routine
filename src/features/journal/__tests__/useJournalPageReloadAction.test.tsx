@@ -29,6 +29,7 @@ describe("useJournalPageReloadAction", () => {
       setTodayEntry: jest.fn(),
       setTitleInput: jest.fn(),
       setContentInput: jest.fn(),
+      setDateInput: jest.fn(),
       setRecentEntries: jest.fn(),
     };
     const { result } = renderHook(() => useJournalPageReloadAction(params));

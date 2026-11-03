@@ -9,10 +9,16 @@ export const createLoadJournalDataAction = (params: {
   setTodayEntry: SetValue<JournalEntry | null>;
   setTitleInput: SetValue<string>;
   setContentInput: SetValue<string>;
+  setDateInput: SetValue<string | null>;
   setRecentEntries: SetValue<JournalEntry[]>;
 }) => {
-  const { setTodayEntry, setTitleInput, setContentInput, setRecentEntries } =
-    params;
+  const {
+    setTodayEntry,
+    setTitleInput,
+    setContentInput,
+    setDateInput,
+    setRecentEntries,
+  } = params;
 
   return () => {
     const pageData = createReloadedJournalViewState(
@@ -22,6 +28,7 @@ export const createLoadJournalDataAction = (params: {
     setTodayEntry(pageData.todayEntry);
     setTitleInput(pageData.titleInput);
     setContentInput(pageData.contentInput);
+    setDateInput(pageData.dateInput);
     setRecentEntries(pageData.recentEntries);
   };
 };

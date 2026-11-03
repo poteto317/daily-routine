@@ -64,7 +64,12 @@ describe("journalPageMutationHandlers", () => {
     });
   });
 
-  it("save handler が既定文言と保存処理を組み立てる", () => {
+  const dateAlertMessages = {
+    invalid: journalTexts.page.alertInvalidDate,
+    future: journalTexts.page.alertFutureDate,
+  };
+
+  it("save handler は今日を 1 回だけ取り、未操作（null）なら今日を日付として保存処理を組み立てる", () => {
     const reloadData = jest.fn();
     const closeForm = jest.fn();
     const getToday = jest.fn(() => "2024-01-12");
@@ -73,6 +78,7 @@ describe("journalPageMutationHandlers", () => {
 
     const result = createSaveJournalEntryHandler({
       getToday,
+      dateInput: null,
       titleInput: " タイトル ",
       contentInput: " 本文 ",
       reloadData,
@@ -80,27 +86,65 @@ describe("journalPageMutationHandlers", () => {
     })();
 
     expect(result).toBe(true);
-    expect(getToday).toHaveBeenCalledWith();
+    expect(getToday).toHaveBeenCalledTimes(1);
     expect(saveJournalEntryAndReload).toHaveBeenCalledWith({
       today: "2024-01-12",
+      date: "2024-01-12",
       titleInput: " タイトル ",
       contentInput: " 本文 ",
       defaultTitle: journalTexts.page.defaultTitle,
       alertMessage: journalTexts.page.alertMissingContent,
+      dateAlertMessages,
       saveEntry: saveJournalEntry,
       reloadData,
       closeForm,
     });
   });
 
-  it("update handler が既定文言と更新処理を組み立てる", () => {
+  it("save handler は選んだ日付（固定済みの日付）を渡し、今日は未来の判定にだけ使う", () => {
+    const getToday = jest.fn(() => "2024-01-12");
+
+    createSaveJournalEntryHandler({
+      getToday,
+      dateInput: "2024-01-05",
+      titleInput: "タイトル",
+      contentInput: "本文",
+      reloadData: jest.fn(),
+      closeForm: jest.fn(),
+    })();
+
+    expect(saveJournalEntryAndReload).toHaveBeenCalledWith(
+      expect.objectContaining({ today: "2024-01-12", date: "2024-01-05" }),
+    );
+  });
+
+  it('save handler は空にした日付（""）を今日に置き換えない', () => {
+    createSaveJournalEntryHandler({
+      getToday: () => "2024-01-12",
+      dateInput: "",
+      titleInput: "タイトル",
+      contentInput: "本文",
+      reloadData: jest.fn(),
+      closeForm: jest.fn(),
+    })();
+
+    expect(saveJournalEntryAndReload).toHaveBeenCalledWith(
+      expect.objectContaining({ today: "2024-01-12", date: "" }),
+    );
+  });
+
+  it("update handler は今日を 1 回だけ取り、編集前の日付と日付の入力を渡して更新処理を組み立てる", () => {
     const reloadData = jest.fn();
     const closeForm = jest.fn();
+    const getToday = jest.fn(() => "2024-01-12");
 
     (updateJournalEntryAndReload as jest.Mock).mockReturnValue(true);
 
     const result = createUpdateJournalEntryHandler({
       entryId: "entry-1",
+      originalDate: "2024-01-10",
+      dateInput: "2024-01-05",
+      getToday,
       titleInput: " タイトル ",
       contentInput: " 本文 ",
       reloadData,
@@ -108,12 +152,17 @@ describe("journalPageMutationHandlers", () => {
     })();
 
     expect(result).toBe(true);
+    expect(getToday).toHaveBeenCalledTimes(1);
     expect(updateJournalEntryAndReload).toHaveBeenCalledWith({
       entryId: "entry-1",
+      originalDate: "2024-01-10",
+      dateInput: "2024-01-05",
+      today: "2024-01-12",
       titleInput: " タイトル ",
       contentInput: " 本文 ",
       defaultTitle: journalTexts.page.defaultTitle,
       alertMessage: journalTexts.page.alertMissingContent,
+      dateAlertMessages,
       updateEntry: updateJournalEntry,
       reloadData,
       closeForm,

@@ -22,7 +22,7 @@ describe("useJournalPageActions", () => {
     jest.clearAllMocks();
   });
 
-  it("load/save/delete/update handler を組み立てて委譲する", () => {
+  it("load/save/delete/update handler を組み立てて委譲する（日付を再読み込みと保存・更新へ渡す）", () => {
     const loadAction = jest.fn();
     const saveAction = jest.fn();
     const deleteAction = jest.fn();
@@ -41,11 +41,13 @@ describe("useJournalPageActions", () => {
     const params = {
       titleInput: "タイトル",
       contentInput: "本文",
+      dateInput: "2026-03-10",
       editingEntry: null,
       handleCancelForm: jest.fn(),
       setTodayEntry: jest.fn(),
       setTitleInput: jest.fn(),
       setContentInput: jest.fn(),
+      setDateInput: jest.fn(),
       setRecentEntries: jest.fn(),
       setShowForm: jest.fn(),
     };
@@ -56,18 +58,18 @@ describe("useJournalPageActions", () => {
       setTodayEntry: params.setTodayEntry,
       setTitleInput: params.setTitleInput,
       setContentInput: params.setContentInput,
+      setDateInput: params.setDateInput,
       setRecentEntries: params.setRecentEntries,
     });
-    expect(useJournalPageMutationActions).toHaveBeenCalledWith(
-      expect.objectContaining({
-        titleInput: "タイトル",
-        contentInput: "本文",
-        editingEntry: null,
-        loadData: loadAction,
-        setShowForm: params.setShowForm,
-        closeForm: params.handleCancelForm,
-      }),
-    );
+    expect(useJournalPageMutationActions).toHaveBeenCalledWith({
+      titleInput: "タイトル",
+      contentInput: "本文",
+      dateInput: "2026-03-10",
+      editingEntry: null,
+      loadData: loadAction,
+      setShowForm: params.setShowForm,
+      closeForm: params.handleCancelForm,
+    });
     expect(createJournalPageActionsResult).toHaveBeenCalledWith({
       handleDeleteEntry: deleteAction,
       handleSaveEntry: saveAction,

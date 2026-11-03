@@ -5,6 +5,7 @@ export type JournalViewState = {
   todayEntry: JournalEntry | null;
   titleInput: string;
   contentInput: string;
+  dateInput: string | null;
   recentEntries: JournalEntry[];
   showForm: boolean;
 };
@@ -19,6 +20,7 @@ export const createInitialJournalViewState = (
     todayEntry: pageData.todayEntry,
     titleInput: pageData.titleInput,
     contentInput: pageData.contentInput,
+    dateInput: pageData.dateInput,
     recentEntries: pageData.recentEntries,
     showForm: false,
   };
@@ -34,6 +36,7 @@ export const createReloadedJournalViewState = (
     todayEntry: pageData.todayEntry,
     titleInput: pageData.titleInput,
     contentInput: pageData.contentInput,
+    dateInput: pageData.dateInput,
     recentEntries: pageData.recentEntries,
   };
 };

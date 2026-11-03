@@ -8,55 +8,66 @@ import {
 
 type SetValue<T> = Dispatch<SetStateAction<T>>;
 
-export const createCancelJournalFormHandler = (params: {
+type JournalFormSetters = {
   setTitleInput: SetValue<string>;
   setContentInput: SetValue<string>;
+  setDateInput: SetValue<string | null>;
   setShowForm: SetValue<boolean>;
   setEditingEntry: SetValue<JournalEntry | null>;
-}) => {
-  const { setTitleInput, setContentInput, setShowForm, setEditingEntry } =
-    params;
+};
+
+export const createCancelJournalFormHandler = (params: JournalFormSetters) => {
+  const {
+    setTitleInput,
+    setContentInput,
+    setDateInput,
+    setShowForm,
+    setEditingEntry,
+  } = params;
 
   return () => {
     const resetInputs = createCanceledJournalFormState();
     setTitleInput(resetInputs.titleInput);
     setContentInput(resetInputs.contentInput);
+    setDateInput(resetInputs.dateInput);
     setShowForm(resetInputs.showForm);
     setEditingEntry(null);
   };
 };
 
-export const createOpenJournalFormAction = (params: {
-  setTitleInput: SetValue<string>;
-  setContentInput: SetValue<string>;
-  setShowForm: SetValue<boolean>;
-  setEditingEntry: SetValue<JournalEntry | null>;
-}) => {
-  const { setTitleInput, setContentInput, setShowForm, setEditingEntry } =
-    params;
+export const createOpenJournalFormAction = (params: JournalFormSetters) => {
+  const {
+    setTitleInput,
+    setContentInput,
+    setDateInput,
+    setShowForm,
+    setEditingEntry,
+  } = params;
 
   return () => {
     const resetState = createCanceledJournalFormState();
     setTitleInput(resetState.titleInput);
     setContentInput(resetState.contentInput);
+    setDateInput(resetState.dateInput);
     setEditingEntry(null);
     setShowForm(createOpenedJournalFormState().showForm);
   };
 };
 
-export const createOpenEditJournalFormAction = (params: {
-  setTitleInput: SetValue<string>;
-  setContentInput: SetValue<string>;
-  setShowForm: SetValue<boolean>;
-  setEditingEntry: SetValue<JournalEntry | null>;
-}) => {
-  const { setTitleInput, setContentInput, setShowForm, setEditingEntry } =
-    params;
+export const createOpenEditJournalFormAction = (params: JournalFormSetters) => {
+  const {
+    setTitleInput,
+    setContentInput,
+    setDateInput,
+    setShowForm,
+    setEditingEntry,
+  } = params;
 
   return (entry: JournalEntry) => {
     const state = createEditingJournalFormState(entry);
     setTitleInput(state.titleInput);
     setContentInput(state.contentInput);
+    setDateInput(state.dateInput);
     setEditingEntry(state.editingEntry);
     setShowForm(state.showForm);
   };

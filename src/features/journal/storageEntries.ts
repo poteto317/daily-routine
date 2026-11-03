@@ -2,6 +2,7 @@ import { type JournalEntry } from "@/types/routine";
 import { generateId } from "@/lib/storage/core";
 import { getJournalHistory, saveJournalHistory } from "./storageData";
 import { getTodayDateString } from "./utils/journalDate";
+import { applyJournalEntryUpdate } from "./journalHistoryUpdate";
 
 const sortEntriesByLatest = (entries: JournalEntry[]): JournalEntry[] => {
   return [...entries].sort((left, right) => {
@@ -46,25 +47,25 @@ export const saveJournalEntry = (
   saveJournalHistory(history);
 };
 
+/**
+ * 履歴を読み、applyJournalEntryUpdate で更新を当てて 1 回だけ書き込む
+ * （見つからないときも内容を変えずに書き込む）。date を省略すると日付も置き場所も変えない。
+ */
 export const updateJournalEntry = (
   entryId: string,
   title: string,
   content: string,
+  date?: string,
 ): void => {
   const history = getJournalHistory();
-  const now = new Date().toISOString();
-  const nextHistory = Object.fromEntries(
-    Object.entries(history).map(([date, entries]) => [
-      date,
-      entries.map((entry) =>
-        entry.id === entryId
-          ? { ...entry, title, content, updatedAt: now }
-          : entry,
-      ),
-    ]),
+  saveJournalHistory(
+    applyJournalEntryUpdate(
+      history,
+      entryId,
+      { title, content, date },
+      new Date().toISOString(),
+    ),
   );
-
-  saveJournalHistory(nextHistory);
 };
 
 export const deleteJournalEntry = (entryId: string): void => {
