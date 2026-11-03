@@ -1,4 +1,10 @@
-import { DEFAULT_SETTINGS, getSettings, saveSettings } from "../storage";
+import {
+  DEFAULT_SETTINGS,
+  getSettings,
+  saveMenuOrder,
+  saveSettings,
+  SETTINGS_UPDATED_EVENT,
+} from "../storage";
 import * as coreStorage from "@/lib/storage/core";
 
 jest.mock("@/lib/storage/core", () => ({
@@ -46,5 +52,38 @@ describe("settings storage", () => {
       "app-settings",
       DEFAULT_SETTINGS,
     );
+  });
+});
+
+describe("saveMenuOrder", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    localStorage.clear();
+  });
+
+  it("保存済みの他の設定を保ったまま menuOrder だけを置き換える", () => {
+    localStorage.setItem(
+      "app-settings",
+      JSON.stringify({ theme: "dark", menuOrder: ["journal", "budget"] }),
+    );
+
+    saveMenuOrder(["budget", "journal"]);
+
+    expect(mockSetStorageItem).toHaveBeenCalledTimes(1);
+    expect(mockSetStorageItem).toHaveBeenCalledWith("app-settings", {
+      ...DEFAULT_SETTINGS,
+      theme: "dark",
+      menuOrder: ["budget", "journal"],
+    });
+  });
+
+  it("保存すると SETTINGS_UPDATED_EVENT を発火する", () => {
+    const listener = jest.fn();
+    window.addEventListener(SETTINGS_UPDATED_EVENT, listener);
+
+    saveMenuOrder(["journal"]);
+
+    window.removeEventListener(SETTINGS_UPDATED_EVENT, listener);
+    expect(listener).toHaveBeenCalledTimes(1);
   });
 });

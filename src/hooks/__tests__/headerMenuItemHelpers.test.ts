@@ -381,3 +381,122 @@ describe("sortByMenuOrder", () => {
     expect(result.map((i) => i.id)).toEqual(menuOrder);
   });
 });
+
+describe("sortByMenuOrder（menuOrder に載っていない Todoリストの位置）", () => {
+  const sortIds = (naturalOrderIds: string[], menuOrder: string[]) =>
+    sortByMenuOrder(naturalOrderIds, (id) => id, naturalOrderIds, menuOrder);
+
+  it("リストの ID が載っていれば、載っていないリストは最後に載っているリストの直後に出る", () => {
+    expect(
+      sortIds(
+        ["journal", "todo-list-a", "todo-list-b", "todo-list-c", "bug-report"],
+        ["todo-list-a", "todo-list-b", "journal", "bug-report"],
+      ),
+    ).toEqual([
+      "todo-list-a",
+      "todo-list-b",
+      "todo-list-c",
+      "journal",
+      "bug-report",
+    ]);
+  });
+
+  it("載っていないリストが複数あれば、最後に載っているリストの直後に自然順で並ぶ", () => {
+    expect(
+      sortIds(
+        ["todo-list-a", "todo-list-b", "todo-list-c", "todo-list-d", "journal"],
+        ["todo-list-a", "todo-list-b", "journal"],
+      ),
+    ).toEqual([
+      "todo-list-a",
+      "todo-list-b",
+      "todo-list-c",
+      "todo-list-d",
+      "journal",
+    ]);
+  });
+
+  it("基準は最初ではなく最後に載っているリストである", () => {
+    expect(
+      sortIds(
+        ["journal", "budget", "todo-list-a", "todo-list-b", "todo-list-c"],
+        ["todo-list-a", "journal", "todo-list-b", "budget"],
+      ),
+    ).toEqual([
+      "todo-list-a",
+      "journal",
+      "todo-list-b",
+      "todo-list-c",
+      "budget",
+    ]);
+  });
+
+  it("旧来の todo-lists があれば、リストの ID が載っていても今までどおり todo-lists の直後に出る", () => {
+    expect(
+      sortIds(
+        ["journal", "todo-list-a", "todo-list-b", "todo-list-c"],
+        ["todo-list-a", "todo-lists", "journal", "todo-list-b"],
+      ),
+    ).toEqual(["todo-list-a", "todo-list-c", "journal", "todo-list-b"]);
+  });
+
+  it("menuOrder が空なら今までどおり自然順", () => {
+    expect(
+      sortIds(["journal", "todo-list-a", "todo-list-b", "bug-report"], []),
+    ).toEqual(["journal", "todo-list-a", "todo-list-b", "bug-report"]);
+  });
+
+  it("リストの ID が 1 つも載っていなければ、載っていないリストは今までどおり末尾に出る", () => {
+    expect(
+      sortIds(
+        ["todo-list-a", "journal", "bug-report"],
+        ["bug-report", "journal"],
+      ),
+    ).toEqual(["bug-report", "journal", "todo-list-a"]);
+  });
+
+  it("リスト以外の載っていない項目は今までどおり末尾に自然順で出る", () => {
+    expect(
+      sortIds(
+        ["todo-list-a", "future-feature", "journal", "todo-list-b"],
+        ["todo-list-a", "journal"],
+      ),
+    ).toEqual(["todo-list-a", "todo-list-b", "journal", "future-feature"]);
+  });
+
+  it("ハンバーガーメニューでも、載っていないリストは他のリストの直後で、設定より前に出る", () => {
+    const staticItems: HeaderMenuItem[] = [
+      { id: "home", label: "ホーム", icon: "🏠", route: "home" },
+      { id: "journal", label: "ジャーナル", icon: "📔", route: "journal" },
+      {
+        id: "bug-report",
+        label: "不具合を報告",
+        icon: "📣",
+        route: "bug-report",
+      },
+      { id: "settings", label: "設定", icon: "⚙️", route: "settings" },
+    ];
+    const dynamicItems: HeaderMenuItem[] = ["a", "b", "c"].map((id) => ({
+      id: `todo-list-${id}`,
+      label: id,
+      icon: "✅",
+      route: "todo-lists" as const,
+    }));
+
+    const ordered = orderHeaderMenuItems({
+      staticItems,
+      dynamicItems,
+      menuOrder: ["todo-list-a", "todo-list-b", "journal", "bug-report"],
+    }).map((item) => item.id);
+
+    expect(ordered).toEqual([
+      "home",
+      "todo-list-a",
+      "todo-list-b",
+      "todo-list-c",
+      "journal",
+      "bug-report",
+      "settings",
+    ]);
+  });
+});

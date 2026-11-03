@@ -69,3 +69,13 @@ export const saveSettings = (settings: AppSettings): void => {
     window.dispatchEvent(new CustomEvent(SETTINGS_UPDATED_EVENT));
   }
 };
+
+/**
+ * メニューの並び順（menuOrder）だけを保存する。
+ * 保存の直前に最新の設定を読み、menuOrder 以外は変えない
+ * （画面が持つ古い設定で他の項目を上書きしないため）。
+ * saveSettings を通すので、ユーザーごとのキーと SETTINGS_UPDATED_EVENT の発火も同じになる。
+ */
+export const saveMenuOrder = (menuOrder: string[]): void => {
+  saveSettings({ ...getSettings(), menuOrder });
+};
