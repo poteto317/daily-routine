@@ -288,7 +288,7 @@ export const buildInitialData = (): TestCategory[] => [
     items: [
       {
         id: "3-1",
-        label: "日記の新規作成（タイトル＋本文）",
+        label: "日記の新規作成（タイトル＋本文＋日付）",
         pc: "unchecked",
         sp: "unchecked",
         note: "",
@@ -323,7 +323,7 @@ export const buildInitialData = (): TestCategory[] => [
       },
       {
         id: "3-6",
-        label: "過去エントリの編集（JournalEditCard）",
+        label: "過去エントリの編集・日付の変更（JournalEditCard）",
         pc: "unchecked",
         sp: "unchecked",
         note: "",

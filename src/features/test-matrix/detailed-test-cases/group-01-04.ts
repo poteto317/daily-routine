@@ -1177,6 +1177,52 @@ export const DETAILED_TEST_CASES_GROUP_01_04: DetailTestCaseMap = {
       sp: "unchecked",
       note: "",
     },
+    {
+      id: "3-1-4",
+      scenario: "新規追加の日付欄で過去の日付を選んで保存",
+      expected:
+        "見出しが「<日付> の記録」になり、選んだ日付の記録として保存され、過去の記録一覧のその日付の位置に表示される",
+      pc: "unchecked",
+      sp: "unchecked",
+      note: "",
+    },
+    {
+      id: "3-1-5",
+      scenario: "新規追加の日付欄を空にして保存",
+      expected:
+        "保存されず日付の入力を促すメッセージが表示される（フォームと入力は残る）",
+      pc: "unchecked",
+      sp: "unchecked",
+      note: "",
+    },
+    {
+      id: "3-1-6",
+      scenario:
+        "新規追加の日付欄に未来の日付を入力して保存（選択画面で未来を選べる端末・直接入力できる端末）",
+      expected:
+        "保存されず未来の日付は保存できない旨のメッセージが表示される（フォームと入力は残る）",
+      pc: "unchecked",
+      sp: "unchecked",
+      note: "",
+    },
+    {
+      id: "3-1-7",
+      scenario: "新規追加の日付欄の選択画面を開く",
+      expected: "今日より後の日付を選べない",
+      pc: "unchecked",
+      sp: "unchecked",
+      note: "",
+    },
+    {
+      id: "3-1-8",
+      scenario:
+        "新規追加の日付欄で 1900 年より前（例: 年を 0202 にする）の日付を入力して保存",
+      expected:
+        "保存されず、不正な日付のメッセージが表示される（フォームと入力は残る）",
+      pc: "unchecked",
+      sp: "unchecked",
+      note: "",
+    },
   ],
   "3-2": [
     {
@@ -1263,6 +1309,79 @@ export const DETAILED_TEST_CASES_GROUP_01_04: DetailTestCaseMap = {
       id: "3-6-3",
       scenario: "過去エントリの編集をキャンセル",
       expected: "変更が破棄され、元の内容が維持される",
+      pc: "unchecked",
+      sp: "unchecked",
+      note: "",
+    },
+    {
+      id: "3-6-4",
+      scenario: "過去エントリの日付を別の過去の日付に変えて保存",
+      expected:
+        "過去の記録一覧で新しい日付の位置へ移り、日付の表示が変わる。編集カードの見出しは保存まで編集前の日付のまま",
+      pc: "unchecked",
+      sp: "unchecked",
+      note: "",
+    },
+    {
+      id: "3-6-5",
+      scenario:
+        "今日の記録が 1 件だけの状態で、今日のエントリを編集し、日付を過去に変えて保存",
+      expected:
+        "今日の欄が「まだ今日の記録はありません」になり、過去の記録一覧の選んだ日付に表示される",
+      pc: "unchecked",
+      sp: "unchecked",
+      note: "",
+    },
+    {
+      id: "3-6-6",
+      scenario: "既に記録がある過去の日付（今日以外）へ変えて保存",
+      expected:
+        "確認なしで保存され、同じ日付の記録として両方が一覧に表示される",
+      pc: "unchecked",
+      sp: "unchecked",
+      note: "",
+    },
+    {
+      id: "3-6-7",
+      scenario: "編集で日付を空にして更新",
+      expected:
+        "更新されず日付の入力を促すメッセージが表示される（編集カードと入力は残る）",
+      pc: "unchecked",
+      sp: "unchecked",
+      note: "",
+    },
+    {
+      id: "3-6-8",
+      scenario:
+        "編集で未来の日付を入力して更新（選択画面で未来を選べる端末・直接入力できる端末）",
+      expected:
+        "更新されず未来の日付は保存できない旨のメッセージが表示される（編集カードと入力は残る）",
+      pc: "unchecked",
+      sp: "unchecked",
+      note: "",
+    },
+    {
+      id: "3-6-9",
+      scenario: "過去エントリの編集カードで日付欄の選択画面を開く",
+      expected: "今日より後の日付を選べない",
+      pc: "unchecked",
+      sp: "unchecked",
+      note: "",
+    },
+    {
+      id: "3-6-10",
+      scenario: "過去エントリの日付を変えずにタイトル・本文だけ直して保存",
+      expected: "内容だけ更新され、日付と過去の記録一覧での位置は変わらない",
+      pc: "unchecked",
+      sp: "unchecked",
+      note: "",
+    },
+    {
+      id: "3-6-11",
+      scenario:
+        "編集で日付欄に 1900 年より前（例: 年を 0202 にする）の日付を入力して更新",
+      expected:
+        "更新されず、不正な日付のメッセージが表示される（編集カードと入力は残る）",
       pc: "unchecked",
       sp: "unchecked",
       note: "",
