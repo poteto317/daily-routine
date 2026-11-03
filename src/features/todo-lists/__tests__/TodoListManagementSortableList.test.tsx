@@ -3,10 +3,15 @@ import {
   TodoListManagementSortableList,
   type TodoListManagementSortableListProps,
 } from "../TodoListManagementSortableList";
+import { restrictToSortableListBounds } from "../restrictToSortableListBounds";
 import type { TodoList } from "../types";
 
 // ---------- dnd-kit モック（TodoCategorySortableList.test.tsx と同じ方針。渡した props を控える） ----------
-let mockDndContextProps: { sensors?: unknown; onDragEnd?: unknown } = {};
+let mockDndContextProps: {
+  sensors?: unknown;
+  onDragEnd?: unknown;
+  modifiers?: unknown;
+} = {};
 let mockSortableItems: unknown;
 
 jest.mock("@dnd-kit/core", () => ({
@@ -14,8 +19,13 @@ jest.mock("@dnd-kit/core", () => ({
     children,
     sensors,
     onDragEnd,
-  }: React.PropsWithChildren<{ sensors?: unknown; onDragEnd?: unknown }>) => {
-    mockDndContextProps = { sensors, onDragEnd };
+    modifiers,
+  }: React.PropsWithChildren<{
+    sensors?: unknown;
+    onDragEnd?: unknown;
+    modifiers?: unknown;
+  }>) => {
+    mockDndContextProps = { sensors, onDragEnd, modifiers };
     return <>{children}</>;
   },
   closestCenter: jest.fn(),
@@ -100,6 +110,25 @@ describe("TodoListManagementSortableList", () => {
 
     expect(mockDndContextProps.sensors).toBe(sensors);
     expect(mockDndContextProps.onDragEnd).toBe(onDragEndAction);
+  });
+
+  it("DndContext に、行を一覧の枠の中に制限する modifier を渡す（下端までのドラッグでページが伸び続けるのを防ぐ）", () => {
+    render(<TodoListManagementSortableList {...createProps()} />);
+
+    expect(mockDndContextProps.modifiers).toEqual([
+      restrictToSortableListBounds,
+    ]);
+  });
+
+  it("再描画しても modifiers は同じ参照のまま渡す", () => {
+    const { rerender } = render(
+      <TodoListManagementSortableList {...createProps()} />,
+    );
+    const first = mockDndContextProps.modifiers;
+    expect(first).toEqual([restrictToSortableListBounds]);
+    rerender(<TodoListManagementSortableList {...createProps()} />);
+
+    expect(mockDndContextProps.modifiers).toBe(first);
   });
 
   it("SortableContext の items は lists の順の ID", () => {

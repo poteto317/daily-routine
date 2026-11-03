@@ -13,6 +13,10 @@ import {
 } from "@dnd-kit/sortable";
 import type { TodoList } from "./types";
 import { TodoListManagementItem } from "./TodoListManagementItem";
+import { restrictToSortableListBounds } from "./restrictToSortableListBounds";
+
+/** 行の移動を一覧の枠の中に制限する（参照を安定させるためモジュールの外に置く） */
+const MODIFIERS = [restrictToSortableListBounds];
 
 export type TodoListManagementSortableListProps = {
   /** 表示順（menuOrder で並べた順）のリスト。非表示のリストも含む */
@@ -56,6 +60,7 @@ export const TodoListManagementSortableList = ({
     <DndContext
       sensors={sensors}
       collisionDetection={closestCenter}
+      modifiers={MODIFIERS}
       onDragEnd={onDragEndAction}
     >
       <SortableContext
