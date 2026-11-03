@@ -13,6 +13,10 @@ jest.mock("../useTodoListManagementDataState", () => ({
   useTodoListManagementDataState: jest.fn(),
 }));
 
+jest.mock("../useTodoListManagementDragAndDrop", () => ({
+  useTodoListManagementDragAndDrop: jest.fn(),
+}));
+
 jest.mock("../useTodoListManagementFormFocus", () => ({
   useTodoListManagementFormFocus: jest.fn(),
 }));
@@ -28,12 +32,16 @@ jest.mock("../useTodoListManagementTitleEditing", () => ({
 import { createTodoListManagementPageStateResult } from "../todoListManagementPageStateResult";
 import { createTodoListManagementTitleEditingBindings } from "../todoListManagementTitleEditingBindings";
 import { useTodoListManagementDataState } from "../useTodoListManagementDataState";
+import { useTodoListManagementDragAndDrop } from "../useTodoListManagementDragAndDrop";
 import { useTodoListManagementFormFocus } from "../useTodoListManagementFormFocus";
 import { useTodoListManagementFormState } from "../useTodoListManagementFormState";
 import { useTodoListManagementPageState } from "../useTodoListManagementPageState";
 import { useTodoListManagementTitleEditing } from "../useTodoListManagementTitleEditing";
 
 describe("useTodoListManagementPageState composition", () => {
+  const handleReorderLists = jest.fn();
+  const dnd = { sensors: [], handleDragEnd: jest.fn() };
+
   beforeEach(() => {
     jest.clearAllMocks();
 
@@ -49,10 +57,12 @@ describe("useTodoListManagementPageState composition", () => {
       handleCreate: jest.fn(),
       handleDelete: jest.fn(),
       handleRename: jest.fn(),
+      handleReorderLists,
       handleToggleVisibility: jest.fn(),
       lists: [],
       openList: jest.fn(),
     });
+    (useTodoListManagementDragAndDrop as jest.Mock).mockReturnValue(dnd);
     (createTodoListManagementTitleEditingBindings as jest.Mock).mockReturnValue(
       {
         bound: true,
@@ -100,5 +110,18 @@ describe("useTodoListManagementPageState composition", () => {
       }),
     );
     expect(result.current).toEqual({ composed: true });
+  });
+
+  it("DnD のフックに handleReorderLists を渡し、その戻り値を dnd として結果に渡す", () => {
+    renderHook(() => useTodoListManagementPageState({ navigate: jest.fn() }));
+
+    expect(
+      (useTodoListManagementDragAndDrop as jest.Mock).mock.calls[0][0]
+        .onReorderLists,
+    ).toBe(handleReorderLists);
+    expect(
+      (createTodoListManagementPageStateResult as jest.Mock).mock.calls[0][0]
+        .dnd,
+    ).toBe(dnd);
   });
 });

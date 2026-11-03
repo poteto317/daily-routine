@@ -4,7 +4,7 @@ import { CardPanel } from "@/components";
 import { useNavigationContext } from "@/features/routine/pages/NavigationContext";
 import { useTodoListManagementPageState } from "./useTodoListManagementPageState";
 import { TodoListCreateForm } from "./TodoListCreateForm";
-import { TodoListManagementItem } from "./TodoListManagementItem";
+import { TodoListManagementSortableList } from "./TodoListManagementSortableList";
 import { TodoListManagementHeader } from "./TodoListManagementHeader";
 import { TodoListManagementEmptyState } from "./TodoListManagementEmptyState";
 import texts from "./locales/ja.json";
@@ -21,6 +21,7 @@ export const TodoListManagementPage = () => {
     cancelEditListTitle,
     closeForm,
     commitEditListTitle,
+    dnd: { sensors, handleDragEnd },
     handleCreate,
     handleDelete,
     handleToggleVisibility,
@@ -63,23 +64,20 @@ export const TodoListManagementPage = () => {
           {lists.length === 0 && !showForm ? (
             <TodoListManagementEmptyState />
           ) : (
-            <div className="space-y-2">
-              {lists.map((list) => (
-                <TodoListManagementItem
-                  key={list.id}
-                  list={list}
-                  editingListId={editingListId}
-                  editingListTitleValue={editingListTitleValue}
-                  onChangeTitleValueAction={setEditingListTitleValue}
-                  onCommitEditAction={commitEditListTitle}
-                  onCancelEditAction={cancelEditListTitle}
-                  onOpenListAction={openList}
-                  onToggleVisibilityAction={handleToggleVisibility}
-                  onStartEditAction={startEditListTitle}
-                  onDeleteAction={handleDelete}
-                />
-              ))}
-            </div>
+            <TodoListManagementSortableList
+              lists={lists}
+              sensors={sensors}
+              onDragEndAction={handleDragEnd}
+              editingListId={editingListId}
+              editingListTitleValue={editingListTitleValue}
+              onChangeTitleValueAction={setEditingListTitleValue}
+              onCommitEditAction={commitEditListTitle}
+              onCancelEditAction={cancelEditListTitle}
+              onOpenListAction={openList}
+              onToggleVisibilityAction={handleToggleVisibility}
+              onStartEditAction={startEditListTitle}
+              onDeleteAction={handleDelete}
+            />
           )}
         </CardPanel>
       </main>

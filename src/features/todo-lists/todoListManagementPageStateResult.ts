@@ -1,10 +1,21 @@
 import type { RefObject } from "react";
+import type {
+  DragEndEvent,
+  SensorDescriptor,
+  SensorOptions,
+} from "@dnd-kit/core";
 import type { TodoList } from "./types";
+
+type TodoListManagementDnd = {
+  sensors: SensorDescriptor<SensorOptions>[];
+  handleDragEnd: (event: DragEndEvent) => void;
+};
 
 type TodoListManagementPageStateResultArgs = {
   closeForm: () => void;
   commitEditListTitle: () => void;
   cancelEditListTitle: () => void;
+  dnd: TodoListManagementDnd;
   editingListId: string | null;
   editingListTitleValue: string;
   handleCreate: () => void;
@@ -25,6 +36,7 @@ export const createTodoListManagementPageStateResult = ({
   closeForm,
   commitEditListTitle,
   cancelEditListTitle,
+  dnd,
   editingListId,
   editingListTitleValue,
   handleCreate,
@@ -46,6 +58,7 @@ export const createTodoListManagementPageStateResult = ({
     showForm,
     titleInput,
     closeForm,
+    dnd,
     handleCreate,
     handleDelete,
     handleToggleVisibility,

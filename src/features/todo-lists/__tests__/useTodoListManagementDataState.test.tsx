@@ -12,10 +12,15 @@ jest.mock("../useTodoListManagementOrder", () => ({
   useTodoListManagementOrder: jest.fn(),
 }));
 
+jest.mock("../useTodoListManagementMenuOrder", () => ({
+  useTodoListManagementMenuOrder: jest.fn(),
+}));
+
 import { getTodoLists } from "../storage";
 import type { TodoList } from "../types";
 import { useTodoListManagementActionHandlers } from "../useTodoListManagementActionHandlers";
 import { useTodoListManagementDataState } from "../useTodoListManagementDataState";
+import { useTodoListManagementMenuOrder } from "../useTodoListManagementMenuOrder";
 import { useTodoListManagementOrder } from "../useTodoListManagementOrder";
 
 describe("useTodoListManagementDataState", () => {
@@ -26,6 +31,8 @@ describe("useTodoListManagementDataState", () => {
     createdAt: "2026-03-07T00:00:00.000Z",
     updatedAt: "2026-03-07T00:00:00.000Z",
   };
+  const menuOrder = ["todo-list-list-1", "journal"];
+  const handleReorderLists = jest.fn();
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -33,6 +40,10 @@ describe("useTodoListManagementDataState", () => {
     (useTodoListManagementOrder as jest.Mock).mockImplementation(
       ({ lists }) => lists,
     );
+    (useTodoListManagementMenuOrder as jest.Mock).mockReturnValue({
+      menuOrder,
+      handleReorderLists,
+    });
     (useTodoListManagementActionHandlers as jest.Mock).mockReturnValue({
       handleCreate: jest.fn(),
       handleDelete: jest.fn(),
@@ -108,7 +119,7 @@ describe("useTodoListManagementDataState", () => {
     ]);
   });
 
-  it("useTodoListManagementOrderにlistsを渡し、その戻り値を公開するlistsとして使う", () => {
+  it("useTodoListManagementOrderにlistsとmenuOrderを渡し、その戻り値を公開するlistsとして使う", () => {
     const listA: TodoList = { ...baseList, id: "list-a", title: "A" };
     const listB: TodoList = { ...baseList, id: "list-b", title: "B" };
     (getTodoLists as jest.Mock).mockReturnValue([listA, listB]);
@@ -127,11 +138,15 @@ describe("useTodoListManagementDataState", () => {
 
     expect(useTodoListManagementOrder).toHaveBeenCalledWith({
       lists: [listA, listB],
+      menuOrder,
     });
+    expect(
+      (useTodoListManagementOrder as jest.Mock).mock.calls[0][0].menuOrder,
+    ).toBe(menuOrder);
     expect(result.current.lists).toBe(sortedByMenuOrder);
   });
 
-  it("並び替えは表示専用であり、action handlerには並び替え前の生のlistsが渡される", () => {
+  it("並び替えは表示専用であり、action handlerとmenuOrderのフックには並び替え前の生のlistsが渡される", () => {
     const listA: TodoList = { ...baseList, id: "list-a", title: "A" };
     const listB: TodoList = { ...baseList, id: "list-b", title: "B" };
     (getTodoLists as jest.Mock).mockReturnValue([listA, listB]);
@@ -150,5 +165,20 @@ describe("useTodoListManagementDataState", () => {
         lists: [listA, listB],
       }),
     );
+    expect(useTodoListManagementMenuOrder).toHaveBeenCalledWith({
+      lists: [listA, listB],
+    });
+  });
+
+  it("useTodoListManagementMenuOrderのhandleReorderListsをそのまま公開する", () => {
+    const { result } = renderHook(() =>
+      useTodoListManagementDataState({
+        titleInput: "",
+        closeForm: jest.fn(),
+        navigate: jest.fn(),
+      }),
+    );
+
+    expect(result.current.handleReorderLists).toBe(handleReorderLists);
   });
 });
