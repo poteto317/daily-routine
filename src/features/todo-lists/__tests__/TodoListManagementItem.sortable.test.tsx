@@ -61,4 +61,29 @@ describe("TodoListManagementItem の dnd-kit の配線", () => {
     expect(mockSetNodeRef).toHaveBeenCalled();
     expect(mockSetNodeRef.mock.calls[0][0]).toContainElement(handle);
   });
+
+  it("useSortable が返した transform・transition・isDragging を行の style に、attributes をハンドルに反映する", () => {
+    jest.mocked(useSortable).mockReturnValueOnce({
+      attributes: { "aria-roledescription": "sortable" },
+      listeners: { onKeyDown: mockOnKeyDown },
+      setNodeRef: mockSetNodeRef,
+      transform: { x: 10, y: 20, scaleX: 1, scaleY: 1 },
+      transition: "transform 200ms ease",
+      isDragging: true,
+    } as unknown as ReturnType<typeof useSortable>);
+    render(<TodoListManagementItem {...defaultProps} />);
+
+    const row = mockSetNodeRef.mock.calls[0][0] as HTMLElement;
+    // ドラッグ中に行が指・ポインタについて動く（transform）、離したときに滑らかに戻る（transition）、掴んだ行が薄くなる（opacity）
+    expect(row.style.transform).toBe(
+      "translate3d(10px, 20px, 0) scaleX(1) scaleY(1)",
+    );
+    expect(row.style.transition).toBe("transform 200ms ease");
+    expect(row.style.opacity).toBe("0.4");
+    // ハンドルに dnd-kit の attributes（読み上げの役割）が付く
+    expect(screen.getByRole("button", { name: "並び替え" })).toHaveAttribute(
+      "aria-roledescription",
+      "sortable",
+    );
+  });
 });

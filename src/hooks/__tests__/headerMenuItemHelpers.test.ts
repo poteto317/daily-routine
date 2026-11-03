@@ -416,6 +416,17 @@ describe("sortByMenuOrder（menuOrder に載っていない Todoリストの位�
     ]);
   });
 
+  it("基準のリストと載っていないリストが同じ順位にならない（載っていないリストは基準の直後に置かれる）", () => {
+    // 基準は実在するリスト b（添字 0）。載っていない a の順位が 0 のままだと b と同順位になり、
+    // 入力の順（a, b）が残って a が b の前に出てしまう
+    expect(
+      sortIds(
+        ["todo-list-a", "todo-list-b", "journal"],
+        ["todo-list-b", "journal"],
+      ),
+    ).toEqual(["todo-list-b", "todo-list-a", "journal"]);
+  });
+
   it("基準は最初ではなく最後に載っているリストである", () => {
     expect(
       sortIds(
