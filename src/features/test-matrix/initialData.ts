@@ -1266,6 +1266,13 @@ export const buildInitialData = (): TestCategory[] => [
         sp: "unchecked",
         note: "",
       },
+      {
+        id: "todo-lists-22",
+        label: "Todoリストの並び替え（Todoリスト管理）",
+        pc: "unchecked",
+        sp: "unchecked",
+        note: "",
+      },
     ],
   },
   {

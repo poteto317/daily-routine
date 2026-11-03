@@ -473,6 +473,75 @@ export const DETAILED_TEST_CASES_GROUP_16_20_21: DetailTestCaseMap = {
       note: "",
     },
   ],
+  "todo-lists-22": [
+    {
+      id: "todo-lists-22-1",
+      scenario:
+        "リストを3件以上作り、Todoリスト管理画面で末尾のリストのハンドル（⠿）をマウスでドラッグして先頭へ置く",
+      expected:
+        "画面の順が変わる。ハンバーガーメニューのTodoリストも同じ順になり、再読み込みしても順が保たれる",
+      pc: "unchecked",
+      sp: "unchecked",
+      note: "",
+    },
+    {
+      id: "todo-lists-22-2",
+      scenario:
+        "スマホ（Android の Chrome・iPhone の Safari）で、ハンドルを指で押したまま上下に動かして置く。ハンドル以外の部分を上下になぞる",
+      expected:
+        "ハンドルからは並び替わる。ハンドル以外をなぞると画面がスクロールし、ドラッグは始まらない",
+      pc: "unchecked",
+      sp: "unchecked",
+      note: "同じ Android の端末で todo-lists-12-1（リストの中のアイテムの並び替え）も確かめる。リストの中のアイテムがタッチで並び替えられないという別の解釈を、実機の結果で退けるため",
+    },
+    {
+      id: "todo-lists-22-3",
+      scenario:
+        "Tab でハンドルにフォーカスし、Space → ↓ → Space で1つ下へ移す。続けて Space → ↓ → Escape を押す",
+      expected:
+        "最初の操作で1つ下へ移る。Escape で終えた操作では元の位置に戻る",
+      pc: "unchecked",
+      sp: "unchecked",
+      note: "",
+    },
+    {
+      id: "todo-lists-22-4",
+      scenario:
+        "非表示のリストを含めて並び替え、その後そのリストを表示に切り替える",
+      expected:
+        "非表示のリストは消えずに並べた位置に残る。表示に戻すと、並べた位置でハンバーガーメニューに出る",
+      pc: "unchecked",
+      sp: "unchecked",
+      note: "",
+    },
+    {
+      id: "todo-lists-22-5",
+      scenario: "並び替えの後に設定画面の「メニュー並び替え」を開く",
+      expected:
+        "Todoリストが同じ順で並ぶ。ジャーナル・家計簿など他の項目の並びは、並び替えの前と変わらない",
+      pc: "unchecked",
+      sp: "unchecked",
+      note: "",
+    },
+    {
+      id: "todo-lists-22-6",
+      scenario:
+        "（PC）タイトルを編集している途中で、別のリストのハンドルをマウスで掴んで並び替える",
+      expected: "編集中のタイトルが確定・保存され、その後に並び替わる",
+      pc: "unchecked",
+      sp: "unchecked",
+      note: "",
+    },
+    {
+      id: "todo-lists-22-7",
+      scenario: "並び替えの後に、新しいリストを作る",
+      expected:
+        "管理画面では末尾に出る。ハンバーガーメニューと設定画面の「メニュー並び替え」でも他のTodoリストのすぐ後ろに出て、「不具合を報告」など他のメニュー項目の後ろ（最下部）には出ない",
+      pc: "unchecked",
+      sp: "unchecked",
+      note: "",
+    },
+  ],
   "20-1": [
     {
       id: "20-1-1",
