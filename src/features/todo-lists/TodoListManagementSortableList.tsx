@@ -15,7 +15,7 @@ import type { TodoList } from "./types";
 import { TodoListManagementItem } from "./TodoListManagementItem";
 import { restrictToSortableListBounds } from "./restrictToSortableListBounds";
 
-/** 行の移動を一覧の枠の中に制限する（参照を安定させるためモジュールの外に置く） */
+/** 行の中心を一覧の枠の中に制限する（参照を安定させるためモジュールの外に置く） */
 const MODIFIERS = [restrictToSortableListBounds];
 
 export type TodoListManagementSortableListProps = {
