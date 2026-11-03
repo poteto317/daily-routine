@@ -206,7 +206,7 @@ Issue #193（報告者の環境: Android 10 の Chrome）の本文は「TODOリ�
 
 ### コンポーネントの構成
 
-- `TodoListManagementSortableList.tsx`（新規。`TodoCategorySortableList.tsx` と同じ役割）: `DndContext`（`sensors`・`collisionDetection={closestCenter}`・`onDragEnd`）と `SortableContext`（`items` は表示順のリスト ID、`verticalListSortingStrategy`）を配線し、`<div className="space-y-2">` の中に `TodoListManagementItem` を並べる。
+- `TodoListManagementSortableList.tsx`（新規。`TodoCategorySortableList.tsx` と同じ役割）: `DndContext`（`sensors`・`collisionDetection={closestCenter}`・`modifiers`〔モジュール外の定数 `[restrictToSortableListBounds]`。行の中心を一覧の枠の中に制限する。「懸念」の節を参照〕・`onDragEnd`）と `SortableContext`（`items` は表示順のリスト ID、`verticalListSortingStrategy`）を配線し、`<div className="space-y-2">` の中に `TodoListManagementItem` を並べる。
   - props は `lists`・`sensors`・`onDragEndAction` と、今 `TodoListManagementPage` が行へ渡している 9 つの props（`editingListId`・`editingListTitleValue`・`onChangeTitleValueAction`・`onCommitEditAction`・`onCancelEditAction`・`onOpenListAction`・`onToggleVisibilityAction`・`onStartEditAction`・`onDeleteAction`）。すべて必須にする（L-060）。
 - `TodoListManagementPage.tsx`: `lists.map(...)` の部分を `TodoListManagementSortableList` に置き換え、`dnd.sensors`・`dnd.handleDragEnd` を渡す。空状態の判定（`lists.length === 0 && !showForm`）は画面に残す（カテゴリと同じ）。
 - `TodoListManagementItem.tsx`
@@ -291,7 +291,7 @@ Issue #193（報告者の環境: Android 10 の Chrome）の本文は「TODOリ�
   - `sensors` は共通の `useTodoDndSensors` の戻り値をそのまま返す（`useTodoDndSensors` をモックし、`toBe` で同一性を確かめる）。センサーの種類と設定値は `useTodoDndSensors.test.ts` が確かめる。
 - `__tests__/TodoListManagementItem.test.tsx`（更新）: 行に「並び替え」のボタンが 1 つある。既存のテスト（開く・トグル・編集・削除・Enter・IME・Escape・打ち消し線）がそのまま通る。
 - `__tests__/TodoListManagementSortableList.test.tsx`（新規。`TodoCategorySortableList.test.tsx` と同じく dnd-kit をモック）
-  - `DndContext` に渡した `onDragEnd` が `onDragEndAction` と同一（`toBe`）で、`sensors` も同一。
+  - `DndContext` に渡した `onDragEnd` が `onDragEndAction` と同一（`toBe`）で、`sensors` も同一。`modifiers` が `[restrictToSortableListBounds]` で、再描画しても同じ参照。`restrictToSortableListBounds` 自体は純粋な関数なので、`restrictToSortableListBounds.test.ts` で単体に固定する（枠の中はそのまま／はみ出す移動量を行の中心基準で丸める／矩形が null のときはそのまま返す／背の高い行・行が 1 つだけのケース）。
   - `SortableContext` の `items` が渡した `lists` の順の ID。
   - 各行のボタン（開く・トグル・編集・削除）が、正しいリストを引数にして対応する props を呼ぶ。
   - `editingListId` が一致する行だけが入力欄になる。
@@ -327,7 +327,7 @@ Issue #193（報告者の環境: Android 10 の Chrome）の本文は「TODOリ�
     - **todo-lists-22-6**: （PC）タイトルを編集している途中で、別のリストのハンドルをマウスで掴んで並び替える。→ 編集中のタイトルが確定・保存され、その後に並び替わる。
     - **todo-lists-22-7**: 並び替えの後に、新しいリストを作る。→ 管理画面では末尾に出る。ハンバーガーメニューと設定画面の「メニュー並び替え」でも他のTodoリストのすぐ後ろに出て、「不具合を報告」など他のメニュー項目の後ろ（最下部）には出ない。
     - **todo-lists-22-8**: リストが画面に収まらない数（14 件ほど）のとき、管理画面で行のハンドルを掴み、画面の下端まで動かして数秒待つ（上端でも同じ）。→ ページは一番下（上端のときは一番上）で止まり、際限なく伸びたり真っ白になったりしない。掴んだ行は一覧の末尾（先頭）から行の高さの半分ほどまでしかはみ出さず、離すと末尾（先頭）へ並ぶ。`note` は「PR レビューで、実ブラウザでの下端ドラッグのスクロール暴走が見つかった。行の中心を一覧の枠の中に制限する modifier で防いでいる」。
-    - **todo-lists-22-9**: タイトルが折り返して 4 行ほどになる長いタイトルのリストを含む 5 件ほどのリストで、管理画面で長いリストのハンドルを一番下（一番上）まで動かして離す。→ 長いリストが末尾（先頭）に並ぶ（末尾から 2 番目〔先頭から 2 番目〕に入らない）。`note` は「PR レビューで、背の高い行が末尾・先頭に置けない退行が見つかった（行の下端を枠で止めていたため）。modifier は行の中心を枠の端まで動かせるようにしている」。
+    - **todo-lists-22-9**: タイトルが折り返して 4 行以上（できれば 5 行。行の高さは 1 行 48px、3 行 84px、4 行 104px、5 行 124px。3 行以下では、行の端で止める作りの退行があっても確認が通ってしまう）になる長いタイトルのリストを先頭に置いた 5 件ほどのリストで、管理画面で長いリストのハンドルを一番下まで動かして離す。続けて、末尾に置かれたその長いリストを一番上まで動かして離す。→ 長いリストが末尾（先頭）に並ぶ（末尾から 2 番目〔先頭から 2 番目〕に入らない）。`note` は「PR レビューで、背の高い行が末尾・先頭に置けない退行が見つかった（行の下端を枠で止めていたため）。modifier は行の中心を枠の端まで動かせるようにしている」。
     - 22-2 の `note`（備考）: 「同じ Android の端末で todo-lists-12-1（リストの中のアイテムの並び替え）も確かめる。リストの中のアイテムがタッチで並び替えられないという別の解釈を、実機の結果で退けるため」。todo-lists-12-1 の ID と本文は変えない。
 
 ## タスクの分け方
@@ -380,4 +380,4 @@ dev-flow-kit の `review-lessons.md`:
 - リストが画面に収まらない長さのとき、`DragOverlay` を使わず行そのものを transform で動かしているため、ハンドルを画面の下端まで動かすと、自動スクロールでページが下がるのに行も付いて下がって文書が伸び続け、画面が真っ白になる（PR レビュー第 6 周で、レビュアーが実ブラウザで発見）。リスト管理画面は、行の中心を一覧の枠の中に制限する modifier（`restrictToSortableListBounds`）を `DndContext` に渡して防ぐ（行は枠から高さの半分までしかはみ出さないので、ページは伸び続けない）。`DragOverlay` と `activeId` は導入しない。カテゴリ管理画面には main から同じ現象が残っており、別の課題とした（同じ modifier を渡すだけで直せる）。確認は todo-lists-22-8。
 - 上の modifier は、はじめ行の上端・下端を枠の端で止めていた。dnd-kit は modifier を当てた後の移動量から当たり判定用の矩形を作って `closestCenter` に渡すので、背の高い行（スマホでタイトルが折り返して 4 行ほどになる行。高さ H、他の行 48px）は中心が「枠の下端 − H/2」までしか下がらず、H が 104px 以上だと末尾から 2 番目の行のほうが近いと判定されて末尾に置けなかった（先頭も同じ。PR レビューで、レビュアーが実ブラウザで発見）。上下は行の中心を枠の端まで動かせるように制限する（左右は行の端を枠に収めたまま）。`collisionDetection` を指の位置で判定するものに差し替える案もあったが、modifier の範囲を変えるほうが変更が小さく、キーボード操作にも影響しない。確認は todo-lists-22-9。
 - ドラッグハンドル（`TodoItemDragHandle`、3 画面で共通）は押せる範囲が約 10×24px と小さく、色も薄い。Android での押しにくさは todo-lists-22-2 の実機確認で見る。直すなら共通の部品を別の課題として扱う。
-- キーボード操作で、行の高さが 104px 以上（タイトルが 4 行ほどに折り返す行。他の行が 48px・行の間隔が 8px の場合）の行は、隣の行を 1 つしか越えられない（PR レビュー第 9 周で、実ブラウザで確認）。原因は dnd-kit の既定のキーボード座標（`sortableKeyboardCoordinates` が ↓ で行の下端、↑ で上端を移動先に揃える）と `closestCenter` の組み合わせで、背の高い行では 1 つ前の行の中心のほうが近いか同じ距離になり、over が変わらないため。`restrictToSortableListBounds` は関係しない（キーボードの移動量は丸めない）。同じ `useTodoDndSensors`・`closestCenter` を使うカテゴリ管理画面など、dnd-kit の既定を使う一覧でも同様と考えられる。マウス・タッチでは同じ行を末尾・先頭に置ける（todo-lists-22-9）。この画面専用の `coordinateGetter` を書けば直せるが、共通のセンサーの構成から外れるため、この変更では直さず、既知の制約とする。
+- キーボード操作で、行の高さが 104px 以上（タイトルが 4 行ほどに折り返す行。他の行が 48px・行の間隔が 8px の場合）の行は、隣の行を 1 つしか越えられない（PR レビュー第 9 周で、実ブラウザで確認）。原因は dnd-kit の既定のキーボード座標（`sortableKeyboardCoordinates` が ↓ で行の下端、↑ で上端を移動先に揃える）と `closestCenter` の組み合わせで、背の高い行では 1 つ前の行の中心のほうが近いか同じ距離になり、over が変わらないため。`restrictToSortableListBounds` は関係しない（dnd-kit はキーボードにも modifier を当てるが、`sortableKeyboardCoordinates` が移動先の行の端に揃えるので、行の中心は枠の中に収まっていて丸めが効かない）。同じ `useTodoDndSensors`・`closestCenter` を使うカテゴリ管理画面など、dnd-kit の既定を使う一覧でも同様と考えられる。マウス・タッチでは同じ行を末尾・先頭に置ける（todo-lists-22-9）。この画面専用の `coordinateGetter` を書けば直せるが、共通のセンサーの構成から外れるため、この変更では直さず、既知の制約とする。
