@@ -1,8 +1,11 @@
 import { useCallback } from "react";
 import { createUpdateJournalEntryHandler } from "./journalPageMutationHandlers";
+import { getTodayDateString } from "./utils/journalDate";
 
 type UseJournalUpdateEntryActionParams = {
   entryId: string;
+  originalDate: string;
+  dateInput: string | null;
   titleInput: string;
   contentInput: string;
   loadData: () => void;
@@ -11,6 +14,8 @@ type UseJournalUpdateEntryActionParams = {
 
 export const useJournalUpdateEntryAction = ({
   entryId,
+  originalDate,
+  dateInput,
   titleInput,
   contentInput,
   loadData,
@@ -19,10 +24,21 @@ export const useJournalUpdateEntryAction = ({
   return useCallback(() => {
     return createUpdateJournalEntryHandler({
       entryId,
+      originalDate,
+      dateInput,
+      getToday: getTodayDateString,
       titleInput,
       contentInput,
       reloadData: loadData,
       closeForm,
     })();
-  }, [entryId, titleInput, contentInput, loadData, closeForm]);
+  }, [
+    entryId,
+    originalDate,
+    dateInput,
+    titleInput,
+    contentInput,
+    loadData,
+    closeForm,
+  ]);
 };

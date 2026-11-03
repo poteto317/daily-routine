@@ -10,6 +10,7 @@ type UseJournalPageReloadActionParams = {
   setTodayEntry: SetValue<JournalEntry | null>;
   setTitleInput: SetValue<string>;
   setContentInput: SetValue<string>;
+  setDateInput: SetValue<string | null>;
   setRecentEntries: SetValue<JournalEntry[]>;
 };
 
@@ -17,6 +18,7 @@ export const useJournalPageReloadAction = ({
   setTodayEntry,
   setTitleInput,
   setContentInput,
+  setDateInput,
   setRecentEntries,
 }: UseJournalPageReloadActionParams) => {
   const loadData = useCallback(() => {
@@ -24,9 +26,16 @@ export const useJournalPageReloadAction = ({
       setTodayEntry,
       setTitleInput,
       setContentInput,
+      setDateInput,
       setRecentEntries,
     })();
-  }, [setContentInput, setRecentEntries, setTitleInput, setTodayEntry]);
+  }, [
+    setContentInput,
+    setDateInput,
+    setRecentEntries,
+    setTitleInput,
+    setTodayEntry,
+  ]);
 
   return createJournalPageReloadActionResult({ loadData });
 };

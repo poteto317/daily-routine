@@ -3,10 +3,14 @@
     "title": "📔 ジャーナル",
     "confirmDeleteEntryTemplate": "{date}の記録を削除しますか？",
     "alertMissingContent": "タイトルまたは本文を入力してください",
+    "alertInvalidDate": "日付を正しく入力してください。1900年1月1日以降の日付を選べます",
+    "alertFutureDate": "未来の日付は保存できません。今日までの日付を選んでください",
     "defaultTitle": "無題"
   },
   "todayCard": {
     "titleLabel": "今日の記録",
+    "dateEntryTitleTemplate": "{date} の記録",
+    "dateInputLabel": "日付",
     "titleInputLabel": "タイトル",
     "contentInputLabel": "本文",
     "titlePlaceholder": "例: 今日の出来事",
@@ -27,6 +31,7 @@
   },
   "editCard": {
     "editingLabel": " の記録を編集",
+    "dateInputLabel": "日付",
     "titleInputLabel": "タイトル",
     "contentInputLabel": "本文",
     "titlePlaceholder": "例: 今日の出来事",

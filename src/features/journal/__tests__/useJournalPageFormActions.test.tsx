@@ -18,13 +18,14 @@ describe("useJournalPageFormActions", () => {
     jest.clearAllMocks();
   });
 
-  it("journal form action を組み立てる", () => {
+  it("journal form action を組み立てる（日付のセッターも渡す）", () => {
     const handleCancelForm = jest.fn();
     const openForm = jest.fn();
     const openEditForm = jest.fn();
     const params = {
       setTitleInput: jest.fn(),
       setContentInput: jest.fn(),
+      setDateInput: jest.fn(),
       setShowForm: jest.fn(),
       setEditingEntry: jest.fn(),
     };
@@ -39,24 +40,9 @@ describe("useJournalPageFormActions", () => {
 
     const { result } = renderHook(() => useJournalPageFormActions(params));
 
-    expect(createCancelJournalFormHandler).toHaveBeenCalledWith({
-      setTitleInput: params.setTitleInput,
-      setContentInput: params.setContentInput,
-      setShowForm: params.setShowForm,
-      setEditingEntry: params.setEditingEntry,
-    });
-    expect(createOpenJournalFormAction).toHaveBeenCalledWith({
-      setTitleInput: params.setTitleInput,
-      setContentInput: params.setContentInput,
-      setShowForm: params.setShowForm,
-      setEditingEntry: params.setEditingEntry,
-    });
-    expect(createOpenEditJournalFormAction).toHaveBeenCalledWith({
-      setTitleInput: params.setTitleInput,
-      setContentInput: params.setContentInput,
-      setShowForm: params.setShowForm,
-      setEditingEntry: params.setEditingEntry,
-    });
+    expect(createCancelJournalFormHandler).toHaveBeenCalledWith(params);
+    expect(createOpenJournalFormAction).toHaveBeenCalledWith(params);
+    expect(createOpenEditJournalFormAction).toHaveBeenCalledWith(params);
     expect(result.current).toEqual({
       handleCancelForm,
       openForm,

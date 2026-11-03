@@ -41,6 +41,7 @@ describe("journal pageStateActions", () => {
       todayEntry: entryA,
       titleInput: "",
       contentInput: "",
+      dateInput: null,
       recentEntries: [entryA],
     });
   });
@@ -49,6 +50,7 @@ describe("journal pageStateActions", () => {
     expect(resetJournalFormInputs()).toEqual({
       titleInput: "",
       contentInput: "",
+      dateInput: null,
     });
   });
 
@@ -77,10 +79,15 @@ describe("journal pageStateActions", () => {
 
     const result = saveJournalEntryAndReload({
       today: "2024-01-12",
+      date: "2024-01-12",
       titleInput: "  ",
       contentInput: "  ",
       defaultTitle: "無題",
       alertMessage: "内容を入力してください",
+      dateAlertMessages: {
+        invalid: "日付を正しく入力してください",
+        future: "未来の日付は保存できません",
+      },
       saveEntry,
       reloadData: jest.fn(),
       closeForm: jest.fn(),
@@ -99,10 +106,15 @@ describe("journal pageStateActions", () => {
 
     const result = saveJournalEntryAndReload({
       today: "2024-01-12",
+      date: "2024-01-12",
       titleInput: "  ",
       contentInput: " memo ",
       defaultTitle: "無題",
       alertMessage: "内容を入力してください",
+      dateAlertMessages: {
+        invalid: "日付を正しく入力してください",
+        future: "未来の日付は保存できません",
+      },
       saveEntry,
       reloadData,
       closeForm,

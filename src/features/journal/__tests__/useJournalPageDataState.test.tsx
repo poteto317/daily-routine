@@ -32,6 +32,7 @@ describe("useJournalPageDataState", () => {
       todayEntry,
       titleInput: "",
       contentInput: "",
+      dateInput: null,
       showForm: false,
       recentEntries: [todayEntry],
     };

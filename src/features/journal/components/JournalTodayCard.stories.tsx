@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { expect, fn, userEvent, within } from "storybook/test";
+import { expect, fireEvent, fn, userEvent, within } from "storybook/test";
 import { JournalTodayCard } from "./JournalTodayCard";
 import type { JournalEntry } from "@/types/routine";
 
@@ -11,8 +11,10 @@ const meta = {
   },
   args: {
     today: "2026-05-21",
+    dateInput: null,
     onCancel: fn(),
     onContentChange: fn(),
+    onDateChange: fn(),
     onEditEntry: fn(),
     onOpenForm: fn(),
     onSave: fn(),
@@ -132,5 +134,59 @@ export const ClickSaveNew: Story = {
     const saveButton = canvas.getByRole("button", { name: "保存" });
     await userEvent.click(saveButton);
     expect(args.onSave).toHaveBeenCalledOnce();
+  },
+};
+
+/** 新規追加で過去の日付を選んだとき → 見出しが「<日付> の記録」になる */
+export const NewEntryPastDate: Story = {
+  args: {
+    todayEntry: null,
+    editingEntry: null,
+    showForm: true,
+    titleInput: "昨日の振り返り",
+    contentInput: "日付をまたいでから書いた。",
+    dateInput: "2026-05-20",
+  },
+};
+
+/** 新規追加で日付欄を空にしたとき → 見出しは「今日の記録」だけ */
+export const NewEntryEmptyDate: Story = {
+  args: {
+    todayEntry: null,
+    editingEntry: null,
+    showForm: true,
+    titleInput: "",
+    contentInput: "",
+    dateInput: "",
+  },
+};
+
+/** 今日の記録を編集中に日付を変えたとき → 見出しは今日のまま */
+export const EditingEntryDateChanged: Story = {
+  args: {
+    todayEntry,
+    editingEntry: todayEntry,
+    showForm: true,
+    titleInput: todayEntry.title,
+    contentInput: todayEntry.content,
+    dateInput: "2026-05-18",
+  },
+};
+
+/** 日付欄を変更 → onDateChange が選んだ値で呼ばれる */
+export const ChangeDate: Story = {
+  args: {
+    todayEntry: null,
+    editingEntry: null,
+    showForm: true,
+    titleInput: "",
+    contentInput: "",
+  },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    fireEvent.change(canvas.getByLabelText("日付"), {
+      target: { value: "2026-05-19" },
+    });
+    expect(args.onDateChange).toHaveBeenCalledWith("2026-05-19");
   },
 };

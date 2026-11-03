@@ -1,10 +1,18 @@
 import { type JournalEntry } from "@/types/routine";
-import { formatJournalDate } from "../utils/journalDate";
 import journalTexts from "../locales/ja.json";
-import { getJournalFormOpenButtonLabel } from "../helpers";
+import {
+  getJournalFormOpenButtonLabel,
+  getJournalTodayCardHeading,
+} from "../helpers";
+import {
+  getJournalTodayCardHeadingDate,
+  resolveJournalDateFieldValue,
+} from "../journalFormDate";
+import { JOURNAL_MIN_DATE } from "../utils/journalDate";
 
 type JournalTodayCardProps = {
   contentInput: string;
+  dateInput: string | null;
   editingEntry: JournalEntry | null;
   showForm: boolean;
   titleInput: string;
@@ -12,6 +20,7 @@ type JournalTodayCardProps = {
   todayEntry: JournalEntry | null;
   onCancel: () => void;
   onContentChange: (value: string) => void;
+  onDateChange: (value: string) => void;
   onEditEntry: (entry: JournalEntry) => void;
   onOpenForm: () => void;
   onSave: () => void;
@@ -21,6 +30,7 @@ type JournalTodayCardProps = {
 
 export const JournalTodayCard = ({
   contentInput,
+  dateInput,
   editingEntry,
   showForm,
   titleInput,
@@ -28,6 +38,7 @@ export const JournalTodayCard = ({
   todayEntry,
   onCancel,
   onContentChange,
+  onDateChange,
   onEditEntry,
   onOpenForm,
   onSave,
@@ -35,11 +46,23 @@ export const JournalTodayCard = ({
   onTitleChange,
 }: JournalTodayCardProps) => {
   const isEditing = editingEntry !== null;
+  const dateValue = resolveJournalDateFieldValue(
+    dateInput,
+    editingEntry,
+    today,
+  );
+  const headingDate = getJournalTodayCardHeadingDate({
+    showForm,
+    editingEntry,
+    dateValue,
+    today,
+  });
+
   return (
     <div className="mb-6 p-4 bg-purple-50 dark:bg-purple-100 rounded-lg">
       <div className="flex items-center justify-between mb-2">
         <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-900">
-          {journalTexts.todayCard.titleLabel} ({formatJournalDate(today)})
+          {getJournalTodayCardHeading(headingDate, today)}
         </h2>
         {!showForm && (
           <button
@@ -53,6 +76,24 @@ export const JournalTodayCard = ({
 
       {showForm ? (
         <div className="space-y-4 mt-4">
+          <div>
+            <label
+              htmlFor="journal-date"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-800 mb-1"
+            >
+              {journalTexts.todayCard.dateInputLabel}
+            </label>
+            <input
+              id="journal-date"
+              type="date"
+              value={dateValue}
+              min={JOURNAL_MIN_DATE}
+              max={today}
+              onChange={(e) => onDateChange(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-400 rounded-lg focus:ring-2 focus:ring-purple-500 dark:bg-white dark:text-gray-900"
+            />
+          </div>
+
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-800 mb-1">
               {journalTexts.todayCard.titleInputLabel}

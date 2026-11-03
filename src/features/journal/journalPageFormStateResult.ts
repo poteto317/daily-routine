@@ -16,8 +16,15 @@ type CreateJournalPageFormStateResultArgs = {
   handleCancelForm: () => void;
   openForm: () => void;
   openEditForm: (entry: JournalEntry) => void;
+  handleTitleChange: (value: string) => void;
+  handleContentChange: (value: string) => void;
+  handleDateChange: (value: string) => void;
 };
 
+/**
+ * フォームの state の公開 shape。UI には handle*Change を渡し、
+ * 素のセッター（set*Input）は再読み込み・リセットの組み立てにだけ渡す。
+ */
 export const createJournalPageFormStateResult = ({
   inputState,
   visibilityState,
@@ -26,9 +33,13 @@ export const createJournalPageFormStateResult = ({
   handleCancelForm,
   openForm,
   openEditForm,
+  handleTitleChange,
+  handleContentChange,
+  handleDateChange,
 }: CreateJournalPageFormStateResultArgs) => {
   return {
     contentInput: inputState.contentInput,
+    dateInput: inputState.dateInput,
     showForm: visibilityState.showForm,
     titleInput: inputState.titleInput,
     editingEntry,
@@ -36,7 +47,11 @@ export const createJournalPageFormStateResult = ({
     handleCancelForm,
     openForm,
     openEditForm,
+    handleTitleChange,
+    handleContentChange,
+    handleDateChange,
     setContentInput: inputState.setContentInput,
+    setDateInput: inputState.setDateInput,
     setShowForm: visibilityState.setShowForm,
     setTitleInput: inputState.setTitleInput,
   };

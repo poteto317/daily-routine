@@ -27,12 +27,14 @@ describe("useJournalPageFormState", () => {
     jest.clearAllMocks();
   });
 
-  it("input/visibility/action hook を compose する", () => {
+  it("input/visibility/action hook と UI 用ハンドラを compose する", () => {
     const inputState = {
       titleInput: "",
       contentInput: "",
+      dateInput: null,
       setTitleInput: jest.fn(),
       setContentInput: jest.fn(),
+      setDateInput: jest.fn(),
     };
     const visibilityState = {
       showForm: false,
@@ -48,44 +50,27 @@ describe("useJournalPageFormState", () => {
       visibilityState,
     );
     (useJournalPageFormActions as jest.Mock).mockReturnValue(actions);
-    const resultState = {
-      contentInput: "",
-      showForm: false,
-      titleInput: "",
-      editingEntry: null,
-      setEditingEntry: jest.fn(),
-      handleCancelForm: actions.handleCancelForm,
-      openForm: actions.openForm,
-      openEditForm: actions.openEditForm,
-      setContentInput: inputState.setContentInput,
-      setShowForm: visibilityState.setShowForm,
-      setTitleInput: inputState.setTitleInput,
-    };
+    const resultState = { composed: true };
     (createJournalPageFormStateResult as jest.Mock).mockReturnValue(
       resultState,
     );
+    const initialState = {
+      titleInput: "",
+      contentInput: "",
+      dateInput: null,
+      showForm: false,
+    };
 
-    const { result } = renderHook(() =>
-      useJournalPageFormState({
-        titleInput: "",
-        contentInput: "",
-        showForm: false,
-      }),
+    const { result } = renderHook(() => useJournalPageFormState(initialState));
+
+    expect(useJournalPageInputState).toHaveBeenCalledWith(initialState);
+    expect(useJournalPageFormVisibilityState).toHaveBeenCalledWith(
+      initialState,
     );
-
-    expect(useJournalPageInputState).toHaveBeenCalledWith({
-      titleInput: "",
-      contentInput: "",
-      showForm: false,
-    });
-    expect(useJournalPageFormVisibilityState).toHaveBeenCalledWith({
-      titleInput: "",
-      contentInput: "",
-      showForm: false,
-    });
     expect(useJournalPageFormActions).toHaveBeenCalledWith({
       setTitleInput: inputState.setTitleInput,
       setContentInput: inputState.setContentInput,
+      setDateInput: inputState.setDateInput,
       setShowForm: visibilityState.setShowForm,
       setEditingEntry: expect.any(Function),
     });
@@ -97,7 +82,24 @@ describe("useJournalPageFormState", () => {
       handleCancelForm: actions.handleCancelForm,
       openForm: actions.openForm,
       openEditForm: actions.openEditForm,
+      handleTitleChange: expect.any(Function),
+      handleContentChange: expect.any(Function),
+      handleDateChange: expect.any(Function),
     });
     expect(result.current).toBe(resultState);
+
+    // UI 用ハンドラが入力 state のセッターにつながっている
+    const args = (createJournalPageFormStateResult as jest.Mock).mock
+      .calls[0][0] as {
+      handleTitleChange: (value: string) => void;
+      handleContentChange: (value: string) => void;
+      handleDateChange: (value: string) => void;
+    };
+    args.handleTitleChange("タイトル");
+    args.handleContentChange("本文");
+    args.handleDateChange("2026-03-01");
+    expect(inputState.setTitleInput).toHaveBeenCalledWith("タイトル");
+    expect(inputState.setContentInput).toHaveBeenCalledWith("本文");
+    expect(inputState.setDateInput).toHaveBeenCalledWith("2026-03-01");
   });
 });

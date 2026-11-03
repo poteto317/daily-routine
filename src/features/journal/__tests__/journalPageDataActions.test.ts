@@ -38,6 +38,7 @@ describe("journalPageDataActions", () => {
       todayEntry: entryA,
       titleInput: "",
       contentInput: "",
+      dateInput: null,
       recentEntries: [entryB, entryA],
     });
     expect(getRecentJournalEntries).toHaveBeenCalledWith({
@@ -45,10 +46,20 @@ describe("journalPageDataActions", () => {
     });
   });
 
-  it("cancel 時のフォーム入力を空に戻す", () => {
+  it("page data の入力欄は cancel と同じリセットの値になる（リセットの規則が 1 か所）", () => {
+    const pageData = createJournalPageData(null, {});
+    expect({
+      titleInput: pageData.titleInput,
+      contentInput: pageData.contentInput,
+      dateInput: pageData.dateInput,
+    }).toEqual(resetJournalFormInputs());
+  });
+
+  it("cancel 時のフォーム入力を空に戻し、日付を未操作（null）に戻す", () => {
     expect(resetJournalFormInputs()).toEqual({
       titleInput: "",
       contentInput: "",
+      dateInput: null,
     });
   });
 });
