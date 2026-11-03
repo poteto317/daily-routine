@@ -16,7 +16,7 @@ import {
   listEntries,
   readHistory,
   removeEntry,
-  replaceEntry,
+  replaceOrMoveEntry,
   toJournalChanges,
 } from "./journalStore";
 
@@ -40,15 +40,14 @@ const update: Operation = ({ data, id, body, now }) => {
   const found = findEntry(history, id);
   if (!found) throw notFound("ジャーナル");
 
-  const updated = applyJournalPatch(
-    found.entry,
-    parseJournalPatchInput(input),
-    now,
-  );
+  const patch = parseJournalPatchInput(input);
+  const updated = applyJournalPatch(found.entry, patch, now);
   assertEntryNotBlank(updated.title, updated.content);
   return okOutcome(
     { entry: updated },
-    toJournalChanges(replaceEntry(history, found.key, updated)),
+    toJournalChanges(
+      replaceOrMoveEntry(history, found.key, updated, patch.date),
+    ),
   );
 };
 

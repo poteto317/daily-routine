@@ -103,4 +103,41 @@ describe("parseJournalPatchInput", () => {
       "invalid_field",
     );
   });
+
+  it("date を指定すると、作成と同じ検証をして返す（date だけでも empty_patch にしない）", () => {
+    expect(parseJournalPatchInput({ date: "2026-10-02" })).toEqual({
+      date: "2026-10-02",
+    });
+    expect(parseJournalPatchInput({ date: "2026-10-02", title: "題" })).toEqual(
+      {
+        date: "2026-10-02",
+        title: "題",
+      },
+    );
+  });
+
+  it("閏日や 100 年未満の date も、実在すれば通す", () => {
+    expect(parseJournalPatchInput({ date: "2028-02-29" })).toEqual({
+      date: "2028-02-29",
+    });
+    expect(parseJournalPatchInput({ date: "0050-01-01" })).toEqual({
+      date: "0050-01-01",
+    });
+  });
+
+  it("date の形式不正・実在しない日付・文字列以外は 400 invalid_field", () => {
+    for (const date of [
+      "2026/10/02",
+      "2026-02-30",
+      "2026-04-31",
+      "",
+      20261002,
+    ]) {
+      expectApiError(
+        () => parseJournalPatchInput({ date }),
+        400,
+        "invalid_field",
+      );
+    }
+  });
 });

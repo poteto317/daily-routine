@@ -18,7 +18,11 @@ export const createJournalEntry = (
   };
 };
 
-/** 既存のジャーナルへパッチを適用し、updatedAt を現在時刻にする（createdAt と date は保つ） */
+/**
+ * 既存のジャーナルへパッチを適用し、updatedAt を現在時刻にする。
+ * createdAt は保つ。date はパッチに含まれるときだけ変える
+ * （バケットの移動は journalStore の replaceOrMoveEntry が行う）。
+ */
 export const applyJournalPatch = (
   existing: JournalEntry,
   patch: JournalPatchInput,

@@ -122,13 +122,8 @@ describe("journalOperations.update", () => {
     });
   });
 
-  it("date の変更は未対応(400)、存在しない ID は 404、空パッチは 400", () => {
+  it("存在しない ID は 404、空パッチは 400、指定できないキーは 400", () => {
     const data = { journalHistory: { "2026-10-01": [entry] } };
-    expect(() =>
-      journalOperations.update(
-        context({ data, id: "journal-1", body: { date: "2026-10-02" } }),
-      ),
-    ).toThrow(expect.objectContaining({ code: "unknown_field" }));
     expect(() =>
       journalOperations.update(
         context({ data, id: "nope", body: { title: "a" } }),
@@ -137,9 +132,14 @@ describe("journalOperations.update", () => {
     expect(() =>
       journalOperations.update(context({ data, id: "journal-1", body: {} })),
     ).toThrow(expect.objectContaining({ code: "empty_patch" }));
+    expect(() =>
+      journalOperations.update(
+        context({ data, id: "journal-1", body: { createdAt: "x" } }),
+      ),
+    ).toThrow(expect.objectContaining({ code: "unknown_field" }));
   });
 
-  it("バケットキーと entry.date が食い違っていてもキーを使って更新できる", () => {
+  it("バケットキーと entry.date が食い違うデータに date を含まない PATCH をしても、バケットを移さずキーを使って更新する", () => {
     const mismatched = { ...entry, date: "2026-09-30" };
     const outcome = journalOperations.update(
       context({
@@ -172,6 +172,140 @@ describe("journalOperations.update", () => {
       context({ data, id: "journal-1", body: { title: "" } }),
     );
     expect((outcome.body as { entry: { title: string } }).entry.title).toBe("");
+  });
+
+  it("date を変えると旧バケットから除いて新しい日付の末尾へ移し、空になった旧キーは消す（date だけの PATCH）", () => {
+    const destination = { ...entry, id: "journal-2", date: "2026-09-20" };
+    const outcome = journalOperations.update(
+      context({
+        data: {
+          journalHistory: {
+            "2026-10-01": [entry],
+            "2026-09-20": [destination],
+          },
+        },
+        id: "journal-1",
+        body: { date: "2026-09-20" },
+      }),
+    );
+    const moved = {
+      ...entry,
+      date: "2026-09-20",
+      updatedAt: NOW.toISOString(),
+    };
+    expect(outcome.status).toBe(200);
+    expect(outcome.body).toEqual({ entry: moved });
+    expect(outcome.changes).toEqual({
+      journalHistory: { "2026-09-20": [destination, moved] },
+    });
+  });
+
+  it("旧バケットに他のエントリがあれば残す", () => {
+    const sameDay = { ...entry, id: "journal-3" };
+    const outcome = journalOperations.update(
+      context({
+        data: { journalHistory: { "2026-10-01": [entry, sameDay] } },
+        id: "journal-1",
+        body: { date: "2026-09-28" },
+      }),
+    );
+    expect(outcome.changes).toEqual({
+      journalHistory: {
+        "2026-10-01": [sameDay],
+        "2026-09-28": [
+          { ...entry, date: "2026-09-28", updatedAt: NOW.toISOString() },
+        ],
+      },
+    });
+  });
+
+  it("date と title / content を同時に変えられる", () => {
+    const outcome = journalOperations.update(
+      context({
+        data: { journalHistory: { "2026-10-01": [entry] } },
+        id: "journal-1",
+        body: { date: "2026-09-30", title: "夜", content: "読書" },
+      }),
+    );
+    expect(outcome.changes).toEqual({
+      journalHistory: {
+        "2026-09-30": [
+          {
+            ...entry,
+            date: "2026-09-30",
+            title: "夜",
+            content: "読書",
+            updatedAt: NOW.toISOString(),
+          },
+        ],
+      },
+    });
+  });
+
+  it("未来の date も受け付ける（アプリは未来を拒否するが、API は作成と同じ検証にそろえる）", () => {
+    const outcome = journalOperations.update(
+      context({
+        data: { journalHistory: { "2026-10-01": [entry] } },
+        id: "journal-1",
+        body: { date: "2099-12-31" },
+      }),
+    );
+    expect((outcome.body as { entry: { date: string } }).entry.date).toBe(
+      "2099-12-31",
+    );
+  });
+
+  it("date の形式不正・実在しない日付は 400 invalid_field で、履歴を変えない", () => {
+    const data = { journalHistory: { "2026-10-01": [entry] } };
+    for (const date of ["2026/10/02", "2026-02-30"]) {
+      expect(() =>
+        journalOperations.update(
+          context({ data, id: "journal-1", body: { date } }),
+        ),
+      ).toThrow(
+        expect.objectContaining({ status: 400, code: "invalid_field" }),
+      );
+    }
+    expect(data.journalHistory["2026-10-01"]).toEqual([entry]);
+  });
+
+  it("キーと entry.date が食い違うデータで date がキーと同じなら、移さずに配列の位置のまま entry.date を直す", () => {
+    const mismatched = { ...entry, date: "2026-09-30" };
+    const other = { ...entry, id: "journal-4" };
+    const outcome = journalOperations.update(
+      context({
+        data: { journalHistory: { "2026-10-01": [mismatched, other] } },
+        id: "journal-1",
+        body: { date: "2026-10-01" },
+      }),
+    );
+    expect(outcome.changes).toEqual({
+      journalHistory: {
+        "2026-10-01": [
+          { ...mismatched, date: "2026-10-01", updatedAt: NOW.toISOString() },
+          other,
+        ],
+      },
+    });
+  });
+
+  it("今と同じ日付を指定した PATCH は、配列の中の位置を変えずに置き換える", () => {
+    const other = { ...entry, id: "journal-4" };
+    const outcome = journalOperations.update(
+      context({
+        data: { journalHistory: { "2026-10-01": [entry, other] } },
+        id: "journal-1",
+        body: { date: "2026-10-01", title: "夜" },
+      }),
+    );
+    expect(outcome.changes).toEqual({
+      journalHistory: {
+        "2026-10-01": [
+          { ...entry, title: "夜", updatedAt: NOW.toISOString() },
+          other,
+        ],
+      },
+    });
   });
 });
 
