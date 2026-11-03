@@ -9,7 +9,7 @@ const createInitialValues = (): WorkoutRecordFormValues => ({
   exerciseId: "",
   weightKg: "",
   reps: "",
-  sets: "",
+  sets: "1",
   caloriesBurned: "",
 });
 

@@ -3,7 +3,7 @@ import { getTodayString } from "@/lib/storage/core";
 import { useWorkoutRecordFormValuesState } from "../page/useWorkoutRecordFormValuesState";
 
 describe("useWorkoutRecordFormValuesState", () => {
-  it("初期値はstrengthラベル・今日の日付・空の入力", () => {
+  it("初期値はstrengthラベル・今日の日付・setsは1でその他の入力は空", () => {
     const { result } = renderHook(() => useWorkoutRecordFormValuesState());
 
     expect(result.current.values).toEqual({
@@ -12,7 +12,7 @@ describe("useWorkoutRecordFormValuesState", () => {
       exerciseId: "",
       weightKg: "",
       reps: "",
-      sets: "",
+      sets: "1",
       caloriesBurned: "",
     });
   });
@@ -48,6 +48,7 @@ describe("useWorkoutRecordFormValuesState", () => {
     act(() => {
       result.current.setExerciseId("ベンチプレス");
       result.current.setWeightKg("60");
+      result.current.setSets("3");
       result.current.setDate("2026-01-01");
     });
 
@@ -55,6 +56,7 @@ describe("useWorkoutRecordFormValuesState", () => {
 
     expect(result.current.values.exerciseId).toBe("");
     expect(result.current.values.weightKg).toBe("");
+    expect(result.current.values.sets).toBe("1");
     expect(result.current.values.date).toBe("2026-01-01");
   });
 });

@@ -18,7 +18,7 @@ const baseFormValues = {
   exerciseId: "",
   weightKg: "",
   reps: "",
-  sets: "",
+  sets: "1",
   caloriesBurned: "",
 };
 
