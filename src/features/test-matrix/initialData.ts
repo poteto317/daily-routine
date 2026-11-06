@@ -622,6 +622,13 @@ export const buildInitialData = (): TestCategory[] => [
         sp: "unchecked",
         note: "",
       },
+      {
+        id: "8-15",
+        label: "未入力の日の表示（今月の過ぎた日）",
+        pc: "unchecked",
+        sp: "unchecked",
+        note: "",
+      },
     ],
   },
   {
