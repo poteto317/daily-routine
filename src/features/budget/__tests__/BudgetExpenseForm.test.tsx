@@ -15,6 +15,7 @@ const renderForm = (overrides: Record<string, unknown> = {}) => {
       expenseAmount=""
       expenseCategoryId=""
       expenseDate="2026-03-07"
+      scrollRequestKey={0}
       {...handlers}
       {...overrides}
     />,
@@ -22,7 +23,112 @@ const renderForm = (overrides: Record<string, unknown> = {}) => {
   return handlers;
 };
 
+const renderFormWithRerender = () => {
+  const props = {
+    categories: [],
+    expenseAmount: "",
+    expenseCategoryId: "",
+    expenseDate: "2026-03-07",
+    scrollRequestKey: 0,
+    onAdd: jest.fn(),
+    onAmountChange: jest.fn(),
+    onCancel: jest.fn(),
+    onCategoryIdChange: jest.fn(),
+    onDateChange: jest.fn(),
+  };
+  const { rerender } = render(<BudgetExpenseForm {...props} />);
+  return { rerender, props };
+};
+
 describe("BudgetExpenseForm", () => {
+  describe("開いたときのスクロール", () => {
+    // jsdom は scrollIntoView を実装していないため、このブロックの中だけ差し替える
+    const originalScrollIntoView = Element.prototype.scrollIntoView;
+    let scrollIntoView: jest.Mock;
+
+    beforeEach(() => {
+      scrollIntoView = jest.fn();
+      Element.prototype.scrollIntoView = scrollIntoView;
+    });
+
+    afterEach(() => {
+      Element.prototype.scrollIntoView = originalScrollIntoView;
+    });
+
+    it("マウント時に 1 回、フォームの外枠を block: nearest で見える位置へスクロールする", () => {
+      renderForm();
+
+      expect(scrollIntoView).toHaveBeenCalledTimes(1);
+      expect(scrollIntoView).toHaveBeenCalledWith({ block: "nearest" });
+      const scrolledElement = scrollIntoView.mock.contexts[0] as HTMLElement;
+      expect(scrolledElement).toContainElement(
+        screen.getByRole("heading", { name: "支出を記録" }),
+      );
+      expect(scrolledElement).toContainElement(
+        screen.getByRole("button", { name: "追加" }),
+      );
+    });
+
+    it("日付が同じ再描画（金額・カテゴリの入力など）では、スクロールは増えない", () => {
+      const { rerender, props } = renderFormWithRerender();
+
+      rerender(<BudgetExpenseForm {...props} expenseAmount="1200" />);
+      rerender(
+        <BudgetExpenseForm
+          {...props}
+          expenseAmount="1200"
+          expenseCategoryId="c1"
+        />,
+      );
+
+      expect(scrollIntoView).toHaveBeenCalledTimes(1);
+    });
+
+    it("開く操作（scrollRequestKey の変化）があると、もう一度 block: nearest で見える位置へスクロールする", () => {
+      const { rerender, props } = renderFormWithRerender();
+      expect(scrollIntoView).toHaveBeenCalledTimes(1);
+
+      rerender(<BudgetExpenseForm {...props} scrollRequestKey={1} />);
+
+      expect(scrollIntoView).toHaveBeenCalledTimes(2);
+      expect(scrollIntoView).toHaveBeenLastCalledWith({ block: "nearest" });
+      const scrolledElement = scrollIntoView.mock.contexts[1] as HTMLElement;
+      expect(scrolledElement).toContainElement(
+        screen.getByRole("heading", { name: "支出を記録" }),
+      );
+
+      // scrollRequestKey が変わらない再描画では増えない
+      rerender(
+        <BudgetExpenseForm
+          {...props}
+          scrollRequestKey={1}
+          expenseAmount="800"
+        />,
+      );
+      expect(scrollIntoView).toHaveBeenCalledTimes(2);
+    });
+
+    it("同じ日付のまま scrollRequestKey が変わっても（同じ日付のボタンの押し直し）、スクロールする", () => {
+      const { rerender, props } = renderFormWithRerender();
+      expect(scrollIntoView).toHaveBeenCalledTimes(1);
+
+      rerender(<BudgetExpenseForm {...props} scrollRequestKey={1} />);
+      rerender(<BudgetExpenseForm {...props} scrollRequestKey={2} />);
+
+      expect(scrollIntoView).toHaveBeenCalledTimes(3);
+    });
+
+    it("expenseDate だけが変わる再描画（月の移動・日付欄の手動変更）では、スクロールしない", () => {
+      const { rerender, props } = renderFormWithRerender();
+      expect(scrollIntoView).toHaveBeenCalledTimes(1);
+
+      rerender(<BudgetExpenseForm {...props} expenseDate="2026-03-05" />);
+      rerender(<BudgetExpenseForm {...props} expenseDate="2026-04-01" />);
+
+      expect(scrollIntoView).toHaveBeenCalledTimes(1);
+    });
+  });
+
   it("0 円の入力の案内（今日より前の日付のみ、残り日数に含めない）を表示する", () => {
     renderForm();
 
@@ -100,6 +206,7 @@ describe("BudgetExpenseForm", () => {
           expenseAmount="100"
           expenseCategoryId=""
           expenseDate="2026-03-07"
+          scrollRequestKey={0}
           onAdd={jest.fn()}
           onAmountChange={jest.fn()}
           onCancel={jest.fn()}

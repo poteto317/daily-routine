@@ -1,4 +1,4 @@
-import { renderHook } from "@testing-library/react";
+import { act, renderHook } from "@testing-library/react";
 
 jest.mock("../budgetPageActionBindings", () => ({
   createBudgetPageActionBindings: jest.fn(),
@@ -28,6 +28,10 @@ jest.mock("../useBudgetCategoriesState", () => ({
   useBudgetCategoriesState: jest.fn(),
 }));
 
+jest.mock("../useBudgetMissingExpenseDates", () => ({
+  useBudgetMissingExpenseDates: jest.fn(),
+}));
+
 import { createBudgetPageActionBindings } from "../budgetPageActionBindings";
 import { createBudgetPageInputHandlers } from "../budgetPageInputHandlers";
 import { createBudgetPageStateResult } from "../budgetPageStateResult";
@@ -35,6 +39,7 @@ import { useBudgetPageActionHandlers } from "../useBudgetPageActionHandlers";
 import { useBudgetPageFormState } from "../useBudgetPageFormState";
 import { useBudgetMonthAndMetricsState } from "../useBudgetMonthAndMetricsState";
 import { useBudgetCategoriesState } from "../useBudgetCategoriesState";
+import { useBudgetMissingExpenseDates } from "../useBudgetMissingExpenseDates";
 import { useBudgetPageState } from "../useBudgetPageState";
 
 const monthlyAllowance = {
@@ -110,6 +115,10 @@ describe("useBudgetPageState composition", () => {
         { id: "cat-1", name: "食料品", createdAt: "2026-05-01T00:00:00.000Z" },
       ],
     });
+    (useBudgetMissingExpenseDates as jest.Mock).mockReturnValue([
+      "2026-03-01",
+      "2026-03-02",
+    ]);
   });
 
   it("monthAndMetrics/form/actions/result を compose する", () => {
@@ -178,5 +187,68 @@ describe("useBudgetPageState composition", () => {
     expect(navigate).toHaveBeenCalledWith("budget-category-management");
     navigateToSummary();
     expect(navigate).toHaveBeenCalledWith("budget-summary");
+  });
+
+  it("表示中の月と支出を未入力の日のフックへ渡し、結果と日付つきで開く操作を公開する", () => {
+    renderHook(() => useBudgetPageState({ navigate: jest.fn() }));
+
+    const { monthState } = (useBudgetMonthAndMetricsState as jest.Mock).mock
+      .results[0].value;
+    const hookArgs = (useBudgetMissingExpenseDates as jest.Mock).mock
+      .calls[0][0];
+    expect(hookArgs.currentDate).toBe(monthState.currentDate);
+    expect(hookArgs.expenses).toBe(monthState.expenses);
+
+    const resultArgs = (createBudgetPageStateResult as jest.Mock).mock
+      .calls[0][0];
+    expect(resultArgs.missingExpenseDates).toBe(
+      (useBudgetMissingExpenseDates as jest.Mock).mock.results[0].value,
+    );
+    expect(resultArgs.startAddExpenseOnDate).toEqual(expect.any(Function));
+    expect(resultArgs.formOpenRequest).toBe(0);
+  });
+
+  it("startAddExpenseOnDate は日付を入れてから追加フォームを開く", () => {
+    renderHook(() => useBudgetPageState({ navigate: jest.fn() }));
+
+    const { monthState } = (useBudgetMonthAndMetricsState as jest.Mock).mock
+      .results[0].value;
+    const { openExpenseForm } = (useBudgetPageFormState as jest.Mock).mock
+      .results[0].value;
+    const { startAddExpenseOnDate } = (createBudgetPageStateResult as jest.Mock)
+      .mock.calls[0][0];
+
+    act(() => {
+      startAddExpenseOnDate("2026-03-02");
+    });
+
+    expect(monthState.setExpenseDate).toHaveBeenCalledWith("2026-03-02");
+    expect(openExpenseForm).toHaveBeenCalledTimes(1);
+  });
+
+  it("openExpenseForm（「➕」）は、既定の日付に戻してから追加フォームを開く", () => {
+    jest.useFakeTimers().setSystemTime(new Date("2026-03-07T12:00:00+09:00"));
+    try {
+      renderHook(() => useBudgetPageState({ navigate: jest.fn() }));
+
+      const { monthState } = (useBudgetMonthAndMetricsState as jest.Mock).mock
+        .results[0].value;
+      const { openExpenseForm } = (useBudgetPageFormState as jest.Mock).mock
+        .results[0].value;
+      const resultArgs = (createBudgetPageStateResult as jest.Mock).mock
+        .calls[0][0];
+
+      act(() => {
+        resultArgs.openExpenseForm();
+      });
+
+      expect(monthState.setExpenseDate).toHaveBeenCalledWith("2026-03-07");
+      expect(openExpenseForm).toHaveBeenCalledTimes(1);
+      expect(
+        monthState.setExpenseDate.mock.invocationCallOrder[0],
+      ).toBeLessThan(openExpenseForm.mock.invocationCallOrder[0]);
+    } finally {
+      jest.useRealTimers();
+    }
   });
 });

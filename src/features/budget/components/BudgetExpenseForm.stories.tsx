@@ -16,6 +16,7 @@ const meta = {
   },
   args: {
     categories,
+    scrollRequestKey: 0,
     onAdd: fn(),
     onAmountChange: fn(),
     onCancel: fn(),

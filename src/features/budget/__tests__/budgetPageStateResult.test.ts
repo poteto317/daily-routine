@@ -34,7 +34,9 @@ describe("budgetPageStateResult", () => {
     const navigateToCategoryManagement = jest.fn();
     const navigateToSummary = jest.fn();
     const openExpenseForm = jest.fn();
+    const startAddExpenseOnDate = jest.fn();
     const startEditExpense = jest.fn();
+    const missingExpenseDates = ["2026-03-01", "2026-03-02"];
     const cancelEditExpense = jest.fn();
 
     expect(
@@ -64,9 +66,12 @@ describe("budgetPageStateResult", () => {
         handleEditExpenseDateChange,
         handleEditExpenseCategoryIdChange,
         isCurrentMonth: true,
+        missingExpenseDates,
         navigateToCategoryManagement,
         navigateToSummary,
         openExpenseForm,
+        startAddExpenseOnDate,
+        formOpenRequest: 4,
         startEditExpense,
         cancelEditExpense,
         showExpenseForm: false,
@@ -98,9 +103,12 @@ describe("budgetPageStateResult", () => {
       handleEditExpenseDateChange,
       handleEditExpenseCategoryIdChange,
       isCurrentMonth: true,
+      missingExpenseDates,
       navigateToCategoryManagement,
       navigateToSummary,
       openExpenseForm,
+      startAddExpenseOnDate,
+      formOpenRequest: 4,
       startEditExpense,
       cancelEditExpense,
       showExpenseForm: false,
