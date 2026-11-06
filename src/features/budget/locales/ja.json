@@ -31,6 +31,11 @@
     "addLabel": "追加",
     "cancelLabel": "キャンセル"
   },
+  "missingDays": {
+    "titleTemplate": "📝 未入力の日（{count}日）",
+    "description": "今月の今日より前の日で、支出の記録が無い日です。日付を押すと、その日の支出を記録できます。お金を使わなかった日は 0 円で記録すると、ここに出なくなります。",
+    "selectDateLabel": "{date}の支出を記録"
+  },
   "expenseList": {
     "title": "📋 支出一覧",
     "empty": "まだ支出の記録がありません",
