@@ -1,11 +1,20 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { TodoCategorySortableList } from "../TodoCategorySortableList";
+import { restrictToSortableListBounds } from "../restrictToSortableListBounds";
 import type { TodoCategorySortableListProps } from "../TodoCategorySortableList";
 import type { TodoCategory } from "../types";
 
 // ---------- dnd-kit モック（TodoListSortableItems.test.tsxと同じ方針） ----------
+let mockDndContextModifiers: unknown;
+
 jest.mock("@dnd-kit/core", () => ({
-  DndContext: ({ children }: React.PropsWithChildren) => <>{children}</>,
+  DndContext: ({
+    children,
+    modifiers,
+  }: React.PropsWithChildren<{ modifiers?: unknown }>) => {
+    mockDndContextModifiers = modifiers;
+    return <>{children}</>;
+  },
   closestCenter: jest.fn(),
 }));
 jest.mock("@dnd-kit/sortable", () => ({
@@ -128,5 +137,20 @@ describe("TodoCategorySortableList", () => {
     );
     expect(screen.getByText("🏷️ 仕事")).toBeInTheDocument();
     expect(screen.queryByText("🏷️ プライベート")).not.toBeInTheDocument();
+  });
+
+  it("DndContext に、行の中心を一覧の枠の中に制限する modifier を渡す（下端までのドラッグでページが伸び続けるのを防ぐ）", () => {
+    render(<TodoCategorySortableList {...defaultProps} />);
+
+    expect(mockDndContextModifiers).toEqual([restrictToSortableListBounds]);
+  });
+
+  it("再描画しても modifiers は同じ参照のまま渡す", () => {
+    const { rerender } = render(<TodoCategorySortableList {...defaultProps} />);
+    const first = mockDndContextModifiers;
+    expect(first).toEqual([restrictToSortableListBounds]);
+    rerender(<TodoCategorySortableList {...defaultProps} />);
+
+    expect(mockDndContextModifiers).toBe(first);
   });
 });
