@@ -1,12 +1,15 @@
+import { useState } from "react";
 import type { Expense } from "@/types/routine";
 import { createBudgetPageActionBindings } from "./budgetPageActionBindings";
 import { createBudgetPageInputHandlers } from "./budgetPageInputHandlers";
 import { createBudgetPageStateResult } from "./budgetPageStateResult";
 import { useBudgetCategoriesState } from "./useBudgetCategoriesState";
 import { useBudgetExpenseEditState } from "./useBudgetExpenseEditState";
+import { useBudgetMissingExpenseDates } from "./useBudgetMissingExpenseDates";
 import { useBudgetMonthAndMetricsState } from "./useBudgetMonthAndMetricsState";
 import { useBudgetPageActionHandlers } from "./useBudgetPageActionHandlers";
 import { useBudgetPageFormState } from "./useBudgetPageFormState";
+import { getDefaultExpenseDate } from "./utils/date";
 
 type UseBudgetPageStateParams = {
   navigate: (page: "budget-category-management" | "budget-summary") => void;
@@ -25,6 +28,12 @@ export const useBudgetPageState = ({ navigate }: UseBudgetPageStateParams) => {
     showExpenseForm,
   } = useBudgetPageFormState({ initialState });
   const expenseEdit = useBudgetExpenseEditState();
+  // フォームを開く操作（日付のボタン・「➕」）の回数。フォームのスクロールの合図
+  const [formOpenRequest, setFormOpenRequest] = useState(0);
+  const missingExpenseDates = useBudgetMissingExpenseDates({
+    currentDate: monthState.currentDate,
+    expenses: monthState.expenses,
+  });
 
   const { handleAddExpense, handleUpdateExpense, handleDeleteExpense } =
     useBudgetPageActionHandlers(
@@ -62,6 +71,18 @@ export const useBudgetPageState = ({ navigate }: UseBudgetPageStateParams) => {
     expenseEdit.cancelEditExpense();
     openExpenseForm();
   };
+  // 「➕」は直前の日付を引き継がず既定の日付へ戻す。今日はハンドラ内で取る（描画時だと固定される）
+  const startAddExpenseOnDefaultDate = () => {
+    monthState.setExpenseDate(getDefaultExpenseDate(monthState.currentDate));
+    startAddExpense();
+    setFormOpenRequest((n) => n + 1);
+  };
+  // 未入力の日のボタンから、その日付で開く。入力中の金額・カテゴリは残す
+  const startAddExpenseOnDate = (date: string) => {
+    monthState.setExpenseDate(date);
+    startAddExpense();
+    setFormOpenRequest((n) => n + 1);
+  };
 
   return createBudgetPageStateResult({
     categories,
@@ -76,6 +97,7 @@ export const useBudgetPageState = ({ navigate }: UseBudgetPageStateParams) => {
     expenseDate: monthState.expenseDate,
     expenseCategoryId,
     expenses: monthState.expenses,
+    formOpenRequest,
     goToCurrentMonth: monthState.goToCurrentMonth,
     goToNextMonth: monthState.goToNextMonth,
     goToPreviousMonth: monthState.goToPreviousMonth,
@@ -83,9 +105,10 @@ export const useBudgetPageState = ({ navigate }: UseBudgetPageStateParams) => {
     handleUpdateExpense,
     handleDeleteExpense,
     isCurrentMonth: metrics.isCurrentMonth,
+    missingExpenseDates,
     navigateToCategoryManagement: () => navigate("budget-category-management"),
     navigateToSummary: () => navigate("budget-summary"),
-    openExpenseForm: startAddExpense,
+    openExpenseForm: startAddExpenseOnDefaultDate,
     handleExpenseAmountChange: inputHandlers.handleExpenseAmountChange,
     handleExpenseDateChange: inputHandlers.handleExpenseDateChange,
     handleExpenseCategoryIdChange: inputHandlers.handleExpenseCategoryIdChange,
@@ -93,6 +116,7 @@ export const useBudgetPageState = ({ navigate }: UseBudgetPageStateParams) => {
     handleEditExpenseDateChange: inputHandlers.handleEditExpenseDateChange,
     handleEditExpenseCategoryIdChange:
       inputHandlers.handleEditExpenseCategoryIdChange,
+    startAddExpenseOnDate,
     startEditExpense,
     cancelEditExpense: expenseEdit.cancelEditExpense,
     showExpenseForm,

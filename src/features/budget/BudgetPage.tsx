@@ -5,6 +5,7 @@ import { BudgetExpenseForm } from "@/features/budget/components/BudgetExpenseFor
 import { BudgetExpenseList } from "@/features/budget/components/BudgetExpenseList";
 import { BudgetMonthNavigation } from "@/features/budget/components/BudgetMonthNavigation";
 import { BudgetDailySummaryCards } from "@/features/budget/components/BudgetDailySummaryCards";
+import { BudgetMissingExpenseDays } from "@/features/budget/components/BudgetMissingExpenseDays";
 import { useBudgetPageState } from "@/features/budget/useBudgetPageState";
 import { useNavigationContext } from "@/features/routine/pages/NavigationContext";
 import budgetTexts from "@/features/budget/locales/ja.json";
@@ -50,6 +51,10 @@ export const BudgetPage = () => {
             isCurrentMonth={state.isCurrentMonth}
             todayExpense={state.todayExpense}
           />
+          <BudgetMissingExpenseDays
+            dates={state.missingExpenseDates}
+            onSelectDate={state.startAddExpenseOnDate}
+          />
           {!state.showExpenseForm && (
             <button
               onClick={state.openExpenseForm}
@@ -64,6 +69,7 @@ export const BudgetPage = () => {
               expenseAmount={state.expenseAmount}
               expenseCategoryId={state.expenseCategoryId}
               expenseDate={state.expenseDate}
+              scrollRequestKey={state.formOpenRequest}
               onAdd={state.handleAddExpense}
               onAmountChange={state.handleExpenseAmountChange}
               onCancel={state.closeExpenseForm}

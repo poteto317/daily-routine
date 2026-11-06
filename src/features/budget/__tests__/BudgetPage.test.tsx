@@ -64,9 +64,12 @@ const createState = (overrides: Record<string, unknown> = {}) => ({
   startEditExpense: jest.fn(),
   cancelEditExpense: jest.fn(),
   isCurrentMonth: true,
+  missingExpenseDates: [],
   navigateToCategoryManagement: jest.fn(),
   navigateToSummary: jest.fn(),
   openExpenseForm: jest.fn(),
+  startAddExpenseOnDate: jest.fn(),
+  formOpenRequest: 0,
   showExpenseForm: false,
   todayExpense: 3000,
   ...overrides,
@@ -261,5 +264,110 @@ describe("BudgetPage", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "キャンセル" }));
     expect(state.cancelEditExpense).toHaveBeenCalledTimes(1);
+  });
+
+  describe("未入力の日", () => {
+    it("state の未入力の日を「➕」より前の欄に出し、日付を押すと startAddExpenseOnDate をその日付で呼ぶ", () => {
+      const state = createState({
+        missingExpenseDates: ["2026-03-02", "2026-03-04"],
+      });
+      mockUseBudgetPageState.mockReturnValue(state as never);
+
+      render(<BudgetPage />);
+
+      const region = screen.getByRole("region", {
+        name: "📝 未入力の日（2日）",
+      });
+      expect(
+        region.compareDocumentPosition(screen.getByText("➕")) &
+          Node.DOCUMENT_POSITION_FOLLOWING,
+      ).toBeTruthy();
+
+      fireEvent.click(
+        screen.getByRole("button", { name: "3月4日(水)の支出を記録" }),
+      );
+
+      expect(state.startAddExpenseOnDate).toHaveBeenCalledTimes(1);
+      expect(state.startAddExpenseOnDate).toHaveBeenCalledWith("2026-03-04");
+    });
+
+    it("未入力の日が無ければ欄を出さない", () => {
+      mockUseBudgetPageState.mockReturnValue(
+        createState({ missingExpenseDates: [] }) as never,
+      );
+
+      render(<BudgetPage />);
+
+      expect(
+        screen.queryByRole("region", { name: /未入力の日/ }),
+      ).not.toBeInTheDocument();
+    });
+  });
+
+  describe("支出フォームを開いたときのスクロール", () => {
+    // jsdom は scrollIntoView を実装していないため、このブロックの中だけ差し替える
+    const originalScrollIntoView = Element.prototype.scrollIntoView;
+    let scrollIntoView: jest.Mock;
+
+    beforeEach(() => {
+      scrollIntoView = jest.fn();
+      Element.prototype.scrollIntoView = scrollIntoView;
+    });
+
+    afterEach(() => {
+      Element.prototype.scrollIntoView = originalScrollIntoView;
+    });
+
+    it("フォームを表示すると 1 回 block: nearest でスクロールし、再描画では増えない", () => {
+      const state = createState({ showExpenseForm: true });
+      mockUseBudgetPageState.mockReturnValue(state as never);
+
+      const { rerender } = render(<BudgetPage />);
+
+      expect(scrollIntoView).toHaveBeenCalledTimes(1);
+      expect(scrollIntoView).toHaveBeenCalledWith({ block: "nearest" });
+
+      mockUseBudgetPageState.mockReturnValue(
+        createState({ showExpenseForm: true, expenseAmount: "2000" }) as never,
+      );
+      rerender(<BudgetPage />);
+
+      expect(scrollIntoView).toHaveBeenCalledTimes(1);
+    });
+
+    it("state の formOpenRequest が変わると、BudgetExpenseForm へ渡してもう一度スクロールする", () => {
+      mockUseBudgetPageState.mockReturnValue(
+        createState({ showExpenseForm: true, formOpenRequest: 3 }) as never,
+      );
+      const { rerender } = render(<BudgetPage />);
+      expect(scrollIntoView).toHaveBeenCalledTimes(1);
+
+      // 日付だけが変わる（月の移動など）再描画ではスクロールしない
+      mockUseBudgetPageState.mockReturnValue(
+        createState({
+          showExpenseForm: true,
+          formOpenRequest: 3,
+          expenseDate: "2026-04-01",
+        }) as never,
+      );
+      rerender(<BudgetPage />);
+      expect(scrollIntoView).toHaveBeenCalledTimes(1);
+
+      mockUseBudgetPageState.mockReturnValue(
+        createState({ showExpenseForm: true, formOpenRequest: 4 }) as never,
+      );
+      rerender(<BudgetPage />);
+      expect(scrollIntoView).toHaveBeenCalledTimes(2);
+    });
+
+    it("フォームを閉じているときはスクロールしない", () => {
+      mockUseBudgetPageState.mockReturnValue(
+        createState({ showExpenseForm: false }) as never,
+      );
+
+      render(<BudgetPage />);
+
+      expect(scrollIntoView).not.toHaveBeenCalled();
+    });
   });
 });

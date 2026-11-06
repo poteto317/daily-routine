@@ -471,4 +471,248 @@ describe("useBudgetPageState", () => {
 
     expect(mockNavigate).toHaveBeenCalledWith("budget-summary");
   });
+
+  describe("未入力の日", () => {
+    it("今月の 1 日〜昨日のうち、支出の記録が無い日を返す。次月へ移動すると [] になる", () => {
+      const { result } = renderHook(() =>
+        useBudgetPageState({ navigate: mockNavigate }),
+      );
+
+      // 今日は 2026-03-07。3 日だけ記録がある
+      expect(result.current.missingExpenseDates).toEqual([
+        "2026-03-01",
+        "2026-03-02",
+        "2026-03-04",
+        "2026-03-05",
+        "2026-03-06",
+      ]);
+
+      act(() => {
+        result.current.goToNextMonth();
+      });
+
+      expect(result.current.missingExpenseDates).toEqual([]);
+    });
+
+    it("startAddExpenseOnDate で、その日付を入れて追加フォームを開く", () => {
+      const { result } = renderHook(() =>
+        useBudgetPageState({ navigate: mockNavigate }),
+      );
+
+      act(() => {
+        result.current.startAddExpenseOnDate("2026-03-02");
+      });
+
+      expect(result.current.showExpenseForm).toBe(true);
+      expect(result.current.expenseDate).toBe("2026-03-02");
+    });
+
+    it("編集中に startAddExpenseOnDate を呼ぶと、編集を閉じて追加フォームを開く", () => {
+      const { result } = renderHook(() =>
+        useBudgetPageState({ navigate: mockNavigate }),
+      );
+
+      act(() => {
+        result.current.startEditExpense({
+          id: "e-mar",
+          date: "2026-03-03",
+          amount: 1000,
+          createdAt: "2026-03-03T00:00:00.000Z",
+        });
+      });
+      act(() => {
+        result.current.startAddExpenseOnDate("2026-03-04");
+      });
+
+      expect(result.current.editingExpenseId).toBeNull();
+      expect(result.current.showExpenseForm).toBe(true);
+      expect(result.current.expenseDate).toBe("2026-03-04");
+    });
+
+    it("追加フォームに金額を入れたまま別の日付で開き直すと、日付だけが変わり金額とカテゴリは残る", () => {
+      const { result } = renderHook(() =>
+        useBudgetPageState({ navigate: mockNavigate }),
+      );
+
+      act(() => {
+        result.current.startAddExpenseOnDate("2026-03-01");
+        result.current.handleExpenseAmountChange("800");
+        result.current.handleExpenseCategoryIdChange("category-lunch");
+      });
+      act(() => {
+        result.current.startAddExpenseOnDate("2026-03-05");
+      });
+
+      expect(result.current.expenseDate).toBe("2026-03-05");
+      expect(result.current.expenseAmount).toBe("800");
+      expect(result.current.expenseCategoryId).toBe("category-lunch");
+      expect(result.current.showExpenseForm).toBe(true);
+    });
+
+    it("日付ボタンで開いてキャンセルしたあと「➕」で開くと、押した日付ではなく今日の日付で開く", () => {
+      const { result } = renderHook(() =>
+        useBudgetPageState({ navigate: mockNavigate }),
+      );
+
+      act(() => {
+        result.current.startAddExpenseOnDate("2026-03-03");
+      });
+      expect(result.current.expenseDate).toBe("2026-03-03");
+
+      act(() => {
+        result.current.closeExpenseForm();
+      });
+      act(() => {
+        result.current.openExpenseForm();
+      });
+
+      expect(result.current.showExpenseForm).toBe(true);
+      expect(result.current.expenseDate).toBe("2026-03-07");
+    });
+
+    it("日付欄を手で変えて閉じたあと「➕」で開いても、今日の日付に戻る", () => {
+      const { result } = renderHook(() =>
+        useBudgetPageState({ navigate: mockNavigate }),
+      );
+
+      act(() => {
+        result.current.openExpenseForm();
+        result.current.handleExpenseDateChange("2026-03-05");
+      });
+      expect(result.current.expenseDate).toBe("2026-03-05");
+
+      act(() => {
+        result.current.closeExpenseForm();
+      });
+      act(() => {
+        result.current.openExpenseForm();
+      });
+
+      expect(result.current.expenseDate).toBe("2026-03-07");
+    });
+
+    it("今月以外を表示中は、「➕」で開くとその月の 1 日の日付で開く", () => {
+      const { result } = renderHook(() =>
+        useBudgetPageState({ navigate: mockNavigate }),
+      );
+
+      act(() => {
+        result.current.goToNextMonth();
+      });
+      act(() => {
+        result.current.openExpenseForm();
+      });
+      act(() => {
+        result.current.handleExpenseDateChange("2026-04-15");
+      });
+      expect(result.current.expenseDate).toBe("2026-04-15");
+      act(() => {
+        result.current.closeExpenseForm();
+      });
+      act(() => {
+        result.current.openExpenseForm();
+      });
+
+      expect(result.current.expenseDate).toBe("2026-04-01");
+    });
+
+    it("startAddExpenseOnDate は、直前に「➕」で開いていても押した日付で開く", () => {
+      const { result } = renderHook(() =>
+        useBudgetPageState({ navigate: mockNavigate }),
+      );
+
+      act(() => {
+        result.current.openExpenseForm();
+      });
+      act(() => {
+        result.current.startAddExpenseOnDate("2026-03-02");
+      });
+
+      expect(result.current.showExpenseForm).toBe(true);
+      expect(result.current.expenseDate).toBe("2026-03-02");
+    });
+  });
+  describe("formOpenRequest（フォームを開く操作のカウンタ）", () => {
+    it("初期値は 0", () => {
+      const { result } = renderHook(() =>
+        useBudgetPageState({ navigate: mockNavigate }),
+      );
+
+      expect(result.current.formOpenRequest).toBe(0);
+    });
+
+    it("startAddExpenseOnDate のたびに 1 増える（同じ日付の押し直しでも増える）", () => {
+      const { result } = renderHook(() =>
+        useBudgetPageState({ navigate: mockNavigate }),
+      );
+
+      act(() => {
+        result.current.startAddExpenseOnDate("2026-03-02");
+      });
+      expect(result.current.formOpenRequest).toBe(1);
+
+      act(() => {
+        result.current.startAddExpenseOnDate("2026-03-02");
+      });
+      expect(result.current.formOpenRequest).toBe(2);
+
+      act(() => {
+        result.current.startAddExpenseOnDate("2026-03-04");
+      });
+      expect(result.current.formOpenRequest).toBe(3);
+    });
+
+    it("openExpenseForm（「➕」）のたびに 1 増える", () => {
+      const { result } = renderHook(() =>
+        useBudgetPageState({ navigate: mockNavigate }),
+      );
+
+      act(() => {
+        result.current.openExpenseForm();
+      });
+      expect(result.current.formOpenRequest).toBe(1);
+
+      act(() => {
+        result.current.closeExpenseForm();
+      });
+      act(() => {
+        result.current.openExpenseForm();
+      });
+      expect(result.current.formOpenRequest).toBe(2);
+    });
+
+    it("月の移動・日付欄の手動変更・編集の開始では増えない", () => {
+      const { result } = renderHook(() =>
+        useBudgetPageState({ navigate: mockNavigate }),
+      );
+
+      act(() => {
+        result.current.startAddExpenseOnDate("2026-03-02");
+      });
+      expect(result.current.formOpenRequest).toBe(1);
+
+      act(() => {
+        result.current.goToPreviousMonth();
+      });
+      act(() => {
+        result.current.goToNextMonth();
+      });
+      act(() => {
+        result.current.goToCurrentMonth();
+      });
+      act(() => {
+        result.current.handleExpenseDateChange("2026-03-05");
+      });
+      act(() => {
+        result.current.startEditExpense({
+          id: "e-mar",
+          date: "2026-03-03",
+          amount: 1000,
+          createdAt: "2026-03-03T00:00:00.000Z",
+        });
+      });
+
+      expect(result.current.formOpenRequest).toBe(1);
+    });
+  });
 });

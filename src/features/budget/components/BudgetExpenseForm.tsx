@@ -1,4 +1,4 @@
-import { useId } from "react";
+import { useEffect, useId, useRef } from "react";
 import type { BudgetCategory } from "@/types/routine";
 import { isZeroAmountOnUnavailableDate } from "../utils/expenseAmountRule";
 import { BudgetExpenseDateSelect } from "./BudgetExpenseDateSelect";
@@ -10,6 +10,8 @@ type BudgetExpenseFormProps = {
   expenseAmount: string;
   expenseCategoryId: string;
   expenseDate: string;
+  /** 変わるたびに、フォームを見える位置へスクロールする（開く操作が行われた合図） */
+  scrollRequestKey: number;
   onAdd: () => void;
   onAmountChange: (value: string) => void;
   onCancel: () => void;
@@ -22,12 +24,14 @@ export const BudgetExpenseForm = ({
   expenseAmount,
   expenseCategoryId,
   expenseDate,
+  scrollRequestKey,
   onAdd,
   onAmountChange,
   onCancel,
   onCategoryIdChange,
   onDateChange,
 }: BudgetExpenseFormProps) => {
+  const formRef = useRef<HTMLDivElement>(null);
   const amountHintId = useId();
   const zeroNoticeId = useId();
   const isZeroRejected = isZeroAmountOnUnavailableDate(
@@ -36,8 +40,17 @@ export const BudgetExpenseForm = ({
     new Date(),
   );
 
+  // マウント時と開く操作（scrollRequestKey が変わったとき）に、画面外なら見える位置へ。
+  // 月の移動・日付欄の手動変更では呼ばない。scrollIntoView が無い環境（jsdom）では何もしない。
+  useEffect(() => {
+    formRef.current?.scrollIntoView?.({ block: "nearest" });
+  }, [scrollRequestKey]);
+
   return (
-    <div className="bg-gray-50 dark:bg-gray-200 rounded-xl p-4 mb-6">
+    <div
+      ref={formRef}
+      className="bg-gray-50 dark:bg-gray-200 rounded-xl p-4 mb-6"
+    >
       <h4 className="font-bold text-gray-900 dark:text-black mb-3">
         {budgetTexts.expenseForm.title}
       </h4>
