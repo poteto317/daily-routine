@@ -15,6 +15,10 @@ import {
 import type { TodoCategory } from "./types";
 import type { TodoItemBgColorValue } from "./todoItemBgColor";
 import { TodoCategoryManagementItem } from "./TodoCategoryManagementItem";
+import { restrictToSortableListBounds } from "./restrictToSortableListBounds";
+
+// 参照を安定させるため、モジュールの外に定数として置く
+const MODIFIERS = [restrictToSortableListBounds];
 
 export type TodoCategorySortableListProps = {
   categories: TodoCategory[];
@@ -68,6 +72,7 @@ export const TodoCategorySortableList = ({
     <DndContext
       sensors={sensors}
       collisionDetection={closestCenter}
+      modifiers={MODIFIERS}
       onDragStart={onDragStartAction}
       onDragEnd={onDragEndAction}
       onDragCancel={onDragCancelAction}
