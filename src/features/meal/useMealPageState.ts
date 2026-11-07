@@ -22,7 +22,6 @@ export const useMealPageState = () => {
   } = useMealPageFormState(mealData.initialState);
   const { handleAddMeal, handleDeleteMeal } = useMealPageActions(
     createMealPageActionBindings({
-      today: mealData.today,
       mealTypeInput,
       timeInput,
       descriptionInput,

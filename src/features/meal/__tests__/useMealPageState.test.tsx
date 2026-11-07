@@ -86,11 +86,14 @@ describe("useMealPageState", () => {
     );
     expect(createMealPageActionBindings).toHaveBeenCalledWith(
       expect.objectContaining({
-        today: "2024-01-12",
         mealTypeInput: "breakfast",
         timeInput: "08:30",
       }),
     );
+    // 描画時の today は表示（結果）にだけ渡し、保存の経路（action の束）には渡さない
+    expect(
+      (createMealPageActionBindings as jest.Mock).mock.calls[0][0],
+    ).not.toHaveProperty("today");
     expect(useMealPageActions).toHaveBeenCalledWith({ bound: true });
     expect(createMealPageStateResult).toHaveBeenCalledWith(
       expect.objectContaining({

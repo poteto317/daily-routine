@@ -4,7 +4,6 @@ import type { MealRecord, MealType } from "@/types/routine";
 type SetValue<T> = Dispatch<SetStateAction<T>>;
 
 type MealPageActionBindingsArgs = {
-  today: string;
   mealTypeInput: MealType;
   timeInput: string;
   descriptionInput: string;
@@ -17,7 +16,6 @@ type MealPageActionBindingsArgs = {
 };
 
 export const createMealPageActionBindings = ({
-  today,
   mealTypeInput,
   timeInput,
   descriptionInput,
@@ -29,7 +27,6 @@ export const createMealPageActionBindings = ({
   setNotesInput,
 }: MealPageActionBindingsArgs) => {
   return {
-    today,
     mealTypeInput,
     timeInput,
     descriptionInput,
