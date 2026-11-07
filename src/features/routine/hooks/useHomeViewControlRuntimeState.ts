@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { RoutineCategory } from "@/types/routine";
-import type { HomeViewMode } from "../pages/homeTypes";
+import type { HomeSelectedViewMode } from "../pages/homeTypes";
 import type { createInitialHomeViewControlState } from "./homeViewControlStateActions";
 import { createHomeViewControlRuntimeStateResult } from "./homeViewControlRuntimeStateResult";
 
@@ -14,15 +14,17 @@ export const useHomeViewControlRuntimeState = (
   const [filterCategory, setFilterCategory] = useState<RoutineCategory | "all">(
     initialState.filterCategory,
   );
-  const [viewMode, setViewMode] = useState<HomeViewMode>(initialState.viewMode);
+  // 初期値は「今日に追従」。表示するタブは描画のたびに既定のタブから求める（useHomeViewControls）
+  const [selectedViewMode, setSelectedViewMode] =
+    useState<HomeSelectedViewMode>({ mode: null });
   const [isEditMode, setIsEditMode] = useState(initialState.isEditMode);
 
   return createHomeViewControlRuntimeStateResult({
     filterCategory,
     isEditMode,
+    selectedViewMode,
     setFilterCategory,
     setIsEditMode,
-    setViewMode,
-    viewMode,
+    setSelectedViewMode,
   });
 };

@@ -1,6 +1,10 @@
 import type { Dispatch, SetStateAction } from "react";
 import type { RoutineCategory } from "@/types/routine";
-import type { HomeDayOption, HomeViewMode } from "../pages/homeTypes";
+import type {
+  HomeDayOption,
+  HomeSelectedViewMode,
+  HomeViewMode,
+} from "../pages/homeTypes";
 import {
   saveFilterCategory,
   saveIsEditMode,
@@ -13,7 +17,7 @@ import {
 } from "./homeViewStateActions";
 
 type SetFilterCategory = Dispatch<SetStateAction<RoutineCategory | "all">>;
-type SetViewMode = Dispatch<SetStateAction<HomeViewMode>>;
+type SetSelectedViewMode = Dispatch<SetStateAction<HomeSelectedViewMode>>;
 type SetIsEditMode = Dispatch<SetStateAction<boolean>>;
 
 export const createToggleHomeEditModeAction = (params: {
@@ -46,14 +50,17 @@ export const createSetHomeFilterCategoryAction = (params: {
 };
 
 export const createSetHomeViewModeAction = (params: {
-  setViewMode: SetViewMode;
+  /** 押した時点の既定のタブを返す。押すたびに呼ぶ（描画時の値を持たない。L-538） */
+  getDefaultViewMode: () => HomeViewMode;
+  setSelectedViewMode: SetSelectedViewMode;
 }) => {
-  const { setViewMode } = params;
+  const { getDefaultViewMode, setSelectedViewMode } = params;
 
   return (mode: HomeViewMode) => {
     setHomeViewModeState({
       mode,
-      setViewMode,
+      defaultViewMode: getDefaultViewMode(),
+      setSelectedViewMode,
       saveViewMode,
     });
   };

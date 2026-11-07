@@ -15,43 +15,42 @@ describe("useHomeViewControlRuntimeState", () => {
     );
   });
 
-  it("filter/view/edit state を保持して更新できる", () => {
+  it("filter/選択中のタブ/edit の state を保持して更新できる（選択中のタブの初期値は mode: null）", () => {
     const { result } = renderHook(() =>
       useHomeViewControlRuntimeState({
         filterCategory: "health",
         isEditMode: true,
-        viewMode: 3,
       }),
     );
 
     expect(result.current.filterCategory).toBe("health");
     expect(result.current.isEditMode).toBe(true);
-    expect(result.current.viewMode).toBe(3);
+    expect(result.current.selectedViewMode).toEqual({ mode: null });
     expect(createHomeViewControlRuntimeStateResult).toHaveBeenCalledWith({
       filterCategory: "health",
       isEditMode: true,
+      selectedViewMode: { mode: null },
       setFilterCategory: expect.any(Function),
       setIsEditMode: expect.any(Function),
-      setViewMode: expect.any(Function),
-      viewMode: 3,
+      setSelectedViewMode: expect.any(Function),
     });
 
     act(() => {
       result.current.setFilterCategory("work");
       result.current.setIsEditMode(false);
-      result.current.setViewMode(5);
+      result.current.setSelectedViewMode({ mode: 5 });
     });
 
     expect(result.current.filterCategory).toBe("work");
     expect(result.current.isEditMode).toBe(false);
-    expect(result.current.viewMode).toBe(5);
+    expect(result.current.selectedViewMode).toEqual({ mode: 5 });
     expect(createHomeViewControlRuntimeStateResult).toHaveBeenLastCalledWith({
       filterCategory: "work",
       isEditMode: false,
+      selectedViewMode: { mode: 5 },
       setFilterCategory: expect.any(Function),
       setIsEditMode: expect.any(Function),
-      setViewMode: expect.any(Function),
-      viewMode: 5,
+      setSelectedViewMode: expect.any(Function),
     });
   });
 });

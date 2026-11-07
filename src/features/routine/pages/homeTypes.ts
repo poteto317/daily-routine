@@ -4,6 +4,12 @@ import type { PageType } from "./types";
 
 export type HomeViewMode = "holiday" | number;
 
+/**
+ * 利用者が自分で選んだ曜日のタブ。`mode` が `null` なら「今日に追従」（既定のタブを表示する）。
+ * タブを押すたびに新しいオブジェクトを入れ、`null` のままでも必ず再描画させる。
+ */
+export type HomeSelectedViewMode = { mode: HomeViewMode | null };
+
 export type HomeDayOption = {
   value: number;
   label: string;
