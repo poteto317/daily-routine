@@ -258,6 +258,13 @@ export const buildInitialData = (): TestCategory[] => [
         sp: "unchecked",
         note: "",
       },
+      {
+        id: "2-30",
+        label: "0 時をまたいだ後の日付・祝日・選択中の曜日",
+        pc: "unchecked",
+        sp: "unchecked",
+        note: "",
+      },
     ],
   },
   {
