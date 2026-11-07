@@ -860,6 +860,13 @@ export const buildInitialData = (): TestCategory[] => [
         sp: "unchecked",
         note: "",
       },
+      {
+        id: "11-9",
+        label: "日曜日に開いた週次表示の期間",
+        pc: "unchecked",
+        sp: "unchecked",
+        note: "",
+      },
     ],
   },
   {

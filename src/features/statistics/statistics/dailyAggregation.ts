@@ -22,15 +22,20 @@ export const buildDateRange = (startDate: Date, endDate: Date): Date[] => {
   return dates;
 };
 
+export const buildDailyStatsForDateKeys = (
+  dateKeys: string[],
+  historyMap: HistoryMap,
+): DailyStats[] => {
+  return dateKeys.map((dateKey) =>
+    calculateDailyStats(dateKey, historyMap[dateKey] ?? null),
+  );
+};
+
 export const buildDailyStatsForDates = (
   dates: Date[],
   historyMap: HistoryMap,
-): DailyStats[] => {
-  return dates.map((date) => {
-    const dateStr = formatDate(date);
-    return calculateDailyStats(dateStr, historyMap[dateStr] ?? null);
-  });
-};
+): DailyStats[] =>
+  buildDailyStatsForDateKeys(dates.map(formatDate), historyMap);
 
 export const summarizeDailyStats = (days: DailyStats[]): DailyStatsTotals => {
   const totals = days.reduce(
