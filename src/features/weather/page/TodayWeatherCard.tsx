@@ -16,7 +16,7 @@ export const TodayWeatherCard = ({ forecast }: TodayWeatherCardProps) => {
         <div className="flex items-center gap-4">
           <span className="text-6xl">{getWeatherIcon(forecast.weather)}</span>
           <div>
-            <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+            <p className="text-2xl font-bold text-gray-900 dark:text-gray-900">
               {getWeatherLabel(forecast.weather)}
             </p>
             <p className="text-gray-600 dark:text-gray-700 mt-1">

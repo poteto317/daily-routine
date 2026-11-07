@@ -21,7 +21,7 @@ export const WeatherHeader = ({
 }: WeatherHeaderProps) => {
   return (
     <div className="flex items-center justify-between mb-6">
-      <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+      <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-900">
         {WEATHER_HEADER_TEXT.title}
       </h1>
       <div className="flex items-center gap-3">

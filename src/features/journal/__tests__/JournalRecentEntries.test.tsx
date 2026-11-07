@@ -103,4 +103,18 @@ describe("JournalRecentEntries", () => {
     expect(screen.getAllByRole("button", { name: "✏️ 編集" })).toHaveLength(2);
     expect(screen.getAllByRole("button", { name: "🗑️ 削除" })).toHaveLength(2);
   });
+
+  it("見出しはダークモードでも明るいカードの上で読める濃い文字色を使う", () => {
+    render(
+      <JournalRecentEntries
+        entries={[]}
+        onEditEntry={onEditEntry}
+        onDeleteEntry={onDeleteEntry}
+      />,
+    );
+
+    const heading = screen.getByRole("heading", { level: 2 });
+    expect(heading).toHaveClass("dark:text-gray-900");
+    expect(heading).not.toHaveClass("dark:text-gray-100");
+  });
 });

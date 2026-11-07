@@ -17,7 +17,7 @@ export const RoutineFormHeader = ({
     <div className="sticky top-0 bg-white dark:bg-slate-100 z-10 flex items-center justify-between p-6 pb-4 border-b border-gray-200 dark:border-gray-300">
       <h2
         id={ROUTINE_FORM_TITLE_ID}
-        className="text-2xl font-bold text-gray-900 dark:text-gray-100"
+        className="text-2xl font-bold text-gray-900 dark:text-gray-900"
       >
         {getRoutineFormHeaderTitle(isEditMode)}
       </h2>

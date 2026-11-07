@@ -31,7 +31,7 @@ export const WeightTrackerPage = () => {
     <div className="min-h-screen bg-linear-to-br from-blue-50 to-indigo-100 dark:from-slate-400 dark:to-slate-300">
       <main className="max-w-4xl mx-auto px-4 py-8">
         <CardPanel>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-900 mb-4">
             {WEIGHT_TRACKER_PAGE_TEXT.title}
           </h1>
 

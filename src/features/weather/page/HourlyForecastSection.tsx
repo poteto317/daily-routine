@@ -36,7 +36,7 @@ export const HourlyForecastSection = ({
               <div className="text-3xl text-center mb-2">
                 {getWeatherIcon(hour.weather)}
               </div>
-              <p className="text-lg font-bold text-gray-900 dark:text-gray-100 text-center mb-1">
+              <p className="text-lg font-bold text-gray-900 dark:text-gray-900 text-center mb-1">
                 {hour.temperature}°
               </p>
               <div className="text-xs text-center space-y-1">

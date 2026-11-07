@@ -70,4 +70,12 @@ describe("MealRecentSection", () => {
 
     expect(screen.getByText(MEAL_RECENT_EMPTY_LABEL)).toBeInTheDocument();
   });
+
+  it("見出しはダークモードでも明るいカードの上で読める濃い文字色を使う", () => {
+    render(<MealRecentSection {...defaultProps} meals={[]} />);
+
+    const heading = screen.getByRole("heading", { name: MEAL_RECENT_TITLE });
+    expect(heading).toHaveClass("dark:text-gray-900");
+    expect(heading).not.toHaveClass("dark:text-gray-100");
+  });
 });

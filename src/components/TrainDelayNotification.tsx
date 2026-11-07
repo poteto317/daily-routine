@@ -34,7 +34,7 @@ export const TrainDelayNotification = ({
             </span>
             <div className="flex-1 min-w-0">
               <div className="flex items-center justify-between gap-2 mb-1">
-                <h3 className="font-bold text-gray-900 dark:text-gray-100 text-base">
+                <h3 className="font-bold text-gray-900 dark:text-gray-900 text-base">
                   🚃 {delay.lineName}
                 </h3>
                 <span className="text-xs text-gray-600 dark:text-gray-700 whitespace-nowrap">

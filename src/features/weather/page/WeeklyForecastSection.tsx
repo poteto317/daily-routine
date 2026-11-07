@@ -38,7 +38,7 @@ export const WeeklyForecastSection = ({
                 <p className="text-sm text-gray-600 dark:text-gray-700">
                   {formatDate(forecast.date)}
                 </p>
-                <p className="text-lg font-bold text-gray-900 dark:text-gray-100">
+                <p className="text-lg font-bold text-gray-900 dark:text-gray-900">
                   {forecast.dayOfWeek}
                   {isToday(forecast.date) && (
                     <span className="ml-1 text-xs bg-blue-600 text-white px-2 py-0.5 rounded">
