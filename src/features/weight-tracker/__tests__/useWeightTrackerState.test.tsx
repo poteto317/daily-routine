@@ -74,11 +74,14 @@ describe("useWeightTrackerState", () => {
     );
     expect(createWeightPageActionBindings).toHaveBeenCalledWith(
       expect.objectContaining({
-        today: "2024-01-12",
         weightInput: "",
         notesInput: "",
       }),
     );
+    // 描画時の today は表示（結果）にだけ渡し、保存の経路（action の束）には渡さない
+    expect(
+      (createWeightPageActionBindings as jest.Mock).mock.calls[0][0],
+    ).not.toHaveProperty("today");
     expect(useWeightTrackerActions).toHaveBeenCalledWith({ bound: true });
     expect(createWeightTrackerStateResult).toHaveBeenCalledWith(
       expect.objectContaining({

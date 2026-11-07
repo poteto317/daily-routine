@@ -39,7 +39,6 @@ describe("useWeightTrackerActions", () => {
     );
 
     const params = {
-      today: "2024-01-12",
       weightInput: "69.5",
       notesInput: "memo",
       setTodayRecord: jest.fn(),
@@ -58,12 +57,15 @@ describe("useWeightTrackerActions", () => {
     });
     expect(useWeightTrackerMutationActions).toHaveBeenCalledWith(
       expect.objectContaining({
-        today: "2024-01-12",
         weightInput: "69.5",
         notesInput: "memo",
         setShowForm: params.setShowForm,
       }),
     );
+    // 保存する日付は保存の時点で決めるので、描画時の today は渡さない
+    expect(
+      (useWeightTrackerMutationActions as jest.Mock).mock.calls[0][0],
+    ).not.toHaveProperty("today");
     expect(createWeightTrackerActionsResult).toHaveBeenCalledWith({
       handleDeleteRecord: deleteAction,
       handleSaveWeight: saveAction,

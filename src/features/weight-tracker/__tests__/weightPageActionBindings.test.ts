@@ -3,7 +3,6 @@ import { createWeightPageActionBindings } from "../page/weightPageActionBindings
 describe("weightPageActionBindings", () => {
   it("weight tracker action 用の依存を束ねる", () => {
     const bindings = createWeightPageActionBindings({
-      today: "2024-01-12",
       weightInput: "69.5",
       notesInput: "updated",
       setTodayRecord: jest.fn(),
@@ -15,10 +14,11 @@ describe("weightPageActionBindings", () => {
 
     expect(bindings).toEqual(
       expect.objectContaining({
-        today: "2024-01-12",
         weightInput: "69.5",
         notesInput: "updated",
       }),
     );
+    // 保存する日付は保存の時点で決めるので、描画時の today は束ねない
+    expect(bindings).not.toHaveProperty("today");
   });
 });

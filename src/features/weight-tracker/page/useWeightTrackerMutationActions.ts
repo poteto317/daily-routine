@@ -12,11 +12,11 @@ import {
   createDeleteWeightHandler,
   createSaveWeightHandler,
 } from "./weightPageStateActions";
+import { getTodayDateKey } from "./weightRecordQueries";
 
 type SetValue<T> = Dispatch<SetStateAction<T>>;
 
 type UseWeightTrackerMutationActionsParams = {
-  today: string;
   weightInput: string;
   notesInput: string;
   setTodayRecord: SetValue<WeightRecord | null>;
@@ -27,7 +27,6 @@ type UseWeightTrackerMutationActionsParams = {
 };
 
 export const useWeightTrackerMutationActions = ({
-  today,
   weightInput,
   notesInput,
   setTodayRecord,
@@ -38,7 +37,9 @@ export const useWeightTrackerMutationActions = ({
 }: UseWeightTrackerMutationActionsParams) => {
   const handleSaveWeight = useCallback(() => {
     createSaveWeightHandler({
-      today,
+      // 保存する日付は、保存を押した時点の今日で決める。描画時の今日をハンドラに持たせると、
+      // フォームを開いたまま 0 時をまたいで再描画が無いまま保存したとき、前日で保存される
+      today: getTodayDateKey(),
       weightInput,
       notesInput,
       saveWeight: saveWeightRecord,
@@ -57,7 +58,6 @@ export const useWeightTrackerMutationActions = ({
     setShowForm,
     setTodayRecord,
     setWeightInput,
-    today,
     weightInput,
   ]);
 

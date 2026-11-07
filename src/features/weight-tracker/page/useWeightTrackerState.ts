@@ -28,7 +28,6 @@ export const useWeightTrackerState = () => {
   });
   const { handleDeleteRecord, handleSaveWeight } = useWeightTrackerActions(
     createWeightPageActionBindings({
-      today,
       weightInput,
       notesInput,
       setTodayRecord,

@@ -4,7 +4,6 @@ import type { WeightRecord } from "@/types/routine";
 type SetValue<T> = Dispatch<SetStateAction<T>>;
 
 type WeightPageActionBindingsArgs = {
-  today: string;
   weightInput: string;
   notesInput: string;
   setTodayRecord: SetValue<WeightRecord | null>;
@@ -15,7 +14,6 @@ type WeightPageActionBindingsArgs = {
 };
 
 export const createWeightPageActionBindings = ({
-  today,
   weightInput,
   notesInput,
   setTodayRecord,
@@ -25,7 +23,6 @@ export const createWeightPageActionBindings = ({
   setRecentRecords,
 }: WeightPageActionBindingsArgs) => {
   return {
-    today,
     weightInput,
     notesInput,
     setTodayRecord,
