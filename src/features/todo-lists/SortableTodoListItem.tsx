@@ -137,7 +137,7 @@ export const SortableTodoListItem = ({
             isDragging
               ? `${getTodoItemBgClass(displayBgColor)} border-teal-400 dark:border-teal-500 shadow-md`
               : isSelected
-                ? "bg-teal-50 dark:bg-teal-900/20 border-teal-300 dark:border-teal-400"
+                ? "bg-teal-50 dark:bg-teal-900 border-teal-300 dark:border-teal-400"
                 : `${getTodoItemBgClass(displayBgColor)} border-gray-100 dark:border-gray-500`
           }`}
         >
