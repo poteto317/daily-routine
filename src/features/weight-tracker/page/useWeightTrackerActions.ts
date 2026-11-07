@@ -7,7 +7,6 @@ import { useWeightTrackerReloadAction } from "./useWeightTrackerReloadAction";
 type SetValue<T> = Dispatch<SetStateAction<T>>;
 
 type UseWeightTrackerActionsParams = {
-  today: string;
   weightInput: string;
   notesInput: string;
   setTodayRecord: SetValue<WeightRecord | null>;
@@ -18,7 +17,6 @@ type UseWeightTrackerActionsParams = {
 };
 
 export const useWeightTrackerActions = ({
-  today,
   weightInput,
   notesInput,
   setTodayRecord,
@@ -35,7 +33,6 @@ export const useWeightTrackerActions = ({
   });
   const { handleDeleteRecord, handleSaveWeight } =
     useWeightTrackerMutationActions({
-      today,
       weightInput,
       notesInput,
       setTodayRecord,

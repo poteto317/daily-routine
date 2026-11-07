@@ -22,6 +22,11 @@ describe("useWeightTrackerMutationActions", () => {
     (createWeightTrackerMutationActionsResult as jest.Mock).mockImplementation(
       (value) => value,
     );
+    jest.useFakeTimers().setSystemTime(new Date("2024-01-12T12:00:00+09:00"));
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
   });
 
   it("save/delete handler を組み立てて委譲する", () => {
@@ -39,7 +44,6 @@ describe("useWeightTrackerMutationActions", () => {
     );
 
     const params = {
-      today: "2024-01-12",
       weightInput: "69.5",
       notesInput: "memo",
       setTodayRecord: jest.fn(),
@@ -70,6 +74,7 @@ describe("useWeightTrackerMutationActions", () => {
       builtHandlers.handleDeleteRecord("2024-01-12");
     });
 
+    // 保存する日付は、保存を押した時点の今日（2024-01-12 12:00 JST）
     expect(createSaveWeightHandler).toHaveBeenCalledWith(
       expect.objectContaining({
         today: "2024-01-12",

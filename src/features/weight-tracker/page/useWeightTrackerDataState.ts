@@ -1,11 +1,11 @@
 import { useState } from "react";
 import type { WeightRecord } from "@/types/routine";
+import { useJstTodayKey } from "@/hooks/useToday";
 import { getTodayWeightRecord, getWeightHistory } from "../storage";
-import { getTodayDateKey } from "./weightRecordQueries";
 import { createWeightPageData } from "./pageStateActions";
 
 export const useWeightTrackerDataState = () => {
-  const today = getTodayDateKey();
+  const today = useJstTodayKey();
   const initialTodayRecord = getTodayWeightRecord();
   const initialPageData = createWeightPageData(
     initialTodayRecord,
