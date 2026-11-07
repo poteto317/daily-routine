@@ -30,15 +30,15 @@ export const NotificationTestSection = ({
     <div>
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-700">
             {texts.notificationTest.label}
           </label>
-          <span className="px-2 py-0.5 text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded">
+          <span className="px-2 py-0.5 text-xs font-medium bg-blue-100 dark:bg-blue-100 text-blue-600 dark:text-blue-700 rounded">
             Beta
           </span>
         </div>
       </div>
-      <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">
+      <p className="text-xs text-gray-500 dark:text-gray-600 mb-3">
         {texts.notificationTest.description}
       </p>
       <button
@@ -56,13 +56,13 @@ export const NotificationTestSection = ({
         </div>
       )}
       {notificationStatus === "error" && !debugMessage && (
-        <p className="text-xs text-red-600 dark:text-red-400 mt-2">
+        <p className="text-xs text-red-600 dark:text-red-700 mt-2">
           {texts.notificationTest.errorHint}
         </p>
       )}
 
-      <div className="mt-3 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
-        <p className="text-xs text-gray-600 dark:text-gray-400">
+      <div className="mt-3 p-3 bg-gray-50 dark:bg-gray-200 rounded-lg">
+        <p className="text-xs text-gray-600 dark:text-gray-600">
           {texts.notificationTest.routineCountLabel}:{" "}
           {routineNotificationCounts.totalRoutines}
           {texts.notificationTest.counterSuffix}
@@ -76,13 +76,13 @@ export const NotificationTestSection = ({
       {swLogs.length > 0 && (
         <div className="mt-3">
           <div className="flex items-center justify-between mb-2">
-            <p className="text-xs font-medium text-gray-700 dark:text-gray-300">
+            <p className="text-xs font-medium text-gray-700 dark:text-gray-700">
               {texts.notificationTest.swLogTitle}
             </p>
             <button
               type="button"
               onClick={clearLogs}
-              className="text-xs text-blue-600 dark:text-blue-400 hover:underline"
+              className="text-xs text-blue-600 dark:text-blue-700 hover:underline"
             >
               {texts.notificationTest.clearLogLabel}
             </button>

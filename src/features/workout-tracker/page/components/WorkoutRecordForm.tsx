@@ -44,8 +44,8 @@ export const WorkoutRecordForm = ({
   const isStrength = values.label === "strength";
 
   return (
-    <div className="p-4 bg-gray-50 dark:bg-gray-800/50 rounded-xl space-y-3">
-      <h2 className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+    <div className="p-4 bg-gray-50 dark:bg-gray-200 rounded-xl space-y-3">
+      <h2 className="text-sm font-semibold text-gray-700 dark:text-gray-700">
         {texts.form.title}
       </h2>
 

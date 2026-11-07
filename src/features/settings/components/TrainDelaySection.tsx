@@ -40,17 +40,17 @@ export const TrainDelaySection = ({
         <h3 className="text-lg font-semibold text-gray-900 dark:text-black">
           {texts.trainDelay.title}
         </h3>
-        <span className="px-2 py-0.5 text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded">
+        <span className="px-2 py-0.5 text-xs font-medium bg-blue-100 dark:bg-blue-100 text-blue-600 dark:text-blue-700 rounded">
           Beta
         </span>
       </div>
-      <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">
+      <p className="text-xs text-gray-500 dark:text-gray-600 mb-4">
         {texts.trainDelay.description}
       </p>
 
       <div className="space-y-4">
-        <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
-          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+        <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-200 rounded-lg">
+          <span className="text-sm font-medium text-gray-700 dark:text-gray-700">
             {texts.trainDelay.toggleLabel}
           </span>
           <ToggleSwitch
@@ -65,7 +65,7 @@ export const TrainDelaySection = ({
         {trainDelayEnabled && (
           <>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-700 mb-2">
                 {texts.trainDelay.addLineLabel}
               </label>
               <div className="flex gap-2">
