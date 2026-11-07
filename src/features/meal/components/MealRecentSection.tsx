@@ -27,7 +27,7 @@ export const MealRecentSection = ({
 }: MealRecentSectionProps) => {
   return (
     <CardPanel className="mb-0!">
-      <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">
+      <h2 className="text-xl font-bold text-gray-900 dark:text-gray-900 mb-4">
         {MEAL_RECENT_TITLE}
       </h2>
       {meals.length === 0 ? (

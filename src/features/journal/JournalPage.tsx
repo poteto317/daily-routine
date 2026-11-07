@@ -19,7 +19,7 @@ export const JournalPage = () => {
     <div className="min-h-screen bg-linear-to-br from-purple-50 to-pink-100 dark:from-slate-400 dark:to-slate-300">
       <main className="max-w-4xl mx-auto px-4 py-8">
         <CardPanel>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-900 mb-4">
             {journalTexts.page.title}
           </h1>
           <JournalTodayCard

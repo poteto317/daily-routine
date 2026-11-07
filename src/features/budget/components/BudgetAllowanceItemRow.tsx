@@ -63,7 +63,7 @@ export const BudgetAllowanceItemRow = <T extends Item>({
             onKeyDown={handleKeyDown}
             placeholder={texts.allowanceSettings.editNamePlaceholder}
             aria-label={texts.allowanceSettings.nameLabel}
-            className="flex-1 min-w-0 text-sm px-2 py-1 border-b-2 border-blue-400 bg-transparent text-gray-800 dark:text-gray-100 focus:outline-none"
+            className="flex-1 min-w-0 text-sm px-2 py-1 border-b-2 border-blue-400 bg-transparent text-gray-800 dark:text-gray-900 focus:outline-none"
           />
           <input
             type="number"
@@ -72,7 +72,7 @@ export const BudgetAllowanceItemRow = <T extends Item>({
             onKeyDown={handleKeyDown}
             placeholder={texts.allowanceSettings.editAmountPlaceholder}
             aria-label={texts.allowanceSettings.amountLabel}
-            className="w-28 shrink-0 text-sm px-2 py-1 border-b-2 border-blue-400 bg-transparent text-gray-800 dark:text-gray-100 focus:outline-none"
+            className="w-28 shrink-0 text-sm px-2 py-1 border-b-2 border-blue-400 bg-transparent text-gray-800 dark:text-gray-900 focus:outline-none"
           />
         </div>
         <div className="flex gap-2">
@@ -101,7 +101,7 @@ export const BudgetAllowanceItemRow = <T extends Item>({
         <span className="text-sm font-medium text-gray-700 dark:text-gray-300 break-words">
           {item.name}
         </span>
-        <p className="text-base font-bold text-gray-900 dark:text-gray-100">
+        <p className="text-base font-bold text-gray-900 dark:text-gray-900">
           {formatCurrency(item.amount)}
         </p>
       </div>

@@ -73,7 +73,7 @@ export const TodoListManagementItem = ({
                 onCommitEditAction();
               if (e.key === "Escape") onCancelEditAction();
             }}
-            className="flex-1 min-w-0 text-sm px-2 py-0.5 border-b-2 border-teal-400 bg-transparent text-gray-800 dark:text-gray-100 focus:outline-none"
+            className="flex-1 min-w-0 text-sm px-2 py-0.5 border-b-2 border-teal-400 bg-transparent text-gray-800 dark:text-gray-900 focus:outline-none"
           />
         ) : (
           <button
