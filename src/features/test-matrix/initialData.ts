@@ -251,6 +251,13 @@ export const buildInitialData = (): TestCategory[] => [
         sp: "unchecked",
         note: "",
       },
+      {
+        id: "2-29",
+        label: "0 時をまたいだ後の曜日の並び順",
+        pc: "unchecked",
+        sp: "unchecked",
+        note: "",
+      },
     ],
   },
   {
@@ -373,6 +380,13 @@ export const buildInitialData = (): TestCategory[] => [
       {
         id: "4-6",
         label: "記録の削除（確認ダイアログ）",
+        pc: "unchecked",
+        sp: "unchecked",
+        note: "",
+      },
+      {
+        id: "4-7",
+        label: "0 時をまたいだ後の保存の日付",
         pc: "unchecked",
         sp: "unchecked",
         note: "",
@@ -566,6 +580,13 @@ export const buildInitialData = (): TestCategory[] => [
         sp: "unchecked",
         note: "",
       },
+      {
+        id: "7-9",
+        label: "0 時をまたいだ後の保存の日付",
+        pc: "unchecked",
+        sp: "unchecked",
+        note: "",
+      },
     ],
   },
   {
@@ -625,6 +646,13 @@ export const buildInitialData = (): TestCategory[] => [
       {
         id: "8-15",
         label: "未入力の日の表示（今月の過ぎた日）",
+        pc: "unchecked",
+        sp: "unchecked",
+        note: "",
+      },
+      {
+        id: "8-16",
+        label: "0 時をまたいだ後の「今日の支出」「1日あたり使える金額」",
         pc: "unchecked",
         sp: "unchecked",
         note: "",
@@ -744,6 +772,13 @@ export const buildInitialData = (): TestCategory[] => [
       {
         id: "10-8",
         label: "未来日付の非表示",
+        pc: "unchecked",
+        sp: "unchecked",
+        note: "",
+      },
+      {
+        id: "10-9",
+        label: "0 時をまたいだ後の今日の強調・未来日",
         pc: "unchecked",
         sp: "unchecked",
         note: "",
