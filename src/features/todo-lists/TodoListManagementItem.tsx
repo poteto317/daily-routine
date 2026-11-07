@@ -57,7 +57,7 @@ export const TodoListManagementItem = ({
         transition,
         opacity: isDragging ? 0.4 : 1,
       }}
-      className="flex items-center justify-between gap-3 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg"
+      className="flex items-center justify-between gap-3 p-3 bg-gray-50 dark:bg-gray-200 rounded-lg"
     >
       <div className="flex items-center gap-2 min-w-0 flex-1">
         <TodoItemDragHandle attributes={attributes} listeners={listeners} />
@@ -81,7 +81,7 @@ export const TodoListManagementItem = ({
             onClick={() => onOpenListAction(list.id)}
             className={`text-sm font-medium min-w-0 break-words text-left ${
               isVisible
-                ? "text-gray-700 dark:text-gray-300 hover:text-teal-600 dark:hover:text-teal-400"
+                ? "text-gray-700 dark:text-gray-700 hover:text-teal-600 dark:hover:text-teal-700"
                 : "text-gray-400 dark:text-gray-500 line-through"
             }`}
             aria-label={`${list.title} を開く`}
@@ -91,7 +91,7 @@ export const TodoListManagementItem = ({
         )}
       </div>
       <div className="flex items-center gap-3 shrink-0">
-        <span className="text-xs text-gray-400 dark:text-gray-500">
+        <span className="text-xs text-gray-400 dark:text-gray-600">
           {isVisible
             ? texts.management.visibleLabel
             : texts.management.hiddenLabel}
@@ -111,7 +111,7 @@ export const TodoListManagementItem = ({
           <button
             type="button"
             onClick={() => onStartEditAction(list.id, list.title)}
-            className="text-gray-300 hover:text-teal-500 dark:text-gray-500 dark:hover:text-teal-400 transition-colors text-base leading-none"
+            className="text-gray-300 hover:text-teal-500 dark:text-gray-500 dark:hover:text-teal-600 transition-colors text-base leading-none"
             aria-label={`${list.title} を編集`}
           >
             ✏️
@@ -120,7 +120,7 @@ export const TodoListManagementItem = ({
         <button
           type="button"
           onClick={() => onDeleteAction(list)}
-          className="text-gray-300 hover:text-red-400 dark:text-gray-500 dark:hover:text-red-400 transition-colors text-base leading-none ml-1"
+          className="text-gray-300 hover:text-red-400 dark:text-gray-500 dark:hover:text-red-600 transition-colors text-base leading-none ml-1"
           aria-label={`${list.title} を削除`}
         >
           🗑️

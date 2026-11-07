@@ -25,7 +25,7 @@ export const WorkoutRecordHistoryItem = ({
           {isStrength ? texts.form.labelStrength : texts.form.labelRunning}{" "}
           {record.exerciseName}
         </p>
-        <p className="text-xs text-gray-500 dark:text-gray-600">
+        <p className="text-xs text-gray-500 dark:text-gray-300">
           {formatWorkoutRecordSummary(record)}
         </p>
       </div>
