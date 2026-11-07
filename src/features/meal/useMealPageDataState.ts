@@ -1,11 +1,12 @@
 import { useState } from "react";
+import { useJstTodayKey } from "@/hooks/useToday";
 import type { MealRecord } from "@/types/routine";
 import { getMealHistory, getTodayMealRecords } from "./storage";
-import { getCurrentTimeString, getTodayDateString } from "./utils/mealFormat";
+import { getCurrentTimeString } from "./utils/mealFormat";
 import { createInitialMealViewState } from "./mealViewStateActions";
 
 export const useMealPageDataState = () => {
-  const today = getTodayDateString();
+  const today = useJstTodayKey();
   const initialState = createInitialMealViewState({
     todayMeals: getTodayMealRecords(),
     mealHistory: getMealHistory(),

@@ -40,7 +40,6 @@ describe("useMealPageMutationActions", () => {
     );
 
     const params = {
-      today: "2024-01-12",
       mealTypeInput: "lunch" as const,
       timeInput: "12:00",
       descriptionInput: "ramen",
@@ -72,12 +71,15 @@ describe("useMealPageMutationActions", () => {
 
     expect(useMealAddAction).toHaveBeenCalledWith(
       expect.objectContaining({
-        today: "2024-01-12",
         mealTypeInput: "lunch",
         timeInput: "12:00",
         descriptionInput: "ramen",
         notesInput: "spicy",
       }),
+    );
+    // 保存する日付は保存の時点で決めるので、描画時の today は渡さない
+    expect((useMealAddAction as jest.Mock).mock.calls[0][0]).not.toHaveProperty(
+      "today",
     );
     expect(useMealDeleteAction).toHaveBeenCalledWith(
       expect.objectContaining({

@@ -7,7 +7,6 @@ import { useMealPageReloadAction } from "./useMealPageReloadAction";
 type SetValue<T> = Dispatch<SetStateAction<T>>;
 
 type UseMealPageActionsParams = {
-  today: string;
   mealTypeInput: MealType;
   timeInput: string;
   descriptionInput: string;
@@ -20,7 +19,6 @@ type UseMealPageActionsParams = {
 };
 
 export const useMealPageActions = ({
-  today,
   mealTypeInput,
   timeInput,
   descriptionInput,
@@ -36,7 +34,6 @@ export const useMealPageActions = ({
     setRecentMeals,
   });
   const { handleAddMeal, handleDeleteMeal } = useMealPageMutationActions({
-    today,
     mealTypeInput,
     timeInput,
     descriptionInput,

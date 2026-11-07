@@ -7,7 +7,6 @@ import { useMealDeleteAction } from "./useMealDeleteAction";
 type SetValue<T> = Dispatch<SetStateAction<T>>;
 
 type UseMealPageMutationActionsParams = {
-  today: string;
   mealTypeInput: MealType;
   timeInput: string;
   descriptionInput: string;
@@ -20,7 +19,6 @@ type UseMealPageMutationActionsParams = {
 };
 
 export const useMealPageMutationActions = ({
-  today,
   mealTypeInput,
   timeInput,
   descriptionInput,
@@ -32,7 +30,6 @@ export const useMealPageMutationActions = ({
   setNotesInput,
 }: UseMealPageMutationActionsParams) => {
   const handleAddMeal = useMealAddAction({
-    today,
     mealTypeInput,
     timeInput,
     descriptionInput,

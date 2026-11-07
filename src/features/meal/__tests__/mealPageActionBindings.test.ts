@@ -3,7 +3,6 @@ import { createMealPageActionBindings } from "../mealPageActionBindings";
 describe("mealPageActionBindings", () => {
   it("meal page action 用の依存を束ねる", () => {
     const bindings = createMealPageActionBindings({
-      today: "2024-01-12",
       mealTypeInput: "lunch",
       timeInput: "12:00",
       descriptionInput: "ramen",
@@ -17,12 +16,13 @@ describe("mealPageActionBindings", () => {
 
     expect(bindings).toEqual(
       expect.objectContaining({
-        today: "2024-01-12",
         mealTypeInput: "lunch",
         timeInput: "12:00",
         descriptionInput: "ramen",
         notesInput: "spicy",
       }),
     );
+    // 保存する日付は保存の時点で決めるので、描画時の today は束ねない
+    expect(bindings).not.toHaveProperty("today");
   });
 });
