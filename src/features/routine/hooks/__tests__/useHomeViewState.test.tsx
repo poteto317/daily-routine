@@ -1,5 +1,10 @@
 import { act, renderHook } from "@testing-library/react";
+import { isHoliday } from "@/lib/holidays";
+import { getJstToday } from "@/lib/storage/core";
 import { useHomeViewState } from "../useHomeViewState";
+
+// 本物（useRoutineQueries）と同じく時計に連動する祝日の判定
+const getIsTodayHoliday = () => isHoliday(getJstToday());
 
 describe("useHomeViewState", () => {
   beforeEach(() => {
@@ -56,8 +61,32 @@ describe("useHomeViewState", () => {
     expect(result.current.sortedDaysAndHoliday[0]).toEqual(
       expect.objectContaining({ value: 6 }),
     );
-    // 選択中の曜日は初期 state のまま（設計書「既知の制約と懸念」3）
-    expect(result.current.viewMode).toBe(5);
+    // タブを選んでいなければ、選択中のタブも新しい今日の曜日になる（#210）
+    expect(result.current.viewMode).toBe(6);
+  });
+
+  it("平日から祝日へ日をまたいだ後の再描画で、日付ラベル・祝日フラグ・「祝日」タブの位置が新しい今日になる", () => {
+    // 2026-11-02（月）は平日、2026-11-03（火）は文化の日
+    jest.useFakeTimers().setSystemTime(new Date("2026-11-02T23:59:00+09:00"));
+    const { result, rerender } = renderHook(() =>
+      useHomeViewState(getIsTodayHoliday),
+    );
+    expect(result.current.currentDate).toBe("2026年11月2日月曜日");
+    expect(result.current.isTodayHoliday).toBe(false);
+    expect(result.current.sortedDaysAndHoliday[0]).toEqual(
+      expect.objectContaining({ value: 1 }),
+    );
+    expect(result.current.sortedDaysAndHoliday.at(-1)).toBe("holiday");
+
+    jest.setSystemTime(new Date("2026-11-03T00:01:00+09:00"));
+    rerender();
+
+    expect(result.current.currentDate).toBe("2026年11月3日火曜日");
+    expect(result.current.isTodayHoliday).toBe(true);
+    expect(result.current.sortedDaysAndHoliday[0]).toBe("holiday");
+    expect(result.current.sortedDaysAndHoliday[1]).toEqual(
+      expect.objectContaining({ value: 2 }),
+    );
   });
 
   it("setFilterCategoryAction/setViewModeAction/toggleEditModeActionでlocalStorageを更新する", () => {

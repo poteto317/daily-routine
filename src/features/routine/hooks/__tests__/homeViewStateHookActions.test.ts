@@ -52,9 +52,8 @@ describe("homeViewStateHookActions", () => {
     });
   });
 
-  it("filter と view mode action を構築する", () => {
+  it("filter action を構築する", () => {
     const setFilterCategory = jest.fn();
-    const setViewMode = jest.fn();
 
     createSetHomeFilterCategoryAction({ setFilterCategory })("work");
     expect(setHomeFilterCategoryState).toHaveBeenCalledWith({
@@ -62,11 +61,36 @@ describe("homeViewStateHookActions", () => {
       setFilterCategory,
       saveFilterCategory,
     });
+  });
 
-    createSetHomeViewModeAction({ setViewMode })(5);
-    expect(setHomeViewModeState).toHaveBeenCalledWith({
+  it("view mode action は、押すたびに既定のタブを求めて委譲する（作った時点では求めない）", () => {
+    const setSelectedViewMode = jest.fn();
+    const getDefaultViewMode = jest
+      .fn<"holiday" | number, []>()
+      .mockReturnValueOnce("holiday")
+      .mockReturnValueOnce(3);
+
+    const action = createSetHomeViewModeAction({
+      getDefaultViewMode,
+      setSelectedViewMode,
+    });
+    expect(getDefaultViewMode).not.toHaveBeenCalled();
+
+    action(5);
+    expect(getDefaultViewMode).toHaveBeenCalledTimes(1);
+    expect(setHomeViewModeState).toHaveBeenLastCalledWith({
       mode: 5,
-      setViewMode,
+      defaultViewMode: "holiday",
+      setSelectedViewMode,
+      saveViewMode,
+    });
+
+    action(3);
+    expect(getDefaultViewMode).toHaveBeenCalledTimes(2);
+    expect(setHomeViewModeState).toHaveBeenLastCalledWith({
+      mode: 3,
+      defaultViewMode: 3,
+      setSelectedViewMode,
       saveViewMode,
     });
   });

@@ -1,9 +1,13 @@
 import type { Dispatch, SetStateAction } from "react";
 import type { RoutineCategory } from "@/types/routine";
-import type { HomeDayOption, HomeViewMode } from "../pages/homeTypes";
+import type {
+  HomeDayOption,
+  HomeSelectedViewMode,
+  HomeViewMode,
+} from "../pages/homeTypes";
 
 type SetFilterCategory = Dispatch<SetStateAction<RoutineCategory | "all">>;
-type SetViewMode = Dispatch<SetStateAction<HomeViewMode>>;
+type SetSelectedViewMode = Dispatch<SetStateAction<HomeSelectedViewMode>>;
 type SetIsEditMode = Dispatch<SetStateAction<boolean>>;
 
 export const createHomeCurrentDateLabel = (
@@ -22,7 +26,8 @@ export const createHomeCurrentDateLabel = (
   });
 };
 
-export const createInitialIsTodayHoliday = (
+/** 今日が祝日か（window が無いときは false。祝日の判定関数を呼ばない） */
+export const createIsTodayHoliday = (
   canUseWindow: boolean,
   getIsTodayHoliday: () => boolean,
 ): boolean => {
@@ -33,16 +38,25 @@ export const createInitialIsTodayHoliday = (
   return getIsTodayHoliday();
 };
 
-export const createInitialHomeViewMode = (
+/** 既定のタブ: 今日が祝日なら「祝日」、そうでなければ今日の曜日（window が無いときは今日の曜日） */
+export const createDefaultHomeViewMode = (
   canUseWindow: boolean,
-  getIsTodayHoliday: () => boolean,
+  isTodayHoliday: boolean,
   currentDayOfWeek: number,
 ): HomeViewMode => {
   if (!canUseWindow) {
     return currentDayOfWeek;
   }
 
-  return getIsTodayHoliday() ? "holiday" : currentDayOfWeek;
+  return isTodayHoliday ? "holiday" : currentDayOfWeek;
+};
+
+/** 表示するタブ: 利用者が選んだタブ。選んでいなければ（`mode` が `null`）既定のタブ */
+export const resolveHomeViewMode = (
+  selectedViewMode: HomeSelectedViewMode,
+  defaultViewMode: HomeViewMode,
+): HomeViewMode => {
+  return selectedViewMode.mode ?? defaultViewMode;
 };
 
 export const createSortedDaysAndHoliday = (params: {
@@ -88,11 +102,15 @@ export const setHomeFilterCategoryState = (params: {
 
 export const setHomeViewModeState = (params: {
   mode: HomeViewMode;
-  setViewMode: SetViewMode;
+  /** 押した時点の既定のタブ（描画時の値を渡さない。L-538） */
+  defaultViewMode: HomeViewMode;
+  setSelectedViewMode: SetSelectedViewMode;
   saveViewMode: (mode: HomeViewMode) => void;
 }): void => {
-  const { mode, setViewMode, saveViewMode } = params;
+  const { mode, defaultViewMode, setSelectedViewMode, saveViewMode } = params;
 
-  setViewMode(mode);
+  // 押した時点の既定のタブと同じなら「今日に追従」（mode: null）に戻す。
+  // 押すたびに新しいオブジェクトを入れる（mode が null のままでも再描画させるため）
+  setSelectedViewMode({ mode: mode === defaultViewMode ? null : mode });
   saveViewMode(mode);
 };

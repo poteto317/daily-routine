@@ -5,30 +5,21 @@ describe("homeViewControlStateActions", () => {
     localStorage.clear();
   });
 
-  it("保存済み filter/edit 状態と初期 view mode をまとめて構築する", () => {
+  it("保存済みの filter/edit 状態から初期 state を構築する（選択中のタブは含めない）", () => {
     localStorage.setItem("filterCategory", "health");
     localStorage.setItem("isEditMode", "false");
+    localStorage.setItem("viewMode", "3");
 
-    expect(
-      createInitialHomeViewControlState({
-        canUseWindow: true,
-        currentDayOfWeek: 3,
-        getIsTodayHoliday: () => false,
-      }),
-    ).toEqual({
+    expect(createInitialHomeViewControlState()).toEqual({
       filterCategory: "health",
       isEditMode: false,
-      viewMode: 3,
     });
   });
 
-  it("祝日なら初期 view mode を holiday にする", () => {
-    expect(
-      createInitialHomeViewControlState({
-        canUseWindow: true,
-        currentDayOfWeek: 2,
-        getIsTodayHoliday: () => true,
-      }).viewMode,
-    ).toBe("holiday");
+  it("保存が無ければ filter は all、編集モードは true", () => {
+    expect(createInitialHomeViewControlState()).toEqual({
+      filterCategory: "all",
+      isEditMode: true,
+    });
   });
 });

@@ -34,7 +34,9 @@ describe("useHomeViewState の今日の曜日は共通フック useJstDay から
     expect(result.current.sortedDaysAndHoliday[0]).toEqual(
       expect.objectContaining({ value: 4 }),
     );
-    // 選択中の曜日は初期 state のまま（設計書「既知の制約と懸念」3）
-    expect(result.current.viewMode).toBe(3);
+    // タブを選んでいなければ、表示するタブもフックの曜日に追いつく（#210）。
+    // setViewModeAction の既定のタブとの比較は、ここでは確かめない（押した時点の曜日は
+    // toJstDay(new Date()) から取るので、モックの曜日と食い違う。useHomeViewState.viewMode.test.tsx で確かめる）
+    expect(result.current.viewMode).toBe(4);
   });
 });

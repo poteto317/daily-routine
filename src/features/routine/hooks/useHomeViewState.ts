@@ -16,6 +16,7 @@ export const useHomeViewState = (getIsTodayHoliday: () => boolean) => {
     canUseWindow,
     currentDayOfWeek,
     getIsTodayHoliday,
+    isTodayHoliday,
   });
   const sortedDaysAndHoliday = useHomeViewSortedDays({
     currentDayOfWeek,

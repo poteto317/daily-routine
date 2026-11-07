@@ -1,30 +1,30 @@
 import type { RoutineCategory } from "@/types/routine";
 import type { Dispatch, SetStateAction } from "react";
-import type { HomeViewMode } from "../pages/homeTypes";
+import type { HomeSelectedViewMode } from "../pages/homeTypes";
 
 type HomeViewControlRuntimeStateResultArgs = {
   filterCategory: RoutineCategory | "all";
   isEditMode: boolean;
+  selectedViewMode: HomeSelectedViewMode;
   setFilterCategory: Dispatch<SetStateAction<RoutineCategory | "all">>;
   setIsEditMode: Dispatch<SetStateAction<boolean>>;
-  setViewMode: Dispatch<SetStateAction<HomeViewMode>>;
-  viewMode: HomeViewMode;
+  setSelectedViewMode: Dispatch<SetStateAction<HomeSelectedViewMode>>;
 };
 
 export const createHomeViewControlRuntimeStateResult = ({
   filterCategory,
   isEditMode,
+  selectedViewMode,
   setFilterCategory,
   setIsEditMode,
-  setViewMode,
-  viewMode,
+  setSelectedViewMode,
 }: HomeViewControlRuntimeStateResultArgs) => {
   return {
     filterCategory,
     isEditMode,
+    selectedViewMode,
     setFilterCategory,
     setIsEditMode,
-    setViewMode,
-    viewMode,
+    setSelectedViewMode,
   };
 };

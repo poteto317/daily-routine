@@ -19,40 +19,27 @@ describe("useHomeViewControlState", () => {
     (useHomeViewControlInitialState as jest.Mock).mockReturnValue({
       filterCategory: "health",
       isEditMode: false,
-      viewMode: 3,
     });
     (useHomeViewControlRuntimeState as jest.Mock).mockReturnValue({
       filterCategory: "health",
       isEditMode: false,
+      selectedViewMode: { mode: 3 },
       setFilterCategory: jest.fn(),
       setIsEditMode: jest.fn(),
-      setViewMode: jest.fn(),
-      viewMode: 3,
+      setSelectedViewMode: jest.fn(),
     });
   });
 
   it("initial state hook と runtime state hook を compose する", () => {
-    const getIsTodayHoliday = jest.fn(() => false);
-    const { result } = renderHook(() =>
-      useHomeViewControlState({
-        canUseWindow: true,
-        currentDayOfWeek: 3,
-        getIsTodayHoliday,
-      }),
-    );
+    const { result } = renderHook(() => useHomeViewControlState());
 
-    expect(useHomeViewControlInitialState).toHaveBeenCalledWith({
-      canUseWindow: true,
-      currentDayOfWeek: 3,
-      getIsTodayHoliday,
-    });
+    expect(useHomeViewControlInitialState).toHaveBeenCalledWith();
     expect(useHomeViewControlRuntimeState).toHaveBeenCalledWith({
       filterCategory: "health",
       isEditMode: false,
-      viewMode: 3,
     });
     expect(result.current.filterCategory).toBe("health");
     expect(result.current.isEditMode).toBe(false);
-    expect(result.current.viewMode).toBe(3);
+    expect(result.current.selectedViewMode).toEqual({ mode: 3 });
   });
 });

@@ -13,36 +13,21 @@ describe("useHomeViewControlInitialState", () => {
     (createInitialHomeViewControlState as jest.Mock).mockReturnValue({
       filterCategory: "health",
       isEditMode: false,
-      viewMode: 3,
     });
   });
 
   it("初期 control state を一度だけ構築して保持する", () => {
-    const getIsTodayHoliday = jest.fn(() => false);
-    const { result, rerender } = renderHook(
-      ({ currentDayOfWeek }) =>
-        useHomeViewControlInitialState({
-          canUseWindow: true,
-          currentDayOfWeek,
-          getIsTodayHoliday,
-        }),
-      {
-        initialProps: { currentDayOfWeek: 3 },
-      },
+    const { result, rerender } = renderHook(() =>
+      useHomeViewControlInitialState(),
     );
 
-    expect(createInitialHomeViewControlState).toHaveBeenCalledWith({
-      canUseWindow: true,
-      currentDayOfWeek: 3,
-      getIsTodayHoliday,
-    });
+    expect(createInitialHomeViewControlState).toHaveBeenCalledTimes(1);
     expect(result.current).toEqual({
       filterCategory: "health",
       isEditMode: false,
-      viewMode: 3,
     });
 
-    rerender({ currentDayOfWeek: 5 });
+    rerender();
 
     expect(createInitialHomeViewControlState).toHaveBeenCalledTimes(1);
   });
