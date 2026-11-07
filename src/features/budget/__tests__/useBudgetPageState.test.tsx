@@ -380,6 +380,58 @@ describe("useBudgetPageState", () => {
     expect(result.current.editingExpenseId).toBe("e-mar");
   });
 
+  // 保存の検証は、押した時点（ハンドラの本体）の今日で行う（L-538）。前日の 23:59 に入力し、
+  // 再描画せずに 0:01 へ進めてから保存する。保存は元から押した時点の今日で検証するので、今回の修正の前でも通る
+  // （退行ガード）。描画時の今日をハンドラに持たせる形にすると落ちる
+  it("今日の日付で 0 円を入れたまま、再描画せずに 0 時をまたいで追加すると、またいだ後の今日で判定して追加する", () => {
+    jest.setSystemTime(new Date("2026-03-07T23:59:00+09:00"));
+    const { result } = renderHook(() =>
+      useBudgetPageState({ navigate: mockNavigate }),
+    );
+    act(() => {
+      result.current.openExpenseForm();
+      result.current.handleExpenseAmountChange("0");
+      result.current.handleExpenseDateChange("2026-03-07");
+    });
+
+    jest.setSystemTime(new Date("2026-03-08T00:01:00+09:00"));
+    act(() => {
+      result.current.handleAddExpense();
+    });
+
+    expect(mockAddExpense).toHaveBeenCalledWith("2026-03-07", 0, undefined);
+  });
+
+  it("編集で今日の日付の支出を 0 円にしたまま、再描画せずに 0 時をまたいで保存すると、またいだ後の今日で判定して保存する", () => {
+    jest.setSystemTime(new Date("2026-03-07T23:59:00+09:00"));
+    const { result } = renderHook(() =>
+      useBudgetPageState({ navigate: mockNavigate }),
+    );
+    act(() => {
+      result.current.startEditExpense({
+        id: "e-mar",
+        date: "2026-03-03",
+        amount: 1000,
+        createdAt: "2026-03-03T00:00:00.000Z",
+      });
+    });
+    act(() => {
+      result.current.handleEditExpenseDateChange("2026-03-07");
+      result.current.handleEditExpenseAmountChange("0");
+    });
+
+    jest.setSystemTime(new Date("2026-03-08T00:01:00+09:00"));
+    act(() => {
+      result.current.handleUpdateExpense();
+    });
+
+    expect(mockUpdateExpense).toHaveBeenCalledWith(
+      "2026-03",
+      "e-mar",
+      expect.objectContaining({ amount: 0, date: "2026-03-07" }),
+    );
+  });
+
   it("支出の編集をキャンセルすると保存せず編集対象を解除する", () => {
     const { result } = renderHook(() =>
       useBudgetPageState({ navigate: mockNavigate }),

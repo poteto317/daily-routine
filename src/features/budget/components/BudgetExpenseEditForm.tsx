@@ -1,4 +1,5 @@
 import { useId } from "react";
+import { useLocalTodayKey } from "@/hooks/useToday";
 import type { BudgetCategory } from "@/types/routine";
 import budgetTexts from "../locales/ja.json";
 import { isZeroAmountOnUnavailableDate } from "../utils/expenseAmountRule";
@@ -30,10 +31,13 @@ export const BudgetExpenseEditForm = ({
   onEditCategoryIdChange,
 }: BudgetExpenseEditFormProps) => {
   const zeroNoticeId = useId();
+  // 判定は日付の部分しか使わないので、今日（端末ローカル）の 0 時の Date で足りる。
+  // 共通フックから取り、日をまたいだ後の再描画で新しい今日で判定する（React Compiler の固定を避ける）
+  const todayKey = useLocalTodayKey();
   const isZeroRejected = isZeroAmountOnUnavailableDate(
     editingExpenseAmount,
     editingExpenseDate,
-    new Date(),
+    new Date(`${todayKey}T00:00:00`),
   );
 
   return (

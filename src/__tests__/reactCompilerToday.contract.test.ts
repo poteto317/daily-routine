@@ -91,6 +91,24 @@ const TODAY_TARGETS: TodayTarget[] = [
     hookCall: "useLocalTodayKey(",
     dependencies: ["todayKey"],
   },
+  {
+    // 0 円の通知の判定（金額・日付・今日のキーが変わったときだけ計算し直す）
+    file: "src/features/budget/components/BudgetExpenseForm.tsx",
+    hookCall: "useLocalTodayKey(",
+    dependencies: ["todayKey"],
+  },
+  {
+    file: "src/features/budget/components/BudgetExpenseEditForm.tsx",
+    hookCall: "useLocalTodayKey(",
+    dependencies: ["todayKey"],
+  },
+  {
+    // 手書きの useMemo だけのフックもコンパイルの対象になる。依存の配列から todayKey を外すと、
+    // コンパイラはこのフックのコンパイルを諦めて _c( が無くなる（「コンパイルされている」の確認で落ちる）
+    file: "src/features/statistics/page/useWeeklyGoalProgress.ts",
+    hookCall: "useJstTodayKey(",
+    dependencies: ["todayKey"],
+  },
 ];
 
 /** 今日を求める式（最初の描画で 1 回だけ実行されるブロックに入っていたら固定される） */

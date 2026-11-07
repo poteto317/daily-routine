@@ -220,5 +220,30 @@ describe("BudgetExpenseForm", () => {
       renderForm({ expenseAmount: "", expenseDate: "2026-03-07" });
       expect(screen.queryByRole("alert")).not.toBeInTheDocument();
     });
+
+    // Jest（ts-jest）は React Compiler を通さないので、このテストは直す前（描画のたびに new Date()）でも通る
+    // （コンパイラによる固定は検出しない。L-690）。直した後も判定が描画時の新しい今日になる経路の固定として置く。
+    // 赤は BudgetExpenseForm.useToday.test.tsx（共通フックのモック）と契約テストで作る
+    it("今日の日付で 0 円の通知が出たまま 0 時をまたぐと、再描画で通知が消える（またいだ後は「昨日」の 0 円は記録できる）", () => {
+      jest.setSystemTime(new Date("2026-03-07T23:59:00+09:00"));
+      const { rerender, props } = renderFormWithRerender();
+      rerender(<BudgetExpenseForm {...props} expenseAmount="0" />);
+      expect(screen.getByRole("alert")).toBeInTheDocument();
+
+      jest.setSystemTime(new Date("2026-03-08T00:01:00+09:00"));
+      rerender(
+        <BudgetExpenseForm
+          {...props}
+          expenseAmount="0"
+          expenseCategoryId="c1"
+        />,
+      );
+
+      expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+      expect(screen.getByPlaceholderText("例: 1500")).toHaveAttribute(
+        "aria-invalid",
+        "false",
+      );
+    });
   });
 });

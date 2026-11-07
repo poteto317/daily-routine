@@ -1,4 +1,5 @@
 import { useEffect, useId, useRef } from "react";
+import { useLocalTodayKey } from "@/hooks/useToday";
 import type { BudgetCategory } from "@/types/routine";
 import { isZeroAmountOnUnavailableDate } from "../utils/expenseAmountRule";
 import { BudgetExpenseDateSelect } from "./BudgetExpenseDateSelect";
@@ -34,10 +35,13 @@ export const BudgetExpenseForm = ({
   const formRef = useRef<HTMLDivElement>(null);
   const amountHintId = useId();
   const zeroNoticeId = useId();
+  // 判定は日付の部分しか使わないので、今日（端末ローカル）の 0 時の Date で足りる。
+  // 共通フックから取り、日をまたいだ後の再描画で新しい今日で判定する（React Compiler の固定を避ける）
+  const todayKey = useLocalTodayKey();
   const isZeroRejected = isZeroAmountOnUnavailableDate(
     expenseAmount,
     expenseDate,
-    new Date(),
+    new Date(`${todayKey}T00:00:00`),
   );
 
   // マウント時と開く操作（scrollRequestKey が変わったとき）に、画面外なら見える位置へ。
