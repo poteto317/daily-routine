@@ -109,6 +109,12 @@ const TODAY_TARGETS: TodayTarget[] = [
     hookCall: "useJstTodayKey(",
     dependencies: ["todayKey"],
   },
+  {
+    file: "src/features/journal/weekly/useWeeklyLogState.ts",
+    hookCall: "useJstTodayKey(",
+    // 今日から求めた今週の開始日が、戻り値のメモ化の依存に入る
+    dependencies: ["currentWeekStart"],
+  },
 ];
 
 /** 今日を求める式（最初の描画で 1 回だけ実行されるブロックに入っていたら固定される） */

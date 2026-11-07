@@ -1,6 +1,8 @@
 import {
   getJournalHistory,
+  getWeeklyLogHistory,
   saveJournalHistory,
+  saveWeeklyLogHistory,
 } from "@/features/journal/storage";
 import { getMealHistory, saveMealHistory } from "@/features/meal/storage";
 import {
@@ -36,11 +38,12 @@ const invalid = DATA_TRANSFER_ERROR_MESSAGES.invalidFieldFormat;
 /**
  * 日々の記録をまとめたグループ。
  *
- * ジャーナル・体重・運動・食事・ポモドーロ・作業記録は、どれも
+ * ジャーナル・業務日誌・体重・運動・食事・ポモドーロ・作業記録は、どれも
  * 「日々つけた記録」として同じ扱いでよく、個別に選ぶ意味が薄いため 1 つにする。
  */
 export const collectRecordTransferData = (): TransferPayload => ({
   journalHistory: getJournalHistory(),
+  weeklyLogHistory: getWeeklyLogHistory(),
   weightHistory: getWeightHistory(),
   workoutRecordHistory: getWorkoutRecordHistory(),
   workoutExercises: getWorkoutExercises(),
@@ -58,6 +61,11 @@ export const RECORD_TRANSFER_FIELDS: TransferField[] = [
     invalid("workoutExercises"),
   ),
   objectField("journalHistory", saveJournalHistory, invalid("journalHistory")),
+  objectField(
+    "weeklyLogHistory",
+    saveWeeklyLogHistory,
+    invalid("weeklyLogHistory"),
+  ),
   objectField("weightHistory", saveWeightHistory, invalid("weightHistory")),
   objectField(
     "workoutRecordHistory",

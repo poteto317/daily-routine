@@ -41,6 +41,8 @@ jest.mock("@/features/workout-tracker/storage", () => ({
 jest.mock("@/features/journal/storage", () => ({
   getJournalHistory: jest.fn(() => ({})),
   saveJournalHistory: jest.fn(),
+  getWeeklyLogHistory: jest.fn(() => ({})),
+  saveWeeklyLogHistory: jest.fn(),
 }));
 jest.mock("@/features/budget/storage", () => ({
   getBudgetData: jest.fn(() => ({ expenses: {} })),

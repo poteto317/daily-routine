@@ -38,6 +38,7 @@ export type {
   Expense,
 } from "./budget";
 export type { JournalEntry, JournalHistory } from "./journal";
+export type { WeeklyLogEntry, WeeklyLogHistory } from "./weeklyLog";
 export type { MealHistory, MealRecord, MealType } from "./meal";
 
 export type { TrainDelayInfo, TrainDelaySettings, TrainLine } from "./train";

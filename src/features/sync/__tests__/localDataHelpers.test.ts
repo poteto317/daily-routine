@@ -22,6 +22,23 @@ describe("hasAnyLocalSyncData", () => {
     ).toBe(true);
   });
 
+  it("weeklyLogHistoryが1件でもあればtrueを返す", () => {
+    expect(
+      hasAnyLocalSyncData({
+        ...emptyData,
+        weeklyLogHistory: {
+          "2026-11-02": {
+            id: "w",
+            weekStart: "2026-11-02",
+            content: "c",
+            createdAt: "x",
+            updatedAt: "x",
+          },
+        },
+      }),
+    ).toBe(true);
+  });
+
   it("routinesが1件でもあればtrueを返す", () => {
     expect(
       hasAnyLocalSyncData({
