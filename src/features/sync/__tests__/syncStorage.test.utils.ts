@@ -52,6 +52,8 @@ const storageReadMocks: StorageReadMockMap = {
     ).mockReturnValue(value),
   journalHistory: (value) =>
     (journalStorage.getJournalHistory as jest.Mock).mockReturnValue(value),
+  weeklyLogHistory: (value) =>
+    (journalStorage.getWeeklyLogHistory as jest.Mock).mockReturnValue(value),
   budgetData: (value) =>
     (budgetStorage.getBudgetData as jest.Mock).mockReturnValue(value),
   budgetCategories: (value) =>
@@ -105,6 +107,8 @@ const storageSaveAssertions: StorageSaveAssertionMap = {
     ),
   journalHistory: (value) =>
     expect(journalStorage.saveJournalHistory).toHaveBeenCalledWith(value),
+  weeklyLogHistory: (value) =>
+    expect(journalStorage.saveWeeklyLogHistory).toHaveBeenCalledWith(value),
   budgetData: (value) =>
     expect(budgetStorage.saveBudgetData).toHaveBeenCalledWith(value),
   budgetCategories: (value) =>
@@ -144,6 +148,8 @@ const storageReadAssertions: StorageReadAssertionMap = {
     expect(workoutTrackerStorage.getWorkoutRecordHistory).toHaveBeenCalled(),
   journalHistory: () =>
     expect(journalStorage.getJournalHistory).toHaveBeenCalled(),
+  weeklyLogHistory: () =>
+    expect(journalStorage.getWeeklyLogHistory).toHaveBeenCalled(),
   budgetData: () => expect(budgetStorage.getBudgetData).toHaveBeenCalled(),
   budgetCategories: () =>
     expect(budgetStorage.getBudgetCategories).toHaveBeenCalled(),

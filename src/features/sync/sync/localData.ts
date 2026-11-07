@@ -29,7 +29,9 @@ import {
 import { collectWorkoutSyncData, saveWorkoutSyncData } from "./workoutSyncData";
 import {
   getJournalHistory,
+  getWeeklyLogHistory,
   saveJournalHistory,
+  saveWeeklyLogHistory,
 } from "@/features/journal/storage";
 import { getMealHistory, saveMealHistory } from "@/features/meal/storage";
 import { getPresets, savePresets } from "@/features/preset/storage";
@@ -63,6 +65,7 @@ export const collectLocalSyncData = (): Omit<
   weightHistory: getWeightHistory(),
   ...collectWorkoutSyncData(),
   journalHistory: getJournalHistory(),
+  weeklyLogHistory: getWeeklyLogHistory(),
   ...collectBudgetSyncData(),
   mealHistory: getMealHistory(),
   presets: getPresets(),
@@ -108,6 +111,7 @@ export const saveSyncDataToLocal = (
     saveWeightHistory(normalized.weightHistory);
     saveWorkoutSyncData(normalized);
     saveJournalHistory(normalized.journalHistory);
+    saveWeeklyLogHistory(normalized.weeklyLogHistory);
     saveBudgetSyncData(normalized);
     saveMealHistory(normalized.mealHistory);
     savePresets(normalized.presets);

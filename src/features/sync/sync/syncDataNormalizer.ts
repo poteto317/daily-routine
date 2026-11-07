@@ -7,7 +7,10 @@ import {
 } from "@/features/work-tracker/storage";
 import { getWeightHistory } from "@/features/weight-tracker/storage";
 import { normalizeWorkoutSyncData } from "./workoutSyncData";
-import { getJournalHistory } from "@/features/journal/storage";
+import {
+  getJournalHistory,
+  getWeeklyLogHistory,
+} from "@/features/journal/storage";
 import { getMealHistory } from "@/features/meal/storage";
 import { getPresets } from "@/features/preset/storage";
 import type { AppSettings } from "@/types/routine";
@@ -29,6 +32,7 @@ export type CoreSyncData = Pick<
   | "workoutRecordHistory"
   | "workoutExercises"
   | "journalHistory"
+  | "weeklyLogHistory"
   | "mealHistory"
   | "presets"
 >;
@@ -97,6 +101,7 @@ export const normalizeCoreSyncData = (
   weightHistory: data.weightHistory ?? getWeightHistory(),
   ...normalizeWorkoutSyncData(data),
   journalHistory: data.journalHistory ?? getJournalHistory(),
+  weeklyLogHistory: data.weeklyLogHistory ?? getWeeklyLogHistory(),
   mealHistory: data.mealHistory ?? getMealHistory(),
   presets: data.presets ?? getPresets(),
 });

@@ -16,6 +16,7 @@ const STORAGE_KEYS = [
   "weight-history",
   "workout-records",
   "journal-history",
+  "weekly-log-history",
   "budget-data",
   "budget-categories",
   "budget-income-items",

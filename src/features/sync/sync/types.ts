@@ -7,6 +7,7 @@ import type {
   DailyHistory,
   DailyProgress,
   JournalHistory,
+  WeeklyLogHistory,
   MealHistory,
   PomodoroHistory,
   Routine,
@@ -31,6 +32,7 @@ export interface SyncPayload {
   workoutRecordHistory: WorkoutRecordHistory;
   workoutExercises: WorkoutExercise[];
   journalHistory: JournalHistory;
+  weeklyLogHistory: WeeklyLogHistory;
   budgetData: BudgetData;
   budgetCategories: BudgetCategory[];
   budgetIncomeItems: BudgetIncomeItem[];

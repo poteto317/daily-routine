@@ -120,7 +120,7 @@ const GROUP_DEFINITIONS: Record<TransferGroupKey, TransferGroupDefinition> = {
     fields: [anyField("settings", saveSettings)],
   },
   records: {
-    label: "記録（ジャーナル・体重・運動・食事・ポモドーロ・作業）",
+    label: "記録（ジャーナル・業務日誌・体重・運動・食事・ポモドーロ・作業）",
     collect: collectRecordTransferData,
     fields: RECORD_TRANSFER_FIELDS,
   },

@@ -30,6 +30,7 @@ const LOCAL = {
   weightHistory: { "2026-02-12": { weight: 60 } },
   workoutRecordHistory: { "2026-02-12": [{ id: "local-w1" }] },
   journalHistory: { "2026-02-12": [{ id: "local-j1" }] },
+  weeklyLogHistory: { "2026-02-09": { id: "local-wl1" } },
   mealHistory: { "2026-02-12": [{ id: "local-m1" }] },
   presets: [{ id: "local-p1" }],
 };
@@ -58,6 +59,9 @@ const mockLocalStorageValues = (): void => {
   (journalStorage.getJournalHistory as jest.Mock).mockReturnValue(
     LOCAL.journalHistory,
   );
+  (journalStorage.getWeeklyLogHistory as jest.Mock).mockReturnValue(
+    LOCAL.weeklyLogHistory,
+  );
   (mealStorage.getMealHistory as jest.Mock).mockReturnValue(LOCAL.mealHistory);
   (presetStorage.getPresets as jest.Mock).mockReturnValue(LOCAL.presets);
 };
@@ -81,7 +85,16 @@ describe("normalizeCoreSyncData", () => {
 
     expect(result.routines).toEqual(remoteRoutines);
     expect(result.journalHistory).toEqual(LOCAL.journalHistory);
+    expect(result.weeklyLogHistory).toEqual(LOCAL.weeklyLogHistory);
     expect(result.presets).toEqual(LOCAL.presets);
+  });
+
+  it("リモートの weeklyLogHistory が null ならローカルの値を維持する", () => {
+    const result = normalizeCoreSyncData({
+      weeklyLogHistory: null as unknown as undefined,
+    });
+
+    expect(result.weeklyLogHistory).toEqual(LOCAL.weeklyLogHistory);
   });
 
   it("明示的な空配列/空オブジェクトはそのまま採用する（ユーザーが全削除した結果を尊重する）", () => {
@@ -89,12 +102,14 @@ describe("normalizeCoreSyncData", () => {
       routines: [],
       presets: [],
       journalHistory: {},
+      weeklyLogHistory: {},
       workoutRecordHistory: {},
     });
 
     expect(result.routines).toEqual([]);
     expect(result.presets).toEqual([]);
     expect(result.journalHistory).toEqual({});
+    expect(result.weeklyLogHistory).toEqual({});
     expect(result.workoutRecordHistory).toEqual({});
   });
 

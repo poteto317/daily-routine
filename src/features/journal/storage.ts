@@ -11,3 +11,8 @@ export {
   getJournalEntriesByPeriod,
   getLatestJournalEntry,
 } from "./storageQueries";
+// 他の機能（同期・データの書き出しと取り込み）に見せるのは、業務日誌の履歴の読み書きだけ
+export {
+  getWeeklyLogHistory,
+  saveWeeklyLogHistory,
+} from "./weekly/weeklyLogStorage";
