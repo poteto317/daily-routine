@@ -664,6 +664,13 @@ export const buildInitialData = (): TestCategory[] => [
         sp: "unchecked",
         note: "",
       },
+      {
+        id: "8-17",
+        label: "0 時をまたいだ後の支出フォームの 0 円の通知",
+        pc: "unchecked",
+        sp: "unchecked",
+        note: "",
+      },
     ],
   },
   {
@@ -842,6 +849,13 @@ export const buildInitialData = (): TestCategory[] => [
       {
         id: "11-7",
         label: "最高/最低達成日の表示",
+        pc: "unchecked",
+        sp: "unchecked",
+        note: "",
+      },
+      {
+        id: "11-8",
+        label: "0 時（月曜）をまたいだ後の週間目標の連続週",
         pc: "unchecked",
         sp: "unchecked",
         note: "",
