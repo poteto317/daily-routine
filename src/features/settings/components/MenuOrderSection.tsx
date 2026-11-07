@@ -78,12 +78,12 @@ export const MenuOrderSection = ({ menuOrder, setMenuOrderAction }: Props) => {
         <button
           type="button"
           onClick={handleReset}
-          className="text-xs text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+          className="text-xs text-gray-500 dark:text-gray-600 hover:text-blue-600 dark:hover:text-blue-600 transition-colors"
         >
           {texts.menuOrder.resetButton}
         </button>
       </div>
-      <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">
+      <p className="text-xs text-gray-500 dark:text-gray-600 mb-4">
         {texts.menuOrder.description}
       </p>
       <ul className="space-y-2">
@@ -110,23 +110,23 @@ export const MenuOrderSection = ({ menuOrder, setMenuOrderAction }: Props) => {
               _dragFromIndex = null;
               setDragOverIndex(null);
             }}
-            className={`flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg border transition-shadow cursor-default ${
+            className={`flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-200 rounded-lg border transition-shadow cursor-default ${
               dragOverIndex === index
                 ? "border-blue-400 dark:border-blue-500 shadow-md"
                 : "border-transparent"
             }`}
           >
             <span
-              className="cursor-grab active:cursor-grabbing text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 select-none text-lg leading-none"
+              className="cursor-grab active:cursor-grabbing text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-700 select-none text-lg leading-none"
               aria-label="ドラッグして並び替え"
             >
               ⠿
             </span>
             <span className="text-base select-none">{item.icon}</span>
-            <span className="flex-1 text-sm font-medium text-gray-700 dark:text-gray-300">
+            <span className="flex-1 text-sm font-medium text-gray-700 dark:text-gray-700">
               {item.label}
             </span>
-            <span className="text-xs text-gray-400 dark:text-gray-500 tabular-nums">
+            <span className="text-xs text-gray-400 dark:text-gray-600 tabular-nums">
               {index + 1}
             </span>
           </li>

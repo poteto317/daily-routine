@@ -22,16 +22,16 @@ export const FeatureVisibilitySection = ({
       <h3 className="text-lg font-semibold text-gray-900 dark:text-black mb-4">
         {texts.featureVisibility.title}
       </h3>
-      <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">
+      <p className="text-xs text-gray-500 dark:text-gray-600 mb-4">
         {texts.featureVisibility.description}
       </p>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         {FEATURE_VISIBILITY_ITEMS.map(({ key, label, icon }) => (
           <div
             key={key}
-            className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg"
+            className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-200 rounded-lg"
           >
-            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-700">
               {icon} {label}
             </span>
             <ToggleSwitch
