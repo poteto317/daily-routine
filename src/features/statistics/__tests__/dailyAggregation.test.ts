@@ -1,5 +1,6 @@
 import { createHistory } from "./statisticsTestUtils";
 import {
+  buildDailyStatsForDateKeys,
   buildDailyStatsForDates,
   buildDateRange,
   summarizeDailyStats,
@@ -102,6 +103,29 @@ describe("dailyAggregation", () => {
       2,
       "2024-01-11",
       null,
+    );
+  });
+
+  it("日付キーの配列を、キーの順のまま日別統計に変換する", () => {
+    const historyMap = {
+      "2024-01-10": createHistory({ date: "2024-01-10" }),
+    };
+
+    const result = buildDailyStatsForDateKeys(
+      ["2024-01-11", "2024-01-10"],
+      historyMap,
+    );
+
+    expect(result.map((day) => day.date)).toEqual(["2024-01-11", "2024-01-10"]);
+    expect(mockCalculateDailyStats).toHaveBeenNthCalledWith(
+      1,
+      "2024-01-11",
+      null,
+    );
+    expect(mockCalculateDailyStats).toHaveBeenNthCalledWith(
+      2,
+      "2024-01-10",
+      historyMap["2024-01-10"],
     );
   });
 
