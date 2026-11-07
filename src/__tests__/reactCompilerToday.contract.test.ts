@@ -18,48 +18,78 @@ import * as ts from "typescript";
 //   今日を素の関数で取ると、コンパイラはその値を変わらないものとみなして依存に入れないため、
 //   下流が古い今日のまま残る
 //
-// 新しく今日を使うフック・コンポーネントを直したら、下の TODAY_TARGETS に足す
+// 新しく今日を使うフック・コンポーネントを直したら、下の TODAY_TARGETS に足す。
+// 描画のたびに今日を求める "use no memo" の関数を足したら、USE_NO_MEMO_TARGETS に足す
 // （docs/02-development/coding-standards.md「React Compiler と今日・現在時刻」から参照している）。
 
 const ROOT = process.cwd();
 
-const TODAY_HOOK_FILE = "src/hooks/useToday.ts";
-const TODAY_HOOK_NAMES = ["useJstTodayKey", "useJstDay", "useLocalTodayKey"];
+type UseNoMemoTarget = {
+  /** 関数を定義しているファイル（リポジトリのルートからのパス） */
+  file: string;
+  /** export const <name> = (...) => { ... } の関数名 */
+  name: string;
+};
+
+/**
+ * 描画のたびに今日を求める関数（本体の最初の文が "use no memo"）。
+ * 共通フック（src/hooks/useToday.ts）と、機能側の関数を呼ぶため機能側に置いた関数。
+ */
+const USE_NO_MEMO_TARGETS: UseNoMemoTarget[] = [
+  { file: "src/hooks/useToday.ts", name: "useJstTodayKey" },
+  { file: "src/hooks/useToday.ts", name: "useJstDay" },
+  { file: "src/hooks/useToday.ts", name: "useLocalTodayKey" },
+  {
+    file: "src/features/routine/hooks/useHomeViewDateState.ts",
+    name: "useHomeViewDateState",
+  },
+];
 
 type TodayTarget = {
   /** 直した箇所のファイル（リポジトリのルートからのパス） */
   file: string;
-  /** ソースが呼んでいるべき共通フック（src/hooks/useToday.ts） */
-  hookCall: string;
-  /** 共通フックの戻り値を入れる変数。コンパイル結果で、メモ化の依存の比較に入っているべきもの */
-  dependency: string;
+  /**
+   * ソースが呼んでいるべき、今日を返すフック（src/hooks/useToday.ts の共通フック、または
+   * USE_NO_MEMO_TARGETS の機能側の関数）。今日を引数で受け取るだけのファイルは持たない
+   */
+  hookCall?: string;
+  /** 今日（または今日から求めた値）を入れる変数。コンパイル結果で、メモ化の依存の比較に入っているべきもの */
+  dependencies: string[];
 };
 
 const TODAY_TARGETS: TodayTarget[] = [
   {
     file: "src/features/weight-tracker/page/useWeightTrackerDataState.ts",
     hookCall: "useJstTodayKey(",
-    dependency: "today",
+    dependencies: ["today"],
   },
   {
     file: "src/features/meal/useMealPageDataState.ts",
     hookCall: "useJstTodayKey(",
-    dependency: "today",
+    dependencies: ["today"],
   },
   {
     file: "src/features/calendar/components/CalendarGrid.tsx",
     hookCall: "useJstTodayKey(",
-    dependency: "todayStr",
+    dependencies: ["todayStr"],
   },
   {
+    // currentDate・isTodayHoliday は useHomeViewDateState の戻り値。下流（view）へ届く配線の確認
+    // （useState の初期値に戻す退行はコンパイル結果に現れないので、日またぎの単体テストが捕まえる）
     file: "src/features/routine/hooks/useHomeViewState.ts",
     hookCall: "useJstDay(",
-    dependency: "currentDayOfWeek",
+    dependencies: ["currentDayOfWeek", "currentDate", "isTodayHoliday"],
+  },
+  {
+    // 描画時の既定のタブ（表示するタブ）を、渡された今日の曜日と祝日フラグから求める。
+    // 祝日の判定関数（getIsTodayHoliday）を描画中に呼ぶ形に戻すと、isTodayHoliday が依存から消える
+    file: "src/features/routine/hooks/useHomeViewControls.ts",
+    dependencies: ["isTodayHoliday", "currentDayOfWeek"],
   },
   {
     file: "src/features/budget/useBudgetPageMetricsState.ts",
     hookCall: "useLocalTodayKey(",
-    dependency: "todayKey",
+    dependencies: ["todayKey"],
   },
 ];
 
@@ -134,11 +164,11 @@ const isUseNoMemoDirective = (statement: ts.Statement | undefined) =>
   ts.isStringLiteral(statement.expression) &&
   statement.expression.text === "use no memo";
 
-/** export const <hookName> = () => { ... } の本体の最初の文が "use no memo" か（構文木で判定する） */
-const startsWithUseNoMemo = (source: string, hookName: string): boolean => {
+/** file の export const <name> = (...) => { ... } の本体の最初の文が "use no memo" か（構文木で判定する） */
+const startsWithUseNoMemo = ({ file, name }: UseNoMemoTarget): boolean => {
   const sourceFile = ts.createSourceFile(
-    TODAY_HOOK_FILE,
-    source,
+    file,
+    readSource(file),
     ts.ScriptTarget.ESNext,
     true,
   );
@@ -147,7 +177,7 @@ const startsWithUseNoMemo = (source: string, hookName: string): boolean => {
     for (const declaration of statement.declarationList.declarations) {
       if (
         ts.isIdentifier(declaration.name) &&
-        declaration.name.text === hookName &&
+        declaration.name.text === name &&
         declaration.initializer &&
         ts.isArrowFunction(declaration.initializer) &&
         ts.isBlock(declaration.initializer.body)
@@ -157,23 +187,21 @@ const startsWithUseNoMemo = (source: string, hookName: string): boolean => {
     }
   }
   throw new Error(
-    `${TODAY_HOOK_FILE} に export const ${hookName} = () => { ... } が見つかりません`,
+    `${file} に export const ${name} = (...) => { ... } が見つかりません`,
   );
 };
 
 describe("React Compiler で「今日」が固定されない（契約テスト）", () => {
-  // 検証 1: 共通フックはそれぞれ本体の最初の文が "use no memo"。
+  // 検証 1: 描画のたびに今日を求める関数は、それぞれ本体の最初の文が "use no memo"。
   // フックを呼ばず JSX も無い関数はコンパイラの対象外なので、コンパイル結果では判定できない。
-  it.each(TODAY_HOOK_NAMES)(
-    '%s は本体の最初の文が "use no memo" である',
-    (hookName) => {
-      expect(startsWithUseNoMemo(readSource(TODAY_HOOK_FILE), hookName)).toBe(
-        true,
-      );
+  it.each(USE_NO_MEMO_TARGETS)(
+    '$file の $name は本体の最初の文が "use no memo" である',
+    (target) => {
+      expect(startsWithUseNoMemo(target)).toBe(true);
     },
   );
 
-  describe.each(TODAY_TARGETS)("$file", ({ file, hookCall, dependency }) => {
+  describe.each(TODAY_TARGETS)("$file", ({ file, hookCall, dependencies }) => {
     const code = compileWithReactCompiler(file);
 
     // 検証 2: 実際にコンパイルされている（`_c(` が無いと、検証 3 が空振りで通る）
@@ -193,13 +221,15 @@ describe("React Compiler で「今日」が固定されない（契約テスト�
       expect(frozenBlocks).toEqual([]);
     });
 
-    it(`メモ化の依存の比較に ${dependency} がある`, () => {
+    it.each(dependencies)("メモ化の依存の比較に %s がある", (dependency) => {
       // 失敗したら: 今日の値が依存から外れ、日をまたいでも下流が再計算されない
       expect(code).toMatch(new RegExp(`\\$\\[\\d+\\] !== ${dependency}\\b`));
     });
 
-    it(`ソースが共通フック ${hookCall} を呼んでいる`, () => {
-      expect(readSource(file)).toContain(hookCall);
-    });
+    if (hookCall !== undefined) {
+      it(`ソースが今日を返すフック ${hookCall} を呼んでいる`, () => {
+        expect(readSource(file)).toContain(hookCall);
+      });
+    }
   });
 });
