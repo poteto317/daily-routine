@@ -65,7 +65,7 @@ export const TodoItemActionMenuTrigger = ({
       aria-haspopup="true"
       aria-expanded={itemMenuItemId === item.id}
       aria-controls={`item-menu-${item.id}`}
-      className="shrink-0 w-6 h-6 flex items-center justify-center text-gray-400 dark:text-gray-500 text-lg leading-none"
+      className="shrink-0 w-6 h-6 flex items-center justify-center text-gray-400 dark:text-gray-400 text-lg leading-none"
     >
       ⋮
     </button>

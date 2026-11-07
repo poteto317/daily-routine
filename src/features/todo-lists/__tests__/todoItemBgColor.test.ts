@@ -87,13 +87,13 @@ describe("getTodoItemBgClass", () => {
 
   it("各色値に対応したクラスを個別に返す", () => {
     const cases: Array<[TodoItemBgColorValue, string]> = [
-      ["bg-red-50", "bg-red-50 dark:bg-red-900/30"],
-      ["bg-orange-50", "bg-orange-50 dark:bg-orange-900/30"],
-      ["bg-yellow-50", "bg-yellow-50 dark:bg-yellow-900/30"],
-      ["bg-green-50", "bg-green-50 dark:bg-green-900/30"],
-      ["bg-blue-50", "bg-blue-50 dark:bg-blue-900/30"],
-      ["bg-purple-50", "bg-purple-50 dark:bg-purple-900/30"],
-      ["bg-pink-50", "bg-pink-50 dark:bg-pink-900/30"],
+      ["bg-red-50", "bg-red-50 dark:bg-red-900"],
+      ["bg-orange-50", "bg-orange-50 dark:bg-orange-900"],
+      ["bg-yellow-50", "bg-yellow-50 dark:bg-yellow-900"],
+      ["bg-green-50", "bg-green-50 dark:bg-green-900"],
+      ["bg-blue-50", "bg-blue-50 dark:bg-blue-900"],
+      ["bg-purple-50", "bg-purple-50 dark:bg-purple-900"],
+      ["bg-pink-50", "bg-pink-50 dark:bg-pink-900"],
     ];
 
     for (const [value, expected] of cases) {

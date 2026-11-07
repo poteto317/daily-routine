@@ -21,7 +21,7 @@ export const TodoItemDragHandle = ({
       {...attributes}
       {...listeners}
       style={{ touchAction: "none" }}
-      className="shrink-0 cursor-grab active:cursor-grabbing text-gray-300 dark:text-gray-500 hover:text-gray-400 dark:hover:text-gray-400 select-none"
+      className="shrink-0 cursor-grab active:cursor-grabbing text-gray-300 dark:text-gray-400 hover:text-gray-400 dark:hover:text-gray-300 select-none"
       aria-label="並び替え"
       onTouchStartCapture={(e) => e.stopPropagation()}
       onMouseDownCapture={(e) => e.stopPropagation()}
