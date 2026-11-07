@@ -141,5 +141,39 @@ describe("BudgetExpenseEditForm", () => {
 
       expect(screen.queryByRole("alert")).not.toBeInTheDocument();
     });
+
+    // Jest（ts-jest）は React Compiler を通さないので、このテストは直す前（描画のたびに new Date()）でも通る
+    // （コンパイラによる固定は検出しない。L-690）。直した後も判定が描画時の新しい今日になる経路の固定として置く。
+    // 赤は BudgetExpenseEditForm.useToday.test.tsx（共通フックのモック）と契約テストで作る
+    it("今日の日付の支出を 0 円にして通知が出たまま 0 時をまたぐと、再描画で通知が消える", () => {
+      jest.setSystemTime(new Date("2026-05-22T23:59:00+09:00"));
+      const props = {
+        categories,
+        editingExpenseDate: "2026-05-22",
+        editingExpenseAmount: "0",
+        editingExpenseCategoryId: "cat-lunch",
+        onCancelEdit: jest.fn(),
+        onSaveEdit: jest.fn(),
+        onEditDateChange: jest.fn(),
+        onEditAmountChange: jest.fn(),
+        onEditCategoryIdChange: jest.fn(),
+      };
+      const { rerender } = render(<BudgetExpenseEditForm {...props} />);
+      expect(screen.getByRole("alert")).toBeInTheDocument();
+
+      jest.setSystemTime(new Date("2026-05-23T00:01:00+09:00"));
+      rerender(
+        <BudgetExpenseEditForm
+          {...props}
+          editingExpenseCategoryId="cat-book"
+        />,
+      );
+
+      expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+      expect(screen.getByLabelText(/金額/)).toHaveAttribute(
+        "aria-invalid",
+        "false",
+      );
+    });
   });
 });
