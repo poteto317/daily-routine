@@ -1,8 +1,3 @@
-import { toJstDateKey } from "@/lib/storage/core";
-
-/** カレンダーの日付キー。JST 基準にしないと日本時間の 0〜9 時が前日になる */
-export const toDateString = (date: Date): string => toJstDateKey(date);
-
 export const toMonthDate = (year: number, month: number): Date => {
   return new Date(year, month - 1, 1);
 };

@@ -100,4 +100,42 @@ describe("useBudgetPageMetricsState", () => {
     expect(result.current.unenteredDays).toBe(30);
     expect(result.current.dailyRemainingBudget).toBe((31000 - 1800) / 30);
   });
+
+  it("同じ入力のまま日をまたいだ後の再描画で、今日の支出と未入力の日数を新しい今日で計算し直す", () => {
+    jest.setSystemTime(new Date("2026-03-07T23:59:00+09:00"));
+    const props = {
+      currentDate: new Date("2026-03-07T00:00:00+09:00"),
+      monthBudget: 31000,
+      expenses: [
+        {
+          id: "expense-1",
+          date: "2026-03-01",
+          amount: 1000,
+          createdAt: "2026-03-01T00:00:00.000Z",
+        },
+        {
+          id: "expense-2",
+          date: "2026-03-07",
+          amount: 800,
+          createdAt: "2026-03-07T00:00:00.000Z",
+        },
+      ],
+    };
+    const { result, rerender } = renderHook(
+      (hookProps: typeof props) => useBudgetPageMetricsState(hookProps),
+      { initialProps: props },
+    );
+    // 03-07 の時点: 今日の支出は 800、今日以外の入力日は 03-01 だけ（31 - 1 = 30）
+    expect(result.current.todayExpense).toBe(800);
+    expect(result.current.unenteredDays).toBe(30);
+
+    // 同じ props（参照も同じ）のまま、時計だけ 0 時をまたいでから再描画する
+    jest.setSystemTime(new Date("2026-03-08T00:01:00+09:00"));
+    rerender(props);
+
+    // 03-08 の時点: 今日の支出は 0、今日以外の入力日は 03-01・03-07（31 - 2 = 29）
+    expect(result.current.todayExpense).toBe(0);
+    expect(result.current.unenteredDays).toBe(29);
+    expect(result.current.dailyRemainingBudget).toBe((31000 - 1800) / 29);
+  });
 });

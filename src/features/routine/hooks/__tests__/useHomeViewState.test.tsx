@@ -38,6 +38,28 @@ describe("useHomeViewState", () => {
     expect(result.current.isEditMode).toBe(false);
   });
 
+  // Jest は React Compiler を通らないので、このテストは固定（メモ化）の退行を検出しない。
+  // 固定の検出は src/__tests__/reactCompilerToday.contract.test.ts（契約テスト）と、共通フックの配線テストが担う
+  it("日をまたいだ後の再描画で、曜日の並び順の先頭が新しい今日の曜日になる", () => {
+    // 2026-08-14 23:59 JST は金曜（5）、2026-08-15 00:01 JST は土曜（6）
+    jest.useFakeTimers().setSystemTime(new Date("2026-08-14T23:59:00+09:00"));
+    const { result, rerender } = renderHook(() =>
+      useHomeViewState(() => false),
+    );
+    expect(result.current.sortedDaysAndHoliday[0]).toEqual(
+      expect.objectContaining({ value: 5 }),
+    );
+
+    jest.setSystemTime(new Date("2026-08-15T00:01:00+09:00"));
+    rerender();
+
+    expect(result.current.sortedDaysAndHoliday[0]).toEqual(
+      expect.objectContaining({ value: 6 }),
+    );
+    // 選択中の曜日は初期 state のまま（設計書「既知の制約と懸念」3）
+    expect(result.current.viewMode).toBe(5);
+  });
+
   it("setFilterCategoryAction/setViewModeAction/toggleEditModeActionでlocalStorageを更新する", () => {
     const setItemSpy = jest.spyOn(Storage.prototype, "setItem");
     const { result } = renderHook(() => useHomeViewState(() => false));
