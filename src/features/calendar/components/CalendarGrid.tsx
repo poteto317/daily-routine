@@ -1,10 +1,10 @@
+import { useJstTodayKey } from "@/hooks/useToday";
 import { isHoliday } from "@/lib/holidays";
 import { type DailyHistory, type PomodoroHistory } from "@/types/routine";
 import {
   buildDateString,
   getDaysInMonth,
   getFirstDayOfMonth,
-  toDateString,
 } from "../utils/calendarDate";
 import {
   getCalendarDayButtonClassName,
@@ -31,8 +31,7 @@ export const CalendarGrid = ({
 }: CalendarGridProps) => {
   const daysInMonth = getDaysInMonth(year, month);
   const firstDay = getFirstDayOfMonth(year, month);
-  const today = new Date();
-  const todayStr = toDateString(today);
+  const todayStr = useJstTodayKey();
 
   const cells: React.ReactElement[] = [];
 
@@ -52,7 +51,8 @@ export const CalendarGrid = ({
 
     const date = new Date(year, month - 1, day);
     const isToday = dateStr === todayStr;
-    const isFuture = date > today;
+    // YYYY-MM-DD は固定長なので、文字列の大小で日付の前後を比べられる
+    const isFuture = dateStr > todayStr;
     const dayOfWeek = date.getDay();
     const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
 
