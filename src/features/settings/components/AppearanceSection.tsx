@@ -21,21 +21,21 @@ export const AppearanceSection = ({
     <>
       <div>
         <div className="flex items-center gap-2 mb-2">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-700">
             {texts.appearance.themeLabel}
           </label>
-          <span className="px-2 py-0.5 text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded">
+          <span className="px-2 py-0.5 text-xs font-medium bg-blue-100 dark:bg-blue-100 text-blue-600 dark:text-blue-700 rounded">
             {texts.appearance.betaLabel}
           </span>
         </div>
-        <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">
+        <p className="text-xs text-gray-500 dark:text-gray-600 mb-3">
           {texts.appearance.themeDescription}
         </p>
         <div className="space-y-2">
           {THEME_OPTIONS.map((item) => (
             <label
               key={item.value}
-              className="flex items-center gap-3 p-3 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors"
+              className="flex items-center gap-3 p-3 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-200 transition-colors"
             >
               <input
                 type="radio"
@@ -49,7 +49,7 @@ export const AppearanceSection = ({
                 <div className="font-medium text-gray-900 dark:text-gray-900">
                   {item.title}
                 </div>
-                <div className="text-xs text-gray-500 dark:text-gray-400">
+                <div className="text-xs text-gray-500 dark:text-gray-600">
                   {item.description}
                 </div>
               </div>
@@ -59,17 +59,17 @@ export const AppearanceSection = ({
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-700 mb-2">
           {texts.appearance.swipeActionLabel}
         </label>
-        <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">
+        <p className="text-xs text-gray-500 dark:text-gray-600 mb-3">
           {texts.appearance.swipeActionDescription}
         </p>
         <div className="space-y-2">
           {SWIPE_ACTION_OPTIONS.map((item) => (
             <label
               key={item.value}
-              className="flex items-center gap-3 p-3 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors"
+              className="flex items-center gap-3 p-3 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-200 transition-colors"
             >
               <input
                 type="radio"
@@ -87,7 +87,7 @@ export const AppearanceSection = ({
                 <div className="font-medium text-gray-900 dark:text-gray-900">
                   {item.title}
                 </div>
-                <div className="text-xs text-gray-500 dark:text-gray-400">
+                <div className="text-xs text-gray-500 dark:text-gray-600">
                   {item.description}
                 </div>
               </div>

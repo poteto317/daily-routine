@@ -64,7 +64,7 @@ export const TodoCategoryManagementItem = ({
         transition,
         opacity: isDragging ? 0.4 : 1,
       }}
-      className="flex items-center justify-between gap-3 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg"
+      className="flex items-center justify-between gap-3 p-3 bg-gray-50 dark:bg-gray-200 rounded-lg"
     >
       <div className="flex items-center gap-2 min-w-0 flex-1">
         <TodoItemDragHandle attributes={attributes} listeners={listeners} />
@@ -94,7 +94,7 @@ export const TodoCategoryManagementItem = ({
             className="flex-1 min-w-0 text-sm px-2 py-0.5 border-b-2 border-teal-400 bg-transparent text-gray-800 dark:text-gray-900 focus:outline-none"
           />
         ) : (
-          <span className="text-sm font-medium min-w-0 break-words text-gray-700 dark:text-gray-300">
+          <span className="text-sm font-medium min-w-0 break-words text-gray-700 dark:text-gray-700">
             🏷️ {category.name}
           </span>
         )}
@@ -124,7 +124,7 @@ export const TodoCategoryManagementItem = ({
           <button
             type="button"
             onClick={() => onStartEditAction(category.id, category.name)}
-            className="text-gray-300 hover:text-teal-500 dark:text-gray-500 dark:hover:text-teal-400 transition-colors text-base leading-none"
+            className="text-gray-300 hover:text-teal-500 dark:text-gray-500 dark:hover:text-teal-600 transition-colors text-base leading-none"
             aria-label={`${category.name} を編集`}
           >
             ✏️
@@ -133,7 +133,7 @@ export const TodoCategoryManagementItem = ({
         <button
           type="button"
           onClick={() => onDeleteAction(category)}
-          className="text-gray-300 hover:text-red-400 dark:text-gray-500 dark:hover:text-red-400 transition-colors text-base leading-none ml-1"
+          className="text-gray-300 hover:text-red-400 dark:text-gray-500 dark:hover:text-red-600 transition-colors text-base leading-none ml-1"
           aria-label={`${category.name} を削除`}
         >
           🗑️

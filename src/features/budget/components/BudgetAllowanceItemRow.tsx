@@ -53,7 +53,7 @@ export const BudgetAllowanceItemRow = <T extends Item>({
 
   if (isEditing) {
     return (
-      <div className="flex flex-col gap-2 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+      <div className="flex flex-col gap-2 p-3 bg-gray-50 dark:bg-gray-200 rounded-lg">
         <div className="flex items-center gap-2">
           <input
             type="text"
@@ -86,7 +86,7 @@ export const BudgetAllowanceItemRow = <T extends Item>({
           <button
             type="button"
             onClick={onCancelEdit}
-            className="text-xs text-gray-500 hover:text-gray-700 dark:text-gray-400 px-2 py-1"
+            className="text-xs text-gray-500 hover:text-gray-700 dark:text-gray-600 px-2 py-1"
           >
             {texts.allowanceSettings.cancelButton}
           </button>
@@ -96,9 +96,9 @@ export const BudgetAllowanceItemRow = <T extends Item>({
   }
 
   return (
-    <div className="flex items-center justify-between gap-3 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+    <div className="flex items-center justify-between gap-3 p-3 bg-gray-50 dark:bg-gray-200 rounded-lg">
       <div className="flex-1 min-w-0">
-        <span className="text-sm font-medium text-gray-700 dark:text-gray-300 break-words">
+        <span className="text-sm font-medium text-gray-700 dark:text-gray-700 break-words">
           {item.name}
         </span>
         <p className="text-base font-bold text-gray-900 dark:text-gray-900">
@@ -110,7 +110,7 @@ export const BudgetAllowanceItemRow = <T extends Item>({
           <button
             type="button"
             onClick={() => onToggleKind(item.id)}
-            className="text-xs px-2 py-1 rounded-full border border-gray-300 dark:border-gray-500 text-gray-500 dark:text-gray-400 hover:border-teal-400 hover:text-teal-600 transition-colors"
+            className="text-xs px-2 py-1 rounded-full border border-gray-300 dark:border-gray-500 text-gray-500 dark:text-gray-600 hover:border-teal-400 hover:text-teal-600 transition-colors"
             aria-label={`${item.name}の分類を切り替える`}
           >
             {kind === "fixed"
@@ -121,7 +121,7 @@ export const BudgetAllowanceItemRow = <T extends Item>({
         <button
           type="button"
           onClick={() => onStartEdit(item)}
-          className="text-gray-300 hover:text-blue-500 dark:text-gray-500 dark:hover:text-blue-400 transition-colors text-base leading-none"
+          className="text-gray-300 hover:text-blue-500 dark:text-gray-500 dark:hover:text-blue-600 transition-colors text-base leading-none"
           aria-label={`${item.name}を編集`}
         >
           ✏️
@@ -129,7 +129,7 @@ export const BudgetAllowanceItemRow = <T extends Item>({
         <button
           type="button"
           onClick={() => onDelete(item)}
-          className="text-gray-300 hover:text-red-400 dark:text-gray-500 dark:hover:text-red-400 transition-colors text-base leading-none"
+          className="text-gray-300 hover:text-red-400 dark:text-gray-500 dark:hover:text-red-600 transition-colors text-base leading-none"
           aria-label={`${item.name}を削除`}
         >
           🗑️
