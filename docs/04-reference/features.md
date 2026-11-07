@@ -248,6 +248,12 @@
 - 記録の編集・削除
   - 編集でも日付を変えられる（今日の記録・過去の記録とも）。変えた日付に既に記録があっても、確認なしで同じ日付に並ぶ
 - 最終更新時刻の表示
+- 週ごとの業務日誌（ジャーナル画面の「🗓️ 週ごとの業務日誌」）
+  - 月曜〜日曜を 1 週とし、週ごとに 1 件、本文だけを書ける（その週の日誌があれば編集になる）
+  - 「2026年11月2日（月）開始の週」のように、何月何日開始の週かと期間（11月2日〜11月8日）を表示する。今週の判定は日本時間
+  - 最初は今週を表示する。「◀ 前の週」「次の週 ▶」で週を切り替えられる（今週より先には進めない。入力中は切り替えられない）
+  - 本文が空（空白だけを含む）では保存できない。削除は確認ダイアログで確かめる
+  - 「📚 これまでの業務日誌」に、記録のある週を新しい週から順に表示し、「開く」でその週を表示する
 
 **使用例**
 
@@ -257,9 +263,9 @@
 **技術仕様**
 
 - ファイル: `src/features/journal/`
-- データ保存: LocalStorage（キー: `journal-history`）
+- データ保存: LocalStorage（キー: `journal-history`、`weekly-log-history`）
 - Firestore同期対応
-- AI エージェント API 対応（`/<redacted-agent-api>/journal/entries`）
+- AI エージェント API 対応（`/<redacted-agent-api>/journal/entries`。日次のジャーナルのみ。週ごとの業務日誌は対象外）
 - ステータス: 正式機能
 
 ---
@@ -547,7 +553,7 @@ Firestoreを使用した複数端末間のデータ同期・バックアップ�
   - Firestore リスナーで他端末からの更新を常時監視
   - 他端末で更新された場合、ヘッダーの同期アイコンや設定画面に「他の端末でデータが更新されています」と通知表示
 - **全機能データの包括同期**
-  - 同期対象: ルーティン、進捗、履歴、設定、家計簿（データ・カテゴリ・収支項目）、ジャーナル、体重記録、運動記録（記録・種目マスター）、食事記録、ポモドーロ履歴、作業記録（セッション・テンプレート）、プリセット、Todoリスト（リスト・カテゴリ）
+  - 同期対象: ルーティン、進捗、履歴、設定、家計簿（データ・カテゴリ・収支項目）、ジャーナル、週ごとの業務日誌、体重記録、運動記録（記録・種目マスター）、食事記録、ポモドーロ履歴、作業記録（セッション・テンプレート）、プリセット、Todoリスト（リスト・カテゴリ）
 - **データ保護・下位互換性設計**
   - リモートデータに特定フィールドが存在しない場合（古いバージョンのアプリやエージェントAPIからの更新時）、ローカルに存在する既存データを消さずに維持
   - 明示的な空配列（ユーザーが全削除した場合）は尊重して空として同期
@@ -678,7 +684,7 @@ AI エージェントや外部スクリプトからアプリデータを安全�
       2. `progress`: 今日の進捗データ (`progress`。当日進捗が存在する場合のみ出力)
       3. `history`: 達成カレンダー・統計データ全履歴 (`history`)
       4. `settings`: アプリ設定 (`settings`)
-      5. `records`: 記録（ジャーナル・体重・運動記録・食事・ポモドーロ・作業）
+      5. `records`: 記録（ジャーナル・業務日誌・体重・運動記録・食事・ポモドーロ・作業）
       6. `todoLists`: Todoリスト（リスト本体・Todoカテゴリ）
       7. `budget`: 家計簿（支出データ・カテゴリ・収入項目・支出項目）
       8. `presets`: プリセット
@@ -956,6 +962,7 @@ Progressive Web App (PWA) 技術と Workbox による Service Worker を活用�
 | `budget-income-items`           | 定期収入項目マスター一覧                             | 家計簿           |
 | `budget-expense-items`          | 固定費・変動費項目マスター一覧                       | 家計簿           |
 | `journal-history`               | 日記・ジャーナル記録データ                           | ジャーナル       |
+| `weekly-log-history`            | 週次の業務日誌データ（週の開始日ごと）               | ジャーナル       |
 | `meal-history`                  | 食事記録データ（朝昼夕間食）                         | 食事記録         |
 | `weight-history`                | 体重記録データ                                       | 体重記録         |
 | `workout-records`               | 運動記録データ（筋トレ・ランニング履歴）             | 運動記録         |
@@ -987,6 +994,7 @@ users/{userId}                         # ユーザー同期データ本体ドキ
   ├─ budgetIncomeItems: BudgetIncomeItem[]
   ├─ budgetExpenseItems: BudgetExpenseItem[]
   ├─ journalHistory: Record<string, JournalEntry>
+  ├─ weeklyLogHistory: Record<string, WeeklyLogEntry>
   ├─ mealHistory: Record<string, MealRecord[]>
   ├─ weightHistory: Record<string, WeightRecord>
   ├─ workoutRecordHistory: Record<string, WorkoutRecord[]>

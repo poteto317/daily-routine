@@ -141,6 +141,7 @@ Firestore（`users/{userId}`）に保存されるデータ：
   budgetIncomeItems: BudgetIncomeItem[],
   budgetExpenseItems: BudgetExpenseItem[],
   journalHistory: Record<string, JournalEntry>,
+  weeklyLogHistory: Record<string, WeeklyLogEntry>,
   mealHistory: Record<string, MealRecord[]>,
   weightHistory: Record<string, WeightRecord>,
   workoutRecordHistory: Record<string, WorkoutRecord[]>,
