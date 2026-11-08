@@ -17,7 +17,7 @@ export const TodoItemActionMenuCategorySection = ({
   onSelect,
 }: Props) => (
   <div className="px-3 py-1.5 border-t border-gray-100 dark:border-gray-600">
-    <p className="text-xs text-gray-400 dark:text-gray-500 mb-1.5">
+    <p className="text-xs text-gray-400 dark:text-gray-300 mb-1.5">
       {texts.list.categoryPickerLabel}
     </p>
     <TodoCategorySwatches

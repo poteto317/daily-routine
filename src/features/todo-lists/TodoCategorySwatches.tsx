@@ -44,7 +44,7 @@ export const TodoCategorySwatches = ({
         aria-checked={isUncategorized}
         type="button"
         onClick={() => onSelectAction(undefined)}
-        className={`px-2 py-1 rounded-lg border text-xs transition-all ${
+        className={`px-2 py-1 rounded-lg border text-xs text-gray-800 dark:text-gray-100 transition-all ${
           isUncategorized
             ? "border-teal-500 ring-2 ring-teal-300 bg-white dark:bg-gray-700"
             : "border-gray-200 dark:border-gray-500 hover:border-teal-400 bg-white dark:bg-gray-700"
@@ -61,7 +61,7 @@ export const TodoCategorySwatches = ({
           aria-checked={selectedCategoryId === category.id}
           type="button"
           onClick={() => onSelectAction(category.id)}
-          className={`px-2 py-1 rounded-lg border text-xs transition-all ${getTodoItemBgClass(category.color)} ${
+          className={`px-2 py-1 rounded-lg border text-xs text-gray-800 dark:text-gray-100 transition-all ${getTodoItemBgClass(category.color)} ${
             selectedCategoryId === category.id
               ? "border-teal-500 ring-2 ring-teal-300"
               : "border-gray-200 dark:border-gray-500 hover:border-teal-400"

@@ -12,7 +12,7 @@ type LabeledFieldProps = {
 };
 
 const DEFAULT_LABEL_CLASS_NAME =
-  "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1";
+  "block text-sm font-medium text-gray-700 dark:text-gray-700 mb-1";
 
 /**
  * ラベル付きの入力欄。

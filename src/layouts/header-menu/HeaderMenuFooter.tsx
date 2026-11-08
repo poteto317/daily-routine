@@ -20,9 +20,9 @@ export const HeaderMenuFooter = ({
   onMenuItemKeyDown,
 }: Props) => {
   return (
-    <div className="border-t border-gray-200 dark:border-gray-700 mt-2 pt-2">
+    <div className="border-t border-gray-200 dark:border-gray-300 mt-2 pt-2">
       {user && (
-        <div className="px-4 py-2 text-sm text-gray-600 dark:text-gray-400">
+        <div className="px-4 py-2 text-sm text-gray-600 dark:text-gray-600">
           <div className="flex items-center gap-2 mb-2">
             <span>👤</span>
             <span className="font-medium">
@@ -41,7 +41,7 @@ export const HeaderMenuFooter = ({
         onClick={onLogoutClick}
         onKeyDown={(event) => onMenuItemKeyDown(event, logoutItemIndex)}
         role="menuitem"
-        className="w-full text-left px-4 py-3 flex items-center gap-3 whitespace-nowrap transition-colors hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600 dark:text-red-400"
+        className="w-full text-left px-4 py-3 flex items-center gap-3 whitespace-nowrap transition-colors hover:bg-red-50 dark:hover:bg-red-100 text-red-600 dark:text-red-700"
       >
         <span className="text-xl">🚪</span>
         <span className="font-medium">{uiTextConfig.auth.logout.button}</span>

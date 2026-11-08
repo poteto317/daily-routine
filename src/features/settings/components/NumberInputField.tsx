@@ -10,7 +10,6 @@ type NumberInputFieldProps = {
   max: number;
   errorText: string;
   hint: string;
-  inputClassName?: string;
 };
 
 export const NumberInputField = ({
@@ -22,18 +21,17 @@ export const NumberInputField = ({
   max,
   errorText,
   hint,
-  inputClassName,
 }: NumberInputFieldProps) => {
   const invalid = isInvalidNumberInput(value, min, max);
 
   return (
     <LabeledField
       label={label}
-      labelClassName="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+      labelClassName="block text-sm font-medium text-gray-700 dark:text-gray-700 mb-2"
     >
       {(inputId) => (
         <>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">
+          <p className="text-xs text-gray-500 dark:text-gray-600 mb-3">
             {description}
           </p>
           <input
@@ -43,18 +41,18 @@ export const NumberInputField = ({
             max={max}
             value={value}
             onChange={(e) => onChange(e.target.value)}
-            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 dark:bg-gray-700 dark:text-gray-100 ${
+            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 dark:bg-white dark:text-gray-900 ${
               invalid
                 ? "border-red-500 focus:ring-red-500"
-                : "border-gray-300 dark:border-gray-600 focus:ring-blue-500"
-            } ${inputClassName ?? ""}`}
+                : "border-gray-300 dark:border-gray-400 focus:ring-blue-500"
+            }`}
           />
           {invalid && (
-            <p className="text-xs text-red-600 dark:text-red-400 mt-1">
+            <p className="text-xs text-red-600 dark:text-red-700 mt-1">
               {errorText}
             </p>
           )}
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+          <p className="text-xs text-gray-500 dark:text-gray-600 mt-1">
             {hint}
           </p>
         </>

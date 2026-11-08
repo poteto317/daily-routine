@@ -41,10 +41,10 @@ export const DefaultAndPomodoroSection = ({
       />
       <div>
         <div className="flex items-center gap-2 mb-2">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-700">
             {DEFAULT_NOTIFICATION_FIELD.label}
           </label>
-          <span className="px-2 py-0.5 text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded">
+          <span className="px-2 py-0.5 text-xs font-medium bg-blue-100 dark:bg-blue-100 text-blue-600 dark:text-blue-700 rounded">
             {texts.defaultAndPomodoro.notificationBetaLabel}
           </span>
         </div>

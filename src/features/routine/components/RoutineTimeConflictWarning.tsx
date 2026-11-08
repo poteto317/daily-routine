@@ -22,7 +22,7 @@ export const RoutineTimeConflictWarning = ({
   }
 
   return (
-    <div className="text-xs text-red-600 dark:text-red-400 mt-1 font-medium">
+    <div className="text-xs text-red-600 dark:text-red-700 mt-1 font-medium">
       <p className="mb-1">{ROUTINE_FORM_CONFLICT_TITLE}</p>
       <ul className="list-disc list-inside space-y-0.5 ml-2">
         {conflictInfo.conflictingRoutines.map(({ routine, commonDays }) => (

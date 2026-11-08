@@ -149,7 +149,11 @@ export const SortableTodoListItem = ({
               getBlockAnchorIndices（todoListItemBlocks.ts）を単一の判定
               根拠として使っており、判定基準が乖離することはない。 */}
           {isBlockAnchor && (
-            <TodoItemDragHandle attributes={attributes} listeners={listeners} />
+            <TodoItemDragHandle
+              attributes={attributes}
+              listeners={listeners}
+              tone="onDark"
+            />
           )}
 
           <TodoItemIndentButtons

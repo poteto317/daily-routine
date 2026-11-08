@@ -45,13 +45,13 @@ export const SyncManagementPage = () => {
           </div>
 
           {isLoading ? (
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-gray-500 dark:text-gray-600">
               {texts.snapshotManager.loading}
             </p>
           ) : error ? (
-            <p className="text-sm text-red-500">{error}</p>
+            <p className="text-sm text-red-600 dark:text-red-700">{error}</p>
           ) : snapshots.length === 0 ? (
-            <div className="text-center py-12 text-gray-400 dark:text-gray-500">
+            <div className="text-center py-12 text-gray-400 dark:text-gray-600">
               <p className="text-3xl mb-2">☁️</p>
               <p className="text-sm font-medium">
                 {texts.snapshotManager.empty}
@@ -65,23 +65,23 @@ export const SyncManagementPage = () => {
                 return (
                   <div
                     key={snapshot.id}
-                    className="rounded-xl border border-gray-200 bg-white dark:bg-gray-800/60 p-4"
+                    className="rounded-xl border border-gray-200 dark:border-gray-300 bg-white dark:bg-gray-200 p-4"
                   >
                     <div className="flex flex-wrap items-start justify-between gap-3">
                       <div>
-                        <p className="text-sm font-semibold text-gray-800 dark:text-gray-100">
+                        <p className="text-sm font-semibold text-gray-800 dark:text-gray-900">
                           {texts.snapshotManager.snapshotLabel.replace(
                             "{index}",
                             String(index + 1),
                           )}
                         </p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                        <p className="text-xs text-gray-500 dark:text-gray-700 mt-1">
                           {texts.snapshotManager.uploadedAtLabel.replace(
                             "{datetime}",
                             formatUploadedAt(snapshot.uploadedAt),
                           )}
                         </p>
-                        <p className="text-xs text-gray-400 dark:text-gray-500 mt-1 break-all">
+                        <p className="text-xs text-gray-400 dark:text-gray-600 mt-1 break-all">
                           {texts.snapshotManager.deviceLabel.replace(
                             "{deviceId}",
                             snapshot.deviceId,

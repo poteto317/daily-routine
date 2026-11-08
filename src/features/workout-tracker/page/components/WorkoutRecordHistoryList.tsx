@@ -18,12 +18,12 @@ export const WorkoutRecordHistoryList = ({
   onDeleteRecordAction,
 }: WorkoutRecordHistoryListProps) => (
   <div className="space-y-4">
-    <h2 className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+    <h2 className="text-sm font-semibold text-gray-700 dark:text-gray-700">
       {texts.historyList.title}
     </h2>
 
     {groups.length === 0 ? (
-      <p className="text-sm text-gray-400 dark:text-gray-500">
+      <p className="text-sm text-gray-400 dark:text-gray-600">
         {texts.historyList.empty}
       </p>
     ) : (

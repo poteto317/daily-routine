@@ -61,9 +61,9 @@ export const RoutineFormCoreFields = ({
               </button>
             ))}
           </FieldGroup>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+          <p className="text-xs text-gray-500 dark:text-gray-600 mt-1">
             {daysOfWeek.length === 0 ? (
-              <span className="text-red-600 dark:text-red-400 font-medium">
+              <span className="text-red-600 dark:text-red-700 font-medium">
                 {ROUTINE_FORM_DAYS_WARNING_LABEL}
               </span>
             ) : (

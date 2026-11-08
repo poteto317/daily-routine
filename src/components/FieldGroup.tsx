@@ -10,7 +10,7 @@ type FieldGroupProps = {
 };
 
 const DEFAULT_LABEL_CLASS_NAME =
-  "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2";
+  "block text-sm font-medium text-gray-700 dark:text-gray-700 mb-2";
 
 /**
  * 見出し付きのボタン群。曜日やカテゴリのように、入力欄ではなく選択肢が

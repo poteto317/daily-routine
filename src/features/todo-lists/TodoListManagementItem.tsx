@@ -60,7 +60,11 @@ export const TodoListManagementItem = ({
       className="flex items-center justify-between gap-3 p-3 bg-gray-50 dark:bg-gray-200 rounded-lg"
     >
       <div className="flex items-center gap-2 min-w-0 flex-1">
-        <TodoItemDragHandle attributes={attributes} listeners={listeners} />
+        <TodoItemDragHandle
+          attributes={attributes}
+          listeners={listeners}
+          tone="onLight"
+        />
         {isEditing ? (
           <input
             type="text"
@@ -81,8 +85,8 @@ export const TodoListManagementItem = ({
             onClick={() => onOpenListAction(list.id)}
             className={`text-sm font-medium min-w-0 break-words text-left ${
               isVisible
-                ? "text-gray-700 dark:text-gray-700 hover:text-teal-600 dark:hover:text-teal-700"
-                : "text-gray-400 dark:text-gray-500 line-through"
+                ? "text-gray-700 dark:text-gray-700 hover:text-teal-600 dark:hover:text-teal-800"
+                : "text-gray-400 dark:text-gray-600 line-through"
             }`}
             aria-label={`${list.title} を開く`}
           >
@@ -111,7 +115,7 @@ export const TodoListManagementItem = ({
           <button
             type="button"
             onClick={() => onStartEditAction(list.id, list.title)}
-            className="text-gray-300 hover:text-teal-500 dark:text-gray-500 dark:hover:text-teal-600 transition-colors text-base leading-none"
+            className="text-gray-300 hover:text-teal-500 dark:text-gray-500 dark:hover:text-teal-700 transition-colors text-base leading-none"
             aria-label={`${list.title} を編集`}
           >
             ✏️

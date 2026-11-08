@@ -70,7 +70,7 @@ export const RoutineFormOptionalFields = ({
               id={`${inputId}-hint`}
               className={`text-xs mt-1 ${
                 isWeeklyGoalTargetValid
-                  ? "text-gray-500 dark:text-gray-400"
+                  ? "text-gray-500 dark:text-gray-600"
                   : "text-red-600 dark:text-red-700"
               }`}
             >
@@ -84,9 +84,9 @@ export const RoutineFormOptionalFields = ({
 
       <LabeledField
         label={ROUTINE_FORM_NOTIFICATION_LABEL}
-        labelClassName="block text-sm font-medium text-gray-700 dark:text-gray-300"
+        labelClassName="block text-sm font-medium text-gray-700 dark:text-gray-700"
         labelAdornment={
-          <span className="px-2 py-0.5 text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded">
+          <span className="px-2 py-0.5 text-xs font-medium bg-blue-100 dark:bg-blue-100 text-blue-600 dark:text-blue-700 rounded">
             {ROUTINE_FORM_NOTIFICATION_BETA}
           </span>
         }
@@ -104,7 +104,7 @@ export const RoutineFormOptionalFields = ({
                 defaultNotificationMinutes,
               )}
             />
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+            <p className="text-xs text-gray-500 dark:text-gray-600 mt-1">
               {ROUTINE_FORM_NOTIFICATION_HINT_PREFIX}{" "}
               {defaultNotificationMinutes}
               {ROUTINE_FORM_NOTIFICATION_HINT_SUFFIX}

@@ -12,21 +12,19 @@ export const ROUTINE_FORM_DURATION_HINT_SUFFIX =
   texts.routineFormTime.durationHintSuffix;
 export const ROUTINE_DAY_NAMES = texts.routineFormTime.dayNames;
 
-export const getRoutineTimeInputClassName = (hasConflict: boolean): string =>
-  `w-full px-3 py-2 border rounded-lg focus:ring-2 dark:bg-white dark:text-gray-900 transition-all ${
+const getRoutineInputClassName = (hasConflict: boolean): string =>
+  `w-full px-3 py-2 border rounded-lg focus:ring-2 dark:text-gray-900 transition-all ${
     hasConflict
       ? "border-red-500 focus:ring-red-500 animate-shake bg-red-50 dark:bg-red-100"
-      : "border-gray-300 dark:border-gray-400 focus:ring-blue-500"
+      : "border-gray-300 dark:border-gray-400 focus:ring-blue-500 dark:bg-white"
   }`;
+
+export const getRoutineTimeInputClassName = (hasConflict: boolean): string =>
+  getRoutineInputClassName(hasConflict);
 
 export const getRoutineDurationInputClassName = (
   hasConflict: boolean,
-): string =>
-  `w-full px-3 py-2 border rounded-lg focus:ring-2 dark:bg-gray-700 dark:text-gray-100 transition-all ${
-    hasConflict
-      ? "border-red-500 focus:ring-red-500 animate-shake bg-red-50 dark:bg-red-900/20"
-      : "border-gray-300 dark:border-gray-600 focus:ring-blue-500"
-  }`;
+): string => getRoutineInputClassName(hasConflict);
 
 export const getRoutineDurationPlaceholder = (
   defaultDurationMinutes: number,

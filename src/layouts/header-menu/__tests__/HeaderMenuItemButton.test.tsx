@@ -48,7 +48,7 @@ describe("HeaderMenuItemButton", () => {
       const button = screen.getByRole("menuitem");
       expect(button.className).not.toContain("bg-blue-50");
       expect(button.className).toContain("hover:bg-gray-200");
-      expect(button.className).toContain("dark:hover:bg-gray-700");
+      expect(button.className).toContain("dark:hover:bg-gray-200");
     });
   });
 
@@ -74,7 +74,7 @@ describe("HeaderMenuItemButton", () => {
       const button = screen.getByRole("menuitem");
       expect(button.className).not.toContain("bg-blue-50");
       expect(button.className).toContain("hover:bg-gray-200");
-      expect(button.className).toContain("dark:hover:bg-gray-700");
+      expect(button.className).toContain("dark:hover:bg-gray-200");
     });
 
     it("【バグ修正】isActive=true でも currentPage が home の場合は非アクティブスタイルになる", () => {
@@ -82,7 +82,7 @@ describe("HeaderMenuItemButton", () => {
       const button = screen.getByRole("menuitem");
       expect(button.className).not.toContain("bg-blue-50");
       expect(button.className).toContain("hover:bg-gray-200");
-      expect(button.className).toContain("dark:hover:bg-gray-700");
+      expect(button.className).toContain("dark:hover:bg-gray-200");
     });
 
     it("isActive=false の場合は currentPage が route と一致してもアクティブスタイルにならない", () => {
@@ -94,13 +94,23 @@ describe("HeaderMenuItemButton", () => {
   });
 
   describe("ダークモードのコントラスト（リグレッション防止）", () => {
-    it("非アクティブ時の dark hover 背景色がテキスト色と同色にならない（gray-300同士の混在防止）", () => {
+    // メニューのパネル（HeaderMenuPanel）はダークモードでも明るい（dark:bg-slate-100）ため、
+    // 項目の文字は暗い色、ホバーの背景は明るい色にする
+    it("非アクティブ時は、明るいパネルの上で読める暗い文字と明るいホバー背景になる", () => {
       renderButton(baseItem, "home");
       const button = screen.getByRole("menuitem");
-      // dark:hover:bg-gray-300 は dark:text-gray-300 と同色になりコントラストが消えるため使用禁止
-      expect(button.className).not.toContain("dark:hover:bg-gray-300");
-      // dark:hover:bg-gray-700 はテキスト gray-300 と十分なコントラストがある
-      expect(button.className).toContain("dark:hover:bg-gray-700");
+      expect(button.className).toContain("dark:text-gray-800");
+      expect(button.className).toContain("dark:hover:bg-gray-200");
+      // 明るいパネルの上の明るい文字・暗いホバー背景（暗い文字と重なる）は使わない
+      expect(button.className).not.toContain("dark:text-gray-300");
+      expect(button.className).not.toContain("dark:hover:bg-gray-700");
+    });
+
+    it("アクティブ時は、不透明の明るい背景と暗い青の文字になる", () => {
+      renderButton(baseItem, "journal");
+      const button = screen.getByRole("menuitem");
+      expect(button.className).toContain("dark:bg-blue-100");
+      expect(button.className).toContain("dark:text-blue-700");
     });
   });
 

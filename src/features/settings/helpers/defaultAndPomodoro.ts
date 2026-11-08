@@ -5,7 +5,6 @@ type NumberFieldViewModel = {
   max: number;
   errorText: string;
   hint: string;
-  inputClassName?: string;
 };
 
 export const DEFAULT_DURATION_FIELD: NumberFieldViewModel = {
@@ -26,8 +25,6 @@ export const DEFAULT_NOTIFICATION_FIELD: NumberFieldViewModel = {
   max: 120,
   errorText: "0～120分の範囲で入力してください（0は通知なし）",
   hint: "0分で通知なし",
-  inputClassName:
-    "dark:bg-white dark:text-gray-900 border-gray-300 dark:border-gray-400",
 };
 
 export const BACKGROUND_REFRESH_FIELD: NumberFieldViewModel = {
