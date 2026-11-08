@@ -46,7 +46,7 @@ export const TodoItemTitleButton = ({
       disabled={isDragActive}
       className={`flex-1 min-w-0 text-sm break-words text-left disabled:cursor-not-allowed ${
         isCompleted
-          ? "line-through text-gray-400 dark:text-gray-400"
+          ? "line-through text-gray-400 dark:text-gray-300"
           : "text-gray-800 dark:text-gray-100"
       }`}
     >

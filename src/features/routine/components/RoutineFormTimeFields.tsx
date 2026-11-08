@@ -65,12 +65,12 @@ export const RoutineFormTimeFields = ({
                 defaultDurationMinutes,
               )}
             />
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+            <p className="text-xs text-gray-500 dark:text-gray-600 mt-1">
               {ROUTINE_FORM_DURATION_HINT_PREFIX} {defaultDurationMinutes}
               {ROUTINE_FORM_DURATION_HINT_SUFFIX}
             </p>
             {conflictInfo.hasConflict && (
-              <p className="text-xs text-red-600 dark:text-red-400 mt-1 font-medium">
+              <p className="text-xs text-red-600 dark:text-red-700 mt-1 font-medium">
                 {ROUTINE_FORM_DURATION_CONFLICT_LABEL}
               </p>
             )}

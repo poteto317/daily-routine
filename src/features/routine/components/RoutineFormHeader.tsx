@@ -24,7 +24,7 @@ export const RoutineFormHeader = ({
       <button
         type="button"
         onClick={onCancel}
-        className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+        className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-gray-500 dark:text-gray-600 hover:text-gray-700 dark:hover:text-gray-200"
         aria-label={ROUTINE_FORM_HEADER_TEXT.closeAriaLabel}
       >
         <svg

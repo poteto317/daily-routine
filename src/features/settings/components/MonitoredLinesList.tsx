@@ -13,7 +13,7 @@ export const MonitoredLinesList = ({
 }: Props) => {
   if (monitoredLines.length === 0) {
     return (
-      <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-4">
+      <p className="text-sm text-gray-500 dark:text-gray-600 text-center py-4">
         {texts.monitoredLines.emptyMessage}
       </p>
     );
@@ -21,7 +21,7 @@ export const MonitoredLinesList = ({
 
   return (
     <div>
-      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+      <label className="block text-sm font-medium text-gray-700 dark:text-gray-700 mb-2">
         {getMonitoredLinesCountLabel(monitoredLines.length)}
       </label>
       <div className="space-y-2">
@@ -34,14 +34,14 @@ export const MonitoredLinesList = ({
               <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                 {line.lineName}
               </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
+              <p className="text-xs text-gray-500 dark:text-gray-300">
                 {line.company}
               </p>
             </div>
             <button
               type="button"
               onClick={() => handleRemoveLine(line.lineId)}
-              className="text-red-600 hover:text-red-700 dark:text-red-500 dark:hover:text-red-400 text-sm font-medium"
+              className="text-red-600 hover:text-red-700 dark:text-red-300 dark:hover:text-red-200 text-sm font-medium"
             >
               {texts.monitoredLines.removeLabel}
             </button>

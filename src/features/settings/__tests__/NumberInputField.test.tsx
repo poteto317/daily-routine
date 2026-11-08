@@ -75,4 +75,39 @@ describe("NumberInputField", () => {
       screen.queryByText("1〜240の範囲で入力してください"),
     ).not.toBeInTheDocument();
   });
+
+  it("明るいカード上の入力欄の背景・文字色（dark:bg-white・dark:text-gray-900）だけが付く", () => {
+    // 同じ要素に dark: の背景を 2 つ付けると、CSS の出力順で勝ち負けが決まってしまう
+    render(<NumberInputField {...defaultProps} />);
+    const input = screen.getByLabelText("デフォルトの所要時間");
+    const classes = input.className.split(/\s+/);
+
+    expect(classes.filter((c) => c.startsWith("dark:bg-"))).toEqual([
+      "dark:bg-white",
+    ]);
+    expect(classes.filter((c) => c.startsWith("dark:text-"))).toEqual([
+      "dark:text-gray-900",
+    ]);
+  });
+
+  it("通常時は、ダークモードの枠の色（dark:border-gray-400）が付く", () => {
+    render(<NumberInputField {...defaultProps} />);
+    const classes = screen
+      .getByLabelText("デフォルトの所要時間")
+      .className.split(/\s+/);
+
+    expect(classes).toContain("dark:border-gray-400");
+    expect(classes).not.toContain("border-red-500");
+  });
+
+  it("範囲外の値では、ダークモードでも赤い枠だけが付く", () => {
+    // 正常時の dark:border-* が残ると、詳細度で赤い枠が消える
+    render(<NumberInputField {...defaultProps} value="999" />);
+    const classes = screen
+      .getByLabelText("デフォルトの所要時間")
+      .className.split(/\s+/);
+
+    expect(classes).toContain("border-red-500");
+    expect(classes.filter((c) => c.startsWith("dark:border-"))).toEqual([]);
+  });
 });

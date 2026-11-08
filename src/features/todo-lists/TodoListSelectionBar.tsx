@@ -17,15 +17,15 @@ export const TodoListSelectionBar = ({
   onCutAction,
   onClearSelectionAction,
 }: TodoListSelectionBarProps) => (
-  <div className="flex items-center justify-between gap-2 mb-4 p-3 bg-teal-50 dark:bg-teal-900/30 border border-teal-200 dark:border-teal-700 rounded-xl">
-    <span className="text-sm text-teal-700 dark:text-teal-300 font-medium">
+  <div className="flex items-center justify-between gap-2 mb-4 p-3 bg-teal-50 dark:bg-teal-100 border border-teal-200 dark:border-teal-300 rounded-xl">
+    <span className="text-sm text-teal-700 dark:text-teal-800 font-medium">
       {texts.list.selectedCount.replace("{count}", String(selectedCount))}
     </span>
     <div className="flex gap-2">
       <button
         type="button"
         onClick={onClearSelectionAction}
-        className="text-xs text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
+        className="text-xs text-gray-500 dark:text-gray-600 hover:text-gray-700 dark:hover:text-gray-800 transition-colors"
       >
         {texts.list.clearSelectionButton}
       </button>

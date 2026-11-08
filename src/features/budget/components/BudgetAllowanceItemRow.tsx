@@ -110,7 +110,7 @@ export const BudgetAllowanceItemRow = <T extends Item>({
           <button
             type="button"
             onClick={() => onToggleKind(item.id)}
-            className="text-xs px-2 py-1 rounded-full border border-gray-300 dark:border-gray-500 text-gray-500 dark:text-gray-600 hover:border-teal-400 hover:text-teal-600 transition-colors"
+            className="text-xs px-2 py-1 rounded-full border border-gray-300 dark:border-gray-500 text-gray-500 dark:text-gray-600 hover:border-teal-400 hover:text-teal-600 dark:hover:text-teal-800 transition-colors"
             aria-label={`${item.name}の分類を切り替える`}
           >
             {kind === "fixed"

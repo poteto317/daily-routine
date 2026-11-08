@@ -63,7 +63,7 @@ export const TrainDelayNotification = ({
           </div>
         </div>
       ))}
-      <p className="text-xs text-gray-500 dark:text-gray-600 text-center mt-2">
+      <p className="text-xs text-gray-500 dark:text-gray-800 text-center mt-2">
         {texts.trainDelay.mockHint}
       </p>
     </div>

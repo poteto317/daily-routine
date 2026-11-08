@@ -33,7 +33,7 @@ export const WorkoutRecordHistoryItem = ({
         type="button"
         onClick={() => onDeleteAction(record)}
         aria-label={texts.historyItem.deleteAriaLabel}
-        className="shrink-0 text-gray-300 hover:text-red-400 dark:text-gray-500 dark:hover:text-red-400 transition-colors text-base leading-none"
+        className="shrink-0 text-gray-300 hover:text-red-400 dark:text-gray-400 dark:hover:text-red-400 transition-colors text-base leading-none"
       >
         🗑️
       </button>

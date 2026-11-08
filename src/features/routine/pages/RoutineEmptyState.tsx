@@ -27,7 +27,7 @@ export const RoutineEmptyState = ({
   if (displayRoutinesCount === 0) {
     return (
       <div className="bg-white dark:bg-slate-100 rounded-xl shadow p-8 text-center">
-        <p className="text-gray-500 dark:text-gray-400 mb-4">
+        <p className="text-gray-500 dark:text-gray-600 mb-4">
           {getEmptyMessage(allRoutinesCount, viewMode)}
         </p>
         {isEditMode && (
@@ -45,7 +45,7 @@ export const RoutineEmptyState = ({
   if (filteredRoutinesCount === 0) {
     return (
       <div className="bg-white dark:bg-slate-100 rounded-xl shadow p-8 text-center">
-        <p className="text-gray-500 dark:text-gray-400">
+        <p className="text-gray-500 dark:text-gray-600">
           {ROUTINE_EMPTY_STATE_TEXT.noCategoryRoutines}
         </p>
       </div>

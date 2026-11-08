@@ -67,7 +67,11 @@ export const TodoCategoryManagementItem = ({
       className="flex items-center justify-between gap-3 p-3 bg-gray-50 dark:bg-gray-200 rounded-lg"
     >
       <div className="flex items-center gap-2 min-w-0 flex-1">
-        <TodoItemDragHandle attributes={attributes} listeners={listeners} />
+        <TodoItemDragHandle
+          attributes={attributes}
+          listeners={listeners}
+          tone="onLight"
+        />
         {isEditing ? (
           <input
             type="text"
@@ -124,7 +128,7 @@ export const TodoCategoryManagementItem = ({
           <button
             type="button"
             onClick={() => onStartEditAction(category.id, category.name)}
-            className="text-gray-300 hover:text-teal-500 dark:text-gray-500 dark:hover:text-teal-600 transition-colors text-base leading-none"
+            className="text-gray-300 hover:text-teal-500 dark:text-gray-500 dark:hover:text-teal-700 transition-colors text-base leading-none"
             aria-label={`${category.name} を編集`}
           >
             ✏️

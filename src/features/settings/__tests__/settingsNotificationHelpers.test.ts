@@ -37,6 +37,16 @@ describe("settings notification helpers", () => {
     expect(getDebugMessageClassName("idle")).toContain("text-blue-800");
   });
 
+  it("debug message はダークモードで、不透明の明るい背景と暗い文字になる（明るいカードの上で読める）", () => {
+    const error = getDebugMessageClassName("error");
+    const idle = getDebugMessageClassName("idle");
+
+    expect(error).toContain("dark:bg-red-100");
+    expect(error).toContain("dark:text-red-800");
+    expect(idle).toContain("dark:bg-blue-100");
+    expect(idle).toContain("dark:text-blue-800");
+  });
+
   it("通知対象ルーティン数を集計する", () => {
     const routines = [
       { notificationMinutes: 0 },

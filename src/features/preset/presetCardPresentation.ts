@@ -16,7 +16,7 @@ export const PRESET_DUPLICATE_LABEL = presetTexts.card.duplicateLabel;
 export const getPresetCardClassName = (isSelected: boolean): string =>
   `p-4 border-2 rounded-lg cursor-pointer transition-all ${
     isSelected
-      ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20"
+      ? "border-blue-500 bg-blue-50 dark:bg-blue-950"
       : "border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500"
   }`;
 

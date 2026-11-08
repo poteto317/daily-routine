@@ -181,6 +181,14 @@ describe("TodoListManagementItem", () => {
     expect(screen.queryByLabelText("Inbox を編集")).not.toBeInTheDocument();
   });
 
+  it("並び替えのハンドルは、明るい行（dark:bg-gray-200）向けの暗い色になる", () => {
+    render(<TodoListManagementItem {...defaultProps} />);
+    expect(screen.getByRole("button", { name: "並び替え" })).toHaveClass(
+      "dark:text-gray-500",
+      "dark:hover:text-gray-700",
+    );
+  });
+
   it("並び替え用のドラッグハンドルを表示する", () => {
     render(<TodoListManagementItem {...defaultProps} />);
     expect(

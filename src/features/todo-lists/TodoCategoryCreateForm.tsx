@@ -55,7 +55,7 @@ export const TodoCategoryCreateForm = ({
         placeholder={texts.categoryManagement.namePlaceholder}
         className="w-full text-sm px-3 py-2 border border-gray-300 dark:border-gray-500 rounded-lg dark:bg-gray-600 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-400 mb-3"
       />
-      <p className="text-xs text-gray-400 dark:text-gray-500 mb-1.5">
+      <p className="text-xs text-gray-400 dark:text-gray-300 mb-1.5">
         {texts.categoryManagement.colorLabel}
       </p>
       <TodoItemColorSwatches

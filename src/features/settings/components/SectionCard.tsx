@@ -22,13 +22,13 @@ export const SectionCard = ({
           {title}
         </h3>
         {beta && (
-          <span className="px-2 py-0.5 text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded">
+          <span className="px-2 py-0.5 text-xs font-medium bg-blue-100 dark:bg-blue-100 text-blue-600 dark:text-blue-700 rounded">
             Beta
           </span>
         )}
       </div>
       {description && (
-        <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">
+        <p className="text-xs text-gray-500 dark:text-gray-600 mb-3">
           {description}
         </p>
       )}

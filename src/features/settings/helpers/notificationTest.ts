@@ -45,10 +45,10 @@ export const getDebugMessageClassName = (
   status: NotificationStatus,
 ): string => {
   if (status === "error") {
-    return "bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-300";
+    return "bg-red-50 dark:bg-red-100 text-red-800 dark:text-red-800";
   }
 
-  return "bg-blue-50 dark:bg-blue-900/20 text-blue-800 dark:text-blue-300";
+  return "bg-blue-50 dark:bg-blue-100 text-blue-800 dark:text-blue-800";
 };
 
 export const getRoutineNotificationCounts = (routines: Routine[]) => {

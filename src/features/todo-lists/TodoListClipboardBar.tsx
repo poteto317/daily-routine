@@ -17,15 +17,15 @@ export const TodoListClipboardBar = ({
   onPasteAction,
   onClearClipboardAction,
 }: TodoListClipboardBarProps) => (
-  <div className="flex items-center justify-between gap-2 mb-4 p-3 bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-700 rounded-xl">
-    <span className="text-sm text-amber-700 dark:text-amber-300 font-medium">
+  <div className="flex items-center justify-between gap-2 mb-4 p-3 bg-amber-50 dark:bg-amber-100 border border-amber-200 dark:border-amber-300 rounded-xl">
+    <span className="text-sm text-amber-700 dark:text-amber-800 font-medium">
       📋 {texts.list.pasteMessage.replace("{count}", String(clipboardCount))}
     </span>
     <div className="flex gap-2">
       <button
         type="button"
         onClick={onClearClipboardAction}
-        className="text-xs text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
+        className="text-xs text-gray-500 dark:text-gray-600 hover:text-gray-700 dark:hover:text-gray-800 transition-colors"
       >
         {texts.list.cancelClipboardButton}
       </button>
