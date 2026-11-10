@@ -15,6 +15,7 @@ import { useVisibleFeaturesState } from "../state/useVisibleFeaturesState";
 describe("useVisibleFeaturesState", () => {
   const visibleFeatures = {
     journal: true,
+    weeklyLog: true,
     calendar: true,
     statistics: true,
     pomodoro: true,

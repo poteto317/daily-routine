@@ -4,6 +4,7 @@ import type { Routine } from "@/types/routine";
 export type PageType =
   | "home"
   | "journal"
+  | "weekly-log"
   | "settings"
   | "calendar"
   | "statistics"
@@ -30,6 +31,7 @@ export type PageType =
 export const VALID_PAGES: PageType[] = [
   "home",
   "journal",
+  "weekly-log",
   "settings",
   "calendar",
   "statistics",

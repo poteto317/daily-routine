@@ -5,6 +5,7 @@ import type { AppSettings } from "@/types/routine";
 type VisibleFeatures = NonNullable<AppSettings["visibleFeatures"]>;
 type FeatureMenuId =
   | "journal"
+  | "weekly-log"
   | "calendar"
   | "statistics"
   | "pomodoro"
@@ -22,6 +23,7 @@ type FeatureMenuId =
 
 const FEATURE_KEY_MAP: Record<FeatureMenuId, keyof VisibleFeatures> = {
   journal: "journal",
+  "weekly-log": "weeklyLog",
   calendar: "calendar",
   statistics: "statistics",
   pomodoro: "pomodoro",

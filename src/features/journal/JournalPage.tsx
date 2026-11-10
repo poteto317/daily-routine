@@ -4,14 +4,11 @@ import { CardPanel } from "@/components";
 import { JournalEditCard } from "./components/JournalEditCard";
 import { JournalRecentEntries } from "./components/JournalRecentEntries";
 import { JournalTodayCard } from "./components/JournalTodayCard";
-import { WeeklyLogCard } from "./weekly/components/WeeklyLogCard";
-import { useWeeklyLogState } from "./weekly/useWeeklyLogState";
 import { useJournalPageState } from "./useJournalPageState";
 import journalTexts from "./locales/ja.json";
 
 export const JournalPage = () => {
   const state = useJournalPageState();
-  const weeklyLogState = useWeeklyLogState();
   const isPastEditing =
     state.editingEntry !== null && state.editingEntry.date !== state.today;
 
@@ -55,8 +52,6 @@ export const JournalPage = () => {
             onCancel={state.handleCancelForm}
           />
         )}
-
-        <WeeklyLogCard state={weeklyLogState} />
 
         <JournalRecentEntries
           entries={state.recentEntries}

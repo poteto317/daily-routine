@@ -22,7 +22,7 @@ const readHistory = (): JournalHistory =>
   JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "{}") as JournalHistory;
 
 // 過去の記録（日次）のカードの見出し（h3）を上から順に返す。
-// 業務日誌のカードにも h3 があるため、「📖 過去の記録」の h2 を持つカードの中に絞る
+// 「📖 過去の記録」の h2 を持つカードの中に絞って、ほかの見出しを拾わないようにする
 const recentTitles = () =>
   within(
     screen.getByRole("heading", { level: 2, name: "📖 過去の記録" })
@@ -283,31 +283,5 @@ describe("JournalPage の日付の選択（実際の state と localStorage）",
     expect(readHistory()).toEqual({});
     expect(screen.getByPlaceholderText(/今日感じたこと/)).toHaveValue("本文");
     expect(screen.getByLabelText("日付")).toHaveValue("0202-03-15");
-  });
-
-  it("業務日誌を保存しても、日次の記録と過去の記録の一覧は変わらない", () => {
-    seedHistory({
-      "2026-03-12": [makeEntry("a", "2026-03-12", "十二日の記録")],
-    });
-    render(<JournalPage />);
-
-    fireEvent.click(screen.getByRole("button", { name: "➕ 書く" }));
-    fireEvent.change(screen.getByLabelText("本文"), {
-      target: { value: "今週の業務" },
-    });
-    fireEvent.click(screen.getByRole("button", { name: "保存" }));
-
-    expect(window.alert).not.toHaveBeenCalled();
-    expect(recentTitles()).toEqual(["十二日の記録"]);
-    expect(readHistory()).toEqual({
-      "2026-03-12": [makeEntry("a", "2026-03-12", "十二日の記録")],
-    });
-    // 2026-03-15（日）を含む週は 2026-03-09（月）開始
-    const weekly = JSON.parse(
-      localStorage.getItem("weekly-log-history") ?? "{}",
-    );
-    expect(weekly["2026-03-09"]).toEqual(
-      expect.objectContaining({ content: "今週の業務" }),
-    );
   });
 });

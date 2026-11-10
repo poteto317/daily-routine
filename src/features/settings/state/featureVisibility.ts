@@ -2,6 +2,7 @@ import { getSettings } from "@/features/settings/storage";
 
 export type VisibleFeaturesState = {
   journal: boolean;
+  weeklyLog: boolean;
   calendar: boolean;
   statistics: boolean;
   pomodoro: boolean;
@@ -22,6 +23,7 @@ export const getInitialVisibleFeatures = (): VisibleFeaturesState => {
   const settings = getSettings();
   return {
     journal: settings.visibleFeatures?.journal ?? true,
+    weeklyLog: settings.visibleFeatures?.weeklyLog ?? true,
     calendar: settings.visibleFeatures?.calendar ?? true,
     statistics: settings.visibleFeatures?.statistics ?? true,
     pomodoro: settings.visibleFeatures?.pomodoro ?? true,

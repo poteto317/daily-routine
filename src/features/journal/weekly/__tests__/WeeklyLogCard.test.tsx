@@ -51,7 +51,7 @@ describe("WeeklyLogCard", () => {
     expect(screen.getByText("2026年11月2日（月）開始の週")).toBeInTheDocument();
     expect(screen.getByText("11月2日〜11月8日")).toBeInTheDocument();
     expect(screen.getByText("今週")).toBeInTheDocument();
-    expect(screen.getByText("2026年11月2日（月）開始の週").tagName).toBe("H3");
+    expect(screen.getByText("2026年11月2日（月）開始の週").tagName).toBe("H2");
     expect(screen.getByRole("button", { name: "次の週" })).toBeDisabled();
     expect(screen.getByRole("button", { name: "前の週" })).not.toBeDisabled();
   });

@@ -31,6 +31,12 @@ describe("MenuOrderSection", () => {
     expect(screen.getByText("ジャーナル")).toBeInTheDocument();
   });
 
+  it("並び替えの一覧に「業務日誌」が出る", () => {
+    render(<MenuOrderSection {...defaultProps} />);
+
+    expect(screen.getByText("業務日誌")).toBeInTheDocument();
+  });
+
   it("リセットボタンをクリックすると初期順序でsetMenuOrderActionが呼ばれる", () => {
     render(<MenuOrderSection {...defaultProps} />);
 

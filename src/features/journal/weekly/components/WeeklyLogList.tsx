@@ -22,9 +22,9 @@ export const WeeklyLogList = ({
   onOpenWeek,
 }: WeeklyLogListProps) => (
   <div className="mt-6">
-    <h3 className="text-lg font-bold text-gray-900 dark:text-gray-900 mb-3">
+    <h2 className="text-lg font-bold text-gray-900 dark:text-gray-900 mb-3">
       {texts.listTitle}
-    </h3>
+    </h2>
     {entries.length === 0 ? (
       <p className="text-gray-500 dark:text-gray-600 text-center py-4">
         {texts.listEmpty}

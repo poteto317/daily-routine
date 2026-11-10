@@ -49,6 +49,14 @@ export const JournalPage = dynamic(
   { loading: PageDynamicFallback },
 );
 
+export const WeeklyLogPage = dynamic(
+  () =>
+    import("@/features/journal/weekly/WeeklyLogPage").then(
+      (module) => module.WeeklyLogPage,
+    ),
+  { loading: PageDynamicFallback },
+);
+
 export const WeightTrackerPage = dynamic(
   () =>
     import("@/features/weight-tracker/WeightTrackerPage").then(

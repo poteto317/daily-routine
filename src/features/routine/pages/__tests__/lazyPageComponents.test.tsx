@@ -11,6 +11,17 @@ describe("lazyPageComponents", () => {
     expect(await screen.findByText("⚙️ 設定")).toBeInTheDocument();
   });
 
+  it("業務日誌の画面は、読み込み後に業務日誌の見出しを描画する（import 先の取り違えの検出）", async () => {
+    render(<lazyComponents.WeeklyLogPage />);
+
+    expect(
+      await screen.findByRole("heading", {
+        level: 1,
+        name: "🗓️ 週ごとの業務日誌",
+      }),
+    ).toBeInTheDocument();
+  });
+
   it("すべての機能ページコンポーネントがエクスポートされ描画可能である", () => {
     const components = [
       lazyComponents.SettingsPage,
@@ -19,6 +30,7 @@ describe("lazyPageComponents", () => {
       lazyComponents.PomodoroPage,
       lazyComponents.WorkTrackerPage,
       lazyComponents.JournalPage,
+      lazyComponents.WeeklyLogPage,
       lazyComponents.WeightTrackerPage,
       lazyComponents.WorkoutTrackerPage,
       lazyComponents.WeatherPage,

@@ -26,6 +26,7 @@ const sampleTodoLists: TodoList[] = [
 
 const defaultOrder = [
   "journal",
+  "weekly-log",
   "calendar",
   "statistics",
   "pomodoro",
@@ -62,6 +63,7 @@ export const CustomOrder: Story = {
       "pomodoro",
       "worktracker",
       "journal",
+      "weekly-log",
       "statistics",
       "calendar",
       "weight-tracker",

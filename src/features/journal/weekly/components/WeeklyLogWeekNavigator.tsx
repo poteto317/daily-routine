@@ -42,12 +42,12 @@ export const WeeklyLogWeekNavigator = ({
       aria-live="polite"
       aria-atomic="true"
     >
-      <h3 className="text-base font-semibold text-gray-800 dark:text-gray-900">
+      <h2 className="text-base font-semibold text-gray-800 dark:text-gray-900">
         {/* 320px 程度の狭い幅では日付の途中で折り返す（折り返しを禁じると前後のボタンに重なる） */}
         {formatWeeklyLogWeekDate(weekStart)}
         <br className="sm:hidden" />
         {texts.weekTitleSuffix}
-      </h3>
+      </h2>
       <div className="flex flex-wrap items-center justify-center gap-x-2">
         <p className="whitespace-nowrap text-sm text-gray-500 dark:text-gray-600">
           {formatWeeklyLogWeekRange(weekStart)}

@@ -10,6 +10,7 @@ import texts from "../locales/ja.json";
 /** ハンバーガーメニューで並び替え可能な機能項目の ID セット */
 const REORDERABLE_MENU_IDS = new Set([
   "journal",
+  "weekly-log",
   "calendar",
   "statistics",
   "pomodoro",

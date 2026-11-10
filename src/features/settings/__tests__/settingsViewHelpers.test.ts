@@ -36,6 +36,7 @@ describe("settings view helpers", () => {
       worktracker: true,
       pomodoro: true,
       journal: true,
+      weeklyLog: true,
       preset: true,
       syncManagement: false,
       testMatrix: false,
