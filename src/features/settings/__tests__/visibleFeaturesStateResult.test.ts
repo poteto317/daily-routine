@@ -4,6 +4,7 @@ describe("createVisibleFeaturesStateResult", () => {
   it("visible features state の公開 shape を返す", () => {
     const visibleFeatures = {
       journal: true,
+      weeklyLog: true,
       calendar: true,
       statistics: true,
       pomodoro: true,

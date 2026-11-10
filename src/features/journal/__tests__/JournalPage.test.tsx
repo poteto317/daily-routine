@@ -1,19 +1,13 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { JournalPage } from "../JournalPage";
 import { useJournalPageState } from "../useJournalPageState";
-import { useWeeklyLogState } from "../weekly/useWeeklyLogState";
 import journalTexts from "../locales/ja.json";
 import { type JournalEntry } from "@/types/routine";
 
 jest.mock("../useJournalPageState");
-jest.mock("../weekly/useWeeklyLogState");
 
 const mockUseJournalPageState = useJournalPageState as jest.MockedFunction<
   typeof useJournalPageState
->;
-
-const mockUseWeeklyLogState = useWeeklyLogState as jest.MockedFunction<
-  typeof useWeeklyLogState
 >;
 
 describe("JournalPage", () => {
@@ -59,24 +53,6 @@ describe("JournalPage", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    mockUseWeeklyLogState.mockReturnValue({
-      currentWeekStart: "2026-03-09",
-      selectedWeekStart: "2026-03-09",
-      selectedEntry: null,
-      entries: [],
-      isEditing: false,
-      contentInput: "",
-      canNavigate: true,
-      canGoNext: false,
-      goToPreviousWeek: jest.fn(),
-      goToNextWeek: jest.fn(),
-      openWeek: jest.fn(),
-      startEditing: jest.fn(),
-      cancelEditing: jest.fn(),
-      changeContent: jest.fn(),
-      save: jest.fn(),
-      remove: jest.fn(),
-    });
   });
 
   it("基本レイアウトとタイトル、JournalTodayCard、JournalRecentEntries をレンダリングする", () => {
@@ -88,16 +64,16 @@ describe("JournalPage", () => {
     expect(screen.queryByText(/beta/i)).not.toBeInTheDocument();
   });
 
-  it("週ごとの業務日誌のカードを、日次の過去の記録より前に出す", () => {
+  it("週ごとの業務日誌の見出しは出ない（独立した画面に移した）", () => {
     mockUseJournalPageState.mockReturnValue(createState() as never);
     render(<JournalPage />);
 
-    const weekly = screen.getByText(journalTexts.weeklyLog.title);
-    const recent = screen.getByText(journalTexts.recentEntries.title);
     expect(
-      weekly.compareDocumentPosition(recent) & Node.DOCUMENT_POSITION_FOLLOWING,
-    ).toBeTruthy();
-    expect(screen.getByText("2026年3月9日（月）開始の週")).toBeInTheDocument();
+      screen.queryByRole("region", { name: journalTexts.weeklyLog.title }),
+    ).toBeNull();
+    expect(
+      screen.queryByRole("heading", { name: journalTexts.weeklyLog.title }),
+    ).toBeNull();
   });
 
   it("過去の日記エントリを編集中の場合は JournalEditCard を表示する", () => {

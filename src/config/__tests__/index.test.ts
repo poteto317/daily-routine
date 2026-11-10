@@ -30,6 +30,19 @@ describe("config exports", () => {
     expect(journalItem).not.toHaveProperty("badge");
   });
 
+  it("業務日誌メニューはジャーナルの直後にあり、🗒️ のアイコンでバッジを持たない", () => {
+    const ids = menuConfig.menuItems.map((item) => item.id);
+    const item = menuConfig.menuItems.find((i) => i.id === "weekly-log");
+
+    expect(ids.indexOf("weekly-log")).toBe(ids.indexOf("journal") + 1);
+    expect(item).toEqual({
+      id: "weekly-log",
+      label: "業務日誌",
+      icon: "🗒️",
+      route: "weekly-log",
+    });
+  });
+
   it("不具合報告メニューのアイコンに📣を設定する", () => {
     const item = menuConfig.menuItems.find((i) => i.id === "bug-report");
     expect(item).toBeDefined();

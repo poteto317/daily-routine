@@ -31,6 +31,7 @@ describe("storage persistence", () => {
       trainDelay: { enabled: false, monitoredLines: [] },
       visibleFeatures: {
         journal: true,
+        weeklyLog: true,
         calendar: true,
         statistics: true,
         pomodoro: true,

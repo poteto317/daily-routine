@@ -15,12 +15,12 @@ export const WeeklyLogCard = ({ state }: WeeklyLogCardProps) => {
   return (
     <CardPanel>
       <section aria-labelledby={headingId}>
-        <h2
+        <h1
           id={headingId}
           className="text-xl font-bold text-gray-900 dark:text-gray-900 mb-4"
         >
           {journalTexts.weeklyLog.title}
-        </h2>
+        </h1>
         <WeeklyLogWeekNavigator
           weekStart={state.selectedWeekStart}
           isCurrentWeek={state.selectedWeekStart === state.currentWeekStart}

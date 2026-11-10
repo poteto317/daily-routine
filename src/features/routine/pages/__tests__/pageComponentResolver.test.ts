@@ -3,6 +3,7 @@ import type { PageType } from "../types";
 
 const FEATURE_PAGES: PageType[] = [
   "journal",
+  "weekly-log",
   "settings",
   "calendar",
   "statistics",

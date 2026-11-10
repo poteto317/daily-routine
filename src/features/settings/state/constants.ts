@@ -43,6 +43,7 @@ export const AVAILABLE_LINES = [
 
 export const VISIBLE_FEATURE_ITEMS = [
   { key: "journal", label: "ジャーナル", icon: "📔" },
+  { key: "weeklyLog", label: "業務日誌", icon: "🗒️" },
   { key: "calendar", label: "達成カレンダー", icon: "📅" },
   { key: "statistics", label: "統計・レポート", icon: "📊" },
   { key: "pomodoro", label: "ポモドーロ", icon: "🍅" },

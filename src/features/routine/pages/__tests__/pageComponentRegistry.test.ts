@@ -18,11 +18,13 @@ import {
   TodoListManagementPage,
   TodoListsPage,
   WeatherPage,
+  WeeklyLogPage,
   WeightTrackerPage,
   WorkoutTrackerPage,
   WorkTrackerPage,
 } from "../lazyPageComponents";
 import { PAGE_COMPONENTS } from "../pageComponentRegistry";
+import { VALID_PAGES } from "../types";
 
 describe("PAGE_COMPONENTS", () => {
   it("各ページを対応する遅延コンポーネントへ割り当てる", () => {
@@ -33,6 +35,7 @@ describe("PAGE_COMPONENTS", () => {
       pomodoro: PomodoroPage,
       worktracker: WorkTrackerPage,
       journal: JournalPage,
+      "weekly-log": WeeklyLogPage,
       "weight-tracker": WeightTrackerPage,
       "workout-tracker": WorkoutTrackerPage,
       meal: MealPage,
@@ -50,5 +53,11 @@ describe("PAGE_COMPONENTS", () => {
       "account-admin": AccountAdminPage,
       "bug-report": BugReportPage,
     });
+  });
+
+  it("VALID_PAGES は home とレジストリの全ページに一致する（足し忘れるとメニューの項目とページ復元が home に戻る）", () => {
+    expect(new Set(VALID_PAGES)).toEqual(
+      new Set(["home", ...Object.keys(PAGE_COMPONENTS)]),
+    );
   });
 });

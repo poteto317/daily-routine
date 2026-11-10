@@ -126,6 +126,59 @@ describe("headerMenuItemHelpers", () => {
     );
   });
 
+  it("weeklyLog が false（他はオン）のとき、weekly-log だけがメニューから消える", () => {
+    const isPageType = (route: string): route is HeaderMenuItem["route"] =>
+      route !== "invalid";
+    const allOn = filterStaticHeaderMenuItems({
+      visibleFeatures: { ...baseVisibleFeatures, weeklyLog: true },
+      isAdmin: false,
+      isPageType,
+    });
+
+    const hidden = filterStaticHeaderMenuItems({
+      visibleFeatures: { ...baseVisibleFeatures, weeklyLog: false },
+      isAdmin: false,
+      isPageType,
+    });
+
+    const hiddenIds = hidden.map((item) => item.id);
+    expect(hiddenIds).not.toContain("weekly-log");
+    expect(hiddenIds).toContain("journal");
+    // weekly-log 以外の項目は変わらない
+    expect(hiddenIds).toEqual(
+      allOn.map((item) => item.id).filter((id) => id !== "weekly-log"),
+    );
+  });
+
+  it("journal が false（weeklyLog はオン）のとき、weekly-log は残る（キーの取り違えの検出）", () => {
+    const items = filterStaticHeaderMenuItems({
+      visibleFeatures: {
+        ...baseVisibleFeatures,
+        journal: false,
+        weeklyLog: true,
+      },
+      isAdmin: false,
+      isPageType: (route): route is HeaderMenuItem["route"] =>
+        route !== "invalid",
+    });
+
+    const ids = items.map((item) => item.id);
+    expect(ids).toContain("weekly-log");
+    expect(ids).not.toContain("journal");
+  });
+
+  it("保存済みの visibleFeatures に weeklyLog が無いとき、weekly-log を表示する（古い設定との互換）", () => {
+    // 古い設定には weeklyLog が無い。baseVisibleFeatures に weeklyLog は含めない
+    const items = filterStaticHeaderMenuItems({
+      visibleFeatures: baseVisibleFeatures,
+      isAdmin: false,
+      isPageType: (route): route is HeaderMenuItem["route"] =>
+        route !== "invalid",
+    });
+
+    expect(items.map((item) => item.id)).toContain("weekly-log");
+  });
+
   it("test-matrix は管理者のみ表示される", () => {
     const isPageType = (route: string): route is HeaderMenuItem["route"] =>
       route !== "invalid";

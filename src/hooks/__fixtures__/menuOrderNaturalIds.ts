@@ -5,6 +5,7 @@
  */
 export const STATICS_BEFORE_LISTS = [
   "journal",
+  "weekly-log",
   "weight-tracker",
   "workout-tracker",
   "pomodoro",

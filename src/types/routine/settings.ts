@@ -10,6 +10,7 @@ export interface AppSettings {
   trainDelay?: TrainDelaySettings;
   visibleFeatures?: {
     journal?: boolean;
+    weeklyLog?: boolean;
     calendar?: boolean;
     statistics?: boolean;
     pomodoro?: boolean;

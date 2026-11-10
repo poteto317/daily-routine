@@ -63,6 +63,12 @@
         "route": "journal"
       },
       {
+        "id": "weekly-log",
+        "label": "業務日誌",
+        "icon": "🗒️",
+        "route": "weekly-log"
+      },
+      {
         "id": "weight-tracker",
         "label": "体重記録",
         "icon": "⚖️",
