@@ -4,6 +4,7 @@ import { DETAILED_TEST_CASES_GROUP_10_13 } from "./group-10-13";
 import { DETAILED_TEST_CASES_GROUP_14_15 } from "./group-14-15";
 import { DETAILED_TEST_CASES_GROUP_16_18 } from "./group-16-18";
 import { DETAILED_TEST_CASES_GROUP_16_20_21 } from "./group-16-20-21";
+import { DETAILED_TEST_CASES_GROUP_27 } from "./group-27";
 import type { DetailTestCaseMap } from "./types";
 
 export { type DetailTestCase } from "./types";
@@ -15,4 +16,5 @@ export const DETAILED_TEST_CASES: DetailTestCaseMap = {
   ...DETAILED_TEST_CASES_GROUP_14_15,
   ...DETAILED_TEST_CASES_GROUP_16_18,
   ...DETAILED_TEST_CASES_GROUP_16_20_21,
+  ...DETAILED_TEST_CASES_GROUP_27,
 };
