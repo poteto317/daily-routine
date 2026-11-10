@@ -26,4 +26,24 @@ describe("FeatureVisibilitySection", () => {
       weeklyLog: false,
     });
   });
+
+  it("「業務日誌」のトグルはジャーナルの直後に並ぶ（メニューと同じ位置）", () => {
+    render(
+      <FeatureVisibilitySection
+        visibleFeatures={allOn}
+        setVisibleFeatures={jest.fn()}
+      />,
+    );
+
+    const names = screen
+      .getAllByRole("switch")
+      .map(
+        (toggle) =>
+          toggle.getAttribute("aria-label") ?? toggle.textContent ?? "",
+      );
+    const journalIndex = names.findIndex((name) => /ジャーナル/.test(name));
+
+    expect(journalIndex).toBeGreaterThanOrEqual(0);
+    expect(names[journalIndex + 1]).toMatch(/業務日誌/);
+  });
 });
