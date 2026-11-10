@@ -151,7 +151,7 @@ src/features/{feature-name}/
 
 ### 3-3. SPA 画面切り替えと動的コード分割
 
-本アプリはルートページ（`src/app/page.tsx`）が起点となり、`PageLayout` および `pageComponentResolver.ts` により `PageType`（全23画面）を切り替える SPA アーキテクチャを採用しています。
+本アプリはルートページ（`src/app/page.tsx`）が起点となり、`PageLayout` および `pageComponentResolver.ts` により `PageType`（全24画面）を切り替える SPA アーキテクチャを採用しています。
 
 - **動的インポート (`next/dynamic`)**: 各機能ページ（`BudgetPage`, `JournalPage`, `WorkoutTrackerPage` 等）は `lazyPageComponents.ts` で遅延読み込みされ、初期バンドルサイズを大幅に削減。
 - **ナビゲーションと履歴管理**: 画面遷移は React の状態（`currentPage`）と `NavigationContext` 経由で伝播し、最後に開いた画面は LocalStorage の `currentPage` キーに永続化されてリロード時にも復元されます。
