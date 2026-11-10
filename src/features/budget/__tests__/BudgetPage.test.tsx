@@ -1,5 +1,8 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { BudgetPage } from "../BudgetPage";
+import { downloadJsonFile } from "@/lib/downloadJsonFile";
+jest.mock("@/lib/downloadJsonFile", () => ({ downloadJsonFile: jest.fn() }));
+const mockDownloadJsonFile = jest.mocked(downloadJsonFile);
 
 jest.mock("../useBudgetPageState", () => ({
   useBudgetPageState: jest.fn(),
@@ -369,5 +372,68 @@ describe("BudgetPage", () => {
 
       expect(scrollIntoView).not.toHaveBeenCalled();
     });
+  });
+});
+
+describe("BudgetPage 月別エクスポートの配線", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockDownloadJsonFile.mockReset();
+  });
+
+  it("表示月の保存済み支出と参照カテゴリを実部品から書き出し、未保存の値は含めない", () => {
+    const state = createState({
+      editingExpenseId: "e1",
+      editingExpenseAmount: "9999",
+      editingExpenseDate: "2026-03-06",
+    });
+    mockUseBudgetPageState.mockReturnValue(state as never);
+    render(<BudgetPage />);
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "この月の支出を JSON でエクスポート",
+      }),
+    );
+    expect(mockDownloadJsonFile).toHaveBeenCalledWith(
+      "daily-routine-budget-2026-03.json",
+      {
+        budgetData: { expenses: { "2026-03": state.expenses } },
+        budgetCategories: [categories[0]],
+      },
+    );
+    expect(screen.getByRole("status")).toHaveTextContent(
+      "JSON のダウンロードを開始しました",
+    );
+  });
+
+  it("月変更で前の結果を消し、変更後の月と支出を出力する", () => {
+    mockUseBudgetPageState.mockReturnValue(createState() as never);
+    const { rerender } = render(<BudgetPage />);
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "この月の支出を JSON でエクスポート",
+      }),
+    );
+    const nextExpense = { ...createState().expenses[0], date: "2027-01-01" };
+    mockUseBudgetPageState.mockReturnValue(
+      createState({
+        currentDate: new Date(2027, 0, 1),
+        expenses: [nextExpense],
+      }) as never,
+    );
+    rerender(<BudgetPage />);
+    expect(screen.queryByRole("status")).not.toBeInTheDocument();
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "この月の支出を JSON でエクスポート",
+      }),
+    );
+    expect(mockDownloadJsonFile).toHaveBeenLastCalledWith(
+      "daily-routine-budget-2027-01.json",
+      {
+        budgetData: { expenses: { "2027-01": [nextExpense] } },
+        budgetCategories: [categories[0]],
+      },
+    );
   });
 });

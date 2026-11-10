@@ -115,5 +115,11 @@
         "exportFailed": "書き出しに失敗しました"
       }
     }
+  },
+  "monthlyExport": {
+    "button": "この月の支出を JSON でエクスポート",
+    "empty": "この月の支出の記録がありません",
+    "started": "JSON のダウンロードを開始しました",
+    "failed": "書き出しに失敗しました"
   }
 }
