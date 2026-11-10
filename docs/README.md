@@ -31,7 +31,7 @@
 アプリケーションのテスト方法とマトリクス。
 
 - **[README.md](./03-testing/README.md)** - ユニットテスト、E2Eテスト（Playwright）、ビルドテストの実行ガイド
-- **[test-matrix.md](./03-testing/test-matrix.md)** - 機能テストマトリクス（全26セクション×230項目以上）
+- **[test-matrix.md](./03-testing/test-matrix.md)** - 機能テストマトリクス（全27セクション×230項目以上）
 
 ### 📖 [04. リファレンス](./04-reference/)
 
