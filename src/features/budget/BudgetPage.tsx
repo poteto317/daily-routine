@@ -1,5 +1,7 @@
 "use client";
 
+import { BudgetMonthlyExport } from "./components/BudgetMonthlyExport";
+import { toMonthKey } from "./utils/date";
 import { CardPanel } from "@/components";
 import { BudgetExpenseForm } from "@/features/budget/components/BudgetExpenseForm";
 import { BudgetExpenseList } from "@/features/budget/components/BudgetExpenseList";
@@ -13,6 +15,7 @@ import budgetTexts from "@/features/budget/locales/ja.json";
 export const BudgetPage = () => {
   const navigate = useNavigationContext();
   const state = useBudgetPageState({ navigate });
+  const month = toMonthKey(state.currentDate);
 
   return (
     <div className="min-h-screen bg-linear-to-br from-green-50 to-emerald-100 dark:from-slate-400 dark:to-slate-300">
@@ -45,6 +48,12 @@ export const BudgetPage = () => {
             onGoToCurrentMonth={state.goToCurrentMonth}
             onNextMonth={state.goToNextMonth}
             onPreviousMonth={state.goToPreviousMonth}
+          />
+          <BudgetMonthlyExport
+            key={month}
+            month={month}
+            expenses={state.expenses}
+            categories={state.categories}
           />
           <BudgetDailySummaryCards
             dailyRemainingBudget={state.dailyRemainingBudget}
