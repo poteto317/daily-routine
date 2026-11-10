@@ -342,27 +342,6 @@ export const buildInitialData = (): TestCategory[] => [
         sp: "unchecked",
         note: "",
       },
-      {
-        id: "3-7",
-        label: "週ごとの業務日誌を書く・編集する（1週1件・本文のみ）",
-        pc: "unchecked",
-        sp: "unchecked",
-        note: "",
-      },
-      {
-        id: "3-8",
-        label: "業務日誌の週の切り替え（月曜開始・未来の週へは進めない）",
-        pc: "unchecked",
-        sp: "unchecked",
-        note: "",
-      },
-      {
-        id: "3-9",
-        label: "これまでの業務日誌の一覧・削除（確認ダイアログ）",
-        pc: "unchecked",
-        sp: "unchecked",
-        note: "",
-      },
     ],
   },
   {
@@ -1675,6 +1654,34 @@ export const buildInitialData = (): TestCategory[] => [
       {
         id: "21-9",
         label: "リセット機能（確認ダイアログ）",
+        pc: "unchecked",
+        sp: "unchecked",
+        note: "",
+      },
+    ],
+  },
+  {
+    id: "weekly-log",
+    title: "27. 業務日誌（Weekly Log）",
+    badge: { text: "実装済", color: "bg-green-500" },
+    items: [
+      {
+        id: "27-1",
+        label: "週ごとの業務日誌を書く・編集する（1週1件・本文のみ）",
+        pc: "unchecked",
+        sp: "unchecked",
+        note: "",
+      },
+      {
+        id: "27-2",
+        label: "業務日誌の週の切り替え（月曜開始・未来の週へは進めない）",
+        pc: "unchecked",
+        sp: "unchecked",
+        note: "",
+      },
+      {
+        id: "27-3",
+        label: "これまでの業務日誌の一覧・削除（確認ダイアログ）",
         pc: "unchecked",
         sp: "unchecked",
         note: "",

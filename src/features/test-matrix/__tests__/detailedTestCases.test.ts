@@ -1,4 +1,5 @@
 import { DETAILED_TEST_CASES } from "../detailedTestCases";
+import { buildInitialData } from "../initialData";
 
 describe("DETAILED_TEST_CASES", () => {
   // 保存済みの確認結果は項目 ID とケース ID で引き当てる。ID は変えず、
@@ -12,4 +13,25 @@ describe("DETAILED_TEST_CASES", () => {
       expect(new Set(ids).size).toBe(ids.length);
     },
   );
+
+  it("業務日誌の詳細ケースは 27-1〜27-3 にあり、ジャーナルの 3-7〜3-9 には残らない", () => {
+    expect(Object.keys(DETAILED_TEST_CASES)).toEqual(
+      expect.arrayContaining(["27-1", "27-2", "27-3"]),
+    );
+    expect(DETAILED_TEST_CASES["3-7"]).toBeUndefined();
+    expect(DETAILED_TEST_CASES["3-8"]).toBeUndefined();
+    expect(DETAILED_TEST_CASES["3-9"]).toBeUndefined();
+  });
+
+  it("詳細ケースのキーはすべて、初期データのどれかの項目 ID に対応する", () => {
+    const itemIds = new Set(
+      buildInitialData().flatMap((category) =>
+        category.items.map((item) => item.id),
+      ),
+    );
+
+    expect(
+      Object.keys(DETAILED_TEST_CASES).filter((id) => !itemIds.has(id)),
+    ).toEqual([]);
+  });
 });
