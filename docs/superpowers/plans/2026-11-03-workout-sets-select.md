@@ -1,7 +1,7 @@
 # 運動記録のセット数入力欄レイアウト修正・セレクトボックス化 実装プラン
 
 - **対象 Issue**: [#192 [不具合報告] 運動記録のセット数入力欄のレイアウトが崩れている](https://github.com/poteto317/daily-routine/issues/192)
-- **設計書**: [2026-11-03-workout-sets-select-design.md](file://.worktrees/issue-192-workout-sets-input/docs/superpowers/specs/2026-11-03-workout-sets-select-design.md)
+- **設計書**: [2026-11-03-workout-sets-select-design.md](../specs/2026-11-03-workout-sets-select-design.md)
 - **反映した知見**: L-015, L-060, L-303
 
 ---

@@ -54,6 +54,7 @@ service cloud.firestore {
         && request.resource.data.description.size() <= 2000
         && (!('title' in request.resource.data) || (request.resource.data.title is string && request.resource.data.title.size() <= 100))
         && (!('stepsToReproduce' in request.resource.data) || (request.resource.data.stepsToReproduce is string && request.resource.data.stepsToReproduce.size() <= 2000))
+        && (!('images' in request.resource.data) || (request.resource.data.images is list && request.resource.data.images.size() <= 3))
         && (!('meta' in request.resource.data) || (
           request.resource.data.meta is map
           && request.resource.data.meta.keys().hasOnly(['appVersion', 'userAgent', 'url', 'locale', 'timezone', 'createdAtClient'])
@@ -67,7 +68,7 @@ service cloud.firestore {
         && request.resource.data.createdAt == request.time
         && request.resource.data.updatedAt == request.time
         && request.resource.data.keys().hasOnly([
-          "uid", "status", "description", "title", "stepsToReproduce", "meta", "createdAt", "updatedAt"
+          "uid", "status", "description", "title", "stepsToReproduce", "images", "meta", "createdAt", "updatedAt"
         ]);
       allow update, delete: if false;
     }
