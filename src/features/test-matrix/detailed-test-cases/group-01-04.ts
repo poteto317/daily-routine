@@ -1074,7 +1074,7 @@ export const DETAILED_TEST_CASES_GROUP_01_04: DetailTestCaseMap = {
     {
       id: "2-24-4",
       scenario:
-        "アプリを終了せずにバックグラウンドへ回し、未完了ルーティンの開始時間を過ぎてから戻す",
+        "アプリを終了せずにバックグラウンドへ回し、未完了ルーティンの開始時刻の次の分以降（例: 09:00 開始なら 09:01 以降）に戻す",
       expected: "再読み込みなしで超過カラー（黄系）に変わる",
       pc: "unchecked",
       sp: "unchecked",
