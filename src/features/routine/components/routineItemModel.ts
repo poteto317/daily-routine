@@ -17,6 +17,8 @@ type RoutineItemCardClassParams = {
   isDraggable: boolean;
   /** ドラッグ中（このアイテム自身がドラッグされている）か否か */
   isDragging?: boolean;
+  /** 表示に使う現在時刻（分単位の epoch ミリ秒）。useCurrentMinute() の値を渡す */
+  nowMinute: number;
 };
 
 const BASE_CARD_CLASS =
@@ -44,8 +46,9 @@ export const getRoutineItemCardClassName = ({
   isEditMode,
   isDraggable,
   isDragging = false,
+  nowMinute,
 }: RoutineItemCardClassParams): string => {
-  const isPast = isRoutinePast(routine);
+  const isPast = isRoutinePast(routine, nowMinute);
 
   // ドラッグ中のプレースホルダーは背景を維持しつつ枠線をハイライト
   if (isDragging) {

@@ -22,6 +22,12 @@ jest.mock("../useRoutineFallbackTimer", () => ({
   })),
 }));
 
+// 現在時刻の通知は、呼ばれた回数だけを検証する（購読しているコンポーネントはここには無い）
+jest.mock("@/hooks/useCurrentMinute", () => ({
+  notifyCurrentMinute: jest.fn(),
+}));
+
+import { notifyCurrentMinute } from "@/hooks/useCurrentMinute";
 import { refreshRoutineState } from "../routineStateSync";
 import { useRoutineForegroundSync } from "../useRoutineForegroundSync";
 
@@ -42,6 +48,7 @@ describe("useRoutineForegroundSync", () => {
     jest.useFakeTimers();
     activeIntervalId = null;
     (refreshRoutineState as jest.Mock).mockClear();
+    (notifyCurrentMinute as jest.Mock).mockClear();
     mockStart.mockReset();
     mockStop.mockReset();
     mockLastUpdateRef.current = 0;
@@ -250,6 +257,68 @@ describe("useRoutineForegroundSync", () => {
       jest.advanceTimersByTime(60_000);
     });
 
+    expect(refreshRoutineState).not.toHaveBeenCalled();
+  });
+
+  // ── 現在時刻の通知 ───────────────────────────────────────────
+
+  it("同一 tick の複数の復帰イベントをまとめた後に、現在時刻を 1 回だけ通知する", () => {
+    const setRoutines = jest.fn();
+    renderHook(() =>
+      useRoutineForegroundSync(true, setRoutines, [], FALLBACK_INTERVAL_MS),
+    );
+
+    act(() => {
+      document.dispatchEvent(new Event("visibilitychange"));
+      window.dispatchEvent(new Event("pageshow"));
+      window.dispatchEvent(new Event("focus"));
+      // まとめる前（タイマーが発火する前）には通知しない
+      expect(notifyCurrentMinute).not.toHaveBeenCalled();
+      jest.advanceTimersByTime(0);
+    });
+
+    expect(notifyCurrentMinute).toHaveBeenCalledTimes(1);
+  });
+
+  it("スケジュール登録後に hidden になると、現在時刻を通知しない", () => {
+    let visibilityState: DocumentVisibilityState = "visible";
+    Object.defineProperty(document, "visibilityState", {
+      configurable: true,
+      get: () => visibilityState,
+    });
+    const setRoutines = jest.fn();
+    renderHook(() =>
+      useRoutineForegroundSync(true, setRoutines, [], FALLBACK_INTERVAL_MS),
+    );
+
+    act(() => {
+      document.dispatchEvent(new Event("visibilitychange"));
+      visibilityState = "hidden";
+      jest.advanceTimersByTime(0);
+    });
+
+    expect(notifyCurrentMinute).not.toHaveBeenCalled();
+  });
+
+  it("フォールバック tick: スキップ条件が成り立っても現在時刻は通知し、refreshRoutineState は呼ばない", () => {
+    activateRealTimer();
+    const setRoutines = jest.fn();
+    renderHook(() =>
+      useRoutineForegroundSync(true, setRoutines, [], FALLBACK_INTERVAL_MS),
+    );
+
+    act(() => {
+      jest.advanceTimersByTime(FALLBACK_INTERVAL_MS - 60_000);
+    });
+    // 直近でルーティンが更新された（refreshRoutineState はスキップされる条件）
+    mockLastUpdateRef.current = Date.now();
+    expect(notifyCurrentMinute).not.toHaveBeenCalled();
+
+    act(() => {
+      jest.advanceTimersByTime(60_000);
+    });
+
+    expect(notifyCurrentMinute).toHaveBeenCalledTimes(1);
     expect(refreshRoutineState).not.toHaveBeenCalled();
   });
 

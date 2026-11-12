@@ -1,14 +1,20 @@
 import { type Routine, ROUTINE_CATEGORIES } from "@/types/routine";
-import { getCurrentTime, timeToMinutes, toJstDay } from "@/lib/storage/core";
+import { timeToMinutes, toJstDay, toJstTime } from "@/lib/storage/core";
 import { getSettings } from "@/features/settings/storage";
 
-export const isRoutinePast = (routine: Routine): boolean => {
-  const currentTime = getCurrentTime();
-  const today = toJstDay(new Date());
-  const isTodayRoutine = routine.daysOfWeek.includes(today);
+/**
+ * 今日（JST）の曜日のルーティンで、開始時刻を過ぎているか。
+ * 現在時刻は引数で受け取る（関数の中で時計を読むと、React Compiler のもとで
+ * 呼び出し側のメモ化のキーに時刻が入らず、判定が最初の描画の値に固定される）。
+ *
+ * @param nowMs 判定に使う現在時刻（epoch ミリ秒）。描画時は useCurrentMinute() の値を渡す
+ */
+export const isRoutinePast = (routine: Routine, nowMs: number): boolean => {
+  const now = new Date(nowMs);
+  const isTodayRoutine = routine.daysOfWeek.includes(toJstDay(now));
   return (
     isTodayRoutine &&
-    timeToMinutes(currentTime) > timeToMinutes(routine.startTime)
+    timeToMinutes(toJstTime(now)) > timeToMinutes(routine.startTime)
   );
 };
 

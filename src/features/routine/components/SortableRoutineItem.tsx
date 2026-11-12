@@ -3,6 +3,7 @@
 import { type Routine } from "@/types/routine";
 import { getSettings } from "@/features/settings/storage";
 import { SwipeableRoutineItem } from "@/components/SwipeableRoutineItem";
+import { useCurrentMinute } from "@/hooks/useCurrentMinute";
 import { RoutineCardContent } from "./RoutineCardContent";
 import { SortableRoutineEditModeItem } from "./SortableRoutineEditModeItem";
 import {
@@ -38,6 +39,7 @@ export const SortableRoutineItem = ({
   onDelete,
   isEditMode = true,
 }: SortableRoutineItemProps) => {
+  const nowMinute = useCurrentMinute();
   const settings = getSettings();
   const {
     handleCardClick,
@@ -68,6 +70,7 @@ export const SortableRoutineItem = ({
             routine,
             isEditMode,
             isDraggable: false,
+            nowMinute,
           })}
         >
           <RoutineCardContent routine={routine} showDuration />

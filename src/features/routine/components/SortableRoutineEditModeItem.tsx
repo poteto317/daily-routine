@@ -4,6 +4,7 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import type { Routine } from "@/types/routine";
 import { SwipeableRoutineItem } from "@/components/SwipeableRoutineItem";
+import { useCurrentMinute } from "@/hooks/useCurrentMinute";
 import { RoutineCardContent } from "./RoutineCardContent";
 import { getRoutineItemCardClassName } from "./routineItemModel";
 import { RoutineItemActionButtons } from "./RoutineItemActionButtons";
@@ -23,6 +24,7 @@ export const SortableRoutineEditModeItem = ({
   onSwipeAction,
   swipeActionType,
 }: SortableRoutineEditModeItemProps) => {
+  const nowMinute = useCurrentMinute();
   const {
     attributes,
     listeners,
@@ -52,6 +54,7 @@ export const SortableRoutineEditModeItem = ({
           isEditMode: true,
           isDraggable: true,
           isDragging,
+          nowMinute,
         })}
       >
         <button

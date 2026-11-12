@@ -3,6 +3,7 @@
 import { type Routine } from "@/types/routine";
 import { getSettings } from "@/features/settings/storage";
 import { SwipeableRoutineItem } from "@/components/SwipeableRoutineItem";
+import { useCurrentMinute } from "@/hooks/useCurrentMinute";
 import { RoutineCardContent } from "./RoutineCardContent";
 import {
   createRoutineItemHandlers,
@@ -40,6 +41,7 @@ export const RoutineItem = ({
   onDelete,
   isEditMode = true,
 }: RoutineItemProps) => {
+  const nowMinute = useCurrentMinute();
   const settings = getSettings();
   const {
     handleCardClick,
@@ -63,6 +65,7 @@ export const RoutineItem = ({
         routine,
         isEditMode,
         isDraggable: false,
+        nowMinute,
       })} flex-col sm:flex-row sm:items-center`}
     >
       <RoutineCardContent routine={routine} />
