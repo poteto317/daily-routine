@@ -9,9 +9,9 @@ jest.mock("@/features/notification", () => ({
   hasNotificationPermission: jest.fn(),
 }));
 jest.mock("@/lib/storage/core", () => ({
-  getCurrentTime: jest.fn(),
   getTodayString: jest.fn(),
   toJstDay: jest.fn(),
+  toJstTime: jest.fn(),
   timeToMinutes: jest.fn((time: string) => {
     const [hours, minutes] = time.split(":").map(Number);
     return hours * 60 + minutes;
@@ -39,10 +39,9 @@ export const mockHasNotificationPermission =
   notificationFeature.hasNotificationPermission as jest.MockedFunction<
     typeof notificationFeature.hasNotificationPermission
   >;
-export const mockGetCurrentTime =
-  coreStorage.getCurrentTime as jest.MockedFunction<
-    typeof coreStorage.getCurrentTime
-  >;
+export const mockToJstTime = coreStorage.toJstTime as jest.MockedFunction<
+  typeof coreStorage.toJstTime
+>;
 export const mockGetTodayString =
   coreStorage.getTodayString as jest.MockedFunction<
     typeof coreStorage.getTodayString

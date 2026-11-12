@@ -3,6 +3,7 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import type { Routine } from "@/types/routine";
+import { useCurrentMinute } from "@/hooks/useCurrentMinute";
 import { RoutineCardContent } from "./RoutineCardContent";
 import { getRoutineItemCardClassName } from "./routineItemModel";
 
@@ -22,6 +23,7 @@ export const SortableRoutineNormalDragItem = ({
   onToggleAction,
   isDragActive,
 }: Props) => {
+  const nowMinute = useCurrentMinute();
   const {
     attributes,
     listeners,
@@ -53,6 +55,7 @@ export const SortableRoutineNormalDragItem = ({
         isEditMode: false,
         isDraggable: false,
         isDragging,
+        nowMinute,
       })}
     >
       <button

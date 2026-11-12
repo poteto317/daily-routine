@@ -1058,7 +1058,7 @@ export const DETAILED_TEST_CASES_GROUP_01_04: DetailTestCaseMap = {
     {
       id: "2-24-2",
       scenario: "開始時間を過ぎた未完了ルーティン",
-      expected: "超過カラー（赤/警告系）で表示",
+      expected: "超過カラー（黄系）で表示",
       pc: "unchecked",
       sp: "unchecked",
       note: "",
@@ -1067,6 +1067,15 @@ export const DETAILED_TEST_CASES_GROUP_01_04: DetailTestCaseMap = {
       id: "2-24-3",
       scenario: "未開始のルーティン",
       expected: "デフォルトカラーで表示",
+      pc: "unchecked",
+      sp: "unchecked",
+      note: "",
+    },
+    {
+      id: "2-24-4",
+      scenario:
+        "アプリを終了せずにバックグラウンドへ回し、未完了ルーティンの開始時間を過ぎてから戻す",
+      expected: "再読み込みなしで超過カラー（黄系）に変わる",
       pc: "unchecked",
       sp: "unchecked",
       note: "",

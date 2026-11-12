@@ -15,7 +15,7 @@ jest.mock("@/features/routine/helpers", () => ({
 }));
 
 jest.mock("@/lib/storage/core", () => ({
-  getCurrentTime: jest.fn(() => "12:00"),
+  toJstTime: jest.fn(() => "12:00"),
   // mockRoutine.daysOfWeekが平日固定のため、テスト実行日に依存させず
   // 月曜(1)に固定する。実行日が週末だと「今日」判定が変わりフレークするため
   toJstDay: jest.fn(() => 1),

@@ -72,8 +72,8 @@ describe("useRoutines initial and mutations", () => {
       document.dispatchEvent(new Event("visibilitychange"));
     });
 
-    // 日付が変わっていないため完了状態はリセットされないが、
-    // isRoutinePast() 再評価のために新しい配列参照が返されデータは保持される
+    // 日付が変わっていないため完了状態はリセットされず、データは保持される
+    // （超過の色の再評価は、配列の参照ではなく、現在時刻の通知 notifyCurrentMinute で行う）
     expect(result.current.routines).toHaveLength(1);
     expect(result.current.routines[0].id).toBe("1");
   });

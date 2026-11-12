@@ -7,26 +7,46 @@ import {
 } from "../helpers";
 import {
   baseRoutine,
-  mockGetCurrentTime,
   mockToJstDay,
+  mockToJstTime,
   mockGetSettings,
   setupHelpersDefaults,
 } from "./helpers.test.setup";
 import { type Routine } from "@/types/routine";
+
+/** isRoutinePast に渡す現在時刻。曜日と時刻はモックで決めるので、値そのものは判定に影響しない */
+const NOW_MS = Date.parse("2026-11-12T09:00:00+09:00");
 
 describe("helpers presentation", () => {
   beforeEach(setupHelpersDefaults);
 
   it("isRoutinePastは当日かつ時刻超過でtrue", () => {
     mockToJstDay.mockReturnValue(1);
-    mockGetCurrentTime.mockReturnValue("09:00");
-    expect(isRoutinePast(baseRoutine)).toBe(true);
+    mockToJstTime.mockReturnValue("09:00");
+    expect(isRoutinePast(baseRoutine, NOW_MS)).toBe(true);
+    // 曜日と時刻は、渡した時刻から求める（関数の中で時計を読まない）
+    expect(mockToJstDay).toHaveBeenCalledWith(new Date(NOW_MS));
+    expect(mockToJstTime).toHaveBeenCalledWith(new Date(NOW_MS));
   });
 
   it("開始時刻が1桁時の旧データでも時刻超過を正しく判定する", () => {
     mockToJstDay.mockReturnValue(1);
-    mockGetCurrentTime.mockReturnValue("09:00");
-    expect(isRoutinePast({ ...baseRoutine, startTime: "8:30" })).toBe(true);
+    mockToJstTime.mockReturnValue("09:00");
+    expect(isRoutinePast({ ...baseRoutine, startTime: "8:30" }, NOW_MS)).toBe(
+      true,
+    );
+  });
+
+  it("開始時刻ちょうどは、まだ超過にしない", () => {
+    mockToJstDay.mockReturnValue(1);
+    mockToJstTime.mockReturnValue("08:00");
+    expect(isRoutinePast(baseRoutine, NOW_MS)).toBe(false);
+  });
+
+  it("今日の曜日でないルーティンは、時刻を過ぎていても超過にしない", () => {
+    mockToJstDay.mockReturnValue(2);
+    mockToJstTime.mockReturnValue("09:00");
+    expect(isRoutinePast(baseRoutine, NOW_MS)).toBe(false);
   });
 
   it("カテゴリ情報とカードスタイルを返す", () => {

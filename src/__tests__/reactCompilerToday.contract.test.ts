@@ -6,7 +6,7 @@ import { join } from "node:path";
 import { transformSync } from "@babel/core";
 import * as ts from "typescript";
 
-// React Compiler の契約テスト: 描画時に求めた「今日」が、最初の描画の値に固定されないこと。
+// React Compiler の契約テスト: 描画時に求めた「今日」「現在時刻」が、最初の描画の値に固定されないこと。
 //
 // Jest（ts-jest）は React Compiler を通さないため、ふつうの単体テストでは固定を検出できない。
 // ここでは対象ファイルを Next と同じオプションの babel-plugin-react-compiler でコンパイルし、
@@ -18,7 +18,8 @@ import * as ts from "typescript";
 //   今日を素の関数で取ると、コンパイラはその値を変わらないものとみなして依存に入れないため、
 //   下流が古い今日のまま残る
 //
-// 新しく今日を使うフック・コンポーネントを直したら、下の TODAY_TARGETS に足す。
+// 新しく今日・現在時刻を使うフック・コンポーネントを直したら、下の TODAY_TARGETS に足す
+// （現在時刻は src/hooks/useCurrentMinute.ts の useCurrentMinute() から取る）。
 // 描画のたびに今日を求める "use no memo" の関数を足したら、USE_NO_MEMO_TARGETS に足す
 // （docs/02-development/coding-standards.md「React Compiler と今日・現在時刻」から参照している）。
 
@@ -49,11 +50,12 @@ type TodayTarget = {
   /** 直した箇所のファイル（リポジトリのルートからのパス） */
   file: string;
   /**
-   * ソースが呼んでいるべき、今日を返すフック（src/hooks/useToday.ts の共通フック、または
-   * USE_NO_MEMO_TARGETS の機能側の関数）。今日を引数で受け取るだけのファイルは持たない
+   * ソースが呼んでいるべき、今日・現在時刻を返すフック（src/hooks/useToday.ts の共通フック、
+   * src/hooks/useCurrentMinute.ts の useCurrentMinute、または USE_NO_MEMO_TARGETS の機能側の関数）。
+   * 今日を引数で受け取るだけのファイルは持たない
    */
   hookCall?: string;
-  /** 今日（または今日から求めた値）を入れる変数。コンパイル結果で、メモ化の依存の比較に入っているべきもの */
+  /** 今日・現在時刻（またはそこから求めた値）を入れる変数。コンパイル結果で、メモ化の依存の比較に入っているべきもの */
   dependencies: string[];
 };
 
@@ -115,9 +117,43 @@ const TODAY_TARGETS: TodayTarget[] = [
     // 今日から求めた今週の開始日が、戻り値のメモ化の依存に入る
     dependencies: ["currentWeekStart"],
   },
+  // ルーティンのカード: 現在時刻（分）が、カードのクラス（超過の色）の計算の依存に入る。
+  // 依存から外れると、開始時間を過ぎても、バックグラウンドから戻っても色が変わらない（#9）
+  {
+    file: "src/features/routine/components/RoutineItem.tsx",
+    hookCall: "useCurrentMinute(",
+    dependencies: ["nowMinute"],
+  },
+  {
+    file: "src/features/routine/components/SortableRoutineItem.tsx",
+    hookCall: "useCurrentMinute(",
+    dependencies: ["nowMinute"],
+  },
+  {
+    file: "src/features/routine/components/SortableRoutineNormalDragItem.tsx",
+    hookCall: "useCurrentMinute(",
+    dependencies: ["nowMinute"],
+  },
+  {
+    file: "src/features/routine/components/SortableRoutineEditModeItem.tsx",
+    hookCall: "useCurrentMinute(",
+    dependencies: ["nowMinute"],
+  },
+  {
+    file: "src/features/routine/components/RoutineDragOverlay.tsx",
+    hookCall: "useCurrentMinute(",
+    dependencies: ["nowMinute"],
+  },
 ];
 
-/** 今日を求める式（最初の描画で 1 回だけ実行されるブロックに入っていたら固定される） */
+/**
+ * 今日を求める式（最初の描画で 1 回だけ実行されるブロックに入っていたら固定される）。
+ *
+ * 現在時刻を読む式（`Date.now()`・`getCurrentMinute()` など）は、ここに入れない。
+ * ルーティンのカードで描画中に時計を直接読むように壊して試したところ、コンパイラはその式を
+ * このブロックに入れなかった（この一覧に足しても検出できない）。現在時刻の固定は、
+ * TODAY_TARGETS の dependencies（メモ化の依存の比較に nowMinute があること）で検出する。
+ */
 const TODAY_EXPRESSIONS = [
   "new Date()",
   "getTodayString(",
@@ -251,7 +287,7 @@ describe("React Compiler で「今日」が固定されない（契約テスト�
     });
 
     if (hookCall !== undefined) {
-      it(`ソースが今日を返すフック ${hookCall} を呼んでいる`, () => {
+      it(`ソースが今日・現在時刻を返すフック ${hookCall} を呼んでいる`, () => {
         expect(readSource(file)).toContain(hookCall);
       });
     }

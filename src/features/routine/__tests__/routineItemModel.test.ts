@@ -12,6 +12,9 @@ jest.mock("../helpers", () => ({
 }));
 
 describe("routineItemModel", () => {
+  /** カードの色の計算に渡す現在時刻（isRoutinePast はモックなので、値そのものは色に影響しない） */
+  const NOW_MINUTE = Date.parse("2026-11-12T09:00:00+09:00");
+
   const routine: Routine = {
     id: "r1",
     title: "朝活",
@@ -63,6 +66,7 @@ describe("routineItemModel", () => {
         routine,
         isEditMode: false,
         isDraggable: false,
+        nowMinute: NOW_MINUTE,
       }),
     ).toContain("cursor-pointer");
 
@@ -71,6 +75,7 @@ describe("routineItemModel", () => {
         routine,
         isEditMode: true,
         isDraggable: true,
+        nowMinute: NOW_MINUTE,
       }),
     ).toContain("cursor-grab");
 
@@ -79,6 +84,7 @@ describe("routineItemModel", () => {
         routine,
         isEditMode: true,
         isDraggable: false,
+        nowMinute: NOW_MINUTE,
       }),
     ).toContain("mock-style");
   });
@@ -89,6 +95,7 @@ describe("routineItemModel", () => {
       isEditMode: false,
       isDraggable: false,
       isDragging: true,
+      nowMinute: NOW_MINUTE,
     });
     expect(className).toContain("border-blue-400");
     expect(className).toContain("shadow-md");
@@ -104,6 +111,7 @@ describe("routineItemModel", () => {
       isEditMode: false,
       isDraggable: false,
       isDragging: true,
+      nowMinute: NOW_MINUTE,
     });
     expect(className).toContain("bg-green-50");
     expect(className).toContain("border-blue-400");
@@ -116,8 +124,21 @@ describe("routineItemModel", () => {
       isEditMode: false,
       isDraggable: false,
       isDragging: true,
+      nowMinute: NOW_MINUTE,
     });
     expect(className).toContain("bg-yellow-50");
     expect(className).toContain("border-blue-400");
+  });
+
+  it("渡された nowMinute を、そのまま isRoutinePast に渡す", () => {
+    (isRoutinePast as jest.Mock).mockClear();
+    getRoutineItemCardClassName({
+      routine,
+      isEditMode: false,
+      isDraggable: false,
+      nowMinute: NOW_MINUTE,
+    });
+    expect(isRoutinePast).toHaveBeenCalledTimes(1);
+    expect(isRoutinePast).toHaveBeenCalledWith(routine, NOW_MINUTE);
   });
 });
