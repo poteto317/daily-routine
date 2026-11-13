@@ -1,4 +1,5 @@
-import * as admin from "firebase-admin";
+import type { Firestore } from "../adminSdk";
+import { FieldValue } from "../adminSdk";
 import { USERS_COLLECTION } from "../constants";
 
 /**
@@ -6,13 +7,13 @@ import { USERS_COLLECTION } from "../constants";
  * ドキュメントIDとして FCMトークンを使用する
  */
 export const saveUserData = async (
-  db: admin.firestore.Firestore,
+  db: Firestore,
   fcmToken: string,
   routines: unknown[],
 ): Promise<void> => {
   await db.collection(USERS_COLLECTION).doc(fcmToken).set({
     fcmToken,
     routines,
-    updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+    updatedAt: FieldValue.serverTimestamp(),
   });
 };

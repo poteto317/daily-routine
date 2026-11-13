@@ -1,4 +1,4 @@
-import type * as admin from "firebase-admin";
+import type { Firestore } from "../adminSdk";
 import { USERS_COLLECTION } from "../constants";
 import { resolveUidByApiKey } from "./apiKeyLookup";
 import type { HandlerDeps } from "./handlerDeps";
@@ -7,7 +7,7 @@ import { applyChanges, type WriteDeps } from "./syncWriter";
 
 /** Firestore に接続する HandlerDeps を作る。時計とサーバー時刻は引数で差し替えられる */
 export const createFirestoreHandlerDeps = (
-  db: admin.firestore.Firestore,
+  db: Firestore,
   writeDeps: WriteDeps,
 ): HandlerDeps => ({
   resolveUid: (key) => resolveUidByApiKey(db, key),

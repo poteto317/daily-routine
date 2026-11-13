@@ -1,18 +1,16 @@
 /** @jest-environment node */
 const mockSend = jest.fn();
 
-jest.mock("firebase-admin", () => ({
-  messaging: () => ({ send: mockSend }),
-  firestore: {
-    FieldValue: { serverTimestamp: () => "SERVER_TIMESTAMP" },
-  },
+jest.mock("../../adminSdk", () => ({
+  FieldValue: { serverTimestamp: () => "SERVER_TIMESTAMP" },
+  getMessaging: () => ({ send: mockSend }),
 }));
 jest.mock("firebase-functions/logger", () => ({
   info: jest.fn(),
   error: jest.fn(),
 }));
 
-import type * as admin from "firebase-admin";
+import type { Firestore } from "../../adminSdk";
 import * as logger from "firebase-functions/logger";
 import type { Routine } from "../../types";
 import { sendRoutineNotification } from "../notification-delivery";
@@ -41,7 +39,7 @@ const makeDb = (alreadySent = false) => {
   const doc = jest.fn(() => ({ get, set }));
   const collection = jest.fn(() => ({ doc }));
   return {
-    db: { collection } as unknown as admin.firestore.Firestore,
+    db: { collection } as unknown as Firestore,
     collection,
     doc,
     get,

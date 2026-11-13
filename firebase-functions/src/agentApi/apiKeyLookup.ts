@@ -1,4 +1,4 @@
-import type * as admin from "firebase-admin";
+import type { Firestore } from "../adminSdk";
 import { API_KEY_PATTERN, hashApiKey } from "./apiKey";
 
 /**
@@ -6,7 +6,7 @@ import { API_KEY_PATTERN, hashApiKey } from "./apiKey";
  * 形式が不正なキーは Firestore を引かずに null にする。失効は apiKeys ドキュメントの削除で表す。
  */
 export const resolveUidByApiKey = async (
-  db: admin.firestore.Firestore,
+  db: Firestore,
   key: string,
 ): Promise<string | null> => {
   if (!API_KEY_PATTERN.test(key)) return null;

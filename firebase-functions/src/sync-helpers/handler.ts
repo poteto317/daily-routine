@@ -1,7 +1,7 @@
+import type { Firestore } from "../adminSdk";
 import { type Request } from "firebase-functions/https";
 import { type Response } from "express";
 import * as logger from "firebase-functions/logger";
-import type * as admin from "firebase-admin";
 import { applyCorsHeaders, handlePreflightRequest } from "./cors";
 import {
   isPostMethod,
@@ -24,7 +24,7 @@ import { abbreviateTokenForLog } from "../token-log";
 export const handleSyncRoutinesRequest = async (
   req: Request,
   res: Response,
-  db: admin.firestore.Firestore,
+  db: Firestore,
 ): Promise<void> => {
   applyCorsHeaders(res);
 

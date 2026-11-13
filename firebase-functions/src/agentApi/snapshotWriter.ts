@@ -1,4 +1,8 @@
-import type * as admin from "firebase-admin";
+import type {
+  CollectionReference,
+  QueryDocumentSnapshot,
+  Transaction,
+} from "../adminSdk";
 import type { SyncDocData } from "./syncDoc";
 import { API_DEVICE_ID, MAX_SYNC_SNAPSHOTS, META_KEYS } from "./syncConstants";
 
@@ -9,10 +13,10 @@ export const toSnapshotPayload = (data: SyncDocData): SyncDocData =>
   );
 
 type SaveSnapshotArgs = {
-  transaction: admin.firestore.Transaction;
-  snapshotsRef: admin.firestore.CollectionReference;
+  transaction: Transaction;
+  snapshotsRef: CollectionReference;
   /** uploadedAt の降順で読み取り済みの既存スナップショット（deviceId のみ取得） */
-  existing: admin.firestore.QueryDocumentSnapshot[];
+  existing: QueryDocumentSnapshot[];
   /** 変更後の users/{uid} の内容 */
   data: SyncDocData;
   lastModified: number;
@@ -20,9 +24,8 @@ type SaveSnapshotArgs = {
 };
 
 /** 最新のスナップショットが API 由来か（アプリ由来の復元ポイントを押し出さないための判定） */
-const isLatestFromApi = (
-  existing: admin.firestore.QueryDocumentSnapshot[],
-): boolean => existing[0]?.data().deviceId === API_DEVICE_ID;
+const isLatestFromApi = (existing: QueryDocumentSnapshot[]): boolean =>
+  existing[0]?.data().deviceId === API_DEVICE_ID;
 
 const buildSnapshotDoc = (
   id: string,

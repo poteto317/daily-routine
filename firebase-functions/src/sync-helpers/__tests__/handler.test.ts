@@ -1,3 +1,4 @@
+import type { Firestore } from "../../adminSdk";
 /** @jest-environment node */
 jest.mock("firebase-functions/logger", () => ({
   info: jest.fn(),
@@ -9,13 +10,12 @@ jest.mock("../storage", () => ({
 
 import type { Request } from "firebase-functions/https";
 import type { Response } from "express";
-import type * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
 import { handleSyncRoutinesRequest } from "../handler";
 import { saveUserData } from "../storage";
 
 const mockedSaveUserData = jest.mocked(saveUserData);
-const db = {} as admin.firestore.Firestore;
+const db = {} as Firestore;
 const TOKEN = "fcm-token-0123456789-abcdef";
 
 const makeRes = () => {

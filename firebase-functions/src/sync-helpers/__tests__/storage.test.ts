@@ -1,11 +1,10 @@
 /** @jest-environment node */
-jest.mock("firebase-admin", () => ({
-  firestore: {
-    FieldValue: { serverTimestamp: () => "SERVER_TIMESTAMP" },
-  },
+import type { Firestore } from "../../adminSdk";
+
+jest.mock("../../adminSdk", () => ({
+  FieldValue: { serverTimestamp: () => "SERVER_TIMESTAMP" },
 }));
 
-import type * as admin from "firebase-admin";
 import { saveUserData } from "../storage";
 
 const makeDb = () => {
@@ -13,7 +12,7 @@ const makeDb = () => {
   const doc = jest.fn(() => ({ set }));
   const collection = jest.fn(() => ({ doc }));
   return {
-    db: { collection } as unknown as admin.firestore.Firestore,
+    db: { collection } as unknown as Firestore,
     collection,
     doc,
     set,

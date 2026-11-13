@@ -1,4 +1,4 @@
-import type * as admin from "firebase-admin";
+import type { Firestore, DocumentData } from "../adminSdk";
 import { type NotificationContext } from "../date-utils";
 import { isNotificationTimeNow } from "./notification-time";
 import { sendRoutineNotification } from "./notification-delivery";
@@ -6,8 +6,8 @@ import { shouldNotifyRoutine } from "./notification-filter";
 import { extractUserNotificationData } from "./user-data-extractor";
 
 type ProcessUserNotificationsParams = NotificationContext & {
-  userData: admin.firestore.DocumentData;
-  db: admin.firestore.Firestore;
+  userData: DocumentData;
+  db: Firestore;
 };
 
 /**

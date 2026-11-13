@@ -1,5 +1,5 @@
+import type { Firestore } from "../../adminSdk";
 /** @jest-environment node */
-import type * as admin from "firebase-admin";
 import { getCleanupThresholdDate } from "../date";
 import { deleteOldNotifications } from "../executor";
 
@@ -40,7 +40,7 @@ describe("deleteOldNotifications", () => {
       db: {
         collection,
         batch: () => batch,
-      } as unknown as admin.firestore.Firestore,
+      } as unknown as Firestore,
       collection,
       where,
       batch,

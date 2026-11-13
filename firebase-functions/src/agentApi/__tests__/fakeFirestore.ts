@@ -1,5 +1,5 @@
-import type * as admin from "firebase-admin";
 
+import type { Firestore } from "../../adminSdk";
 type Data = Record<string, unknown>;
 type Direction = "asc" | "desc";
 
@@ -150,7 +150,7 @@ export const createFakeFirestore = (initial: Record<string, Data>) => {
   };
 
   return {
-    db: db as unknown as admin.firestore.Firestore,
+    db: db as unknown as Firestore,
     get: (path: string) => store.get(path),
     snapshotsOf: (uid: string) =>
       queryDocs(

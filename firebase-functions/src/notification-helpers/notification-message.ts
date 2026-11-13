@@ -1,4 +1,4 @@
-import type * as admin from "firebase-admin";
+import type { Message } from "../adminSdk";
 import { type Routine } from "../types";
 import { NOTIFICATION_TEXTS } from "./notification-texts";
 
@@ -8,7 +8,7 @@ import { NOTIFICATION_TEXTS } from "./notification-texts";
 export const buildRoutineNotificationMessage = (
   fcmToken: string,
   routine: Routine,
-): admin.messaging.Message => {
+): Message => {
   return {
     token: fcmToken,
     notification: {

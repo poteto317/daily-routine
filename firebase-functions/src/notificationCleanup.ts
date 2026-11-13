@@ -1,6 +1,6 @@
+import type { Firestore } from "./adminSdk";
 import { onSchedule } from "firebase-functions/v2/scheduler";
 import * as logger from "firebase-functions/logger";
-import type * as admin from "firebase-admin";
 import {
   deleteOldNotifications,
   getCleanupThresholdDate,
@@ -9,7 +9,7 @@ import {
 /**
  * 毎日午前0時に古い通知履歴を削除
  */
-export const cleanupNotifications = (db: admin.firestore.Firestore) =>
+export const cleanupNotifications = (db: Firestore) =>
   onSchedule(
     {
       schedule: "0 0 * * *",

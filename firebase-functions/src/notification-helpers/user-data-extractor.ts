@@ -1,4 +1,4 @@
-import type * as admin from "firebase-admin";
+import type { DocumentData } from "../adminSdk";
 import { type Routine } from "../types";
 import type { UserNotificationData } from "./types";
 
@@ -9,7 +9,7 @@ export type { UserNotificationData };
  * データが存在しない場合は null を返す
  */
 export const extractUserNotificationData = (
-  userData: admin.firestore.DocumentData,
+  userData: DocumentData,
 ): UserNotificationData | null => {
   const fcmToken = userData.fcmToken;
   const routines: Routine[] = userData.routines || [];

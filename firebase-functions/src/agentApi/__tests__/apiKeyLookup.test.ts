@@ -1,5 +1,5 @@
+import type { Firestore } from "../../adminSdk";
 /** @jest-environment node */
-import type * as admin from "firebase-admin";
 import { hashApiKey } from "../apiKey";
 import { resolveUidByApiKey } from "../apiKeyLookup";
 
@@ -15,7 +15,7 @@ const fakeDb = (docs: Record<string, Record<string, unknown>>) => {
     name,
   }));
   return {
-    db: { collection } as unknown as admin.firestore.Firestore,
+    db: { collection } as unknown as Firestore,
     get,
     collection,
   };
@@ -57,7 +57,7 @@ describe("resolveUidByApiKey", () => {
         get: async () => ({ exists: true, data: () => undefined }),
       }),
     }));
-    const db = { collection } as unknown as admin.firestore.Firestore;
+    const db = { collection } as unknown as Firestore;
     await expect(resolveUidByApiKey(db, VALID_KEY)).resolves.toBeNull();
   });
 });

@@ -1,7 +1,8 @@
+import type { Firestore } from "../adminSdk";
+import { FieldValue } from "../adminSdk";
 import { onDocumentCreated } from "firebase-functions/v2/firestore";
 import * as logger from "firebase-functions/logger";
-import type * as admin from "firebase-admin";
-import { FieldValue, type Timestamp } from "firebase-admin/firestore";
+import type { Timestamp } from "firebase-admin/firestore";
 import { getStorage } from "firebase-admin/storage";
 import { BUG_REPORTS_COLLECTION } from "./constants";
 import { anthropicApiKey, githubToken, githubRepo } from "./config";
@@ -13,7 +14,7 @@ import { createStorageImageStore } from "./storageImageStore";
  * bugReports ドキュメント作成時に GitHub Issue を自動作成する Firestore トリガ。
  * 実際の Issue 作成・書き戻し・冪等性は processBugReport に委譲する。
  */
-export const onBugReportCreated = (db: admin.firestore.Firestore) =>
+export const onBugReportCreated = (db: Firestore) =>
   onDocumentCreated(
     {
       document: `${BUG_REPORTS_COLLECTION}/{reportId}`,

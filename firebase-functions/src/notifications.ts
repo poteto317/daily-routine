@@ -1,13 +1,13 @@
+import type { Firestore } from "./adminSdk";
 import { onSchedule } from "firebase-functions/v2/scheduler";
 import * as logger from "firebase-functions/logger";
-import type * as admin from "firebase-admin";
 import { getCurrentNotificationContext } from "./date-utils";
 import { processAllUsersNotifications } from "./notification-helpers";
 
 /**
  * 毎分実行：ルーティンの時刻をチェックして通知を送信
  */
-export const checkNotifications = (db: admin.firestore.Firestore) =>
+export const checkNotifications = (db: Firestore) =>
   onSchedule(
     {
       schedule: "every 1 minutes",

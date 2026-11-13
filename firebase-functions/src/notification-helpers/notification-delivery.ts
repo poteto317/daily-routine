@@ -1,5 +1,6 @@
+import type { Firestore } from "../adminSdk";
+import { getMessaging } from "../adminSdk";
 import * as logger from "firebase-functions/logger";
-import * as admin from "firebase-admin";
 import { abbreviateTokenForLog } from "../token-log";
 import { type Routine } from "../types";
 import { createNotificationId } from "./notification-id";
@@ -17,7 +18,7 @@ import { buildRoutineNotificationMessage } from "./notification-message";
 export const sendRoutineNotification = async (
   fcmToken: string,
   routine: Routine,
-  db: admin.firestore.Firestore,
+  db: Firestore,
   todayStr: string,
 ): Promise<boolean> => {
   const notificationId = createNotificationId(fcmToken, routine.id, todayStr);
@@ -28,9 +29,9 @@ export const sendRoutineNotification = async (
   }
 
   try {
-    await admin
-      .messaging()
-      .send(buildRoutineNotificationMessage(fcmToken, routine));
+    await getMessaging().send(
+      buildRoutineNotificationMessage(fcmToken, routine),
+    );
 
     await recordSentNotification(db, notificationId, routine);
 

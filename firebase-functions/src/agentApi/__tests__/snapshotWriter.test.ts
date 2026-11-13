@@ -1,5 +1,9 @@
 /** @jest-environment node */
-import type * as admin from "firebase-admin";
+import type {
+  CollectionReference,
+  QueryDocumentSnapshot,
+  Transaction,
+} from "../../adminSdk";
 import { saveApiSnapshot, toSnapshotPayload } from "../snapshotWriter";
 import { API_DEVICE_ID, MAX_SYNC_SNAPSHOTS } from "../syncConstants";
 
@@ -24,10 +28,9 @@ const setup = (existing: FakeSnapshotDoc[]) => {
   const snapshotsRef = { doc: jest.fn(() => newRef) };
   const save = (data: Record<string, unknown> = { budgetCategories: [] }) =>
     saveApiSnapshot({
-      transaction: transaction as unknown as admin.firestore.Transaction,
-      snapshotsRef:
-        snapshotsRef as unknown as admin.firestore.CollectionReference,
-      existing: existing as unknown as admin.firestore.QueryDocumentSnapshot[],
+      transaction: transaction as unknown as Transaction,
+      snapshotsRef: snapshotsRef as unknown as CollectionReference,
+      existing: existing as unknown as QueryDocumentSnapshot[],
       data,
       lastModified: 5000,
       serverTimestamp: "SERVER_TS",

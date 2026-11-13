@@ -1,4 +1,4 @@
-import type * as admin from "firebase-admin";
+import type { Firestore } from "../adminSdk";
 import { USERS_COLLECTION } from "../constants";
 import { noSyncData, outdatedSyncData } from "./errors";
 import { nextLastModified } from "./lastModified";
@@ -16,7 +16,7 @@ export type WriteDeps = {
  * 変更フィールドと同期メタ情報だけを書き、変更後のスナップショットも保存する。
  */
 export const applyChanges = <T extends { changes?: SyncDocData }>(
-  db: admin.firestore.Firestore,
+  db: Firestore,
   uid: string,
   build: (data: SyncDocData) => T,
   deps: WriteDeps,

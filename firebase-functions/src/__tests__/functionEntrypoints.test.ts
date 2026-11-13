@@ -1,3 +1,4 @@
+import type { Firestore } from "../adminSdk";
 /** @jest-environment node */
 // onSchedule / onRequest は、渡された設定と処理本体をそのまま返すモックにする
 jest.mock("firebase-functions/v2/scheduler", () => ({
@@ -30,7 +31,6 @@ jest.mock("../sync-helpers", () => ({
   handleSyncRoutinesRequest: jest.fn().mockResolvedValue(undefined),
 }));
 
-import type * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
 import {
   deleteOldNotifications,
@@ -52,7 +52,7 @@ type CapturedFunction = {
 /** モックの onSchedule / onRequest が返した設定と処理本体を取り出す */
 const capture = (value: unknown) => value as CapturedFunction;
 
-const db = { id: "db" } as unknown as admin.firestore.Firestore;
+const db = { id: "db" } as unknown as Firestore;
 
 describe("Cloud Functions のエントリーポイント", () => {
   afterEach(() => {

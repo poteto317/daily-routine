@@ -1,9 +1,9 @@
+import type { Firestore, DocumentData } from "../../adminSdk";
 /** @jest-environment node */
 jest.mock("../notification-delivery", () => ({
   sendRoutineNotification: jest.fn().mockResolvedValue(true),
 }));
 
-import type * as admin from "firebase-admin";
 import { HOLIDAY_DAY_VALUE } from "../../constants";
 import type { NotificationContext } from "../../date-utils";
 import type { Routine } from "../../types";
@@ -12,7 +12,7 @@ import { processUserNotifications } from "../process-user-notifications";
 import { processAllUsersNotifications } from "../users-processor";
 
 const mockedSend = jest.mocked(sendRoutineNotification);
-const db = {} as admin.firestore.Firestore;
+const db = {} as Firestore;
 
 /** 2026-10-30（金）09:00 の平日 */
 const CONTEXT: NotificationContext = {
@@ -133,14 +133,14 @@ describe("processAllUsersNotifications", () => {
     jest.clearAllMocks();
   });
 
-  const makeDb = (users: admin.firestore.DocumentData[]) => {
+  const makeDb = (users: DocumentData[]) => {
     const collection = jest.fn(() => ({
       get: jest.fn().mockResolvedValue({
         docs: users.map((data) => ({ data: () => data })),
       }),
     }));
     return {
-      db: { collection } as unknown as admin.firestore.Firestore,
+      db: { collection } as unknown as Firestore,
       collection,
     };
   };
