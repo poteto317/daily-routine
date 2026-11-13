@@ -220,30 +220,16 @@ AI エージェント（Claude / Codex / スクリプト）から家計簿・ジ
 
 ### 4-1. 認証と認可
 
-- **トークン形式**: `Authorization: Bearer drk_<32バイト暗号乱数>`
-- **ハッシュ検証**: トークン平文は一切保存せず、SHA-256 でハッシュ化した値を Firestore `apiKeys/{keyHash}` から検索。
-- **アカウント分離**: キーに記録された `uid` をもとに、対応する `users/{uid}` の同期データのみを読み書き。他ユーザーのデータには一切アクセスできません。
+- アプリの設定画面で発行した API キーで認証する。
+- 平文キーは保存せず、ハッシュ照合で紐づくアカウントの同期データだけを読み書きする（他ユーザーのデータにはアクセスできない）。
+- 操作手順・リクエスト形式の詳細は公開リポジトリの対象外（実装は `firebase-functions/src/agentApi/`）。
 
-### 4-2. エージェント API の処理フロー
+### 4-2. エージェント API の処理フロー（概要）
 
-```mermaid
-sequenceDiagram
-  autonumber
-  actor Agent as AI エージェント
-  participant Handler as Functions (agentApi)
-  participant Auth as apiKeyLookup
-  participant Router as router & validation
-  participant FS as Firestore (users/{uid})
-
-  Agent->>Handler: HTTP リクエスト (POST <redacted-agent-api>/workout/records)
-  Handler->>Auth: Bearer トークンの SHA-256 ハッシュを検証
-  Auth-->>Handler: 紐づく uid を返却 (認証成功)
-  Handler->>Router: ルーティング & 本文・クエリの厳格バリデーション (fail-closed)
-  Handler->>FS: トランザクション内で users/{uid} を取得
-  Handler->>Handler: データの作成・更新・整合性チェック (409 / 400 検証)
-  Handler->>FS: users/{uid} 更新 & syncSnapshots へ記録
-  Handler-->>Agent: 201 Created (作成されたエンティティ JSON)
-```
+1. HTTPS で `agentApi` を呼び出す
+2. API キーを検証し、紐づく uid を解決する
+3. ルーティングと入力検証のあと、当該ユーザーの同期データを更新する
+4. 必要に応じて同期スナップショットを残して応答する
 
 ---
 

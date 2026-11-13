@@ -8,7 +8,7 @@
 
 | 関数名                 | 種別           | トリガー / エンドポイント      | 主な役割                                          |
 | ---------------------- | -------------- | ------------------------------ | ------------------------------------------------- |
-| `agentApi`             | HTTPS          | `/agentApi/*`                  | AI エージェント・外部ツール向け CRUD REST API     |
+| `agentApi`             | HTTPS          | （パス詳細は非公開）           | AI エージェント・外部ツール向け CRUD REST API     |
 | `onBugReportCreated`   | Firestore      | `bugReports/{reportId}` 作成時 | アプリ内不具合報告から GitHub Issue を自動起票    |
 | `syncRoutines`         | HTTPS          | `/syncRoutines`                | クライアントの通知用ルーティンデータ同期受付      |
 | `checkNotifications`   | スケジューラー | 毎分 (`every 1 minutes`)       | 通知時刻になったルーティンの FCM プッシュ通知配信 |
