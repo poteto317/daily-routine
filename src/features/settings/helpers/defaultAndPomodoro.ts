@@ -28,9 +28,9 @@ export const DEFAULT_NOTIFICATION_FIELD: NumberFieldViewModel = {
 };
 
 export const BACKGROUND_REFRESH_FIELD: NumberFieldViewModel = {
-  label: "バックグラウンド復帰リフレッシュ間隔（分）",
+  label: "表示中の定期リフレッシュ間隔（分）",
   description:
-    "アプリをバックグラウンドから戻した際に、ルーティンの背景色（経過色）を再評価するまでの最大待機時間です。0を設定すると定期的な再評価は行われません。",
+    "アプリを表示したままのときに、ルーティンの背景色（経過色）を再評価する間隔です。バックグラウンドから戻したときは、この値に関係なくすぐに再評価します。0を設定すると定期的な再評価は行われません。",
   min: 0,
   max: 60,
   errorText: "0～60分の範囲で入力してください（0で定期更新なし）",

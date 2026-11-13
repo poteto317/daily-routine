@@ -4,6 +4,7 @@ import {
   getUpdatedSettingsForSwipeAction,
 } from "../helpers/appearance";
 import {
+  BACKGROUND_REFRESH_FIELD,
   DEFAULT_DURATION_FIELD,
   DEFAULT_NOTIFICATION_FIELD,
   POMODORO_FIELDS,
@@ -93,5 +94,24 @@ describe("settings view helpers", () => {
         company: "JR東日本",
       }),
     ).toBe("JR東日本 - 山手線");
+  });
+
+  it("定期リフレッシュ間隔の表示名と説明文が、実際の動作（表示中の間隔。復帰時はすぐ再評価）を説明している", () => {
+    // 期待値は定数を参照せず、文字列をそのまま書く（定数を変えたときにテストが気づけるようにする）
+    expect(BACKGROUND_REFRESH_FIELD).toEqual({
+      label: "表示中の定期リフレッシュ間隔（分）",
+      description:
+        "アプリを表示したままのときに、ルーティンの背景色（経過色）を再評価する間隔です。バックグラウンドから戻したときは、この値に関係なくすぐに再評価します。0を設定すると定期的な再評価は行われません。",
+      min: 0,
+      max: 60,
+      errorText: "0～60分の範囲で入力してください（0で定期更新なし）",
+      hint: "推奨: 30分",
+    });
+
+    // 以前の誤解を招く言い回し（復帰してから待つ、と読める表現）が残っていない
+    expect(BACKGROUND_REFRESH_FIELD.label).not.toContain(
+      "バックグラウンド復帰",
+    );
+    expect(BACKGROUND_REFRESH_FIELD.description).not.toContain("最大待機時間");
   });
 });
