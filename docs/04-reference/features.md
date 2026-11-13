@@ -645,24 +645,17 @@ AI エージェントや外部スクリプトからアプリデータを安全�
 
 - **設定画面でのキー発行・管理**
   - 設定画面「API キー」セクションからワンクリックで発行
-  - 発行時に平文トークン（`[redacted-key-prefix]` 形式、32バイト暗号論的乱数）をモーダルで1回だけ表示（再表示不可、クリップボードコピー対応）
+  - 発行時に平文トークンをモーダルで1回だけ表示（再表示不可、クリップボードコピー対応）
   - キーの再発行（旧キーは即座に失効）および明示的な失効
-- **CLI ツール連携（`tools/api-key/cli.mjs`）**
-  - `npm run <private-ops> -- <command>` により開発環境やエージェント環境からキー管理が可能
-  - `users`: アカウント一覧確認
-  - `list`: 紐づくキー一覧
-  - `issue`: キーを発行して `.env.local` 等のファイルに直接安全に書き込み（`--replace`, `--env-file` 対応）
-  - `revoke`: キーの失効
-  - `[redacted]` により `firebase login` 済みの認証情報を利用可能
 - **セキュアな設計**
-  - 平文トークンはサーバー・Firestore のいずれにも保存せず、SHA-256 ハッシュ値のみを Firestore `apiKeys/{keyHash}` に保存
+  - 平文トークンはサーバー・Firestore のいずれにも保存せず、ハッシュ値のみを Firestore に保存
   - 各キーは発行した Firebase アカウントの uid に紐づき、ユーザー間のデータ分離を保証
   - Firestore セキュリティルールにより認証ユーザー本人の uid のキーのみ作成・削除・照会可能
 
 **技術仕様**
 
-- ファイル: `src/features/api-key/`, `tools/api-key/cli.mjs`, `firebase-functions/src/agentApi/`
-- 保存先: Firestore `apiKeys/{keyHash}`
+- ファイル: `src/features/api-key/`, `firebase-functions/src/agentApi/`
+- 保存先: Firestore（キーはハッシュのみ）
 
 ---
 
@@ -934,7 +927,7 @@ Progressive Web App (PWA) 技術と Workbox による Service Worker を活用�
 - **コンポーネントカタログ**: Storybook
 - **Linter / Formatter**: ESLint 9, Prettier
 - **型チェック**: TypeScript (`tsc --noEmit`)
-- **ユーティリティ CLI**: `tools/api-key/cli.mjs`（API キー管理）、`tools/tailwind/check-shorthand.mjs`
+- **ユーティリティ CLI**: `tools/tailwind/check-shorthand.mjs`
 
 ---
 
@@ -1121,7 +1114,6 @@ daily-routine/
 │   ├── lib/                          # ストレージ基盤・Firebase・祝日計算
 │   └── types/                        # TypeScript 型定義
 ├── tools/                            # 開発・運用支援スクリプト
-│   ├── api-key/                      # API キー発行・管理 CLI (cli.mjs)
 │   ├── generate-firebase-messaging-sw.mjs
 │   ├── generate-icons.mjs
 │   └── tailwind/                     # Tailwind ユーティリティチェック
@@ -1162,9 +1154,6 @@ daily-routine/
 - [セットアップガイド](../01-getting-started/) - 環境構築
 - [開発ガイドライン](../02-development/) - コーディング規約
 - [テストガイド](../03-testing/) - テスト方法とマトリクス
-- [API リファレンス](./agent-api.md) - AI エージェント向け API
-- [OpenAPI 仕様書](./openapi.yaml) - OpenAPI 3.0.3 定義
-
 ---
 
 [📖 ドキュメントトップに戻る](../)

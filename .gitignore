@@ -28,6 +28,13 @@
 /AGENTS.md
 /CLAUDE.md
 
+# 公開リポジトリ対象外の運用資材（管理者 CLI・エージェント API 詳細仕様）
+/tools/api-key/
+/（非公開のエージェント API 仕様）
+/（非公開の OpenAPI 仕様）
+/docs/superpowers/plans/2026-10-03-agent-crud-api.md
+/docs/superpowers/specs/2026-10-03-agent-crud-api-design.md
+
 # production
 /build
 

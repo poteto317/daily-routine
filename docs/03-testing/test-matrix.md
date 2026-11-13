@@ -484,10 +484,6 @@
 | 24-3  | API キーの再発行                                       | ✅   | ⬜  | ⬜  | 旧キー即時失効                                |
 | 24-4  | API キーの失効                                         | ✅   | ⬜  | ⬜  | 確認ダイアログ付き                            |
 | 24-5  | Firestore `apiKeys` への SHA-256 ハッシュ保存          | ✅   | ⬜  | ⬜  | 平文は保存しない                              |
-| 24-6  | CLI ツール（`npm run <private-ops> -- users`）               | ✅   | ⬜  | ⬜  | アカウント一覧（先頭100件）表示               |
-| 24-7  | CLI ツール（`npm run <private-ops> -- list`）                | ✅   | ⬜  | ⬜  | 紐づくキーハッシュ一覧表示                    |
-| 24-8  | CLI ツール（`npm run <private-ops> -- issue`）               | ✅   | ⬜  | ⬜  | `--email`, `--replace`, `--env-file` 連携     |
-| 24-9  | CLI ツール（`npm run <private-ops> -- revoke`）              | ✅   | ⬜  | ⬜  | アカウントのキー一括失効                      |
 | 24-10 | 発行キーによるエージェント API 認証                    | ✅   | ⬜  | ⬜  | Bearer 認証、未知入力拒否、古い同期データ保護 |
 
 ---

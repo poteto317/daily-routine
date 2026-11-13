@@ -137,7 +137,6 @@ npm run typecheck:functions
 npm run test -- --runInBand
 npm run verify:fast
 npm run verify
-npm run <private-ops> -- <command>
 npm run storybook
 npm run test:e2e
 ```
@@ -208,7 +207,7 @@ daily-routine/
 │   ├── service-worker/    # 追加の Service Worker 関連コード
 │   ├── services/          # 認証サービスなど
 │   └── types/             # 型定義
-├── tools/                 # 補助スクリプト (api-key CLI, SW 生成, アイコン等)
+├── tools/                 # 補助スクリプト (SW 生成, アイコン等)
 ├── e2e/                   # Playwright E2E テスト
 ├── firestore.rules        # Firestore セキュリティルール
 ├── .env.local.example     # 環境変数テンプレート
@@ -228,8 +227,6 @@ daily-routine/
 - [docs/02-development/storybook-guide.md](./docs/02-development/storybook-guide.md)
 - [docs/03-testing/test-matrix.md](./docs/03-testing/test-matrix.md)
 - [docs/04-reference/features.md](./docs/04-reference/features.md)
-- [（非公開のエージェント API 仕様）](./（非公開のエージェント API 仕様）)
-- [（非公開の OpenAPI 仕様）](./（非公開の OpenAPI 仕様）)
 
 ## 補足
 

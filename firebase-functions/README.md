@@ -77,21 +77,8 @@ firebase-functions/
 
 ### 1. `agentApi` (AI エージェント向け REST API)
 
-- **ベース URL**: `https://asia-northeast1-<projectId>.cloudfunctions.net/agentApi`
-- **認証方式**: `Authorization: [redacted]`（`apiKeys` コレクション内の SHA-256 ハッシュと照合）
-- **操作対象**: Firestore `users/{uid}` ドキュメント（同期データ本体）
-- **対応リソース**:
-  - 家計簿: `/budget/expenses`, `/categories`, `/income-items`, `/expense-items`
-  - ジャーナル: `/journal/entries`
-  - Todo: `/todo/lists`, `/items`, `/categories`
-  - 運動記録: `/workout/exercises`, `/records`
-- **安全設計**:
-  - API で書き込む前に、アプリからの同期データが存在することを確認（`404 no_sync_data`）
-  - 同期フィールドが存在しない古い同期データへの意図しない追加を防止（`409 outdated_sync_data`）
-  - 更新のたびに最新の同期スナップショットを Firestore に自動保存
-- **仕様詳細**:
-  - 仕様ドキュメント: `（非公開のエージェント API 仕様）`
-  - OpenAPI 定義: `（非公開の OpenAPI 仕様）`
+- アプリの設定画面で発行した API キーで認証し、紐づくユーザーの同期データを操作する HTTPS 関数です。
+- 公開リポジトリには操作手順や OpenAPI 定義を含めていません（実装は `src/agentApi/`）。
 
 ### 2. `onBugReportCreated` (GitHub Issue 自動起票)
 
@@ -116,7 +103,7 @@ firebase-functions/
 
 ### 3. 通知系関数 (`syncRoutines`, `checkNotifications`, `cleanupNotifications`)
 
-- **`syncRoutines`**（`POST /syncRoutines`）: クライアントから `{ token: FCM トークン, routines: ルーティン配列 }` を受け取り、Firestore `users/{FCM トークン}` に `fcmToken`・`routines`・`updatedAt` を上書き保存する
+- **`syncRoutines`**: クライアントの通知用ルーティンデータを受け取り、Firestore に保存する（詳細は `src/sync-helpers/`）
   - 応答: 成功 `200 { success: true, routinesCount }`、`token` が空でない文字列でない・`routines` が配列でない場合 `400`、POST 以外 `405`、保存失敗 `500`。`OPTIONS`（プリフライト）は `204`
   - CORS は全オリジンからの `POST`（`Content-Type` ヘッダー）を許可する。認証は行わない
   - `users` コレクションには、同期データ（`users/{uid}`、agentApi やアプリの同期が使う）と、この通知用ドキュメント（`users/{FCM トークン}`）が混在する
@@ -209,8 +196,6 @@ warn の理由ごとの原因と対処（どの場合も Issue は従来の内�
 
 ## 関連ドキュメント
 
-- [AI エージェント向け API 仕様](../（非公開のエージェント API 仕様）)
-- [OpenAPI 3.0.3 仕様書](../（非公開の OpenAPI 仕様）)
 - [不具合報告機能設計書](../docs/02-development/bug-report-feature-plan.md)
 - [GitHub Token / Secret 設定手順](../docs/02-development/bug-report-secrets-config.md)
 - [クラウド同期セットアップ](../docs/01-getting-started/SYNC_SETUP.md)
