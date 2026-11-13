@@ -23,7 +23,7 @@ describe("SettingsPage render/autosave", () => {
       .closest("div")!;
     expect(within(durationSection).getByRole("spinbutton")).toHaveValue(30);
     const bgRefreshSection = screen
-      .getByText("バックグラウンド復帰リフレッシュ間隔（分）")
+      .getByText("表示中の定期リフレッシュ間隔（分）")
       .closest("div")!;
     expect(within(bgRefreshSection).getByRole("spinbutton")).toHaveValue(30);
     expect(screen.getByDisplayValue("0")).toBeInTheDocument();

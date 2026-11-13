@@ -104,7 +104,7 @@ describe("SettingsPage features", () => {
     const focusSection = screen.getByText("集中時間（分）").closest("div")!;
     expect(within(focusSection).getByRole("spinbutton")).toHaveValue(30);
     const bgRefreshSection = screen
-      .getByText("バックグラウンド復帰リフレッシュ間隔（分）")
+      .getByText("表示中の定期リフレッシュ間隔（分）")
       .closest("div")!;
     expect(within(bgRefreshSection).getByRole("spinbutton")).toHaveValue(30);
     expect(screen.getByDisplayValue("10")).toBeInTheDocument();
