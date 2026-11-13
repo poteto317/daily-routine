@@ -6,7 +6,7 @@
 
 **Architecture:** 種目マスター `workoutExercises` を追加し、記録には種目 ID と記録時の名前を保存する。既存の localStorage・Firestore 同期・スナップショットの仕組みと `agentApi` の認証・トランザクションを拡張する。
 
-**Tech Stack:** Next.js 16.3 / React 19 / TypeScript / Firebase Cloud Functions・Firestore / Jest・Testing Library / OpenAPI 3.0.3。
+**Tech Stack:** Next.js 16.3 / React 19 / TypeScript / Firebase Cloud Functions・Firestore / Jest・Testing Library 。
 
 **Spec:** この文書の「設計仕様」。ユーザー確認済み事項：種目名を変更・削除しても、過去の記録には記録時の名前を残す。
 

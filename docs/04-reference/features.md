@@ -554,7 +554,7 @@ Firebase Authenticationを使用したユーザー認証機能です。
 
 - メールアドレス・パスワード認証
 - 新規アカウント作成
-- テストアカウント（test@example.com / test123456）
+- テストアカウント（`test@example.com` / `test123456`。**ローカル擬似認証専用**。Firebase 設定時や本番では使わない）
 - 匿名ログイン（アプリ起動時に自動で匿名アカウントを発行）
 - ローカル擬似認証（Firebase 未設定時、`NEXT_PUBLIC_ENABLE_LOCAL_AUTH=true` で開発用モックログイン）
 

@@ -5143,7 +5143,7 @@ Expected: エラー 0 件（`*.stories.tsx` の `satisfies Meta<typeof …>` と
 
 ---
 
-## Task 3: AI エージェント API（`PATCH` の `date`）と OpenAPI・agent-api.md
+## Task 3: AI エージェント API（`PATCH` の `date`）と 非公開の API 仕様
 
 アプリとは独立したタスク（Task 1〜2b に依存しない）。
 
@@ -5171,7 +5171,7 @@ Expected: エラー 0 件（`*.stories.tsx` の `satisfies Meta<typeof …>` と
 - 検証は作成（`POST`）と同じ `readDate`（形式と実在。未来は拒否しない）。アプリは未来を拒否し API は許す非対称は意図したもの（テストで固定する）。
 - 2-3 節: バケットの移動は、`patch.date !== undefined` かつ `patch.date !== found.key`（`findEntry` が返す実際の置き場所）のときだけ。`updated.date !== key` で比べない（`applyJournalPatch` が `date` を既存値で埋めるので、キーと `entry.date` が食い違う古いデータで `date` を含まない `PATCH` がバケットを移してしまう）。
 - 2-4 節: 空の判定は更新後の値（`assertEntryNotBlank(updated.title, updated.content)`）のまま。`date` だけの `PATCH` は `empty_patch` にならない（`compact` の結果に `date` が残る）。
-- L-203: `JOURNAL_UPDATE_KEYS` のコメント「日付は変更できない」、OpenAPI の「date は変更不可」、`agent-api.md` の「日付は変更不可」を実装に合わせて直す（`applyJournalPatch` の JSDoc は Task 4）。
+- L-203: `JOURNAL_UPDATE_KEYS` のコメント「日付は変更できない」、OpenAPI の「date は変更不可」、（非公開のエージェント API 仕様） の「日付は変更不可」を実装に合わせて直す（`applyJournalPatch` の JSDoc は Task 4）。
 - `firebase-functions` は別の `package.json`。このワークツリーは `firebase-functions/node_modules` をリンクしているので、テストはルートの Jest、型は `npm run typecheck:functions`（exit 0 が基準）で確かめる（Global Constraints）。`npm --prefix firebase-functions run build` は `lib/` を書き換えるので実行しない。
 
 - [ ] **Step 1: 作業前の型エラーの件数を記録する**
@@ -5490,40 +5490,9 @@ Expected: PASS（6 ファイル）。
 2. `grep -nF "updated.date !== key" firebase-functions/src/agentApi/operations/journal/journalOperations.ts` と `grep -nF "patchDate === key" firebase-functions/src/agentApi/operations/journal/journalOperations.ts` が何も出さないこと。
 3. Step 9 のコマンドを再実行して PASS。
 
-- [ ] **Step 12: OpenAPI と agent-api.md を直す**
+- [ ] **Step 12: 非公開の API 仕様を直す**
 
-`（非公開の OpenAPI 仕様）` の `JournalEntryPatch:`（`components.schemas`）全体を次にする。下のブロックは字下げを省いて載せている。ファイルの中では既存の `JournalEntryPatch:` と同じ位置（行頭から空白 4 つ）に置き、各行を空白 4 つ字下げする（`title`・`content` は今の定義と同じ）。
-
-```yaml
-JournalEntryPatch:
-  type: object
-  properties:
-    date:
-      type: string
-      format: date
-      pattern: ^\d{4}-\d{2}-\d{2}$
-      description: 実在する日付（YYYY-MM-DD）。指定すると記録の日付を変更し、その日付の記録の末尾へ移す。未来の日付も可。
-      example: "2026-10-07"
-    title:
-      type: string
-      maxLength: 200
-      description: 前後の空白は保持。長さは UTF-16 コード単位。
-    content:
-      type: string
-      maxLength: 20000
-      description: 前後の空白は保持。長さは UTF-16 コード単位。
-  additionalProperties: false
-  minProperties: 1
-  description: 指定した項目だけを更新する。date は作成と同じ検証（形式と実在する日付）で、未来の日付も受け付ける。既存値へ適用した後、title/content が両方空白のみになると 400 empty_entry。
-  example:
-    content: 散歩と読書をした。
-```
-
-`（非公開のエージェント API 仕様）` の 90 行目（「本文」の節）を次の 1 行に置き換える。
-
-```markdown
-- ジャーナル: 作成 `{date, title?, content?}`（両方空は不可）、更新 `{date?, title?, content?}`。更新で `date` を指定すると、記録の日付を変えてその日付の記録の末尾へ移します（作成と同じく実在する日付なら受け付け、未来の日付も可。アプリの画面では今日までしか選べません）
-```
+公開リポジトリ外に保管している OpenAPI / エージェント API 手順書を、実装に合わせて更新する（`JournalEntryPatch` に `date` を足す。パッチ本文の説明も同様）。スキーマ本文は公開プランに載せない。
 
 - [ ] **Step 13: Task 3 全体を検証する**
 
@@ -5700,7 +5669,7 @@ JournalEntryPatch:
    - Task 1: `src/features/journal/storageEntries.ts`・`utils/journalDate.ts`・`locales/ja.json`・`__tests__/storage.test.ts`・`__tests__/journalDate.test.ts`
    - Task 2a: Task 2a の Files に挙げたソース 20 ファイルとテスト 24 ファイル（新規の `useJournalPageFormState.dateLock.test.tsx` を含む）
    - Task 2b: `helpers.ts`・`components/JournalTodayCard.tsx`・`components/JournalEditCard.tsx`・`JournalPage.tsx`・2 つの stories・`__tests__/helpers.test.ts`（新規）・`__tests__/JournalPage.dateEdit.test.tsx`（新規）・`__tests__/JournalTodayCard.test.tsx`・`__tests__/JournalEditCard.test.tsx`・`__tests__/JournalPage.test.tsx`
-   - Task 3: `journalInput.ts`・`journalOperations.ts`・`journal.test.ts`・`journalInput.test.ts`・`journalEntity.test.ts`・`openapi.yaml`・`agent-api.md`
+   - Task 3: `journalInput.ts`・`journalOperations.ts`・`journal.test.ts`・`journalInput.test.ts`・`journalEntity.test.ts`・（非公開の OpenAPI 仕様）・（非公開のエージェント API 仕様）
    - Task 4: `features.md`・`test-matrix.md`・`initialData.ts`・`group-01-04.ts`・`journalEntity.ts`
    - 未追跡の設計書 `docs/superpowers/specs/2026-11-03-journal-edit-date-design.md` とこのプラン
    - `.env.local`・`firebase-functions/lib/` が増えていないこと（`firebase-functions/node_modules` のリンクは `.git/info/exclude` で対象外なので `git status` に出ない）。
@@ -5739,7 +5708,7 @@ JournalEntryPatch:
 | 過去のエントリの日付を変えると一覧の位置が変わる・今日のエントリを過去へ移すと今日の欄が空                    | Task 2b `JournalPage.dateEdit`                            |
 | Storybook（固定の日付。L-502）                                                                                | Task 2b 2b-3                                              |
 | API: `JOURNAL_UPDATE_KEYS`・`readDate`・`patch.date` とキーの比較での移動・未来を許す・`empty_patch` にしない | Task 3 Step 2〜11                                         |
-| OpenAPI・`agent-api.md`                                                                                       | Task 3 Step 12                                            |
+| OpenAPI・（非公開のエージェント API 仕様）                                                                                       | Task 3 Step 12                                            |
 | `features.md`・手動確認表 3 か所（3-1・3-6。3-2 は触れない）・`applyJournalPatch` の JSDoc                    | Task 4 Step 1〜5                                          |
 | 全体の検証（typecheck・test・lint・Prettier・build・functions）                                               | Task 4 Step 7                                             |
 

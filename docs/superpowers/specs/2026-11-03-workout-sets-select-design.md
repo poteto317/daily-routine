@@ -42,7 +42,7 @@
 
 - データ型定義（`StrengthWorkoutRecord.sets?: number`）および LocalStorage 保存形式（`workout-records`）は変更しない（過去データの互換性を完全維持 / L-015 準拠）。
 - ランニング記録の項目や種目管理（`WorkoutExercise`）のロジックには手を加えない。
-- Agent REST API スキーマ（`openapi.yaml`）は `sets?: number` のままとし、後方互換性を保つ。
+- Agent REST API スキーマ（（非公開の OpenAPI 仕様））は `sets?: number` のままとし、後方互換性を保つ。
 
 ## 反映した知見
 

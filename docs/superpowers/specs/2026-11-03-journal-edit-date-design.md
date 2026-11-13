@@ -17,7 +17,7 @@
 | 日付の範囲             | 1900-01-01 から今日まで。未来の日付は選べない・保存できない（下限は下の「日付の検証」）                     |
 | 変更先に既存のエントリ | 同じ日付に共存する（確認は出さない）。現状の保存が同じ日付に複数のエントリを許すため、仕組みを変えない      |
 | 新規追加フォーム       | 日付欄を足す                                                                                                |
-| AI エージェント API    | 日付も変えられるようにする（`PATCH` の `date`、OpenAPI、`agent-api.md`、`firebase-functions` とそのテスト） |
+| AI エージェント API    | 日付も変えられるようにする（`PATCH` の `date`、OpenAPI、（非公開のエージェント API 仕様）、`firebase-functions` とそのテスト） |
 
 推奨案を採用したもの（利用者の指定が無かった細部）:
 
@@ -124,7 +124,7 @@
 
 1. **保存層・検証関数・文言**: `updateJournalEntry` の日付、`getJournalDateError`・`isValidJournalDate`・`formatJournalDate` の不正入力対応（`utils/journalDate.ts`）、新しい文言のキー（日付ラベル・`<日付> の記録`・`page.alertInvalidDate`・`page.alertFutureDate`）。
 2. **画面**: 入力 state・固定・配線（入力 state と処理の層）、カード・`JournalPage.tsx`・Storybook（カードの層）。配線の層とカードの層でレビューの区切りを置く（変更が大きいため）。
-3. **AI エージェント API**: `firebase-functions`（別の `package.json`。検証もそこで行う）と OpenAPI・`agent-api.md`。
+3. **AI エージェント API**: `firebase-functions`（別の `package.json`。検証もそこで行う）と OpenAPI・（非公開のエージェント API 仕様）。
 4. **説明・確認表**: `features.md`・手動確認表（3 か所）・`applyJournalPatch` の JSDoc。
 
 ## 失敗の扱い
@@ -157,7 +157,7 @@ dev-flow-kit の `review-lessons.md`:
 - L-060: 組み立て役（配線）の取りこぼしを、各層のテストで落とす。
 - L-181: テストで時刻を固定するときにタイムゾーンを指定する（`TZ=Asia/Tokyo` の流儀）。
 - L-502: Storybook のストーリーで相対日付を使わない。
-- L-203: 型・コメント・設計書・API の説明（`JOURNAL_UPDATE_KEYS` の「日付は変更できない」、`applyJournalPatch` の JSDoc、OpenAPI、`agent-api.md`、`features.md`、手動確認表）を、実装に合わせて直す。
+- L-203: 型・コメント・設計書・API の説明（`JOURNAL_UPDATE_KEYS` の「日付は変更できない」、`applyJournalPatch` の JSDoc、OpenAPI、（非公開のエージェント API 仕様）、`features.md`、手動確認表）を、実装に合わせて直す。
 
 このリポジトリの `docs/02-development/review-lessons.md`:
 
