@@ -37,8 +37,6 @@
 
 機能仕様と技術仕様のリファレンス。
 
-- **[openapi.yaml](./04-reference/openapi.yaml)** - 実装済み HTTP API の OpenAPI 3.0.3 定義
-- **[agent-api.md](./04-reference/agent-api.md)** - AI エージェント向け API（家計簿・ジャーナル・Todo・運動記録の CRUD）のリファレンス
 - **[features.md](./04-reference/features.md)** - 実装済み全機能の詳細ドキュメント（運動記録、不具合報告、APIキー管理、Todo管理、同期履歴管理等を含む完全仕様）
 
 ---

@@ -6,14 +6,14 @@
 
 ### 機能仕様
 
-- **[openapi.yaml](./openapi.yaml)** - 実装済み HTTP API の OpenAPI 3.0.3 定義（認証・入力・応答・エラー）
-- **[agent-api.md](./agent-api.md)** - AI エージェント向け API（家計簿・ジャーナル・Todo・運動記録の CRUD）のリファレンス
 - **[features.md](./features.md)** - 実装済み全機能の詳細ドキュメント
   - 実装済み全機能の完全仕様
   - 各機能の使い方
   - 技術仕様
   - データストレージ構造
   - ファイル構成
+
+エージェント向け HTTP API の詳細仕様（OpenAPI・操作手順）は公開リポジトリの対象外です。アプリの設定画面から API キーを発行できます。
 
 ## 📖 機能カテゴリ
 
@@ -52,7 +52,7 @@
 - 🔐 認証（匿名認証・ローカル開発認証）
 - ☁️ クラウド同期
 - 📣 不具合報告（GitHub Issue 自動起票）
-- 🔑 APIキー管理（設定画面・CLI）
+- 🔑 APIキー管理（設定画面）
 - 🔔 通知機能（BETA・不安定）
 - ⚙️ 設定（機能表示、外観テーマ、メニュー並び替え等）
 - 📱 PWA・オフライン対応（Service Worker キャッシュ）
@@ -86,17 +86,13 @@
 - **ViewModelパターン**: テキスト定数（`locales/ja.json`）+ ロジック（`helpers.ts`）
 - **Feature-Based Architecture**: 機能ごとのディレクトリ分離
 - **データ永続化**: LocalStorage + Firestore 同期 + スナップショット履歴
-- **AI エージェント連携**: `agentApi` (REST API) + API キー認証
+- **AI エージェント連携**: 設定画面で発行した API キーによる REST 連携（詳細仕様は非公開）
 
 ## 💡 使い方
 
 ### 機能仕様を確認したい
 
 → [features.md](./features.md) で該当機能を検索
-
-### API 仕様を確認したい
-
-→ [agent-api.md](./agent-api.md) または [openapi.yaml](./openapi.yaml) を参照
 
 ### 新機能を実装したい
 

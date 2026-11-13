@@ -270,7 +270,6 @@ sequenceDiagram
 ## 📖 関連ドキュメント
 
 - [実装機能リファレンス](../04-reference/features.md)
-- [AI エージェント向け API 仕様](../04-reference/agent-api.md)
 - [コーディング規約](./coding-standards.md)
 - [レビュー教訓集](./review-lessons.md)
 - [GitHub Actions CI/CD ガイド](./github-actions-guide.md)

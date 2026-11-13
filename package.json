@@ -10,7 +10,6 @@
     "dev": "npm run generate:fcm-sw && next dev --webpack",
     "build": "npm run generate:fcm-sw && next build --webpack",
     "start": "npm run generate:fcm-sw && next start",
-    "api-key": "node tools/api-key/cli.mjs",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lint": "eslint --max-warnings 0",

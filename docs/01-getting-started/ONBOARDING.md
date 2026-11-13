@@ -69,7 +69,7 @@ npm run dev    # http://localhost:3000 を開き、「匿名」または「テ�
 
 - 同期は `src/features/sync/`。アップロードは全機能のデータを集めて Firestore の `users/{uid}` に上書きし、履歴を `syncSnapshots` に最大 5 件残します。ダウンロードは「無いフィールドはローカルを維持し、明示的な空配列は尊重する」規則で取り込みます（`syncDataNormalizer.ts`、[architecture.md 2-3 節](../02-development/architecture.md#2-3-データ保護下位互換性設計)）。
 - 同期状態は `sync-status-changed` イベントで画面に伝わります（`src/features/sync/sync/statusStore.ts`）。
-- AI エージェント API は `firebase-functions/src/agentApi/`。`handler.ts` が「認証 → ルーティング → 操作の実行 → 応答」をつなぎ、操作は `operations/` に機能ごとに分かれています。仕様は [agent-api.md](../04-reference/agent-api.md) と [openapi.yaml](../04-reference/openapi.yaml) です。
+- AI エージェント API は `firebase-functions/src/agentApi/`。`handler.ts` が「認証 → ルーティング → 操作の実行 → 応答」をつなぎ、操作は `operations/` に機能ごとに分かれています。公開用の詳細仕様書はリポジトリに含めていません。
 
 ## 4. テストの書き方
 
