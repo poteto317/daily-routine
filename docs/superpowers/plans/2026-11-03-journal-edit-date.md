@@ -5164,7 +5164,7 @@ Expected: エラー 0 件（`*.stories.tsx` の `satisfies Meta<typeof …>` と
 - Produces:
   - `JOURNAL_UPDATE_KEYS = ["date", "title", "content"] as const`
   - `export type JournalPatchInput = Partial<{ date: string; title: string; content: string }>;`
-  - `PATCH <redacted-agent-api>/journal/entries/{id}` が `{ date?: "YYYY-MM-DD", title?, content? }` を受け付ける
+  - ジャーナル更新 API が `{ date?: "YYYY-MM-DD", title?, content? }` を受け付ける（HTTP パス詳細は非公開）
 
 **気をつける知見:**
 
@@ -5583,7 +5583,7 @@ JournalEntryPatch:
 - ファイル: `src/features/journal/`
 - データ保存: LocalStorage（キー: `journal-history`。日付ごとの配列。日付を変えると、その日付の配列の末尾へ移る）
 - Firestore同期対応
-- AI エージェント API 対応（`/<redacted-agent-api>/journal/entries`。`PATCH` で `date` も変更できる）
+- AI エージェント API 対応（`PATCH` で `date` も変更できる。HTTP パス詳細は非公開）
 - ステータス: 正式機能
 ```
 
