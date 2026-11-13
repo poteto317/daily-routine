@@ -28,6 +28,11 @@ export const notifyCurrentMinute = (): void => {
  * - サーバーでの描画と、ハイドレーションの最初の描画で描かれるコンポーネントからは使わない。
  *   サーバーとクライアントで分がずれると、ハイドレーションの不一致になる
  *   （いまの利用箇所は、最初の描画ではローディングを返す AuthGuard の内側だけ）。
+ * - 開発時だけ、分の変わり目に React が getSnapshot を続けて 2 回呼ぶあいだで値が変わると、
+ *   「The result of getSnapshot should be cached」の警告が 1 回出ることがある。
+ *   本番ビルドではこの確認は行われず、無限ループにもならない。
+ *   ストアに値をキャッシュして直すと、別の理由の再描画でも分が進む今の動作が変わるため、
+ *   意図して直していない（Issue #225）。
  */
 export const useCurrentMinute = (): number =>
   useSyncExternalStore(subscribe, getCurrentMinute, getCurrentMinute);
