@@ -1,6 +1,6 @@
 # デイリールーティン管理アプリ
 
-**デモ**: https://daily-routine-murex.vercel.app/
+**デモ**: https://daily-routine-murex.vercel.app/（公開デモ専用の Firebase プロジェクト。個人用データとは分離）
 
 日々のルーティン、ライフログ、作業記録を 1 つの PWA で管理する Next.js アプリです。
 
