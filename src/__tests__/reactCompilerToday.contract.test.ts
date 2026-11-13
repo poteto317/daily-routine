@@ -1,10 +1,12 @@
 /**
  * @jest-environment node
  */
-import { readFileSync } from "node:fs";
-import { join } from "node:path";
-import { transformSync } from "@babel/core";
 import * as ts from "typescript";
+import {
+  compileWithReactCompiler,
+  listSentinelBlocks,
+  readSource,
+} from "./reactCompilerContract.helpers";
 
 // React Compiler の契約テスト: 描画時に求めた「今日」「現在時刻」が、最初の描画の値に固定されないこと。
 //
@@ -22,8 +24,6 @@ import * as ts from "typescript";
 // （現在時刻は src/hooks/useCurrentMinute.ts の useCurrentMinute() から取る）。
 // 描画のたびに今日を求める "use no memo" の関数を足したら、USE_NO_MEMO_TARGETS に足す
 // （docs/02-development/coding-standards.md「React Compiler と今日・現在時刻」から参照している）。
-
-const ROOT = process.cwd();
 
 type UseNoMemoTarget = {
   /** 関数を定義しているファイル（リポジトリのルートからのパス） */
@@ -161,62 +161,6 @@ const TODAY_EXPRESSIONS = [
   "getTodayDateKey(",
   "toJstDay(new Date",
 ];
-
-const SENTINEL_CONDITION = '=== Symbol.for("react.memo_cache_sentinel"))';
-
-const readSource = (file: string) => readFileSync(join(ROOT, file), "utf-8");
-
-/** TypeScript の型を外し（JSX は残す）、Next と同じオプションで React Compiler を通す */
-const compileWithReactCompiler = (file: string): string => {
-  const { outputText } = ts.transpileModule(readSource(file), {
-    fileName: file,
-    compilerOptions: {
-      jsx: ts.JsxEmit.Preserve,
-      target: ts.ScriptTarget.ESNext,
-      module: ts.ModuleKind.ESNext,
-    },
-  });
-  const result = transformSync(outputText, {
-    babelrc: false,
-    configFile: false,
-    filename: file,
-    parserOpts: { plugins: ["jsx"] },
-    plugins: [
-      [
-        "babel-plugin-react-compiler",
-        { environment: { enableNameAnonymousFunctions: false } },
-      ],
-    ],
-  });
-  if (!result?.code) {
-    throw new Error(`${file} のコンパイル結果が空です`);
-  }
-  return result.code;
-};
-
-/** `{` の位置から、対応する `}` までの中身を返す（波かっこの数で対応を取る） */
-const readBlock = (code: string, openBraceIndex: number): string => {
-  let depth = 0;
-  for (let index = openBraceIndex; index < code.length; index++) {
-    if (code[index] === "{") depth++;
-    if (code[index] === "}") depth--;
-    if (depth === 0) return code.slice(openBraceIndex + 1, index);
-  }
-  throw new Error("メモ化のブロックの終わりが見つかりません");
-};
-
-/** 最初の描画で 1 回だけ実行されるブロック（sentinel の if の中身）をすべて返す */
-const listSentinelBlocks = (code: string): string[] => {
-  const blocks: string[] = [];
-  let from = 0;
-  for (;;) {
-    const conditionIndex = code.indexOf(SENTINEL_CONDITION, from);
-    if (conditionIndex === -1) return blocks;
-    const openBraceIndex = code.indexOf("{", conditionIndex);
-    blocks.push(readBlock(code, openBraceIndex));
-    from = openBraceIndex + 1;
-  }
-};
 
 const isUseNoMemoDirective = (statement: ts.Statement | undefined) =>
   statement !== undefined &&
