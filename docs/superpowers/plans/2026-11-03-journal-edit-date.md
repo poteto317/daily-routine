@@ -5151,8 +5151,8 @@ Expected: エラー 0 件（`*.stories.tsx` の `satisfies Meta<typeof …>` と
 
 - Modify: `firebase-functions/src/agentApi/operations/journal/journalInput.ts`
 - Modify: `firebase-functions/src/agentApi/operations/journal/journalOperations.ts`
-- Modify: `（非公開の OpenAPI 仕様）`（`components.schemas.JournalEntryPatch`）
-- Modify: `（非公開のエージェント API 仕様）`（「本文」の節のジャーナルの行）
+- Modify: `（非公開の OpenAPI 仕様）`（ジャーナル更新のスキーマ）
+- Modify: `（非公開のエージェント API 仕様）`（ジャーナルの説明）
 - Test: `firebase-functions/src/agentApi/__tests__/journal.test.ts`
 - Test: `firebase-functions/src/agentApi/__tests__/operations/journalInput.test.ts`
 - Test: `firebase-functions/src/agentApi/__tests__/operations/journalEntity.test.ts`

@@ -49,11 +49,23 @@ yarn-error.log*
 .pnpm-debug.log*
 build-error.log
 build-log.txt
+firebase-debug.log
+firebase-debug.*.log
 
 # env files (can opt-in for committing if needed)
 .env*
 !.env*.example
 !.env.example
+
+# cloud credentials / ADC（誤って git add しない）
+serviceAccount*.json
+*-firebase-adminsdk-*.json
+application_default_credentials.json
+credentials.json
+**/credentials.json
+
+# エージェント作業ディレクトリ（共有 ignore。info/exclude だけに頼らない）
+.claude/dev-flow/
 
 # vercel
 .vercel

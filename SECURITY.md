@@ -8,10 +8,11 @@ This repository tracks the `main` branch as the supported line for security fixe
 
 Please **do not** open a public Issue for security reports that include exploit details or secrets.
 
-Prefer one of the following:
+Prefer one of the following (in order):
 
-1. GitHub Security Advisories for this repository (Security → Advisories → New draft security advisory), if available to you
-2. Contact the repository owner via GitHub (profile or private contact linked from the owner account)
+1. **Private vulnerability reporting** on this repository (Security → Report a vulnerability), if available to you
+2. GitHub Security Advisories for this repository (Security → Advisories → New draft security advisory), if available to you
+3. Contact the repository owner via GitHub (profile or private contact linked from the owner account)
 
 Include:
 

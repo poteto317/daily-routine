@@ -3,6 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "license": "MIT",
+  "author": "poteto317",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/poteto317/daily-routine.git"
+  },
   "scripts": {
     "clean": "node -e \"require('fs').rmSync('.next', {recursive: true, force: true})\"",
     "generate:fcm-sw": "node tools/generate-firebase-messaging-sw.mjs",
