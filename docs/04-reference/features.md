@@ -234,7 +234,7 @@
 - ファイル: `src/features/budget/`
 - データ保存: LocalStorage（キー: `budget-data`, `budget-categories`, `budget-income-items`, `budget-expense-items`）
 - Firestore同期対応（フィールド: `budgetData`, `budgetCategories`, `budgetIncomeItems`, `budgetExpenseItems`）
-- AI エージェント API 対応（`/<redacted-agent-api>/budget/expenses`, `/categories`, `/income-items`, `/expense-items`）
+- AI エージェント API 対応（設定画面で発行した API キー経由。詳細仕様は非公開）
 - ステータス: 正式機能
 
 ---
@@ -265,7 +265,7 @@
 - ファイル: `src/features/journal/`（週ごとの業務日誌は `src/features/journal/weekly/` に分かれていて、ジャーナル画面には出ない）
 - データ保存: LocalStorage（キー: `journal-history`）
 - Firestore同期対応
-- AI エージェント API 対応（`/<redacted-agent-api>/journal/entries`）
+- AI エージェント API 対応（設定画面で発行した API キー経由。詳細仕様は非公開）
 - ステータス: 正式機能
 
 ---
@@ -334,7 +334,7 @@
 - データ保存: LocalStorage（キー: `workout-records`, `workout-exercises`）
 - Firestore同期対応（フィールド: `workoutRecordHistory`, `workoutExercises`）
   - 古い同期データで種目が欠損している場合は端末の種目を維持し、明示的な空配列は削除として反映
-- AI エージェント API 対応（`/<redacted-agent-api>/workout/exercises`, `/<redacted-agent-api>/workout/records`）
+- AI エージェント API 対応（設定画面で発行した API キー経由。詳細仕様は非公開）
 - ステータス: BETA版
 
 ---
@@ -512,7 +512,7 @@
 - ファイル: `src/features/todo-lists/`
 - データ保存: LocalStorage（キー: `todo-lists`, `todo-categories`）
 - Firestore同期対応（フィールド: `todoLists`, `todoCategories`）
-- AI エージェント API 対応（`/<redacted-agent-api>/todo/lists`, `/items`, `/categories`）
+- AI エージェント API 対応（設定画面で発行した API キー経由。詳細仕様は非公開）
 
 ---
 
@@ -1072,7 +1072,7 @@ daily-routine/
 │   ├── 01-getting-started/           # 環境構築・初期設定
 │   ├── 02-development/               # コーディング規約・設計・教訓
 │   ├── 03-testing/                   # テストガイド・マトリクス
-│   └── 04-reference/                 # 仕様リファレンス・OpenAPI
+│   └── 04-reference/                 # 仕様リファレンス
 ├── firebase-functions/               # Firebase Cloud Functions (Node.js 24)
 │   └── src/
 │       ├── agentApi/                 # AI エージェント用 REST API (CRUD)

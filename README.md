@@ -30,7 +30,7 @@
 
 ### システム
 
-Firebase 匿名認証 / Firestore 同期（スナップショット履歴・復元対応） / 不具合報告（GitHub Issue 自動起票） / API キー管理（CLI・設定画面） / AI エージェント REST API / PWA インストール / 通知 / テーマ切り替え / JSON インポート・エクスポート / アカウント管理
+Firebase 匿名認証 / Firestore 同期（スナップショット履歴・復元対応） / 不具合報告（GitHub Issue 自動起票） / API キー管理（設定画面） / AI エージェント REST API / PWA インストール / 通知 / テーマ切り替え / JSON インポート・エクスポート / アカウント管理
 
 ## 技術スタック
 
