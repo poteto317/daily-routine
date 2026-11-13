@@ -4,8 +4,8 @@ import type { Routine } from "@/types/routine";
 import { DEFAULT_SETTINGS, saveSettings } from "@/features/settings/storage";
 import { RoutineItem } from "./RoutineItem";
 
-// getSettings() は localStorage が空のとき DEFAULT_SETTINGS を返すため
-// 追加モックなしで描画可能。swipeAction バリエーションのみ beforeEach で設定する。
+// RoutineItem は useSwipeActionSetting() で設定を読む。localStorage が空のときは
+// DEFAULT_SETTINGS の値になるため、追加モックなしで描画可能。swipeAction バリエーションのみ beforeEach で設定する。
 
 const meta = {
   title: "Features/Routine/RoutineItem",

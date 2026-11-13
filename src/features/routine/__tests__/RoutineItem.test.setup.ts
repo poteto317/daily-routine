@@ -25,6 +25,9 @@ jest.mock("@/lib/storage/core", () => ({
   }),
 }));
 jest.mock("@/features/settings/storage", () => ({
+  // カードは useSwipeActionSetting（SETTINGS_UPDATED_EVENT・DEFAULT_SETTINGS を使う）で設定を
+  // 読むので、本物の export を残し、getSettings だけを固定値に差し替える
+  ...jest.requireActual("@/features/settings/storage"),
   getSettings: jest.fn(() => ({
     swipeAction: "delete" as const,
     defaultNotificationMinutes: 10,
