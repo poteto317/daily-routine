@@ -4,8 +4,8 @@ import type { Routine } from "@/types/routine";
 import { DraggableRoutineList } from "./DraggableRoutineList";
 
 // DraggableRoutineList は自身が DndContext を内包するため、外部の DnD ラッパーは不要。
-// 内部で SortableRoutineItem → SortableRoutineEditModeItem → getSettings() を呼ぶため
-// localStorage が空でも DEFAULT_SETTINGS でレンダリング可能。
+// 内部の SortableRoutineItem は useSwipeActionSetting() で設定を読む。
+// localStorage が空でも DEFAULT_SETTINGS の値でレンダリング可能。
 
 const meta = {
   title: "Features/Routine/DraggableRoutineList",

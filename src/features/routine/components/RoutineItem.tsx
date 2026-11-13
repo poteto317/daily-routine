@@ -1,7 +1,7 @@
 "use client";
 
 import { type Routine } from "@/types/routine";
-import { getSettings } from "@/features/settings/storage";
+import { useSwipeActionSetting } from "@/features/settings/state/useSwipeActionSetting";
 import { SwipeableRoutineItem } from "@/components/SwipeableRoutineItem";
 import { useCurrentMinute } from "@/hooks/useCurrentMinute";
 import { RoutineCardContent } from "./RoutineCardContent";
@@ -42,7 +42,7 @@ export const RoutineItem = ({
   isEditMode = true,
 }: RoutineItemProps) => {
   const nowMinute = useCurrentMinute();
-  const settings = getSettings();
+  const swipeAction = useSwipeActionSetting();
   const {
     handleCardClick,
     handleEditClick,
@@ -95,7 +95,7 @@ export const RoutineItem = ({
   return (
     <SwipeableRoutineItem
       onSwipeAction={() => handleSwipeAction(routine)}
-      swipeActionType={settings.swipeAction}
+      swipeActionType={swipeAction}
       isEditMode={isEditMode}
     >
       {cardContent}
