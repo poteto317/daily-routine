@@ -42,7 +42,7 @@ Firebase 匿名認証 / Firestore 同期（スナップショット履歴・復�
 - Firebase Cloud Functions (Node.js 24)
 - Jest + React Testing Library
 - Chart.js / react-chartjs-2
-- next-pwa / Workbox
+- Workbox（`workbox-webpack-plugin` による Service Worker 生成）
 
 ## セットアップ
 
