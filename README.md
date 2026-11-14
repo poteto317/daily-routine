@@ -34,7 +34,7 @@ Firebase 匿名認証 / Firestore 同期（スナップショット履歴・復�
 
 ## 技術スタック
 
-- Next.js 16.3.0
+- Next.js 16.4.6
 - React 19.2.3
 - TypeScript 5
 - Tailwind CSS v4
@@ -46,10 +46,12 @@ Firebase 匿名認証 / Firestore 同期（スナップショット履歴・復�
 
 ## セットアップ
 
+初めて参加する場合の読み方は [docs/01-getting-started/ONBOARDING.md](./docs/01-getting-started/ONBOARDING.md) も参照してください。
+
 ### 前提環境
 
 - Node.js 22 または 24（CI はこの 2 つで検証しています。`.nvmrc` の推奨は 24）
-- npm 最新版を推奨
+- npm 最新版を推奨（`npm -v` で確認）
 - Firebase Functions は `firebase-functions/package.json` で Node 24 を指定
 
 ローカルで警告が出ても、フロントエンド開発や verify が通るなら即問題になるわけではありません。ただし Functions の本番実行環境は Node 24 前提です。
@@ -57,21 +59,48 @@ Firebase 匿名認証 / Firestore 同期（スナップショット履歴・復�
 ### 1. インストール
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/poteto317/daily-routine.git
 cd daily-routine
+nvm use   # .nvmrc の Node 24 を使う（任意だが推奨）
 npm install
-cd firebase-functions
-npm install
-cd ..
+npm install --prefix firebase-functions
 ```
 
-### 2. 環境変数の設定
+`.env.local` はリポジトリ直下に置き、Git 管理しません（`.gitignore` の `.env*`）。生成される `public/firebase-messaging-sw.js` もコミットしないでください。
 
-`.env.local.example` をベースに `.env.local` を作成し、Firebase の値を設定します。
+### 2. 最短: Firebase なしで動かす
+
+Firebase プロジェクトが無くても、ローカル擬似認証で画面を一通り動かせます。
 
 ```bash
-cp .env.local.example .env.local
+# 既に .env.local がある場合は上書きしない（L-072）
+cp -n .env.local.example .env.local
 ```
+
+`.env.local` を開き、次を設定します。
+
+1. `NEXT_PUBLIC_ENABLE_LOCAL_AUTH=true`
+2. `NEXT_PUBLIC_FIREBASE_API_KEY`・`NEXT_PUBLIC_FIREBASE_PROJECT_ID`・`NEXT_PUBLIC_FIREBASE_APP_ID` の値を**空にする**
+
+`your-api-key` などのプレースホルダが残っていると Firebase 設定済みとみなされ、ローカル擬似認証は使われません（`src/lib/firebase-modules/config.ts` の `isFirebaseConfigured`）。
+
+ローカル擬似認証が有効になるのは、次の 3 つがそろったときだけです（`src/features/auth/storage.ts` の `isLocalAuthEnabled` と `src/services/localAuthService.ts` の `shouldUseLocalAuth`）。
+
+- `NEXT_PUBLIC_ENABLE_LOCAL_AUTH` が `"true"`（既定値は `false`）
+- Firebase が未設定（API キー・プロジェクト ID・アプリ ID のどれかが空。設定済みならこのフラグは無視され、Firebase 認証を使います）
+- ブラウザのホスト名が `localhost` / `127.0.0.1` / `::1`
+
+判定は `NODE_ENV` ではなくホスト名で行うため、本番ビルド（`npm start`）でも localhost で開けば有効になります。公開 URL からは有効になりません。共有の開発環境や staging・プレビューでは有効化しないでください。
+
+```bash
+npm run dev
+```
+
+`npm run dev` の前に `generate:fcm-sw` が自動実行され、`.env.local` の内容から `public/firebase-messaging-sw.js` が生成されます。ブラウザで `http://localhost:3000` を開き、「匿名」または「テストアカウント」でログインします。データはブラウザの localStorage に保存されます。クラウド同期・通知・不具合報告など Firebase を使う機能は動きません。
+
+### 3. Firebase を使う場合
+
+同期・通知・不具合報告などを確かめるときは、`.env.local` に Firebase の値を入れ、`NEXT_PUBLIC_ENABLE_LOCAL_AUTH` は `false` のままで構いません（Firebase 設定済みならローカル認証フラグは無視されます）。
 
 ```env
 NEXT_PUBLIC_ENABLE_LOCAL_AUTH=false
@@ -85,37 +114,14 @@ NEXT_PUBLIC_FIREBASE_VAPID_KEY=
 NEXT_PUBLIC_FUNCTIONS_URL=
 ```
 
-`NEXT_PUBLIC_ENABLE_LOCAL_AUTH=true` を設定すると、Firebase を用意しなくてもローカル擬似認証（匿名・テストアカウント・メールアドレス）でログインできます。有効になるのは次の 3 つがそろったときだけです（`src/features/auth/storage.ts` の `isLocalAuthEnabled` と `src/services/localAuthService.ts` の `shouldUseLocalAuth`）。
-
-- `NEXT_PUBLIC_ENABLE_LOCAL_AUTH` が `"true"`（既定値は `false`）
-- Firebase が未設定（API キー・プロジェクト ID・アプリ ID のどれかが空。設定済みならこのフラグは無視され、Firebase 認証を使います）
-- ブラウザで開いているホスト名が `localhost` / `127.0.0.1`
-
-判定は `NODE_ENV` ではなくホスト名で行うため、本番ビルド（`npm start`）でも localhost で開けば有効になります。公開 URL からは有効になりませんが、共有の開発環境や検証環境では有効化しないでください。
-
-通知を使う場合は Firebase Cloud Messaging の設定も必要です。
-
-### 3. Firebase の準備
-
-最低限、以下を有効化してください。
+最低限、次を有効化してください。
 
 - Authentication の匿名認証
 - Firestore Database
-- Cloud Messaging
-- Cloud Functions
+- Cloud Messaging（通知を使う場合）
+- Cloud Functions（通知同期・不具合報告・エージェント API を使う場合）
 
-詳細は [docs/01-getting-started/SYNC_SETUP.md](./docs/01-getting-started/SYNC_SETUP.md) と [docs/01-getting-started/SETUP_CHECKLIST.md](./docs/01-getting-started/SETUP_CHECKLIST.md) を参照してください。
-
-### 4. 開発サーバー起動
-
-```bash
-npm run dev
-```
-
-`npm run dev` の前に `generate:fcm-sw` が自動実行され、`.env.local` の内容から `public/firebase-messaging-sw.js` が生成されます。
-
-ブラウザで `http://localhost:3000` を開いて確認します。
-
+手順のチェックリストは [docs/01-getting-started/SETUP_CHECKLIST.md](./docs/01-getting-started/SETUP_CHECKLIST.md)、同期の詳細は [docs/01-getting-started/SYNC_SETUP.md](./docs/01-getting-started/SYNC_SETUP.md) を参照してください。
 ## Firebase Service Worker の扱い
 
 - `public/firebase-messaging-sw.template.js` をリポジトリで管理します。
@@ -220,6 +226,7 @@ daily-routine/
 ## 関連ドキュメント
 
 - [docs/README.md](./docs/README.md)
+- [docs/01-getting-started/ONBOARDING.md](./docs/01-getting-started/ONBOARDING.md) — 初めて参加する開発者向け
 - [docs/01-getting-started/SETUP_CHECKLIST.md](./docs/01-getting-started/SETUP_CHECKLIST.md)
 - [docs/01-getting-started/SYNC_SETUP.md](./docs/01-getting-started/SYNC_SETUP.md)
 - [docs/02-development/architecture.md](./docs/02-development/architecture.md)

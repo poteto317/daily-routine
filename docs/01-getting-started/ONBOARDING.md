@@ -6,7 +6,7 @@
 
 | 順番 | 文書                                                                        | 読む目的                                                     |
 | ---- | --------------------------------------------------------------------------- | ------------------------------------------------------------ |
-| 1    | [README.md](../../README.md)                                                | アプリの概要、セットアップ、よく使うコマンド                 |
+| 1    | [README.md](../../README.md)                                                | アプリの概要、最短セットアップ（Firebase なし）、よく使うコマンド |
 | 2    | このガイド                                                                  | 主要な流れ、テストの書き方、落とし穴                         |
 | 3    | [architecture.md](../02-development/architecture.md)                        | 同期モデル、ディレクトリの責務、共通基盤モジュールの一覧     |
 | 4    | [coding-standards.md](../02-development/coding-standards.md)                | ディレクトリの分類と依存の向き、ViewModel パターン、IME 対応 |
@@ -17,22 +17,21 @@ AI アシスタント向けの規約は `.github/copilot-instructions.md` にあ
 
 ## 2. セットアップ（Firebase なしで動かす）
 
-Firebase のプロジェクトが無くても、ローカル疑似認証で画面を一通り動かせます。
+手順の正本は [README の「最短: Firebase なしで動かす」](../../README.md#2-最短-firebase-なしで動かす) です。ここでは初日に必要な要点だけ書きます。
 
 ```bash
 nvm use                                 # .nvmrc の Node 24 を使う
 npm install
 npm install --prefix firebase-functions # Cloud Functions のテストも npm test で動くため必須
-cp .env.local.example .env.local
+cp -n .env.local.example .env.local     # 既にある .env.local は上書きしない
 ```
 
-`.env.local` の `NEXT_PUBLIC_ENABLE_LOCAL_AUTH` を `true` にし、`NEXT_PUBLIC_FIREBASE_API_KEY`・`NEXT_PUBLIC_FIREBASE_PROJECT_ID`・`NEXT_PUBLIC_FIREBASE_APP_ID` の値を消して空にします。`your-api-key` などのプレースホルダーが残っていると Firebase 設定済みとみなされ、ローカル擬似認証は使われません。
+`.env.local` で `NEXT_PUBLIC_ENABLE_LOCAL_AUTH=true` にし、`NEXT_PUBLIC_FIREBASE_API_KEY`・`NEXT_PUBLIC_FIREBASE_PROJECT_ID`・`NEXT_PUBLIC_FIREBASE_APP_ID` を空にします（`your-*` プレースホルダを残さない）。有効条件はフラグ・Firebase 未設定・ホストが `localhost` / `127.0.0.1` / `::1` の 3 つです。
 
 ```bash
 npm run dev    # http://localhost:3000 を開き、「匿名」または「テストアカウント」でログイン
 ```
 
-- ローカル疑似認証が有効になる条件（フラグ・Firebase 未設定・ホスト名が localhost）は [README の環境変数の節](../../README.md#2-環境変数の設定) を参照してください。
 - データはすべてブラウザの localStorage に保存されます。クラウド同期・通知・不具合報告など Firebase を使う機能は動きません。
 - Firebase を使う機能を確かめるときは [SETUP_CHECKLIST.md](./SETUP_CHECKLIST.md) と [SYNC_SETUP.md](./SYNC_SETUP.md) に従って設定します。
 
