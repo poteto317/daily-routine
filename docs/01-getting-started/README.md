@@ -36,16 +36,16 @@
 
 ## 🚀 セットアップの流れ
 
-1. **全体の把握** → [ONBOARDING.md](./ONBOARDING.md) を読む
-2. **環境構築** → [SETUP_CHECKLIST.md](./SETUP_CHECKLIST.md) を順番に進める
+1. **全体の把握と最短起動** → ルート [README.md](../../README.md) の「最短: Firebase なしで動かす」と [ONBOARDING.md](./ONBOARDING.md) を読む
+2. **Firebase / デプロイが必要なら** → [SETUP_CHECKLIST.md](./SETUP_CHECKLIST.md) を順番に進める
 3. **開発環境** → [vscode_extensions.md](./vscode_extensions.md) で拡張機能をインストール
-4. **クラウド機能** → [SYNC_SETUP.md](./SYNC_SETUP.md) でFirebase設定（オプション）
+4. **クラウド同期の詳細** → [SYNC_SETUP.md](./SYNC_SETUP.md)（オプション）
 5. **次のステップ** → [開発ガイドライン](../02-development/) でコーディング規約を確認
 
 ## 💡 ヒント
 
-- 初めての方は **ONBOARDING.md** で全体を把握してから **SETUP_CHECKLIST.md** に進んでください
-- クラウド同期を使わない場合、**SYNC_SETUP.md** はスキップして構いません
+- 初めての方はルート **README** の最短セットアップで起動し、**ONBOARDING.md** でコードの入口を把握してください
+- Firebase なしで画面確認だけするなら **SETUP_CHECKLIST.md** / **SYNC_SETUP.md** は後回しで構いません
 - VSCode以外のエディタを使用する場合、**vscode_extensions.md** は参考程度にご覧ください
 
 ---
