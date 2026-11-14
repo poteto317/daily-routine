@@ -17,6 +17,19 @@ const createRoutine = async (page: Page, title: string, startTime: string) => {
   await expect(page.getByText(title)).toBeVisible();
 };
 
+/**
+ * プリセット作成・編集の「元にする曜日」は radio（sr-only）。
+ * ルーティンがある曜日だけ有効なので、その label をクリックして選ぶ。
+ * input 自体は不可視のため check() だと actionability 待ちでタイムアウトする。
+ */
+const selectEnabledSourceDay = async (page: Page) => {
+  const group = page.getByRole("group", { name: "元にする曜日・祝日を選択" });
+  const enabledLabel = group.locator("label").filter({
+    has: page.locator('input[type="radio"]:not([disabled])'),
+  });
+  await expect(enabledLabel).toHaveCount(1);
+  await enabledLabel.click();
+};
 test.describe("プリセット編集", () => {
   test.beforeEach(async ({ page }) => {
     await clearStorageOnFirstNavigation(page);
@@ -34,23 +47,22 @@ test.describe("プリセット編集", () => {
 
     await navigateViaMenu(page, "プリセット管理");
 
-    // プリセットを作る（作成画面のチェックは全件入れる）
+    // プリセットを作る（元曜日を選び、その曜日の全ルーティンが入る）
     await page.getByRole("button", { name: "➕" }).click();
     await page
       .getByPlaceholder("例: 平日モーニングルーティン")
       .fill("E2Eプリセット");
-    const createCheckboxes = page.getByRole("checkbox");
-    const createCount = await createCheckboxes.count();
-    for (let index = 0; index < createCount; index += 1) {
-      await createCheckboxes.nth(index).check();
-    }
-    await page.getByRole("button", { name: "プリセットを作成" }).click();
+    await selectEnabledSourceDay(page);
+    const createButton = page.getByRole("button", { name: "プリセットを作成" });
+    await expect(createButton).toBeEnabled();
+    await createButton.click();
 
-    // 作ったプリセットの編集を開く
+    // 作ったプリセットの編集を開き、同じ曜日を選んでプレビューの並びを見る
     await page.getByRole("button", { name: "プリセットを編集" }).click();
+    await selectEnabledSourceDay(page);
 
-    // 編集画面の各行に出る開始時刻を上から読む
-    const times = page.locator("label").getByText(/^\d{2}:\d{2}$/);
+    // プレビュー行の開始時刻（span）が時刻昇順であること
+    const times = page.getByText(/^\d{2}:\d{2}$/);
     await expect(times).toHaveText(["06:00", "12:00", "22:00"]);
   });
 });
