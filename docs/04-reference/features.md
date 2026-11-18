@@ -755,6 +755,7 @@ Progressive Web App (PWA) 技術と Workbox による Service Worker を活用�
 - **ホーム画面への追加（インストール）**
   - `public/manifest.json` による Web App Manifest 定義（アプリアイコン、テーマカラー `#2563eb`、背景色 `#ffffff`、スタンドアロン表示モード、ポートレート固定）
   - 各種デバイス向け解像度アイコン（48px〜512px、iOS 用 Apple Touch Icon、Android 向け maskable アイコン）を完備
+  - **アイコンや `manifest.json` を変更した後の注意（Android / Chrome）**: インストール済みのアプリ（WebAPK）は、インストール時点のアイコン情報を持ち続けます。変更が反映されないと、起動時のスプラッシュ画面にロゴが出ず、アプリ名（「デイリールーティン」）の文字だけが表示されることがあります（Xperia / Android 16 で確認）。その場合は、アプリをアンインストールしてから Chrome で再インストールしてください。Chrome による自動更新もありますが、アプリをすべて閉じた状態で、充電中かつ Wi-Fi 接続中であることが条件のため、反映まで時間がかかります。更新の状態は Chrome で `chrome://webapks` を開くと確認できます
 - **バックグラウンド通知統合**
   - Firebase Cloud Messaging 用 Service Worker（`public/firebase-messaging-sw.js`）およびカスタム Service Worker のスケジューラ（`custom-sw/schedulerControl.js`）と連携し、ルーティンリマインダーや更新通知を受信可能
 
