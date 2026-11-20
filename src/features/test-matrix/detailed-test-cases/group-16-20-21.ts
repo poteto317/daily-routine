@@ -536,7 +536,7 @@ export const DETAILED_TEST_CASES_GROUP_16_20_21: DetailTestCaseMap = {
       id: "todo-lists-22-7",
       scenario: "並び替えの後に、新しいリストを作る",
       expected:
-        "管理画面では末尾に出る。ハンバーガーメニューと設定画面の「メニュー並び替え」でも他のTodoリストのすぐ後ろに出て、「不具合を報告」など他のメニュー項目の後ろ（最下部）には出ない",
+        "管理画面では末尾に出る。ハンバーガーメニューと設定画面の「メニュー並び替え」でも他のTodoリストのすぐ後ろに出て、「報告・問い合わせ」など他のメニュー項目の後ろ（最下部）には出ない",
       pc: "unchecked",
       sp: "unchecked",
       note: "",

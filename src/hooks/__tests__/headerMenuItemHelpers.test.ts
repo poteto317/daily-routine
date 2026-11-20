@@ -534,7 +534,7 @@ describe("sortByMenuOrder（menuOrder に載っていない Todoリストの位�
       { id: "journal", label: "ジャーナル", icon: "📔", route: "journal" },
       {
         id: "bug-report",
-        label: "不具合を報告",
+        label: "報告・問い合わせ",
         icon: "📣",
         route: "bug-report",
       },

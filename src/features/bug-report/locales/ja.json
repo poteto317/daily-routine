@@ -1,11 +1,11 @@
 {
   "page": {
-    "title": "不具合を報告",
-    "description": "アプリの不具合や改善要望を開発者に送信できます。"
+    "title": "報告・問い合わせ",
+    "description": "アプリの不具合、改善提案、問い合わせを開発者に送信できます。"
   },
   "form": {
-    "descriptionLabel": "不具合の内容",
-    "descriptionPlaceholder": "発生している不具合の内容を具体的に記入してください",
+    "descriptionLabel": "報告・問い合わせの内容",
+    "descriptionPlaceholder": "不具合や改善提案、問い合わせの内容を具体的に記入してください",
     "stepsLabel": "再現手順（任意）",
     "stepsPlaceholder": "1. 〇〇画面を開く\n2. △△ボタンを押す\n3. ...",
     "imagesLabel": "スクリーンショット（任意）",
@@ -14,12 +14,12 @@
     "imageRemove": "添付画像 {n} を外す",
     "submitLabel": "報告を送信",
     "submittingLabel": "送信中...",
-    "privacyNote": "報告にはアプリのバージョンや端末情報（ブラウザ種別・言語など）が自動的に含まれます。添付した画像は GitHub Issue に掲載され、リポジトリの閲覧権限を持つメンバーが確認できます。報告内容や添付画像は Issue 作成のため、外部の AI サービス（Anthropic の Claude）に送信・整形されることがあります。氏名・パスワード・API キーなどの個人情報や機密情報が写り込まないようご注意ください。",
-    "formAriaLabel": "不具合報告フォーム"
+    "privacyNote": "報告にはアプリのバージョンや端末情報（ブラウザ種別・言語など）が自動的に含まれます。送信内容と添付画像はスクラムかんばんに掲載され、プロジェクトの閲覧権限を持つメンバーが確認できます。画像のリンクを知っている人は、その画像を閲覧できます。報告内容や添付画像は起票のため、外部の AI サービス（Anthropic の Claude）に送信・整形されることがあります。氏名・パスワード・API キーなどの個人情報や機密情報は記入・添付しないでください。",
+    "formAriaLabel": "報告・問い合わせフォーム"
   },
   "validation": {
-    "descriptionRequired": "不具合の内容を入力してください",
-    "descriptionTooLong": "不具合の内容が長すぎます（2000文字以内で入力してください）",
+    "descriptionRequired": "報告・問い合わせの内容を入力してください",
+    "descriptionTooLong": "報告・問い合わせの内容が長すぎます（2000文字以内で入力してください）",
     "titleTooLong": "タイトルが長すぎます（100文字以内で入力してください）",
     "stepsTooLong": "再現手順が長すぎます（2000文字以内で入力してください）",
     "imageUnsupportedType": "PNG・JPEG・WebP・GIF 形式の画像を選択してください",

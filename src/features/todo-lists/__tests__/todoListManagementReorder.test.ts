@@ -29,7 +29,7 @@ const STATIC_HEADER_ITEMS: HeaderMenuItem[] = [
     icon: "📝",
     route: "todo-list-management",
   },
-  { id: "bug-report", label: "不具合を報告", icon: "📣", route: "bug-report" },
+  { id: "bug-report", label: "報告・問い合わせ", icon: "📣", route: "bug-report" },
   { id: "settings", label: "設定", icon: "⚙️", route: "settings" },
 ];
 

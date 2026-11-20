@@ -5,7 +5,7 @@ import { useBugReportForm } from "../hooks/useBugReportForm";
 import { BugReportForm } from "./BugReportForm";
 import texts from "../locales/ja.json";
 
-/** 不具合を報告するための独立ページ（ハンバーガーメニューから遷移） */
+/** 報告・問い合わせするための独立ページ（ハンバーガーメニューから遷移） */
 export const BugReportPage = () => {
   const form = useBugReportForm();
 
