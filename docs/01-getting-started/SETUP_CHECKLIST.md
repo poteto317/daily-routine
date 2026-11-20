@@ -113,18 +113,18 @@ Cloud Functions は Node.js 24 環境で以下の 5 つの関数をエクスポ�
 - `syncRoutines`: ルーティン通知用同期 (HTTP)
 - `checkNotifications`: 通知チェックスケジューラー (Pub/Sub)
 - `cleanupNotifications`: 通知クリーンアップスケジューラー (Pub/Sub)
-- `onBugReportCreated`: 不具合報告 GitHub Issue 自動起票 (Firestore トリガー)
+- `onBugReportCreated`: 報告・問い合わせのかんばん自動起票 (Firestore トリガー)
 - `agentApi`: AI エージェント向け CRUD REST API (HTTP)
 
 Cloud Functions をデプロイする場合は、事前に Secret の設定が必須です。`onBugReportCreated` も一緒にデプロイされるため、不具合報告機能を使うかどうかに関わらず必要になります。Claude を使わない場合は `ANTHROPIC_API_KEY` に `none` を登録します（詳細は `docs/02-development/bug-report-secrets-config.md` 参照）：
 
 ```bash
-firebase functions:secrets:set GITHUB_TOKEN
+firebase functions:secrets:set SCRUM_BOARD_CREDENTIALS
 # Claude による Issue の整形に使う Anthropic の API キー（使わない場合は値に none を登録）
 firebase functions:secrets:set ANTHROPIC_API_KEY
 
 # 任意の起票先は firebase-functions/.env.<project-id> に以下を記載
-# GITHUB_REPO=owner/repo（未指定時: poteto317/daily-routine）
+# SCRUM_BOARD_ORIGIN と SCRUM_BOARD_PROJECT_ID（起票先を変更する場合）
 ```
 
 ビルドとデプロイ：
@@ -173,9 +173,9 @@ Vercel で本番運用する場合は、`.env.local` に設定した Firebase �
 | `NEXT_PUBLIC_FIREBASE_VAPID_KEY`           | 任意（通知を使う場合）                                                    | Web Push (FCM) 通知用 VAPID 公開鍵                                                                        | `BEl62v...`                                               |
 | `NEXT_PUBLIC_FUNCTIONS_URL`                | 任意                                                                      | Cloud Functions のベース URL（通知同期用）                                                                | `https://asia-northeast1-<project-id>.cloudfunctions.net` |
 | `NEXT_PUBLIC_APP_VERSION`                  | 自動                                                                      | アプリケーションのバージョン（`next.config.ts` で `package.json` から自動注入）                           | `0.1.0`                                                   |
-| `GITHUB_TOKEN`                             | Functions Secret                                                          | 不具合報告の GitHub Issue 自動起票用トークン                                                              | Secret Manager に登録                                     |
+| `SCRUM_BOARD_CREDENTIALS`                             | Functions Secret                                                          | かんばんの Basic 認証情報（ユーザー名:パスワード）                                                              | Secret Manager に登録                                     |
 | `ANTHROPIC_API_KEY`                        | Functions Secret                                                          | 不具合報告の Issue を Claude で整形するための Anthropic API キー（使わない場合は `none`）                 | Secret Manager に登録                                     |
-| `GITHUB_REPO`                              | Functions 文字列パラメータ                                                | 不具合報告の起票先 GitHub リポジトリ（デフォルト: `poteto317/daily-routine`）                             | firebase-functions/.env.<project-id> に設定               |
+| `SCRUM_BOARD_ORIGIN` / `SCRUM_BOARD_PROJECT_ID` | Functions パラメータ | かんばんの HTTPS オリジンとプロジェクト ID | 起票先を変更する場合に設定 |
 
 設定方法:
 

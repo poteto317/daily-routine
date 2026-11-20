@@ -6,7 +6,7 @@
 
 ## 1. システム全体構成
 
-本アプリは、ブラウザ側で完結する**オフラインファーストなクライアントアーキテクチャ**を中心に、Firebase バックエンド（Authentication, Firestore, Cloud Functions）および AI エージェント API、GitHub API 連携が協調して動作します。
+本アプリは、ブラウザ側で完結する**オフラインファーストなクライアントアーキテクチャ**を中心に、Firebase バックエンド（Authentication, Firestore, Cloud Functions）および AI エージェント API、スクラムかんばん API 連携が協調して動作します。
 
 ```mermaid
 graph TD
@@ -28,8 +28,8 @@ graph TD
 
   subgraph External ["外部システム"]
     Agent["AI エージェント<br/>（Claude / Codex / スクリプト）"]
-    GitHub["GitHub REST API<br/>（Issue 自動起票）"]
-    Claude["Anthropic Claude API<br/>（不具合報告 Issue の整形）"]
+    ScrumBoard["スクラムかんばん API<br/>（Todo へ自動起票）"]
+    Claude["Anthropic Claude API<br/>（報告・問い合わせの整形）"]
   end
 
   UI <-->|"手動アップロード/ダウンロード<br/>リアルタイム変更検知"| Firestore
@@ -37,8 +37,8 @@ graph TD
   Agent -->|"Bearer APIキー (HTTPS)"| Functions
   Functions <-->|"同期データ更新 / APIキー照合"| Firestore
   Firestore -->|"onCreate トリガー"| Functions
-  Functions -->|"Issue 作成"| GitHub
-  Functions -->|"Issue の整形"| Claude
+  Functions -->|"アイテム作成"| ScrumBoard
+  Functions -->|"報告・問い合わせの整形"| Claude
 ```
 
 ---
@@ -247,7 +247,7 @@ AI エージェント（Claude / Codex / スクリプト）から家計簿・ジ
 ### 5-2. 秘密情報の管理
 
 - **Firebase Functions Secrets**:
-  GitHub REST API 呼び出しに必要な `GITHUB_TOKEN` は Secret Manager で管理します。不具合報告の Issue を Claude で整形するための Anthropic API キー `ANTHROPIC_API_KEY` も Secret Manager で管理します（整形を使わない場合は値に `none` を登録）。対象リポジトリ名 `GITHUB_REPO` は `defineString` の通常パラメータで、Functions の `.env.<project-id>` に設定します。未指定時は `poteto317/daily-routine` を使用します。
+  スクラムかんばんの起票 API に必要な `SCRUM_BOARD_CREDENTIALS` は Secret Manager で管理します。報告・問い合わせを Claude で整形するための Anthropic API キー `ANTHROPIC_API_KEY` も Secret Manager で管理します（整形を使わない場合は値に `none` を登録）。起票先の変更には `SCRUM_BOARD_ORIGIN` と `SCRUM_BOARD_PROJECT_ID` を使います。既定の起票先は daily-routine プロジェクトの Todo です。
 - **FCM Service Worker 自動生成**:
   Firebase 設定情報を公開リポジトリに残さないため、ビルド時に `.env.local` から `tools/generate-firebase-messaging-sw.mjs` を通じて動的生成されます。
 

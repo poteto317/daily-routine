@@ -9,7 +9,7 @@
 | 関数名                 | 種別           | トリガー / エンドポイント      | 主な役割                                          |
 | ---------------------- | -------------- | ------------------------------ | ------------------------------------------------- |
 | `agentApi`             | HTTPS          | （パス詳細は非公開）           | AI エージェント・外部ツール向け CRUD REST API     |
-| `onBugReportCreated`   | Firestore      | `bugReports/{reportId}` 作成時 | アプリ内不具合報告から GitHub Issue を自動起票    |
+| `onBugReportCreated`   | Firestore      | `bugReports/{reportId}` 作成時 | 報告・問い合わせをスクラムかんばんに自動起票    |
 | `syncRoutines`         | HTTPS          | `/syncRoutines`                | クライアントの通知用ルーティンデータ同期受付      |
 | `checkNotifications`   | スケジューラー | 毎分 (`every 1 minutes`)       | 通知時刻になったルーティンの FCM プッシュ通知配信 |
 | `cleanupNotifications` | スケジューラー | 毎日 00:00 JST (`0 0 * * *`)   | 古い通知送信履歴のクリーンアップ                  |
@@ -51,7 +51,7 @@ firebase-functions/
     │   │   ├── todo/          # Todo リスト・アイテム・カテゴリ
     │   │   └── workout/       # 運動種目・運動記録
     │   └── validation/        # 入力値の型・形式チェック（文字列・金額・日付・列挙値・クエリなど）
-    ├── bugReport/             # 不具合報告 GitHub Issue 起票
+    ├── bugReport/             # 報告・問い合わせのかんばん起票
     │   ├── onBugReportCreated.ts # Firestore トリガーと Secret の宣言
     │   ├── handleBugReport.ts    # 最新の報告を読み直し、起票処理を実行して結果を記録する
     │   ├── processBugReport.ts   # 処理ロック → 画像解決 → 整形 → 起票 → 状態更新の手順
@@ -59,7 +59,7 @@ firebase-functions/
     │   ├── storageImageStore.ts  # Firebase Storage Bucket アダプタ（ダウンロードトークン URL 生成）
     │   ├── imageFormats.ts       # 許可画像形式とマジックナンバー判定
     │   ├── draftIssueWithClaude.ts # Claude による Issue の整形（画像入力対応）
-    │   └── createGithubIssue.ts  # GitHub REST API の呼び出し
+    │   └── createScrumBoardItem.ts  # スクラムかんばん API の呼び出し
     ├── notifications.ts       # 通知チェックスケジューラー (毎分)
     ├── notificationCleanup.ts # 通知送信履歴の定期クリーンアップ (毎日 00:00 JST)
     ├── notification-helpers/  # 通知対象の判定と FCM 送信・送信履歴の記録
@@ -80,25 +80,25 @@ firebase-functions/
 - アプリの設定画面で発行した API キーで認証し、紐づくユーザーの同期データを操作する HTTPS 関数です。
 - 公開リポジトリには操作手順や OpenAPI 定義を含めていません（実装は `src/agentApi/`）。
 
-### 2. `onBugReportCreated` (GitHub Issue 自動起票)
+### 2. `onBugReportCreated` (スクラムかんばん自動起票)
 
 - **トリガー**: `bugReports/{reportId}` ドキュメントの新規作成（Firestore `onCreate`）
 - **動作フロー**:
   1. クライアントが作成した報告ドキュメント（`status: "pending"`）を検知
   2. 処理ロックを取得した後、添付画像（`images`）がある場合は Firebase Storage から取得してサイズ・マジックナンバー検証を行い、ダウンロードトークン付き URL を発行する
   3. Claude（`claude-opus-5-5`）で Issue のタイトルと本文を整形（下記「Claude による整形」）。添付画像がある場合は画像も Claude に渡す
-  4. Secret に設定された GitHub Personal Access Token を使用して GitHub REST API を呼び出し、リポジトリに `bug`・`user-report` ラベル付き Issue を自動起票（添付画像は本文の `## スクリーンショット` 節に埋め込む）
+  4. Secret の Basic 認証情報を使って daily-routine プロジェクトの Todo に起票（添付画像は本文の `## スクリーンショット` 節にリンクを載せる）
   5. 成功時: ドキュメントを `status: "issued"`, `issueNumber`, `issueUrl`, `updatedAt` で更新
-  6. 失敗時: `status: "error"`, `errorMessage` を記録。GitHub の応答が 30 秒以内に返らず打ち切った場合、Issue が作られていても `status: "error"`（`issueNumber` なし）になることがある。手で起票し直す前に、同じ時刻・同じ報告者 uid の `user-report` Issue が GitHub に無いか確認する（二重起票を防ぐため）
+  6. 失敗時: `status: "error"`, `errorMessage` を記録。API のタイムアウトなどで作成結果を取得できない場合は、再起票の前に同じ時刻・報告者 uid のアイテムをかんばんで確認する
 - **設定値**:
-  - `GITHUB_TOKEN`（Secret）: GitHub 個人アクセストークン（`issues:write` 権限）
-  - `GITHUB_REPO`（文字列パラメータ）: 対象リポジトリ名（例: `poteto317/daily-routine`。未設定時はデフォルト値を使用）
+  - `SCRUM_BOARD_CREDENTIALS`（Secret）: Basic 認証の `ユーザー名:パスワード`
+  - `SCRUM_BOARD_ORIGIN` と `SCRUM_BOARD_PROJECT_ID`: 起票先の HTTPS オリジンとプロジェクト ID
   - `ANTHROPIC_API_KEY`（Secret）: Claude による整形に使う Anthropic の API キー。Claude を使わない場合は `none` を登録する（Secret の値を変えたら関数の再デプロイが必要。Functions v2 はデプロイ時点の Secret のバージョンを使うため）。止め方・再開の仕方とトラブル対応は「6. Claude による整形の停止・再開とトラブル対応」を参照
   - 設定手順の詳細は `docs/02-development/bug-report-secrets-config.md` を参照
 - **Claude による整形**:
-  - 説明・再現手順・入力タイトル・画面の URL（および有効な添付画像）を Claude に渡し、要約したタイトル（`[不具合報告] ` を前置）と Markdown の本文を作る。uid や User-Agent は渡さない。環境情報と報告者 uid は今までどおり本文の末尾に付き、注記は「Claude で整形されました」になる
-  - 画像つきの整形が失敗した場合は、画像なしで 1 回だけ再整形を試みる。それでも失敗した場合（または画像なしで失敗した場合）は、従来の内容（入力タイトル、無ければ説明の先頭から作るタイトルと、報告文そのままの本文）で起票する（Claude 最大 45 秒 × 最大 2 回、GitHub 最大 30 秒、関数のタイムアウトは 180 秒、メモリは 512MiB）
-  - 関数ログの info `Bug report <id> processed: ... (repo=..., content=<値>)` で結果が分かる。`content=claude` は整形できた、`content=fallback` は従来の内容で起票した（失敗、`none`、または説明が空白だけ）、`content=none` はスキップ・ロック取得失敗で整形を試みなかったことを表す（`content` は整形の結果だけを表す。起票の成否は `processed:` の値 `issued` / `error` / `skipped` で判断する）。失敗時は warn `Claude による整形に失敗したため従来の内容で起票します (<理由>)`（画像つき失敗時は `画像つきの整形に失敗したため画像なしで再整形します (<理由>)`）に理由が出る（API キー・報告本文・エラーメッセージ本文は出さない）。理由は API 呼び出しの失敗（`api_error(status=<HTTP ステータス>)`・`timeout`・`connection_error`）か、応答を採用できなかったこと（`refusal`: 拒否応答、`max_tokens`: 出力が上限で打ち切られた、`no_text_output`: テキストの出力が無い、`invalid_output`: JSON でない・形式が合わない、`empty_output`: タイトル（先頭の `[不具合報告]` を除く）か本文が空）のどれか。それ以外の例外は `unknown(<クラス名>)`（SDK の想定外のエラーは `parse_failed`）。理由ごとの対処は「6. Claude による整形の停止・再開とトラブル対応」を参照
+  - 説明・再現手順・入力タイトル・画面の URL（および有効な添付画像）を Claude に渡し、要約したタイトル（`[アプリからの報告] ` を前置）と Markdown の本文を作る。uid や User-Agent は渡さない。環境情報と報告者 uid は今までどおり本文の末尾に付き、注記は「Claude で整形されました」になる
+  - 画像つきの整形が失敗した場合は、画像なしで 1 回だけ再整形を試みる。それでも失敗した場合（または画像なしで失敗した場合）は、従来の内容（入力タイトル、無ければ説明の先頭から作るタイトルと、報告文そのままの本文）で起票する（Claude 最大 45 秒 × 最大 2 回、かんばん API 最大 30 秒、関数のタイムアウトは 180 秒、メモリは 512MiB）
+  - 関数ログの info `Bug report <id> processed: ... (projectId=..., content=<値>)` で結果が分かる。`content=claude` は整形できた、`content=fallback` は従来の内容で起票した（失敗、`none`、または説明が空白だけ）、`content=none` はスキップ・ロック取得失敗で整形を試みなかったことを表す（`content` は整形の結果だけを表す。起票の成否は `processed:` の値 `issued` / `error` / `skipped` で判断する）。失敗時は warn `Claude による整形に失敗したため従来の内容で起票します (<理由>)`（画像つき失敗時は `画像つきの整形に失敗したため画像なしで再整形します (<理由>)`）に理由が出る（API キー・報告本文・エラーメッセージ本文は出さない）。理由は API 呼び出しの失敗（`api_error(status=<HTTP ステータス>)`・`timeout`・`connection_error`）か、応答を採用できなかったこと（`refusal`: 拒否応答、`max_tokens`: 出力が上限で打ち切られた、`no_text_output`: テキストの出力が無い、`invalid_output`: JSON でない・形式が合わない、`empty_output`: タイトル（先頭の `[アプリからの報告]` を除く）か本文が空）のどれか。それ以外の例外は `unknown(<クラス名>)`（SDK の想定外のエラーは `parse_failed`）。理由ごとの対処は「6. Claude による整形の停止・再開とトラブル対応」を参照
   - 注意: ログインユーザーが連投すると、Anthropic 側の月の利用上限を使い切りうる（その後は従来の内容で起票される）。報告のレート制限は未実装
 
 ### 3. 通知系関数 (`syncRoutines`, `checkNotifications`, `cleanupNotifications`)
@@ -151,7 +151,7 @@ firebase deploy --only functions:onBugReportCreated
 ### 4. Secret と起票先の設定
 
 ```bash
-firebase functions:secrets:set GITHUB_TOKEN
+firebase functions:secrets:set SCRUM_BOARD_CREDENTIALS
 firebase functions:secrets:set ANTHROPIC_API_KEY
 ```
 
@@ -159,14 +159,14 @@ firebase functions:secrets:set ANTHROPIC_API_KEY
 
 Claude の月の利用額の上限（例: 100 ドル）は、アプリ側では管理せず、Anthropic Console のワークスペースの利用上限で設定します。上限に達すると API がエラーを返し、従来の内容で起票されます。
 
-起票先を変更する場合は `firebase-functions/.env.<project-id>` に `GITHUB_REPO=owner/repo` を記載し、再デプロイしてください。`<project-id>` は対象のFirebaseプロジェクトIDです。`GITHUB_REPO` は `defineString` の通常パラメータであり、Secretとして登録しません。省略時の起票先は `poteto317/daily-routine` です。
+起票先の変更方法と Secret の値の形式は [Secret 設定手順](../docs/02-development/bug-report-secrets-config.md) を参照してください。
 
 ### 5. Claude による整形のデプロイ後の確認
 
 実装時は API キーが無く実 API で確認していないため、デプロイ後に次を確認してください。
 
-1. アプリから不具合報告を 1 件送る
-2. 作成された Issue のタイトルが要約（`[不具合報告] <要約>`）になり、本文末尾に「Claude で整形されました」の注記があることを確認する
+1. アプリの「報告・問い合わせ」から検証用の報告を 1 件送る
+2. Todo に作成されたアイテムのタイトルが要約（`[アプリからの報告] <要約>`）になり、本文末尾に「Claude で整形されました」の注記があることを確認する
 3. `firebase functions:log --only onBugReportCreated` で info ログに `content=claude` が出ていることを確認する
 4. 長めの報告（説明と再現手順がそれぞれ数百文字）と、入力上限近くの報告（説明と再現手順がそれぞれ約 2000 文字）でも `content=claude` になり、warn に `max_tokens` や `timeout` が出ないことを確認する。所要時間（Google Cloud コンソールの Cloud Run の該当サービスのリクエストログの latency、または関数ログの最初と最後の行の時刻の差）も控え、上限近くで 45 秒に近い場合は Claude のタイムアウト（`draftIssueWithClaude.ts`）の見直しを検討する
 5. Secret の値を変えたら `firebase deploy --only functions:onBugReportCreated` で再デプロイしてから確認する。`ANTHROPIC_API_KEY` に `none` を登録した場合は `content=fallback` になり、warn は出ないことを確認する。無効なキーを登録した場合は `content=fallback` になり、warn に `api_error(status=401)` が出ることを確認する。warn の理由が `unknown(TypeError)` の場合は、登録したキーに全角文字や途中の改行が混ざっていないか確認する（ヘッダーを組み立てられず SDK が TypeError を投げるため）
@@ -197,5 +197,5 @@ warn の理由ごとの原因と対処（どの場合も Issue は従来の内�
 ## 関連ドキュメント
 
 - [不具合報告機能設計書](../docs/02-development/bug-report-feature-plan.md)
-- [GitHub Token / Secret 設定手順](../docs/02-development/bug-report-secrets-config.md)
+- [スクラムかんばん・Claude の Secret 設定手順](../docs/02-development/bug-report-secrets-config.md)
 - [クラウド同期セットアップ](../docs/01-getting-started/SYNC_SETUP.md)
