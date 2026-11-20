@@ -27,7 +27,7 @@
 - [システム機能](#システム機能)
   - [🔐 認証](#-認証)
   - [☁️ クラウド同期](#️-クラウド同期)
-  - [📣 不具合報告](#-不具合報告)
+  - [📣 報告・問い合わせ](#-報告問い合わせ)
   - [🔑 APIキー管理](#-apiキー管理)
   - [🔔 通知機能](#-通知機能)
   - [⚙️ 設定](#️-設定)
@@ -601,16 +601,16 @@ Firestoreを使用した複数端末間のデータ同期・バックアップ�
 
 ---
 
-### 📣 不具合報告
+### 📣 報告・問い合わせ
 
-アプリ内から直接バグや要望を報告し、GitHub Issue へ自動起票する機能です。
+アプリ内から不具合、改善提案、問い合わせを送信し、スクラムかんばんの daily-routine プロジェクトの Todo に自動起票します。
 
 **主な機能**
 
 - **報告フォームUI**
-  - ヘッダーメニューの「📣 不具合を報告」からいつでも起動可能
+  - ヘッダーメニューの「📣 報告・問い合わせ」からいつでも起動可能
   - 入力項目:
-    - 不具合の詳細（必須、1〜2000文字）
+    - 報告・問い合わせの内容（必須、1〜2000文字）
     - タイトル（任意、最大100文字。UI省略時はAIが生成）
     - 再現手順（任意、最大2000文字）
     - スクリーンショット画像（任意、PNG・JPEG・WebP・GIF、1枚5MB以下、最大3枚、サムネイルプレビュー・個別削除対応）
@@ -622,10 +622,10 @@ Firestoreを使用した複数端末間のデータ同期・バックアップ�
   - 表示言語 (`locale`)
   - タイムゾーン (`timezone`)
   - クライアント時刻 (`createdAtClient`)
-- **GitHub Issue 自動起票連携**
+- **スクラムかんばんへの自動起票**
   - 画像が添付されている場合は、クライアントが先に Firebase Storage（`bugReports/{uid}/{reportId}/{fileName}`）へアップロードしてから、Firestore `bugReports/{reportId}` へ `status: "pending"` としてドキュメントを作成（途中失敗時はアップロード済み画像を自動削除）
   - Firestore セキュリティルールおよび Storage セキュリティルールにより不正入力・形式外やサイズ超過の画像・serverTimestamp 改ざんを厳格に拒否
-  - Cloud Functions の Firestore トリガー（`onBugReportCreated`）が検知し、添付画像のサイズ・マジックナンバー検証およびダウンロードトークン付き URL の取得を行った上で、GitHub REST API を叩いて `bug`・`user-report` ラベル付き Issue を自動作成（本文の `## スクリーンショット` 節に画像を埋め込み）
+  - Cloud Functions の Firestore トリガー（`onBugReportCreated`）が検知し、添付画像のサイズ・マジックナンバー検証およびダウンロードトークン付き URL の取得を行った上で、スクラムかんばん API で Todo にアイテムを作成（本文の `## スクリーンショット` 節に画像のリンクを追加）
   - Issue のタイトルと本文は Claude（Anthropic API）で整形し、添付画像がある場合は画像も Claude に渡して状況把握に活用する（`ANTHROPIC_API_KEY` に `none` を登録すると整形しない）。画像つき整形が失敗した場合は画像なしで1回だけ再整形し、それも失敗した場合は従来の内容（報告文そのまま）で起票する
   - 起票成功時に Firestore を `status: "issued"`, `issueNumber`, `issueUrl` で更新
 
@@ -633,7 +633,7 @@ Firestoreを使用した複数端末間のデータ同期・バックアップ�
 
 - ファイル: `src/features/bug-report/`, `firebase-functions/src/bugReport/`
 - 保存先: Firestore `bugReports/{reportId}`, Firebase Storage `bugReports/{uid}/{reportId}/{fileName}`
-- 連携: GitHub REST API（Secret: `GITHUB_TOKEN`、文字列パラメータ: `GITHUB_REPO`）、Anthropic Claude API で Issue を整形（Secret: `ANTHROPIC_API_KEY`。失敗時は従来の内容で起票）
+- 連携: スクラムかんばん API（Secret: `SCRUM_BOARD_CREDENTIALS`）、Anthropic Claude API で Issue を整形（Secret: `ANTHROPIC_API_KEY`。失敗時は従来の内容で起票）
 
 ---
 
@@ -963,7 +963,7 @@ Progressive Web App (PWA) 技術と Workbox による Service Worker を活用�
 | `todo-category-management`   | Todoカテゴリ管理                     | 📝       | `TodoCategoryManagementPage`   | タスク管理           |
 | `sync-management`            | 同期履歴管理                         | ☁️       | `SyncManagementPage`           | 開発・管理           |
 | `settings`                   | 設定                                 | ⚙️       | `SettingsPage`                 | システム             |
-| `bug-report`                 | 不具合を報告                         | 📣       | `BugReportPage`                | システム             |
+| `bug-report`                 | 報告・問い合わせ                         | 📣       | `BugReportPage`                | システム             |
 | `test-matrix`                | 機能テストマトリクス                 | 📋       | `TestMatrixPage`               | 開発・管理           |
 | `account-admin`              | アカウント管理                       | 👥       | `AccountAdminPage`             | 開発・管理（管理者） |
 
@@ -1042,7 +1042,7 @@ routines/{userId}/...                  # ルーティン通知用データ（Clo
 
 accounts/{accountId}                   # アカウント管理用コレクション（管理者 isAdmin レコード）
 
-bugReports/{reportId}                  # 不具合報告コレクション（クライアント作成 → Cloud Functions が GitHub Issue 起票）
+bugReports/{reportId}                  # 報告・問い合わせ（Cloud Functions がかんばんに起票）
   ├─ uid: string
   ├─ status: "pending" | "processing" | "issued" | "error"
   ├─ title: string
@@ -1077,7 +1077,7 @@ daily-routine/
 ├── firebase-functions/               # Firebase Cloud Functions (Node.js 24)
 │   └── src/
 │       ├── agentApi/                 # AI エージェント用 REST API (CRUD)
-│       ├── bugReport/                # 不具合報告 GitHub Issue 起票トリガー
+│       ├── bugReport/                # 報告・問い合わせのかんばん起票トリガー
 │       ├── notifications.ts          # 通知チェックスケジューラー
 │       ├── notificationCleanup.ts    # 通知データ定期クリーンアップ
 │       ├── notification-helpers/     # 通知・FCM 配信ユーティリティ
