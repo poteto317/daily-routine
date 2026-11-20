@@ -26,7 +26,7 @@ const makeDrafter = (
           type: "text",
           text: JSON.stringify({
             title: "保存できない",
-            body: "## 不具合の内容\n\n要約",
+            body: "## 報告・問い合わせの内容\n\n要約",
           }),
         },
       ],
@@ -117,7 +117,7 @@ describe("createIssueDrafter", () => {
 
     await expect(drafter.draftIssue(report)).resolves.toEqual({
       title: "保存できない",
-      body: "## 不具合の内容\n\n要約",
+      body: "## 報告・問い合わせの内容\n\n要約",
     });
 
     expect(createDraftRequester).toHaveBeenCalledWith(API_KEY);
@@ -176,7 +176,7 @@ describe("createIssueDrafter", () => {
 
       await expect(drafter.draftIssue(report, [sampleImage])).resolves.toEqual({
         title: "保存できない",
-        body: "## 不具合の内容\n\n要約",
+        body: "## 報告・問い合わせの内容\n\n要約",
       });
 
       expect(requestDraft).toHaveBeenCalledTimes(1);
@@ -205,7 +205,7 @@ describe("createIssueDrafter", () => {
               type: "text",
               text: JSON.stringify({
                 title: "再整形タイトル",
-                body: "## 不具合の内容\n\n画像なし要約",
+                body: "## 報告・問い合わせの内容\n\n画像なし要約",
               }),
             },
           ],
@@ -216,7 +216,7 @@ describe("createIssueDrafter", () => {
 
       await expect(drafter.draftIssue(report, [sampleImage])).resolves.toEqual({
         title: "再整形タイトル",
-        body: "## 不具合の内容\n\n画像なし要約",
+        body: "## 報告・問い合わせの内容\n\n画像なし要約",
       });
 
       expect(createDraftRequester).toHaveBeenCalledTimes(1);
@@ -258,7 +258,7 @@ describe("createIssueDrafter", () => {
               type: "text",
               text: JSON.stringify({
                 title: "再整形成功",
-                body: "## 不具合の内容\n\n本文",
+                body: "## 報告・問い合わせの内容\n\n本文",
               }),
             },
           ],
@@ -267,7 +267,7 @@ describe("createIssueDrafter", () => {
 
       await expect(drafter.draftIssue(report, [sampleImage])).resolves.toEqual({
         title: "再整形成功",
-        body: "## 不具合の内容\n\n本文",
+        body: "## 報告・問い合わせの内容\n\n本文",
       });
 
       expect(requestDraft).toHaveBeenCalledTimes(2);

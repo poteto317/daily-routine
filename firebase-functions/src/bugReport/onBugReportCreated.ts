@@ -5,13 +5,18 @@ import * as logger from "firebase-functions/logger";
 import type { Timestamp } from "firebase-admin/firestore";
 import { getStorage } from "firebase-admin/storage";
 import { BUG_REPORTS_COLLECTION } from "./constants";
-import { anthropicApiKey, githubToken, githubRepo } from "./config";
+import {
+  anthropicApiKey,
+  scrumBoardCredentials,
+  scrumBoardOrigin,
+  scrumBoardProjectId,
+} from "./config";
 import { handleBugReport } from "./handleBugReport";
 import { canClaimProcessing } from "./canClaimProcessing";
 import { createStorageImageStore } from "./storageImageStore";
 
 /**
- * bugReports ドキュメント作成時に GitHub Issue を自動作成する Firestore トリガ。
+ * bugReports ドキュメント作成時に スクラムかんばんの Todo にアイテムを自動作成する Firestore トリガ。
  * 実際の Issue 作成・書き戻し・冪等性は processBugReport に委譲する。
  */
 export const onBugReportCreated = (db: Firestore) =>
@@ -19,10 +24,10 @@ export const onBugReportCreated = (db: Firestore) =>
     {
       document: `${BUG_REPORTS_COLLECTION}/{reportId}`,
       region: "asia-northeast1",
-      // Claude 最大 45 秒（画像つきの失敗後に画像なしで再整形して最大 45 秒）+ GitHub 最大 30 秒 + 画像の取得・Firestore の読み書きが収まる長さ
+      // Claude 最大 45 秒（画像つきの失敗後に画像なしで再整形して最大 45 秒）+ かんばん API 最大 30 秒 + 画像の取得・Firestore の読み書きが収まる長さ
       timeoutSeconds: 180,
       memory: "512MiB",
-      secrets: [githubToken, anthropicApiKey],
+      secrets: [scrumBoardCredentials, anthropicApiKey],
     },
     async (event) => {
       if (!event.data) {
@@ -39,8 +44,7 @@ export const onBugReportCreated = (db: Firestore) =>
           claimed = false; // トランザクション再試行時にリセット
           const snap = await t.get(docRef);
           const data = snap.data() as
-            | { status?: string; processingAt?: Timestamp }
-            | undefined;
+            { status?: string; processingAt?: Timestamp } | undefined;
           if (!data) return;
 
           const processingAtMs = data.processingAt
@@ -61,8 +65,9 @@ export const onBugReportCreated = (db: Firestore) =>
       };
 
       await handleBugReport(reportId, db, {
-        repo: githubRepo.value(),
-        token: githubToken.value(),
+        origin: scrumBoardOrigin.value(),
+        projectId: scrumBoardProjectId.value(),
+        credentials: scrumBoardCredentials.value(),
         anthropicApiKey: anthropicApiKey.value(),
         createImageStore: () => createStorageImageStore(getStorage().bucket()),
         logger,

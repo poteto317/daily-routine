@@ -1,11 +1,11 @@
 /** @jest-environment node */
 import Anthropic from "@anthropic-ai/sdk";
 import { handleBugReport } from "../handleBugReport";
-import { createGithubIssue } from "../createGithubIssue";
+import { createScrumBoardItem } from "../createScrumBoardItem";
 import type { DraftRequester } from "../draftIssueWithClaude";
 
-jest.mock("../createGithubIssue", () => ({
-  createGithubIssue: jest.fn(),
+jest.mock("../createScrumBoardItem", () => ({
+  createScrumBoardItem: jest.fn(),
 }));
 
 const API_KEY = "sk-ant-test-key";
@@ -39,7 +39,7 @@ const makeDeps = (
           type: "text",
           text: JSON.stringify({
             title: "保存できない",
-            body: "## 不具合の内容\n\n要約",
+            body: "## 報告・問い合わせの内容\n\n要約",
           }),
         },
       ],
@@ -50,8 +50,9 @@ const makeDeps = (
   return {
     requestDraft,
     deps: {
-      repo: "owner/repo",
-      token: "fake-token",
+      origin: "https://board.example.test",
+      projectId: 8,
+      credentials: "test-user:password",
       anthropicApiKey: overrides.anthropicApiKey ?? API_KEY,
       createDraftRequester,
       logger: { info: jest.fn(), warn: jest.fn(), error: jest.fn() },
@@ -62,9 +63,9 @@ const makeDeps = (
 
 const report = { uid: "u1", description: DESCRIPTION, status: "pending" };
 
-/** createGithubIssue に渡された Issue のタイトル */
+/** createScrumBoardItem に渡された Issue のタイトル */
 const issuedTitle = (): string =>
-  (createGithubIssue as jest.Mock).mock.calls[0][0].content.title;
+  (createScrumBoardItem as jest.Mock).mock.calls[0][0].content.title;
 
 /** logger のあるメソッドに渡された全引数を 1 つの文字列にする */
 const loggedText = (mock: jest.Mock): string =>
@@ -72,7 +73,7 @@ const loggedText = (mock: jest.Mock): string =>
 
 beforeEach(() => {
   jest.clearAllMocks();
-  (createGithubIssue as jest.Mock).mockResolvedValue({
+  (createScrumBoardItem as jest.Mock).mockResolvedValue({
     issueNumber: 1,
     issueUrl: "https://example.com/1",
   });
@@ -85,7 +86,7 @@ describe("handleBugReport — Claude による整形", () => {
     await handleBugReport("report-1", makeDb(report), deps);
 
     expect(deps.createDraftRequester).toHaveBeenCalledWith(API_KEY);
-    expect(issuedTitle()).toBe("[不具合報告] 保存できない");
+    expect(issuedTitle()).toBe("[アプリからの報告] 保存できない");
     expect(deps.logger.warn).not.toHaveBeenCalled();
     expect(deps.logger.info).toHaveBeenCalledWith(
       expect.stringContaining("content=claude"),
@@ -107,7 +108,7 @@ describe("handleBugReport — Claude による整形", () => {
 
     await handleBugReport("report-1", makeDb(report), deps);
 
-    expect(issuedTitle()).toBe(`[不具合報告] ${DESCRIPTION}`);
+    expect(issuedTitle()).toBe(`[アプリからの報告] ${DESCRIPTION}`);
     expect(deps.logger.warn).toHaveBeenCalledWith(
       expect.stringContaining("api_error(status=400)"),
     );
@@ -133,7 +134,7 @@ describe("handleBugReport — Claude による整形", () => {
       expect(deps.createDraftRequester).not.toHaveBeenCalled();
       expect(requestDraft).not.toHaveBeenCalled();
       expect(deps.logger.warn).not.toHaveBeenCalled();
-      expect(issuedTitle()).toBe(`[不具合報告] ${DESCRIPTION}`);
+      expect(issuedTitle()).toBe(`[アプリからの報告] ${DESCRIPTION}`);
       expect(deps.logger.info).toHaveBeenCalledWith(
         expect.stringContaining("content=fallback"),
       );
@@ -147,7 +148,7 @@ describe("handleBugReport — Claude による整形", () => {
 
     expect(deps.createDraftRequester).not.toHaveBeenCalled();
     expect(requestDraft).not.toHaveBeenCalled();
-    expect(createGithubIssue).not.toHaveBeenCalled();
+    expect(createScrumBoardItem).not.toHaveBeenCalled();
     expect(deps.logger.info).toHaveBeenCalledWith(
       expect.stringContaining("content=none"),
     );
