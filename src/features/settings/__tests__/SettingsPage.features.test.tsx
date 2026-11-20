@@ -63,7 +63,7 @@ describe("SettingsPage features", () => {
     ).not.toBeInTheDocument();
 
     // メニュー並び替えUI（MenuOrderSection）には並べ替え対象の項目として残る
-    expect(screen.getByText("不具合を報告")).toBeInTheDocument();
+    expect(screen.getByText("報告・問い合わせ")).toBeInTheDocument();
   });
 
   it("ポモドーロ設定は保存ボタンなしで即時保存される", async () => {

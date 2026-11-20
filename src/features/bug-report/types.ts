@@ -4,7 +4,7 @@ import type { FieldValue, Timestamp } from "firebase/firestore";
  * 不具合報告の処理状態。
  * - pending: クライアントが作成した直後（未処理）
  * - processing: Cloud Functions が処理中
- * - issued: GitHub Issue 作成済み
+ * - issued: かんばんアイテム作成済み
  * - error: Issue 化に失敗
  */
 export type BugReportStatus = "pending" | "processing" | "issued" | "error";

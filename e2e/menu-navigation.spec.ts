@@ -12,7 +12,7 @@ test.describe("ハンバーガーメニューからの遷移", () => {
 
   // 常時表示される項目と、遷移先で必ず出る見出しの組み合わせ
   const destinations = [
-    { menuItem: "不具合を報告", heading: "不具合を報告" },
+    { menuItem: "報告・問い合わせ", heading: "報告・問い合わせ" },
     { menuItem: "プリセット管理", heading: "プリセット管理" },
     { menuItem: "同期履歴管理", heading: "☁️ 同期履歴管理" },
   ];
