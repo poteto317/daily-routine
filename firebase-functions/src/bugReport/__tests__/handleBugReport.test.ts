@@ -11,8 +11,8 @@ jest.mock("../processBugReport", () => ({
   processBugReport: jest.fn().mockResolvedValue("issued"),
 }));
 
-jest.mock("../createGithubIssue", () => ({
-  createGithubIssue: jest.fn(),
+jest.mock("../createScrumBoardItem", () => ({
+  createScrumBoardItem: jest.fn(),
 }));
 
 jest.mock("../resolveReportImages", () => {
@@ -44,8 +44,9 @@ const makeDb = (docData: Record<string, unknown> | null) => {
 };
 
 const makeDeps = () => ({
-  repo: "owner/repo",
-  token: "fake-token",
+  origin: "https://board.example.test",
+  projectId: 8,
+  credentials: "test-user:password",
   anthropicApiKey: "none",
   logger: {
     info: jest.fn(),

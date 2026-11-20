@@ -1,6 +1,6 @@
 import { processBugReport } from "./processBugReport";
 import type { ProcessableBugReport } from "./types";
-import { createGithubIssue } from "./createGithubIssue";
+import { createScrumBoardItem } from "./createScrumBoardItem";
 import { BUG_REPORTS_COLLECTION } from "./constants";
 import { createIssueDrafter } from "./createIssueDrafter";
 import type { DraftRequester } from "./draftIssueWithClaude";
@@ -25,8 +25,9 @@ type DbLike = {
 };
 
 type HandleBugReportDeps = {
-  repo: string;
-  token: string;
+  origin: string;
+  projectId: number;
+  credentials: string;
   /** Claude の API キー。空または none なら Claude を使わない */
   anthropicApiKey: string;
   /** API キーから整形の依頼関数を作る（テスト用。既定は createClaudeDraftRequester） */
@@ -105,7 +106,12 @@ export const handleBugReport = async (
       resolveImages,
       draftIssue: drafter.draftIssue,
       createIssue: (content) =>
-        createGithubIssue({ token: deps.token, repo: deps.repo, content }),
+        createScrumBoardItem({
+          credentials: deps.credentials,
+          origin: deps.origin,
+          projectId: deps.projectId,
+          content,
+        }),
       updateReport: async (fields) => {
         await db
           .collection(BUG_REPORTS_COLLECTION)
@@ -115,7 +121,7 @@ export const handleBugReport = async (
       now: deps.now,
     });
     deps.logger.info(
-      `Bug report ${reportId} processed: ${result} (repo=${deps.repo}, content=${drafter.contentSource()})`,
+      `Bug report ${reportId} processed: ${result} (projectId=${deps.projectId}, content=${drafter.contentSource()})`,
     );
   } catch (error) {
     deps.logger.error(`Bug report ${reportId} processing threw an exception`, {

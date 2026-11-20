@@ -358,7 +358,7 @@ describe("processBugReport", () => {
 
 describe("processBugReport — Claude による整形（draftIssue）", () => {
   const issueResult = { issueNumber: 1, issueUrl: "u" };
-  const draft = { title: "保存できない", body: "## 不具合の内容\n\n要約本文" };
+  const draft = { title: "保存できない", body: "## 報告・問い合わせの内容\n\n要約本文" };
 
   const makeDeps = (draftIssue?: jest.Mock) => ({
     claimProcessing: jest.fn().mockResolvedValue(true),
@@ -374,7 +374,7 @@ describe("processBugReport — Claude による整形（draftIssue）", () => {
 
     expect(deps.draftIssue).toHaveBeenCalledWith(pendingReport, []);
     const content = deps.createIssue.mock.calls[0][0];
-    expect(content.title).toBe("[不具合報告] 保存できない");
+    expect(content.title).toBe("[アプリからの報告] 保存できない");
     expect(content.body).toContain("要約本文");
   });
 
@@ -384,9 +384,9 @@ describe("processBugReport — Claude による整形（draftIssue）", () => {
     await processBugReport(pendingReport, deps);
 
     const content = deps.createIssue.mock.calls[0][0];
-    expect(content.title).toBe("[不具合報告] 不具合の内容");
+    expect(content.title).toBe("[アプリからの報告] 不具合の内容");
     expect(content.body).toContain(
-      "> この Issue はアプリの不具合報告機能から自動生成されました。",
+      "> このアイテムはアプリの「報告・問い合わせ」から自動生成されました。",
     );
   });
 
@@ -398,7 +398,7 @@ describe("processBugReport — Claude による整形（draftIssue）", () => {
     expect(result).toBe("issued");
     expect(deps.createIssue).toHaveBeenCalledTimes(1);
     expect(deps.createIssue.mock.calls[0][0].title).toBe(
-      "[不具合報告] 不具合の内容",
+      "[アプリからの報告] 不具合の内容",
     );
   });
 
@@ -425,7 +425,7 @@ describe("processBugReport — Claude による整形（draftIssue）", () => {
     await processBugReport(pendingReport, deps);
 
     expect(deps.createIssue.mock.calls[0][0].title).toBe(
-      "[不具合報告] 不具合の内容",
+      "[アプリからの報告] 不具合の内容",
     );
   });
 });
@@ -445,7 +445,7 @@ describe("processBugReport — 画像の解決と埋め込み（resolveImages）
     });
     const draftIssue = jest.fn().mockResolvedValue({
       title: "整形タイトル",
-      body: "## 不具合の内容\n\n整形本文",
+      body: "## 報告・問い合わせの内容\n\n整形本文",
     });
     const createIssue = jest.fn().mockResolvedValue(issueResult);
 
@@ -463,7 +463,7 @@ describe("processBugReport — 画像の解決と埋め込み（resolveImages）
     const content = createIssue.mock.calls[0][0];
     expect(content.body).toContain("## スクリーンショット");
     expect(content.body).toContain(
-      "![スクリーンショット 1](https://example.test/shot1.png)",
+      "[スクリーンショット 1](https://example.test/shot1.png)",
     );
   });
 
@@ -483,7 +483,7 @@ describe("processBugReport — 画像の解決と埋め込み（resolveImages）
 
     const content = createIssue.mock.calls[0][0];
     expect(content.body).toContain(
-      "![スクリーンショット 1](https://example.test/shot1.png)",
+      "[スクリーンショット 1](https://example.test/shot1.png)",
     );
     expect(content.body).toContain(
       "（添付された画像 2 枚を取得できなかったため掲載していません）",
@@ -552,9 +552,9 @@ describe("processBugReport — 画像の解決と埋め込み（resolveImages）
     });
 
     const content = createIssue.mock.calls[0][0];
-    expect(content.title).toBe("[不具合報告] 不具合の内容");
+    expect(content.title).toBe("[アプリからの報告] 不具合の内容");
     expect(content.body).toContain(
-      "![スクリーンショット 1](https://example.test/shot1.png)",
+      "[スクリーンショット 1](https://example.test/shot1.png)",
     );
   });
 });

@@ -263,10 +263,10 @@ describe("draftIssueWithClaude", () => {
   it.each([
     { title: "  ", body: "本文" },
     { title: "要約", body: " \n " },
-    { title: "[不具合報告]", body: "本文" },
-    { title: " [不具合報告]  ", body: "本文" },
+    { title: "[アプリからの報告]", body: "本文" },
+    { title: " [アプリからの報告]  ", body: "本文" },
   ])(
-    "タイトル（先頭の [不具合報告] を除く）か本文が空白だけなら IssueDraftError(empty_output) を投げる (%o)",
+    "タイトル（先頭の [アプリからの報告] を除く）か本文が空白だけなら IssueDraftError(empty_output) を投げる (%o)",
     async (parsed) => {
       const requestDraft = jest.fn().mockResolvedValue(okResponse(parsed));
       await expectDraftError(

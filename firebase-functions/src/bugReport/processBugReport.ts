@@ -1,9 +1,9 @@
 import {
   buildIssueContent,
-  type GithubIssueContent,
+  type IssueContent,
   type IssueDraft,
 } from "./buildIssueContent";
-import type { GithubIssueResult } from "./createGithubIssue";
+import type { IssueResult } from "./createScrumBoardItem";
 import {
   countReferencedImages,
   type ResolvedImage,
@@ -21,7 +21,7 @@ export interface ProcessBugReportDeps {
   /** status を pending → processing へアトミックに更新し、成功なら true を返す */
   claimProcessing: () => Promise<boolean>;
   /** Issue を作成し結果を返す */
-  createIssue: (content: GithubIssueContent) => Promise<GithubIssueResult>;
+  createIssue: (content: IssueContent) => Promise<IssueResult>;
   /** Firestore ドキュメントを更新する */
   updateReport: (fields: Record<string, unknown>) => Promise<void>;
   /** updatedAt 等に使うサーバ時刻（任意・注入） */
@@ -83,7 +83,7 @@ const resolveDraft = async (
 };
 
 /**
- * 不具合報告から GitHub Issue を作成し、結果を Firestore に書き戻すコアロジック。
+ * 不具合報告から スクラムかんばんの Todo を作成し、結果を Firestore に書き戻すコアロジック。
  *
  * 実行順序:
  * 1. 冪等性チェック（shouldSkipProcessing）: 終端状態（status が "issued" / "error"）
@@ -125,7 +125,7 @@ export const processBugReport = async (
   const draft = await resolveDraft(report, imageResult.images, deps.draftIssue);
 
   // Phase 1: Issue 作成
-  let issueResult!: GithubIssueResult;
+  let issueResult!: IssueResult;
   try {
     const content = buildIssueContent(report, draft, imageResult);
     issueResult = await deps.createIssue(content);
