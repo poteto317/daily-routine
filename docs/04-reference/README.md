@@ -51,7 +51,7 @@
 
 - 🔐 認証（匿名認証・ローカル開発認証）
 - ☁️ クラウド同期
-- 📣 不具合報告（GitHub Issue 自動起票）
+- 📣 報告・問い合わせ（スクラムかんばんへの自動起票）
 - 🔑 APIキー管理（設定画面）
 - 🔔 通知機能（BETA・不安定）
 - ⚙️ 設定（機能表示、外観テーマ、メニュー並び替え等）
@@ -79,7 +79,7 @@
 - Firebase Firestore
 - Firebase Cloud Messaging（BETA・不安定）
 - Firebase Cloud Functions（Node.js 24）
-- GitHub REST API（不具合報告 Issue 起票）
+- スクラムかんばん API（報告・問い合わせの起票）
 
 ### アーキテクチャ
 
@@ -123,7 +123,7 @@ users/{userId}                         # 同期データ本体ドキュメント
   └─ syncSnapshots/{snapshotId}        # スナップショット履歴（最大5件）
 routines/{userId}/...                  # 通知用データ
 accounts/{accountId}                   # アカウント管理用データ
-bugReports/{reportId}                  # 不具合報告データ（GitHub Issue 連携）
+bugReports/{reportId}                  # 報告・問い合わせデータ（スクラムかんばん連携）
 apiKeys/{keyHash}                      # AI エージェント API キー
 ```
 
