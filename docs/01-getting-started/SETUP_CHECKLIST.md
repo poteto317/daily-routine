@@ -74,20 +74,36 @@ Firebase Console で匿名認証を有効化：
 
 ### 4. Firestore セキュリティルールの設定
 
-ルールの正本はリポジトリ直下の [`firestore.rules`](../../firestore.rules) です。Firebase Console に手で転記せず、次でデプロイしてください。
-
-```bash
-firebase deploy --only firestore:rules
-```
+ルールの正本はリポジトリ直下の [`firestore.rules`](../../firestore.rules) です。既存環境を移行するときは、最初に [アカウント管理者の棚卸しと初期設定](#アカウント管理者の棚卸しと初期設定) を実施してください。
 
 概要（詳細・条件はファイルを参照）:
 
 - `users/{userId}` と配下の `syncSnapshots` — 本人のみ読み書き
 - `routines/{userId}` — 本人のみ読み書き
-- `accounts/{accountId}` — 本人の読み取り・作成、管理者は全レコードの読み書き
+- `accounts/{accountId}` — 本人の読み取りと一般権限での作成、確認済み管理者による一覧・編集・削除
+- `accountAdminGrants/{accountId}` — 権限の正本。確認済み管理者が他人の権限を付与・剥奪でき、本人は自分の権限を確認できる
 - `bugReports/{reportId}` — 本人の作成・読み取りのみ（`status: pending` 固定）。更新・削除は Cloud Functions のみ
 - `apiKeys/{keyHash}` — 本人の作成・読み取り・削除。更新は禁止
 - その他は拒否
+
+#### アカウント管理者の棚卸しと初期設定
+
+新規環境で管理者が未設定の場合は、`firebase deploy --only firestore:rules --project <対象プロジェクトID>` で最初にルールを公開できる。管理画面を使うときに、初回登録済みの承認済み UID へ手順 2 の方法で権限を付与する。
+
+既存環境を移行するときは、次の順で進める。
+
+1. 対象の本番 Firebase プロジェクト ID を、稼働アプリの Firebase 設定で確認する。Firebase Console の Firestore で `accounts` の `isAdmin == true` と `accountAdminGrants` を調べる。Authentication のユーザー UID と照合し、承認済みの管理者、一般利用者、対象不明を記録する。旧フラグは過去の初回登録で自動設定されるため、管理者の承認記録としては使えない。
+2. 対象環境、作業権限、承認済みの管理者 UID が確認できたら、IAM 権限を持つ運用者が承認済み UID の `accountAdminGrants/{uid}` にフィールドなしのドキュメントを作成する。用意した UID に対応する有効な Authentication ユーザーと `accounts/{uid}` が存在することを確認する。Admin SDK では対象プロジェクトを明示した上で `db.collection("accountAdminGrants").doc(uid).create({})` を使う。既存の付与がある場合は承認記録と照合する。
+3. 初期付与の再取得を確認してから、`firebase deploy --only firestore:rules --project <対象プロジェクトID>` を実行し、新しいアプリを公開する。新ルールを公開すると旧アプリの管理者表示と操作が一致しない期間が生じるため、続けてアプリを公開する。
+4. 承認済み管理者がアカウント管理を開けることと、一般利用者が自分の情報でログインできることを確認する。以後の付与は管理者画面で編集先の UID を Authentication と照合して行う。
+
+既存環境で対象プロジェクト、棚卸しの読み取り権限、承認済み UID を確認できない場合は初期付与と公開を保留する。管理者画面で新規ユーザー発行後にプロフィール保存が失敗した場合は一覧で保存結果を確認する。プロフィールがなければ、発行済みユーザーが初回ログインで一般プロフィールを作成し、確認済み管理者が必要に応じて権限を付与する。
+
+ルールを公開する前に、Java 21 以降と Firebase CLI がある環境で次を実行する。ルートと `firebase-functions` の依存パッケージが必要。
+
+```bash
+firebase emulators:exec --project demo-daily-routine --only auth,firestore 'node --test tools/firestore/account-admin.rules.test.mjs'
+```
 
 ### 5. Firebase プランの確認
 
@@ -134,9 +150,10 @@ cd firebase-functions
 npm run build
 cd ..
 firebase deploy --only functions
-firebase deploy --only firestore:rules
 firebase deploy --only storage
 ```
+
+Firestore ルールは [アカウント管理者の棚卸しと初期設定](#アカウント管理者の棚卸しと初期設定) に従って公開してください。
 
 デプロイ後、Functions の URL が表示されるので、`.env.local` の `NEXT_PUBLIC_FUNCTIONS_URL` を更新してください。
 

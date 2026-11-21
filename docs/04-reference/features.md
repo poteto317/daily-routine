@@ -841,7 +841,6 @@ Progressive Web App (PWA) 技術と Workbox による Service Worker を活用�
 - アカウント一覧表示
 - 新規アカウント作成
 - アカウント情報の編集
-  - メールアドレス
   - 表示名
   - 管理者権限の付与/剥奪
 - アカウント削除
@@ -852,7 +851,8 @@ Progressive Web App (PWA) 技術と Workbox による Service Worker を活用�
 
 **注意事項**
 
-- 新規アカウント作成後は再ログインが必要
+- 新規アカウント作成後も操作中の管理者セッションを保持
+- 権限を付与する前に、編集画面の UID を Firebase Authentication で確認
 - アカウント削除はデータベース記録のみ削除
 
 **技術仕様**
@@ -1040,7 +1040,8 @@ users/{userId}                         # ユーザー同期データ本体ドキ
 
 routines/{userId}/...                  # ルーティン通知用データ（Cloud Functions / FCM が参照）
 
-accounts/{accountId}                   # アカウント管理用コレクション（管理者 isAdmin レコード）
+accounts/{accountId}                   # アカウントプロフィール
+accountAdminGrants/{accountId}         # 管理者権限を付与した UID
 
 bugReports/{reportId}                  # 報告・問い合わせ（Cloud Functions がかんばんに起票）
   ├─ uid: string

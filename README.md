@@ -192,8 +192,9 @@ cd firebase-functions
 npm run build
 cd ..
 firebase deploy --only functions
-firebase deploy --only firestore:rules
 ```
+
+Firestore ルールは [アカウント管理者の棚卸しと初期設定](docs/01-getting-started/SETUP_CHECKLIST.md#アカウント管理者の棚卸しと初期設定) に従って公開してください。
 
 ## ディレクトリ構成
 
