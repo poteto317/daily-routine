@@ -36,19 +36,16 @@ const account = {
 };
 
 describe("accountAdminPageActionHandlers", () => {
-  let alertSpy: jest.SpyInstance;
   let consoleErrorSpy: jest.SpyInstance;
 
   beforeEach(() => {
     jest.clearAllMocks();
-    alertSpy = jest.spyOn(window, "alert").mockImplementation(() => undefined);
     consoleErrorSpy = jest
       .spyOn(console, "error")
       .mockImplementation(() => undefined);
   });
 
   afterEach(() => {
-    alertSpy.mockRestore();
     consoleErrorSpy.mockRestore();
   });
 
@@ -59,15 +56,12 @@ describe("accountAdminPageActionHandlers", () => {
   });
 
   it("アカウント作成後に一覧を再読込する", async () => {
-    (executeCreateAccount as jest.Mock).mockResolvedValue({
-      needsPageReload: false,
-    });
+    jest.mocked(executeCreateAccount).mockResolvedValue(undefined);
     const loadAccounts = jest.fn().mockResolvedValue(undefined);
     const resetCreateForm = jest.fn();
     const setActionLoading = jest.fn();
 
     await submitCreateAccount({
-      currentUid: "admin",
       createDisplayName: "ユーザー",
       createEmail: "user@example.com",
       createIsAdmin: true,
@@ -86,28 +80,29 @@ describe("accountAdminPageActionHandlers", () => {
     expect(setActionLoading).toHaveBeenLastCalledWith(false);
   });
 
-  it("リロードが必要な作成を処理する", async () => {
-    (executeCreateAccount as jest.Mock).mockResolvedValue({
-      needsPageReload: true,
-    });
-    const reloadPage = jest.fn();
+  it("作成に失敗した場合はフォームを保持しエラーを表示する", async () => {
+    jest
+      .mocked(executeCreateAccount)
+      .mockRejectedValue(new Error("save failed"));
+    const resetCreateForm = jest.fn();
+    const loadAccounts = jest.fn();
+    const reportError = jest.fn();
 
     await submitCreateAccount({
-      currentUid: "admin",
       createDisplayName: "ユーザー",
       createEmail: "user@example.com",
       createIsAdmin: true,
       createPassword: "secret123",
-      loadAccounts: jest.fn(),
-      reportError: jest.fn(),
+      loadAccounts,
+      reportError,
       clearError: jest.fn(),
-      resetCreateForm: jest.fn(),
+      resetCreateForm,
       setActionLoading: jest.fn(),
-      reloadPage,
     });
 
-    expect(window.alert).toHaveBeenCalled();
-    expect(reloadPage).toHaveBeenCalled();
+    expect(reportError).toHaveBeenCalledWith("作成失敗");
+    expect(resetCreateForm).not.toHaveBeenCalled();
+    expect(loadAccounts).not.toHaveBeenCalled();
   });
 
   it("更新と削除を処理する", async () => {
@@ -198,7 +193,6 @@ describe("accountAdminPageActionHandlers", () => {
 
   it("入力不足の作成や編集対象なし更新を何もしない", async () => {
     await submitCreateAccount({
-      currentUid: "admin",
       createDisplayName: "",
       createEmail: "",
       createIsAdmin: false,

@@ -26,8 +26,7 @@
     ]
   },
   "messages": {
-    "confirmDeleteAccountTemplate": "アカウント \"{email}\" を削除してもよろしいですか？\n\nこの操作は取り消せません。",
-    "alertAccountCreated": "✅ アカウントが作成されました。\n\nセキュリティ上の理由により、新しいアカウントでログインし直してください。"
+    "confirmDeleteAccountTemplate": "アカウント \"{email}\" を削除してもよろしいですか？\n\nこの操作は取り消せません。"
   },
   "table": {
     "titlePrefix": "登録済みアカウント（",

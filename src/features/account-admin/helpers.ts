@@ -35,7 +35,6 @@ export const ACCOUNT_ADMIN_LEGEND_TEXT = {
 export const ACCOUNT_ADMIN_MESSAGES = {
   confirmDeleteAccount: (email: string) =>
     texts.messages.confirmDeleteAccountTemplate.replace("{email}", email),
-  alertAccountCreated: texts.messages.alertAccountCreated,
 } as const;
 
 // Create Form

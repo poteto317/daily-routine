@@ -128,7 +128,7 @@ describe("account-admin hooks", () => {
     const resetCreateForm = jest.fn();
     const cancelEdit = jest.fn();
 
-    mockExecuteCreateAccount.mockResolvedValue({ needsPageReload: false });
+    mockExecuteCreateAccount.mockResolvedValue(undefined);
     mockExecuteUpdateAccount.mockResolvedValue(undefined);
     mockExecuteDeleteAccount.mockResolvedValue(undefined);
 

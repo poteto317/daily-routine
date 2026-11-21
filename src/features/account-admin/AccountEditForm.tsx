@@ -40,6 +40,9 @@ export const AccountEditForm = ({
       <h2 className="text-lg font-bold text-gray-800 mb-4">
         {ACCOUNT_EDIT_TITLE_PREFIX} {editingAccount.email}
       </h2>
+      <p className="mb-4 wrap-anywhere text-xs text-gray-600">
+        UID {editingAccount.uid}
+      </p>
       <form onSubmit={onSubmit} className="space-y-4">
         <input
           type="text"

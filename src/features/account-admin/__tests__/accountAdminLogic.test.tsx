@@ -122,9 +122,8 @@ describe("account-admin logic", () => {
         createPassword: "secret123",
         createDisplayName: "",
         createIsAdmin: true,
-        hasExistingUser: true,
       }),
-    ).resolves.toEqual({ needsPageReload: true });
+    ).resolves.toBeUndefined();
 
     expect(mockCreateAuthUser).toHaveBeenCalledWith(
       "new@example.com",
@@ -132,7 +131,6 @@ describe("account-admin logic", () => {
     );
     expect(mockCreateAccountRecord).toHaveBeenCalledWith("u9", {
       email: "new@example.com",
-      password: "secret123",
       displayName: "new",
       isAdmin: true,
     });
@@ -152,6 +150,17 @@ describe("account-admin logic", () => {
 
     await executeDeleteAccount({ account, currentUid: "u1" });
     expect(mockDeleteAccountRecord).toHaveBeenCalledTimes(1);
+  });
+
+  it("表示名だけを変更した場合は権限変更を送らない", async () => {
+    await executeUpdateAccount({
+      editingAccount: account,
+      editDisplayName: "更新後",
+      editIsAdmin: account.isAdmin,
+    });
+    expect(mockUpdateAccountRecord).toHaveBeenCalledWith("u1", {
+      displayName: "更新後",
+    });
   });
 
   it("create error messageをコード別に返す", () => {

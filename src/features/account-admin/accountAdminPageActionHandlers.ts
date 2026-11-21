@@ -7,7 +7,6 @@ import {
 import { ACCOUNT_ADMIN_ERROR_MESSAGES } from "./helpers";
 import {
   blockSelfAccountDeletion,
-  completeCreateAccount,
   confirmAccountDeletion,
   runAccountAdminAction,
 } from "./accountAdminPageActionWorkflowActions";
@@ -21,14 +20,11 @@ type SharedActionArgs = {
 };
 
 type CreateActionArgs = SharedActionArgs & {
-  currentUid?: string;
   createEmail: string;
   createPassword: string;
   createDisplayName: string;
   createIsAdmin: boolean;
   resetCreateForm: () => void;
-  alertFn?: (message?: string) => void;
-  reloadPage?: () => void;
 };
 
 type UpdateActionArgs = SharedActionArgs & {
@@ -52,7 +48,6 @@ export const canCreateAccount = (
 };
 
 export const submitCreateAccount = async ({
-  currentUid,
   createDisplayName,
   createEmail,
   createIsAdmin,
@@ -62,8 +57,6 @@ export const submitCreateAccount = async ({
   clearError,
   resetCreateForm,
   setActionLoading,
-  alertFn = window.alert,
-  reloadPage = () => window.location.reload(),
 }: CreateActionArgs): Promise<void> => {
   if (!canCreateAccount(createEmail, createPassword)) {
     return;
@@ -73,21 +66,15 @@ export const submitCreateAccount = async ({
     clearError,
     setActionLoading,
     execute: async () => {
-      const { needsPageReload } = await executeCreateAccount({
+      await executeCreateAccount({
         createDisplayName,
         createEmail,
         createIsAdmin,
         createPassword,
-        hasExistingUser: !!currentUid,
       });
 
-      await completeCreateAccount({
-        needsPageReload,
-        resetCreateForm,
-        loadAccounts,
-        alertFn,
-        reloadPage,
-      });
+      resetCreateForm();
+      await loadAccounts();
     },
     onError: (error) => {
       reportError(getCreateAccountErrorMessage(error));

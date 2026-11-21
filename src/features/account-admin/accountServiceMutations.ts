@@ -1,29 +1,16 @@
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { deleteDoc, setDoc, updateDoc } from "firebase/firestore";
-import { getAuthInstance } from "@/lib/firebase";
+import { runTransaction, writeBatch } from "firebase/firestore";
+import { getFirestoreInstance } from "@/lib/firebase";
 import { type CreateAccountInput, type UpdateAccountInput } from "./types";
 import {
   createTimestamp,
+  getAccountAdminGrantRef,
   getAccountDocRef,
   TEST_USER_EMAIL,
 } from "./accountServiceCore";
-import { getAccount } from "./accountServiceQueries";
 import {
   getDefaultDisplayNameFromEmail,
   ANONYMOUS_USER_DEFAULT_DISPLAY_NAME,
 } from "./accountUtils";
-
-export const createAuthUser = async (
-  email: string,
-  password: string,
-): Promise<{ uid: string }> => {
-  const credential = await createUserWithEmailAndPassword(
-    getAuthInstance(),
-    email,
-    password,
-  );
-  return credential.user;
-};
 
 export const createAccountRecord = async (
   uid: string,
@@ -31,15 +18,20 @@ export const createAccountRecord = async (
 ): Promise<void> => {
   const now = createTimestamp();
 
-  await setDoc(getAccountDocRef(uid), {
+  const batch = writeBatch(getFirestoreInstance());
+  batch.set(getAccountDocRef(uid), {
     email: input.email,
     displayName: input.displayName,
-    isAdmin: input.isAdmin,
+    isAdmin: false,
     isAnonymous: false,
     isTestUser: false,
     createdAt: now,
     updatedAt: now,
   });
+  if (input.isAdmin) {
+    batch.set(getAccountAdminGrantRef(uid), {});
+  }
+  await batch.commit();
 };
 
 export const updateAccountRecord = async (
@@ -53,15 +45,21 @@ export const updateAccountRecord = async (
   if (input.displayName !== undefined) {
     updateData.displayName = input.displayName;
   }
-  if (input.isAdmin !== undefined) {
-    updateData.isAdmin = input.isAdmin;
+  const batch = writeBatch(getFirestoreInstance());
+  batch.update(getAccountDocRef(uid), updateData);
+  if (input.isAdmin === true) {
+    batch.set(getAccountAdminGrantRef(uid), {});
+  } else if (input.isAdmin === false) {
+    batch.delete(getAccountAdminGrantRef(uid));
   }
-
-  await updateDoc(getAccountDocRef(uid), updateData);
+  await batch.commit();
 };
 
 export const deleteAccountRecord = async (uid: string): Promise<void> => {
-  await deleteDoc(getAccountDocRef(uid));
+  const batch = writeBatch(getFirestoreInstance());
+  batch.delete(getAccountAdminGrantRef(uid));
+  batch.delete(getAccountDocRef(uid));
+  await batch.commit();
 };
 
 export const ensureAccountRecord = async (
@@ -69,21 +67,22 @@ export const ensureAccountRecord = async (
   email: string | null,
   isAnonymous: boolean,
 ): Promise<void> => {
-  const existing = await getAccount(uid);
-  if (existing) return;
-
+  const ref = getAccountDocRef(uid);
   const now = createTimestamp();
-  const isTestUser = email === TEST_USER_EMAIL;
 
-  await setDoc(getAccountDocRef(uid), {
-    email: email || "",
-    displayName:
-      (email && getDefaultDisplayNameFromEmail(email)) ||
-      (isAnonymous ? ANONYMOUS_USER_DEFAULT_DISPLAY_NAME : ""),
-    isAdmin: !isAnonymous && !isTestUser,
-    isAnonymous,
-    isTestUser,
-    createdAt: now,
-    updatedAt: now,
+  await runTransaction(getFirestoreInstance(), async (transaction) => {
+    if ((await transaction.get(ref)).exists()) return;
+
+    transaction.set(ref, {
+      email: email ?? "",
+      displayName:
+        (email && getDefaultDisplayNameFromEmail(email)) ||
+        (isAnonymous ? ANONYMOUS_USER_DEFAULT_DISPLAY_NAME : ""),
+      isAdmin: false,
+      isAnonymous,
+      isTestUser: email === TEST_USER_EMAIL,
+      createdAt: now,
+      updatedAt: now,
+    });
   });
 };
