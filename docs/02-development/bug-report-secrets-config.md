@@ -31,11 +31,13 @@ Secret や起票先を変更したら `firebase deploy --only functions:onBugRep
 
 ## 添付画像を使う環境の設定
 
-Firebase コンソールの Storage で既定バケットを有効にし、`NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET` に設定します。Cloud Functions の実行サービスアカウントには、同じプロジェクトの既定バケットの読み書き権限が必要です。新規環境ではルールもデプロイします。
+Firebase コンソールの Storage で既定バケットを有効にし、`NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET` に設定します。Cloud Functions の実行サービスアカウントには、同じプロジェクトの既定バケットの読み書き権限が必要です。Storage のルールをデプロイします。
 
 ```bash
-firebase deploy --only storage,firestore:rules
+firebase deploy --only storage
 ```
+
+Firestore ルールの公開は、[セットアップチェックリスト](../01-getting-started/SETUP_CHECKLIST.md#アカウント管理者の棚卸しと初期設定)の対象環境に合う手順に従ってください。
 
 かんばん本文に埋め込まれる添付画像の URL にはダウンロード用トークンが含まれます。URL を知っている人は、スクラムかんばんの閲覧権限に関わらず、その画像を開けます。
 
