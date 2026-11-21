@@ -15,7 +15,6 @@ export interface Account {
 
 export interface CreateAccountInput {
   email: string;
-  password: string;
   displayName: string;
   isAdmin: boolean;
 }

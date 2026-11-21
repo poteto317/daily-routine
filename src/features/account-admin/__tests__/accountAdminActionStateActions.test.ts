@@ -36,7 +36,6 @@ describe("accountAdminActionStateActions", () => {
     const preventDefault = jest.fn();
 
     await createAccountAdminCreateHandler({
-      currentUid: "u2",
       createEmail: "user@example.com",
       createPassword: "secret123",
       createDisplayName: "ユーザー",
@@ -51,7 +50,6 @@ describe("accountAdminActionStateActions", () => {
     expect(preventDefault).toHaveBeenCalled();
     expect(submitCreateAccount).toHaveBeenCalledWith(
       expect.objectContaining({
-        currentUid: "u2",
         createEmail: "user@example.com",
       }),
     );

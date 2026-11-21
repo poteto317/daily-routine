@@ -39,7 +39,6 @@ export const useAccountAdminActionHandlers = ({
   setActionLoading,
 }: ActionDeps) => {
   const handleCreate = useAccountAdminCreateHandler({
-    currentUid,
     createDisplayName,
     createEmail,
     createIsAdmin,

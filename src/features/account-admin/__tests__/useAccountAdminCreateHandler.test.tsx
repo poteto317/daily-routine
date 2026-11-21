@@ -17,7 +17,6 @@ describe("useAccountAdminCreateHandler", () => {
 
     expect(createAccountAdminCreateHandler).toHaveBeenCalledWith(
       expect.objectContaining({
-        currentUid: params.currentUid,
         createEmail: params.createEmail,
         resetCreateForm: params.resetCreateForm,
       }),
@@ -27,7 +26,6 @@ describe("useAccountAdminCreateHandler", () => {
 });
 
 const createParams = () => ({
-  currentUid: "u2",
   loadAccounts: jest.fn().mockResolvedValue(undefined),
   reportError: jest.fn(),
   clearError: jest.fn(),

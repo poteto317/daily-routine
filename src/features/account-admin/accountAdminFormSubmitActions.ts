@@ -13,7 +13,6 @@ type SharedActionDeps = {
 };
 
 type CreateHandlerArgs = SharedActionDeps & {
-  currentUid?: string;
   createEmail: string;
   createPassword: string;
   createDisplayName: string;
@@ -29,7 +28,6 @@ type UpdateHandlerArgs = SharedActionDeps & {
 };
 
 export const createAccountAdminCreateHandler = ({
-  currentUid,
   createDisplayName,
   createEmail,
   createIsAdmin,
@@ -43,7 +41,6 @@ export const createAccountAdminCreateHandler = ({
   return async (event: FormEvent) => {
     event.preventDefault();
     await submitCreateAccount({
-      currentUid,
       createDisplayName,
       createEmail,
       createIsAdmin,

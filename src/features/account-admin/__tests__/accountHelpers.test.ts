@@ -114,8 +114,5 @@ describe("account-admin helpers", () => {
     expect(
       ACCOUNT_ADMIN_MESSAGES.confirmDeleteAccount("a@example.com"),
     ).toContain('"a@example.com"');
-    expect(ACCOUNT_ADMIN_MESSAGES.alertAccountCreated).toContain(
-      "アカウントが作成されました",
-    );
   });
 });

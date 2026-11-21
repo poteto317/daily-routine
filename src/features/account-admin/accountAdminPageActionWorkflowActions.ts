@@ -13,14 +13,6 @@ type RunAccountAdminActionArgs = {
   logError?: (error: unknown) => void;
 };
 
-type CompleteCreateAccountArgs = {
-  needsPageReload: boolean;
-  resetCreateForm: () => void;
-  loadAccounts: () => Promise<void>;
-  alertFn: (message?: string) => void;
-  reloadPage: () => void;
-};
-
 type DeleteSelfGuardArgs = {
   account: Account;
   currentUid?: string;
@@ -49,24 +41,6 @@ export const runAccountAdminAction = async ({
   } finally {
     setActionLoading(false);
   }
-};
-
-export const completeCreateAccount = async ({
-  needsPageReload,
-  resetCreateForm,
-  loadAccounts,
-  alertFn,
-  reloadPage,
-}: CompleteCreateAccountArgs): Promise<void> => {
-  resetCreateForm();
-
-  if (needsPageReload) {
-    alertFn(ACCOUNT_ADMIN_MESSAGES.alertAccountCreated);
-    reloadPage();
-    return;
-  }
-
-  await loadAccounts();
 };
 
 export const blockSelfAccountDeletion = ({

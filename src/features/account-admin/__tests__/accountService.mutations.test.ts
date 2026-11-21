@@ -1,86 +1,106 @@
-import "./accountService.test.setup";
+import {
+  mockBatch,
+  mockRunTransaction,
+  mockTransaction,
+  setupAccountServiceMocks,
+} from "./accountService.test.setup";
 import {
   createAccountRecord,
   deleteAccountRecord,
   ensureAccountRecord,
   updateAccountRecord,
 } from "../accountService";
-import {
-  mockDeleteDoc,
-  mockGetDoc,
-  mockSetDoc,
-  mockUpdateDoc,
-  setupAccountServiceMocks,
-} from "./accountService.test.setup";
 
 describe("accountService mutations", () => {
-  beforeEach(() => {
-    setupAccountServiceMocks();
-  });
+  beforeEach(setupAccountServiceMocks);
 
-  it("createAccountRecordは初期フィールドで保存する", async () => {
-    const nowSpy = jest
-      .spyOn(Date.prototype, "toISOString")
-      .mockReturnValue("2026-02-12T10:00:00.000Z");
-
+  it("プロフィールと管理者権限を一括で保存する", async () => {
     await createAccountRecord("u1", {
       email: "a@example.com",
-      password: "dummy",
       displayName: "alice",
       isAdmin: true,
     });
 
-    expect(mockSetDoc).toHaveBeenCalledWith(
+    expect(mockBatch.set).toHaveBeenCalledWith(
       { path: "accounts/u1" },
       expect.objectContaining({
         email: "a@example.com",
         displayName: "alice",
-        isAdmin: true,
+        isAdmin: false,
         isAnonymous: false,
         isTestUser: false,
       }),
     );
-    nowSpy.mockRestore();
+    expect(mockBatch.set).toHaveBeenCalledWith(
+      { path: "accountAdminGrants/u1" },
+      {},
+    );
+    expect(mockBatch.commit).toHaveBeenCalledTimes(1);
   });
 
-  it("updateAccountRecordは指定項目のみ更新する", async () => {
-    const nowSpy = jest
-      .spyOn(Date.prototype, "toISOString")
-      .mockReturnValue("2026-02-12T11:00:00.000Z");
-
+  it("表示名変更では権限を書き込まない", async () => {
     await updateAccountRecord("u1", { displayName: "new-name" });
 
-    expect(mockUpdateDoc).toHaveBeenCalledWith(
+    expect(mockBatch.update).toHaveBeenCalledWith(
       { path: "accounts/u1" },
-      { updatedAt: "2026-02-12T11:00:00.000Z", displayName: "new-name" },
+      { updatedAt: expect.any(String), displayName: "new-name" },
     );
-    nowSpy.mockRestore();
+    expect(mockBatch.set).not.toHaveBeenCalled();
+    expect(mockBatch.delete).not.toHaveBeenCalled();
+    expect(mockBatch.commit).toHaveBeenCalledTimes(1);
   });
 
-  it("deleteAccountRecordは対象アカウントを削除する", async () => {
+  it("剥奪では対象の権限を削除する", async () => {
+    await updateAccountRecord("u1", { isAdmin: false });
+    expect(mockBatch.delete).toHaveBeenCalledWith({
+      path: "accountAdminGrants/u1",
+    });
+    expect(mockBatch.commit).toHaveBeenCalledTimes(1);
+  });
+
+  it("対象プロフィールと権限を一括で削除する", async () => {
     await deleteAccountRecord("u9");
-    expect(mockDeleteDoc).toHaveBeenCalledWith({ path: "accounts/u1" });
+    expect(mockBatch.delete).toHaveBeenCalledWith({ path: "accounts/u9" });
+    expect(mockBatch.delete).toHaveBeenCalledWith({
+      path: "accountAdminGrants/u9",
+    });
+    expect(mockBatch.commit).toHaveBeenCalledTimes(1);
   });
 
-  it("ensureAccountRecordは既存アカウントがある場合は作成しない", async () => {
-    mockGetDoc.mockResolvedValue({
-      exists: () => true,
-      id: "u1",
-      data: () => ({ email: "a@example.com" }),
-    } as never);
+  it("再試行時は先に作成されたプロフィールに書き込まない", async () => {
+    mockTransaction.get
+      .mockResolvedValueOnce({ exists: () => false })
+      .mockResolvedValueOnce({ exists: () => true });
+    mockRunTransaction.mockImplementationOnce(async (_db, run) => {
+      await run(mockTransaction as never);
+      return run(mockTransaction as never);
+    });
 
     await ensureAccountRecord("u1", "a@example.com", false);
-    expect(mockSetDoc).not.toHaveBeenCalled();
+
+    expect(mockTransaction.get).toHaveBeenCalledTimes(2);
+    expect(mockTransaction.set).toHaveBeenCalledTimes(1);
   });
 
-  it("ensureAccountRecordはテストユーザーを非管理者で作成する", async () => {
-    mockGetDoc.mockResolvedValue({ exists: () => false } as never);
+  it.each([
+    ["a@example.com", false, false],
+    ["test@example.com", false, true],
+    [null, true, false],
+  ])(
+    "本人登録は一般権限を保存する（%s）",
+    async (email, anonymous, testUser) => {
+      mockTransaction.get.mockResolvedValue({ exists: () => false });
 
-    await ensureAccountRecord("u2", "test@example.com", false);
+      await ensureAccountRecord("u2", email, anonymous);
 
-    expect(mockSetDoc).toHaveBeenCalledWith(
-      { path: "accounts/u1" },
-      expect.objectContaining({ isAdmin: false, isTestUser: true }),
-    );
-  });
+      expect(mockTransaction.set).toHaveBeenCalledWith(
+        { path: "accounts/u2" },
+        expect.objectContaining({
+          isAdmin: false,
+          isAnonymous: anonymous,
+          isTestUser: testUser,
+        }),
+      );
+    },
+  );
 });

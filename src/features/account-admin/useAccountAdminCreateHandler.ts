@@ -2,7 +2,6 @@ import type { Dispatch, SetStateAction } from "react";
 import { createAccountAdminCreateHandler } from "./accountAdminFormSubmitActions";
 
 type UseAccountAdminCreateHandlerArgs = {
-  currentUid?: string;
   createEmail: string;
   createPassword: string;
   createDisplayName: string;
@@ -15,7 +14,6 @@ type UseAccountAdminCreateHandlerArgs = {
 };
 
 export const useAccountAdminCreateHandler = ({
-  currentUid,
   createDisplayName,
   createEmail,
   createIsAdmin,
@@ -27,7 +25,6 @@ export const useAccountAdminCreateHandler = ({
   setActionLoading,
 }: UseAccountAdminCreateHandlerArgs) => {
   return createAccountAdminCreateHandler({
-    currentUid,
     createDisplayName,
     createEmail,
     createIsAdmin,

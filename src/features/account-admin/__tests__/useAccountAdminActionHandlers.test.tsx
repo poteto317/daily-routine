@@ -64,7 +64,6 @@ describe("useAccountAdminActionHandlers", () => {
 
     expect(useAccountAdminCreateHandler).toHaveBeenCalledWith(
       expect.objectContaining({
-        currentUid: params.currentUid,
         createEmail: params.createEmail,
         setActionLoading: params.setActionLoading,
       }),

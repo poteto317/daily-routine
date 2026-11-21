@@ -23,6 +23,11 @@
       ]
     }
   ],
+  "emulators": {
+    "auth": { "host": "127.0.0.1", "port": 19099 },
+    "firestore": { "host": "127.0.0.1", "port": 18080 },
+    "ui": { "enabled": false }
+  },
   "hosting": {
     "public": ".next",
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"]

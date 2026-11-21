@@ -15,8 +15,11 @@ export const executeUpdateAccount = async ({
 }: UpdateParams): Promise<void> => {
   const updateData: UpdateAccountInput = {
     displayName: editDisplayName,
-    isAdmin: editIsAdmin,
   };
+
+  if (editIsAdmin !== editingAccount.isAdmin) {
+    updateData.isAdmin = editIsAdmin;
+  }
 
   await updateAccountRecord(editingAccount.uid, updateData);
 };

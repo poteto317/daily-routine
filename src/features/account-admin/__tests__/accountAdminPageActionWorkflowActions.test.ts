@@ -1,6 +1,5 @@
 import {
   blockSelfAccountDeletion,
-  completeCreateAccount,
   confirmAccountDeletion,
   runAccountAdminAction,
 } from "../accountAdminPageActionWorkflowActions";
@@ -52,37 +51,6 @@ describe("accountAdminPageActionWorkflowActions", () => {
 
     expect(onError).toHaveBeenCalledWith(error);
     expect(logError).toHaveBeenCalledWith(error);
-  });
-
-  it("作成完了後に reload 必要有無で処理を切り替える", async () => {
-    const resetCreateForm = jest.fn();
-    const loadAccounts = jest.fn().mockResolvedValue(undefined);
-    const alertFn = jest.fn();
-    const reloadPage = jest.fn();
-
-    await completeCreateAccount({
-      needsPageReload: false,
-      resetCreateForm,
-      loadAccounts,
-      alertFn,
-      reloadPage,
-    });
-
-    expect(resetCreateForm).toHaveBeenCalledTimes(1);
-    expect(loadAccounts).toHaveBeenCalledTimes(1);
-    expect(alertFn).not.toHaveBeenCalled();
-    expect(reloadPage).not.toHaveBeenCalled();
-
-    await completeCreateAccount({
-      needsPageReload: true,
-      resetCreateForm,
-      loadAccounts,
-      alertFn,
-      reloadPage,
-    });
-
-    expect(alertFn).toHaveBeenCalled();
-    expect(reloadPage).toHaveBeenCalled();
   });
 
   it("自己削除ガードと削除確認を判定する", () => {
