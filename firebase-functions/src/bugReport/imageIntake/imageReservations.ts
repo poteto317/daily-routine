@@ -196,7 +196,11 @@ export async function releaseReservation(
       readUsage(await tx.get(usageRefs.global)),
       reserved,
     );
-    tx.set(usageRefs.user, user);
+    if (user.count === 0 && user.bytes === 0) {
+      tx.delete(usageRefs.user);
+    } else {
+      tx.set(usageRefs.user, user);
+    }
     tx.set(usageRefs.global, global);
     tx.delete(ref);
   });
