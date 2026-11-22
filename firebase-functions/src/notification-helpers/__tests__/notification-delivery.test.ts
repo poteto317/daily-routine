@@ -10,6 +10,7 @@ jest.mock("firebase-functions/logger", () => ({
   error: jest.fn(),
 }));
 
+import { createHash } from "node:crypto";
 import type { Firestore } from "../../adminSdk";
 import * as logger from "firebase-functions/logger";
 import type { Routine } from "../../types";
@@ -23,6 +24,7 @@ import { buildRoutineNotificationMessage } from "../notification-message";
 const TODAY = "2026-10-30";
 const TOKEN = "fcm-token-0123456789-abcdef";
 const NOTIFICATION_ID = `${TOKEN}_routine-1_${TODAY}`;
+const deliveryId = createHash("sha256").update(NOTIFICATION_ID).digest("hex");
 
 const routine: Routine = {
   id: "routine-1",
@@ -31,6 +33,9 @@ const routine: Routine = {
   daysOfWeek: [1, 2, 3, 4, 5],
   isActive: true,
 };
+
+const sdkError = () =>
+  new Error(`SDK failure: ${routine.title} ${NOTIFICATION_ID}`);
 
 /** notifications_sent コレクションだけを持つ Firestore のフェイク */
 const makeDb = (alreadySent = false) => {
@@ -94,6 +99,10 @@ describe("sendRoutineNotification", () => {
     );
     expect(doc).toHaveBeenCalledWith(NOTIFICATION_ID);
     expect(set).toHaveBeenCalledTimes(1);
+    expect(jest.mocked(logger.info).mock.calls).toEqual([
+      ["Notification sent", { deliveryId }],
+    ]);
+    expect(logger.error).not.toHaveBeenCalled();
   });
 
   it("本日送信済みなら送信も記録もせず false を返す", async () => {
@@ -104,50 +113,64 @@ describe("sendRoutineNotification", () => {
     expect(result).toBe(false);
     expect(mockSend).not.toHaveBeenCalled();
     expect(set).not.toHaveBeenCalled();
+    expect(jest.mocked(logger.info).mock.calls).toEqual([
+      ["Notification already sent", { deliveryId }],
+    ]);
+    expect(logger.error).not.toHaveBeenCalled();
   });
 
-  it("FCM の送信に失敗したら記録せず、エラーをログに残して false を返す", async () => {
-    const error = new Error("invalid token");
-    mockSend.mockRejectedValue(error);
-    const { db, set } = makeDb(false);
-
-    const result = await sendRoutineNotification(TOKEN, routine, db, TODAY);
-
-    expect(result).toBe(false);
-    expect(set).not.toHaveBeenCalled();
-    expect(logger.error).toHaveBeenCalledWith(
-      expect.stringContaining("朝の運動"),
-      error,
-    );
-  });
-
-  it("送信履歴の記録に失敗しても例外を投げず false を返す", async () => {
-    const { db, set } = makeDb(false);
-    set.mockRejectedValue(new Error("write failed"));
+  it("FCM の送信に失敗したら診断用 ID だけをログに残して false を返す", async () => {
+    mockSend.mockRejectedValue(sdkError());
+    const { db, set } = makeDb();
 
     await expect(
       sendRoutineNotification(TOKEN, routine, db, TODAY),
     ).resolves.toBe(false);
+
+    expect(set).not.toHaveBeenCalled();
+    expect(logger.info).not.toHaveBeenCalled();
+    expect(jest.mocked(logger.error).mock.calls).toEqual([
+      ["Notification send failed", { deliveryId }],
+    ]);
   });
 
-  // 送信済み確認は try の外にあるため、読み取りの失敗は呼び出し元へ伝わる
-  it("送信済みの確認に失敗したら送信せず例外を投げる", async () => {
-    const { db, get } = makeDb(false);
-    get.mockRejectedValue(new Error("read failed"));
+  it("履歴の記録に失敗したら送信とは異なる固定メッセージを残して false を返す", async () => {
+    const { db, set } = makeDb();
+    set.mockRejectedValue(sdkError());
 
     await expect(
       sendRoutineNotification(TOKEN, routine, db, TODAY),
-    ).rejects.toThrow("read failed");
-    expect(mockSend).not.toHaveBeenCalled();
+    ).resolves.toBe(false);
+
+    expect(mockSend).toHaveBeenCalledTimes(1);
+    expect(logger.info).not.toHaveBeenCalled();
+    expect(jest.mocked(logger.error).mock.calls).toEqual([
+      ["Notification history write failed", { deliveryId }],
+    ]);
   });
 
-  it("ログにはトークンの先頭 20 文字だけを出す", async () => {
-    const { db } = makeDb(false);
+  it("履歴の確認に失敗したら送信せず、上位に安全な例外だけを伝える", async () => {
+    const { db, get, set } = makeDb();
+    const original = sdkError();
+    get.mockRejectedValue(original);
 
-    await sendRoutineNotification(TOKEN, routine, db, TODAY);
+    const error = await sendRoutineNotification(
+      TOKEN,
+      routine,
+      db,
+      TODAY,
+    ).catch((reason: unknown) => reason);
 
-    const message = String(jest.mocked(logger.info).mock.calls[0][0]);
-    expect(message).toContain(TOKEN.substring(0, 20));
-    expect(message).not.toContain(TOKEN);
+    expect(error).toBeInstanceOf(Error);
+    expect(error).not.toBe(original);
+    expect(error).toHaveProperty(
+      "message",
+      `Notification history lookup failed (${deliveryId})`,
+    );
+    expect(error).not.toHaveProperty("cause");
+    expect(mockSend).not.toHaveBeenCalled();
+    expect(set).not.toHaveBeenCalled();
+    expect(logger.info).not.toHaveBeenCalled();
+    expect(logger.error).not.toHaveBeenCalled();
   });
 });
