@@ -68,7 +68,7 @@ BUG_REPORT_PROJECT_DAILY_LIMIT=50
    node scripts/revoke-report-image-links.mjs --project PROJECT_ID --bucket BUCKET
    ```
 
-4. 対象は `bugReports/` と `bugReportManagedImages/` の現行オブジェクトです。確認結果を照合後、メタデータ更新権限を持つ実行主体で同じコマンドに `--apply` を追加します。失敗件数があれば原因を調べて再実行し、再度の確認で更新対象が 0 件であることを確認します。ソフトデリートやバージョニングから画像を復元した場合は、古いトークンも戻り得ます。復元した画像を使う前に、再度この手順でトークンの除去を確認します。
+4. 対象は `bugReports/` と `bugReportManagedImages/` の現行オブジェクトです。確認結果を照合後、メタデータ更新権限を持つ実行主体で同じコマンドに `--apply` を追加します。失敗件数があれば原因を調べて再実行し、再度の確認で更新対象が 0 件であることを確認します。古い世代をトークン付きのまま元のパスに復元すると、その直後から旧リンクが再び有効になり得ます。失効を維持する場合は、トークンを含まないバックアップから復元するか、旧トークンを除いたコピーを作ってから元のパスに配置します。Cloud Storage のソフトデリートからの直接復元は旧メタデータを引き継ぎます。復元後は旧 URL が拒否されることを再確認します。 [Cloud Storage の復元 API](https://docs.cloud.google.com/storage/docs/json_api/v1/objects/restore)
 5. 検証環境の合成画像で、移行後に旧 Firebase URL が拒否されること、Cloud Storage の同じオブジェクトに無署名でアクセスできないこと、新しい署名付き URL が期限内に開けて期限後に新たな取得を拒否することを確認します。既にダウンロードされた画像や過去に保存されたキャッシュは回収できません。
 
 Claude の停止・再開やログの調査方法は [Cloud Functions の運用手順](../../firebase-functions/README.md) を参照してください。
