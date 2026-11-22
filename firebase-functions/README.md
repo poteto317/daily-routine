@@ -113,6 +113,8 @@ firebase-functions/
 
 ### 既存環境の切り替え
 
+Firebase CLI は `--only` で関数を絞っても、同じコードベースの設定を解析します。通常のソースで公開する場合は、[Secret と起票先の設定](#4-secret-と起票先の設定) を事前に確認してください。対象外の Secret を変更せずに公開する必要がある場合は、検証済みソースを別の作業ディレクトリにコピーし、`syncRoutines` と `checkNotifications` だけをエクスポートする一時パッケージを作ります。初期化・グローバル設定と関数の実装は既存のエントリポイントと揃え、既存のコードベース、関数名、リージョンを使って以下の順に公開します。
+
 1. Firebase プロジェクトと `NEXT_PUBLIC_FUNCTIONS_URL` が同じ環境を指すことを確認する。
 2. `firebase deploy --only functions:syncRoutines --project <対象プロジェクトID>` を実行し、認証がないリクエストを保存せずに拒否することを確認する。
 3. `firebase deploy --only functions:checkNotifications --project <対象プロジェクトID>` を実行し、更新版の Web アプリを公開する。
