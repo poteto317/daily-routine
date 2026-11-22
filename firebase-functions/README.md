@@ -27,7 +27,6 @@ firebase-functions/
     ├── firebase-init.ts       # Firebase Admin SDK の初期化
     ├── constants.ts           # 共通定数（祝日の曜日値、users / notifications_sent のコレクション名）
     ├── types.ts               # 共通型定義（通知で使う Routine）
-    ├── token-log.ts           # FCM トークンをログ用に短縮する（先頭 20 文字だけ残す）
     ├── agentApi/              # AI エージェント向け REST API
     │   ├── agentApi.ts        # HTTPS エンドポイント定義
     │   ├── handler.ts         # 認証 → ルーティング → 操作の実行 → 応答をつなぐ
