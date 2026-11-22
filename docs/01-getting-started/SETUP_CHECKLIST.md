@@ -143,6 +143,8 @@ firebase functions:secrets:set ANTHROPIC_API_KEY
 # SCRUM_BOARD_ORIGIN と SCRUM_BOARD_PROJECT_ID（起票先を変更する場合）
 ```
 
+既存環境の通知同期を更新する場合は、[既存環境の切り替え](../../firebase-functions/README.md#既存環境の切り替え) の順に公開してください。
+
 ビルドとデプロイ：
 
 ```bash

@@ -1038,7 +1038,7 @@ users/{userId}                         # ユーザー同期データ本体ドキ
   ├─ updatedAt: Timestamp
   └─ syncSnapshots/{snapshotId}        # 同期スナップショット履歴（最大5件、復元用）
 
-routines/{userId}/...                  # ルーティン通知用データ（Cloud Functions / FCM が参照）
+notificationSubscriptions/{tokenHash}  # 確認済み UID にひも付く端末別通知設定
 
 accounts/{accountId}                   # アカウントプロフィール
 accountAdminGrants/{accountId}         # 管理者権限を付与した UID

@@ -103,21 +103,22 @@ firebase-functions/
 
 ### 3. 通知系関数 (`syncRoutines`, `checkNotifications`, `cleanupNotifications`)
 
-- **`syncRoutines`**: クライアントの通知用ルーティンデータを受け取り、Firestore に保存する（詳細は `src/sync-helpers/`）
-  - 応答: 成功 `200 { success: true, routinesCount }`、`token` が空でない文字列でない・`routines` が配列でない場合 `400`、POST 以外 `405`、保存失敗 `500`。`OPTIONS`（プリフライト）は `204`
-  - CORS は全オリジンからの `POST`（`Content-Type` ヘッダー）を許可する。認証は行わない
-  - `users` コレクションには、同期データ（`users/{uid}`、agentApi やアプリの同期が使う）と、この通知用ドキュメント（`users/{FCM トークン}`）が混在する
-- **`checkNotifications`**: Cloud Scheduler により毎分起動（スケジュールは JST、リージョン asia-northeast1）。`users` の全ドキュメントを読み、`fcmToken` とルーティンを持つものについて次の条件をすべて満たすルーティンを FCM で通知する
-  - 曜日: 祝日なら `daysOfWeek` に `7`（祝日）を含むもの、祝日でなければ今日の曜日（0=日〜6=土）を含むもの。旧形式の `holidayMode`（`only` / `include`）は `daysOfWeek` に読み替える
-  - 時刻: `startTime`（HH:mm）に `notificationMinutes`（開始の何分後か。未設定は 0）を足した時・分が現在の時・分と一致する
-  - 重複防止: `notifications_sent/{FCM トークン}_{ルーティン ID}_{日付}` が既にあれば送らない。送信に成功したら記録する
-  - 祝日判定（`date-utils`）は固定祝日・ハッピーマンデー・春分/秋分の日（概算式）に対応する。振替休日と国民の休日は判定しない
-  - 時・分・曜日は `Date` のローカル時刻（関数の実行環境のタイムゾーン）で求める。`onSchedule` の `timeZone` は起動スケジュールにだけ効く。重複防止に使う日付は UTC の日付になる
+- **`syncRoutines`**: `Authorization: Bearer <Firebase ID トークン>` を検証し、確認した UID の端末登録だけを更新する。FCM トークンのハッシュをキーに、`notificationSubscriptions` に所有者と配信設定を保存する。保存済みの所有者が異なるときは 403 を返す。
+- **`checkNotifications`**: 毎分起動し、通知専用コレクションを読んで時刻・曜日が合うルーティンを通知する。個人同期を管理する `users/{uid}` は読まない。
 - **`cleanupNotifications`**: 毎日午前0時 (JST) に実行され、`sentAt` が現在から 1 日より前の `notifications_sent` ドキュメントを 1 つのバッチでまとめて削除する
 
 ---
 
 ## 開発とデプロイ
+
+### 既存環境の切り替え
+
+1. Firebase プロジェクトと `NEXT_PUBLIC_FUNCTIONS_URL` が同じ環境を指すことを確認する。
+2. `firebase deploy --only functions:syncRoutines --project <対象プロジェクトID>` を実行し、認証がないリクエストを保存せずに拒否することを確認する。
+3. `firebase deploy --only functions:checkNotifications --project <対象プロジェクトID>` を実行し、更新版の Web アプリを公開する。
+4. 通知許可済みの利用者は更新版を開き、Firebase にログインすると、本人の保存済みルーティンを端末ごとに再登録する。起動時に送信できる保存データがない場合、アプリからルーティンを編集して再同期する。
+
+旧登録には確認済み UID がないため、専用コレクションへのコピーは行いません。切り替え中と端末の再登録まで、旧登録によるクラウド通知は停止します。旧レコードと個人の同期データはこの作業で削除しません。ロールバック時も認証なしの同期受付は公開しないでください。
 
 ### 1. 前提条件
 
@@ -135,7 +136,7 @@ npm run build
 
 ### 3. デプロイ
 
-先に「4. Secret と起票先の設定」の Secret 登録を行ってください。
+先に「4. Secret と起票先の設定」の Secret 登録を行ってください。既存環境の通知同期を更新する場合は、[既存環境の切り替え](#既存環境の切り替え) の順に公開してください。
 
 ```bash
 # ルートディレクトリから実行

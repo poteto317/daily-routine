@@ -187,6 +187,8 @@ vercel --prod
 
 ### Cloud Functions
 
+既存環境の通知同期を更新する場合は、[既存環境の切り替え](firebase-functions/README.md#既存環境の切り替え) の順に公開してください。
+
 ```bash
 cd firebase-functions
 npm run build
