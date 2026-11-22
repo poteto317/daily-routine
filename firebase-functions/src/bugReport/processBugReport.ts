@@ -18,7 +18,7 @@ export type { ProcessableBugReport };
 export type ProcessBugReportResult = "skipped" | "issued" | "error";
 
 export interface ProcessBugReportDeps {
-  /** status を pending → processing へアトミックに更新し、成功なら true を返す */
+  /** 処理枠と処理ロックを確保し、成功なら true を返す */
   claimProcessing: () => Promise<boolean>;
   /** Issue を作成し結果を返す */
   createIssue: (content: IssueContent) => Promise<IssueResult>;
@@ -89,10 +89,10 @@ const resolveDraft = async (
  * 1. 冪等性チェック（shouldSkipProcessing）: 終端状態（status が "issued" / "error"）
  *    または issueNumber 既存ならスキップ。"pending" および "processing" は処理対象として
  *    通過し、ロック取得の最終判定は claimProcessing に委ねる。
- * 2. claimProcessing でトランザクション的にロックを取得（pending → processing、または
+ * 2. claimProcessing で処理枠とロックを取得（pending → processing、または
  *    stale な processing の再取得）。
  *    - true: ロック取得成功。処理続行。
- *    - false: 他の実行が fresh な processing 中、または競合状態。スキップ。
+ *    - false: 有効なロック、終端状態、または処理枠不足のためスキップ。
  *    - 例外: Cloud Functions にリトライを委ねる。
  * 3. 画像の解決（任意）: resolveImages があれば添付画像を検証・取得する。
  * 4. 整形（任意）: draftIssue があれば Issue のタイトルと本文を整形する。
@@ -114,8 +114,7 @@ export const processBugReport = async (
   const withTimestamp = (fields: Record<string, unknown>) =>
     deps.now ? { ...fields, updatedAt: deps.now() } : fields;
 
-  // ロック取得（pending または stale な processing の再取得）。
-  // false の場合は他の実行が fresh な processing 中のためスキップ。
+  // 外部処理へ進む前に、処理枠とロックを確保する。
   const claimed = await deps.claimProcessing();
   if (!claimed) {
     return "skipped";

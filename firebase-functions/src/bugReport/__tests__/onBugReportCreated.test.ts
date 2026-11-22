@@ -20,6 +20,7 @@ jest.mock("../storageImageStore", () => ({
   createStorageImageStore: jest.fn(() => mockCreatedStore),
 }));
 
+import { createFakeFirestore } from "../../agentApi/__tests__/fakeFirestore";
 import { onBugReportCreated } from "../onBugReportCreated";
 import { handleBugReport } from "../handleBugReport";
 import { PROCESSING_LOCK_TIMEOUT_MS } from "../constants";
@@ -69,6 +70,8 @@ describe("onBugReportCreated のトリガー設定", () => {
   describe("Secret とパラメータの受け渡し", () => {
     const ENV_KEYS = [
       "ANTHROPIC_API_KEY",
+      "BUG_REPORT_PROJECT_DAILY_LIMIT",
+      "BUG_REPORT_USER_DAILY_LIMIT",
       "SCRUM_BOARD_CREDENTIALS",
       "SCRUM_BOARD_ORIGIN",
       "SCRUM_BOARD_PROJECT_ID",
@@ -110,5 +113,32 @@ describe("onBugReportCreated のトリガー設定", () => {
       expect(createStorageImageStore).toHaveBeenCalledWith(mockBucket);
       expect(store).toBe(mockCreatedStore);
     });
+
+    it.each(["BUG_REPORT_USER_DAILY_LIMIT", "BUG_REPORT_PROJECT_DAILY_LIMIT"])(
+      "enforces %s through the trigger's claim callback",
+      async (key) => {
+        process.env.ANTHROPIC_API_KEY = "test-key";
+        process.env.SCRUM_BOARD_CREDENTIALS = "test-credentials";
+        process.env.SCRUM_BOARD_PROJECT_ID = "27";
+        process.env.BUG_REPORT_PROJECT_DAILY_LIMIT = "20";
+        process.env.BUG_REPORT_USER_DAILY_LIMIT = "2";
+        process.env[key] = "0";
+        const { db, get } = createFakeFirestore({
+          "bugReports/r1": { status: "pending", uid: "test-user" },
+        });
+        const fn = onBugReportCreated(db) as unknown as {
+          run(event: unknown): Promise<void>;
+        };
+
+        await fn.run({ data: {}, params: { reportId: "r1" } });
+
+        const [, , deps] = (handleBugReport as jest.Mock).mock.calls[0];
+        await expect(deps.claimProcessing()).resolves.toBe(false);
+        expect(get("bugReports/r1")).toMatchObject({
+          status: "error",
+          errorCode: "quota_exceeded",
+        });
+      },
+    );
   });
 });
