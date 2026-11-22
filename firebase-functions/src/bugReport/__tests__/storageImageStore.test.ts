@@ -1,5 +1,6 @@
 import {
   type BucketLike,
+  ensurePrivateReportImage,
   createStorageImageStore,
   type FileLike,
 } from "../storageImageStore";
@@ -10,21 +11,25 @@ function createFakeBucket(): {
   getMetadata: jest.Mock;
   download: jest.Mock;
   setMetadata: jest.Mock;
+  getSignedUrl: jest.Mock;
 } {
   const getMetadata = jest.fn();
   const download = jest.fn();
   const setMetadata = jest.fn().mockResolvedValue([{}]);
+  const getSignedUrl = jest
+    .fn()
+    .mockResolvedValue(["https://example.test/signed-image"]);
   const fileObj: FileLike = {
     getMetadata,
     download,
     setMetadata,
+    getSignedUrl,
   };
   const fileMock = jest.fn<FileLike, [string]>().mockReturnValue(fileObj);
   const bucket: BucketLike = {
-    name: "bucket-1",
     file: fileMock,
   };
-  return { bucket, fileMock, getMetadata, download, setMetadata };
+  return { bucket, fileMock, getMetadata, download, setMetadata, getSignedUrl };
 }
 
 describe("storageImageStore", () => {
@@ -78,74 +83,102 @@ describe("storageImageStore", () => {
   });
 
   describe("getDownloadUrl", () => {
-    it("firebaseStorageDownloadTokens が既にある場合は先頭トークンを使い setMetadata を呼ばない", async () => {
-      const { bucket, getMetadata, setMetadata } = createFakeBucket();
-      getMetadata.mockResolvedValueOnce([
-        {
-          metadata: {
-            firebaseStorageDownloadTokens: "tok-a,tok-b",
-          },
-        },
-      ]);
-      const store = createStorageImageStore(bucket, () => "unused-token");
+    const path = "bugReports/u1/r1/a.png";
+    const now = 1_800_000_000_000;
+    const cacheControl = "private, no-store, max-age=0";
+    const generation = "1784213261164653";
+    const secureMetadata = { cacheControl, generation, metageneration: "2" };
+    const legacyMetadata = {
+      generation,
+      metageneration: "1",
+      metadata: {
+        firebaseStorageDownloadTokens: "fixture-a,fixture-b",
+        other: "keep",
+      },
+    };
 
-      const url = await store.getDownloadUrl("bugReports/u1/r1/a.png");
-      expect(url).toBe(
-        "https://firebasestorage.googleapis.com/v0/b/bucket-1/o/bugReports%2Fu1%2Fr1%2Fa.png?alt=media&token=tok-a",
-      );
-      expect(setMetadata).not.toHaveBeenCalled();
-    });
-
-    it("トークンが無い（metadata 未設定または空文字）場合は generateToken で生成して setMetadata を呼び URL を返す", async () => {
-      const { bucket, getMetadata, setMetadata } = createFakeBucket();
+    it("既存トークンを条件付きで削除し、再確認後、同じ世代に15分の読み取り署名を発行する", async () => {
+      const { bucket, getMetadata, setMetadata, getSignedUrl } =
+        createFakeBucket();
       getMetadata
-        .mockResolvedValueOnce([{}])
-        .mockResolvedValueOnce([
-          { metadata: { firebaseStorageDownloadTokens: "  " } },
-        ]);
-      let counter = 0;
-      const store = createStorageImageStore(bucket, () => {
-        counter += 1;
-        return `gen-token-${counter}`;
-      });
-
-      const url1 = await store.getDownloadUrl("bugReports/u1/r1/a.png");
-      expect(url1).toBe(
-        "https://firebasestorage.googleapis.com/v0/b/bucket-1/o/bugReports%2Fu1%2Fr1%2Fa.png?alt=media&token=gen-token-1",
-      );
-      expect(setMetadata).toHaveBeenNthCalledWith(1, {
-        metadata: { firebaseStorageDownloadTokens: "gen-token-1" },
-      });
-
-      const url2 = await store.getDownloadUrl("bugReports/u1/r1/b.png");
-      expect(url2).toBe(
-        "https://firebasestorage.googleapis.com/v0/b/bucket-1/o/bugReports%2Fu1%2Fr1%2Fb.png?alt=media&token=gen-token-2",
-      );
-      expect(setMetadata).toHaveBeenNthCalledWith(2, {
-        metadata: { firebaseStorageDownloadTokens: "gen-token-2" },
-      });
-    });
-
-    it("setMetadata が例外を投げた場合は例外を投げ URL を返さない", async () => {
-      const { bucket, getMetadata, setMetadata } = createFakeBucket();
-      getMetadata.mockResolvedValueOnce([{}]);
-      setMetadata.mockRejectedValueOnce(new Error("permission denied"));
-      const store = createStorageImageStore(bucket, () => "tok-1");
+        .mockResolvedValueOnce([legacyMetadata])
+        .mockResolvedValueOnce([secureMetadata]);
 
       await expect(
-        store.getDownloadUrl("bugReports/u1/r1/a.png"),
-      ).rejects.toThrow("permission denied");
+        createStorageImageStore(bucket, () => now).getDownloadUrl(path),
+      ).resolves.toBe("https://example.test/signed-image");
+
+      expect(setMetadata).toHaveBeenCalledWith(
+        { cacheControl, metadata: { firebaseStorageDownloadTokens: null } },
+        { ifGenerationMatch: generation, ifMetagenerationMatch: "1" },
+      );
+      expect(getMetadata).toHaveBeenCalledTimes(2);
+      expect(getSignedUrl).toHaveBeenCalledWith({
+        version: "v4",
+        action: "read",
+        expires: now + 15 * 60 * 1000,
+        queryParams: { generation },
+      });
+      expect(getSignedUrl.mock.invocationCallOrder[0]).toBeGreaterThan(
+        getMetadata.mock.invocationCallOrder[1],
+      );
     });
 
-    it("generateToken を省略したときの既定が UUID 形式のトークンを生成する", async () => {
-      const { bucket, getMetadata } = createFakeBucket();
-      getMetadata.mockResolvedValueOnce([{}]);
-      const store = createStorageImageStore(bucket);
+    it("保護済みオブジェクトのメタデータを書き換えない", async () => {
+      const { bucket, getMetadata, setMetadata, getSignedUrl } =
+        createFakeBucket();
+      getMetadata.mockResolvedValue([secureMetadata]);
 
-      const url = await store.getDownloadUrl("bugReports/u1/r1/a.png");
-      expect(url).toMatch(
-        /^https:\/\/firebasestorage\.googleapis\.com\/v0\/b\/bucket-1\/o\/bugReports%2Fu1%2Fr1%2Fa\.png\?alt=media&token=[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
-      );
+      await createStorageImageStore(bucket).getDownloadUrl(path);
+
+      expect(setMetadata).not.toHaveBeenCalled();
+      expect(getSignedUrl).toHaveBeenCalledTimes(1);
+    });
+
+    it.each([
+      [
+        "トークンが残る",
+        { ...secureMetadata, metadata: legacyMetadata.metadata },
+      ],
+      [
+        "キャッシュ設定が反映されない",
+        { ...secureMetadata, cacheControl: "public" },
+      ],
+      ["世代が変わる", { ...secureMetadata, generation: "9999" }],
+    ])("%s 場合に署名を発行しない", async (_, finalMetadata) => {
+      const { bucket, getMetadata, getSignedUrl } = createFakeBucket();
+      getMetadata
+        .mockResolvedValueOnce([legacyMetadata])
+        .mockResolvedValueOnce([finalMetadata]);
+
+      await expect(
+        createStorageImageStore(bucket).getDownloadUrl(path),
+      ).rejects.toThrow();
+      expect(getSignedUrl).not.toHaveBeenCalled();
+    });
+
+    it("メタデータの更新失敗時に署名を発行しない", async () => {
+      const { bucket, getMetadata, setMetadata, getSignedUrl } =
+        createFakeBucket();
+      getMetadata.mockResolvedValueOnce([legacyMetadata]);
+      setMetadata.mockRejectedValueOnce(new Error("fixture update failed"));
+
+      await expect(
+        createStorageImageStore(bucket).getDownloadUrl(path),
+      ).rejects.toThrow();
+      expect(getSignedUrl).not.toHaveBeenCalled();
+    });
+
+    it("移行の確認モードはメタデータを変更しない", async () => {
+      const { bucket, getMetadata, setMetadata, getSignedUrl } =
+        createFakeBucket();
+      getMetadata.mockResolvedValueOnce([legacyMetadata]);
+
+      await expect(
+        ensurePrivateReportImage(bucket.file(path), false),
+      ).resolves.toEqual({ generation, needsUpdate: true });
+      expect(setMetadata).not.toHaveBeenCalled();
+      expect(getSignedUrl).not.toHaveBeenCalled();
     });
   });
 });

@@ -2,6 +2,7 @@ import {
   SCRUM_BOARD_DESCRIPTION_MAX_LENGTH,
   SCRUM_BOARD_TITLE_MAX_LENGTH,
 } from "./constants";
+import { REPORT_IMAGE_URL_TTL_MINUTES } from "./imageFormats";
 
 /**
  * かんばんアイテムの本文整形に必要な不具合報告データ（firebase 非依存の構造型）。
@@ -101,6 +102,12 @@ const buildScreenshotLines = (imageSection?: IssueImageSection): string[] => {
   }
 
   const lines: string[] = ["## スクリーンショット", ""];
+  if (images.length > 0) {
+    lines.push(
+      `添付リンクは発行から ${REPORT_IMAGE_URL_TTL_MINUTES} 分で失効します。`,
+      "",
+    );
+  }
   images.forEach((img, index) => {
     lines.push(
       `[スクリーンショット ${index + 1}](${sanitizeMention(img.url)})`,

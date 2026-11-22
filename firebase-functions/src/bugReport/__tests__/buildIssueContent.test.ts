@@ -418,6 +418,7 @@ describe("buildIssueContent — スクリーンショットセクション (Issu
     );
 
     expect(Array.from(content.body).length).toBeLessThanOrEqual(10_000);
+    expect(content.body).toContain("添付リンクは発行から 15 分で失効します。");
     expect(content.body).toContain(`[スクリーンショット 1](${url})`);
     expect(content.body).toContain(`報告者 uid: ${baseReport.uid}`);
   });

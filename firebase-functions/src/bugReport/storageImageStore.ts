@@ -1,9 +1,13 @@
-import { randomUUID } from "node:crypto";
-
+import { REPORT_IMAGE_URL_TTL_MINUTES } from "./imageFormats";
 import type { ImageStore } from "./resolveReportImages";
+
+const CACHE_CONTROL = "private, no-store, max-age=0";
 
 export interface FileMetadataLike {
   readonly size?: unknown;
+  readonly generation?: string | number;
+  readonly metageneration?: string | number;
+  readonly cacheControl?: string;
   readonly metadata?: {
     readonly firebaseStorageDownloadTokens?: unknown;
   };
@@ -12,11 +16,22 @@ export interface FileMetadataLike {
 export interface FileLike {
   getMetadata(): Promise<readonly [FileMetadataLike, ...unknown[]]>;
   download(): Promise<readonly [Buffer, ...unknown[]]>;
-  setMetadata(metadata: object): Promise<unknown>;
+  setMetadata(
+    metadata: {
+      cacheControl: string;
+      metadata: { firebaseStorageDownloadTokens: null };
+    },
+    conditions: { ifGenerationMatch: string; ifMetagenerationMatch: string },
+  ): Promise<unknown>;
+  getSignedUrl(options: {
+    version: "v4";
+    action: "read";
+    expires: number;
+    queryParams: { generation: string };
+  }): Promise<readonly [string, ...unknown[]]>;
 }
 
 export interface BucketLike {
-  readonly name: string;
   file(path: string): FileLike;
 }
 
@@ -31,20 +46,54 @@ function parseNonNegativeSize(raw: unknown): number | null {
   return null;
 }
 
-function extractFirstToken(raw: unknown): string | null {
-  if (typeof raw !== "string") {
-    return null;
+function versionNumber(raw: string | number | undefined): string {
+  const value = String(raw);
+  if (
+    !/^[1-9][0-9]*$/.test(value) ||
+    (typeof raw === "number" && !Number.isSafeInteger(raw))
+  ) {
+    throw new Error("Invalid report image version metadata");
   }
-  const first = raw
-    .split(",")
-    .map((part) => part.trim())
-    .find((part) => part.length > 0);
-  return first ?? null;
+  return value;
+}
+
+const needsProtection = (meta: FileMetadataLike): boolean =>
+  meta.cacheControl !== CACHE_CONTROL ||
+  meta.metadata?.firebaseStorageDownloadTokens != null;
+
+/** 旧トークンをすべて削除し、同じオブジェクトの保護状態を確認する。 */
+export async function ensurePrivateReportImage(
+  file: Pick<FileLike, "getMetadata" | "setMetadata">,
+  apply: boolean,
+): Promise<{ generation: string; needsUpdate: boolean }> {
+  const [meta] = await file.getMetadata();
+  const generation = versionNumber(meta.generation);
+  const needsUpdate = needsProtection(meta);
+  if (!apply || !needsUpdate) return { generation, needsUpdate };
+
+  await file.setMetadata(
+    {
+      cacheControl: CACHE_CONTROL,
+      metadata: { firebaseStorageDownloadTokens: null },
+    },
+    {
+      ifGenerationMatch: generation,
+      ifMetagenerationMatch: versionNumber(meta.metageneration),
+    },
+  );
+  const [updated] = await file.getMetadata();
+  if (
+    versionNumber(updated.generation) !== generation ||
+    needsProtection(updated)
+  ) {
+    throw new Error("Report image access protection could not be verified");
+  }
+  return { generation, needsUpdate };
 }
 
 export function createStorageImageStore(
   bucket: BucketLike,
-  generateToken: () => string = randomUUID,
+  now: () => number = Date.now,
 ): ImageStore {
   return {
     async getSize(path: string): Promise<number | null> {
@@ -59,22 +108,14 @@ export function createStorageImageStore(
 
     async getDownloadUrl(path: string): Promise<string> {
       const file = bucket.file(path);
-      const [meta] = await file.getMetadata();
-      let token = extractFirstToken(
-        meta?.metadata?.firebaseStorageDownloadTokens,
-      );
-
-      if (!token) {
-        token = generateToken();
-        await file.setMetadata({
-          metadata: {
-            firebaseStorageDownloadTokens: token,
-          },
-        });
-      }
-
-      const encodedPath = encodeURIComponent(path);
-      return `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/${encodedPath}?alt=media&token=${token}`;
+      const { generation } = await ensurePrivateReportImage(file, true);
+      const [url] = await file.getSignedUrl({
+        version: "v4",
+        action: "read",
+        expires: now() + REPORT_IMAGE_URL_TTL_MINUTES * 60 * 1000,
+        queryParams: { generation },
+      });
+      return url;
     },
   };
 }
