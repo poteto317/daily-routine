@@ -169,8 +169,27 @@ describe("image reservations", () => {
     const { user, global } = imageUsageRefs(db, "user");
     expect(remove).toHaveBeenCalledTimes(2);
     expect(get(reservationPath)).toBeUndefined();
-    expect(get(user.path)).toEqual({ count: 0, bytes: 0 });
+    expect(get(user.path)).toBeUndefined();
     expect(get(global.path)).toEqual({ count: 0, bytes: 0 });
+  });
+
+  it("retains the usage record while another reservation is charged", async () => {
+    const { db, get } = createFakeFirestore({});
+    await reserveOne(db);
+    await reserveImages(
+      db,
+      "user",
+      "other-report",
+      [{ bytes: png, contentType: "image/png" }],
+      now + 1,
+    );
+
+    await reclaimExpiredImages(db, "report", jest.fn(), () => pendingEnd);
+
+    expect(get(imageUsageRefs(db, "user").user.path)).toEqual({
+      count: 1,
+      bytes: png.length,
+    });
   });
 
   it("ignores legacy paths and pins orphan deletion to the event generation", async () => {
