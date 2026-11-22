@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { render, screen } from "@testing-library/react";
 import { AuthGuard } from "../AuthGuard";
 import { useAuth } from "@/features/auth";
@@ -70,5 +71,29 @@ describe("AuthGuard", () => {
 
     expect(screen.getByText("保護コンテンツ")).toBeInTheDocument();
     expect(screen.queryByTestId("login-page")).not.toBeInTheDocument();
+  });
+
+  it("UID 切り替え時に保護された画面の状態を作り直す", () => {
+    let mounts = 0;
+    const Protected = () => {
+      const [value] = useState(() => ++mounts);
+      return <span>{value}</span>;
+    };
+    const content = (
+      <AuthGuard>
+        <Protected />
+      </AuthGuard>
+    );
+    mockUseAuth.mockReturnValue(createMockAuth({ user: { uid: "a" } }));
+    const view = render(content);
+    expect(screen.getByText("1")).toBeInTheDocument();
+
+    mockUseAuth.mockReturnValue(createMockAuth({ user: { uid: "b" } }));
+    view.rerender(
+      <AuthGuard>
+        <Protected />
+      </AuthGuard>,
+    );
+    expect(screen.getByText("2")).toBeInTheDocument();
   });
 });

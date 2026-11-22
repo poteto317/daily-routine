@@ -33,6 +33,7 @@ jest.mock("@/features/settings/storage", () => ({
 }));
 
 jest.mock("@/lib/storage/core", () => ({
+  getCurrentUserId: () => "routine-owner",
   setLocalDataUpdatedAt: jest.fn(),
 }));
 
@@ -167,6 +168,7 @@ describe("useRoutines", () => {
     expect(saveAndSyncRoutines).toHaveBeenCalledWith(
       mockRoutines,
       process.env.NEXT_PUBLIC_FUNCTIONS_URL,
+      "routine-owner",
     );
   });
 

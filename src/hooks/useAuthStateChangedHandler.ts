@@ -16,6 +16,8 @@ import {
   ensureAccountRecord,
 } from "@/features/account-admin/accountService";
 import { runDateKeyMigrationOnce } from "@/lib/dateKeyMigration";
+import { syncRoutinesToFirebase } from "@/features/routine/helpersSync";
+import { getNotificationBootstrapRoutines } from "@/features/routine/storageRoutinesCore";
 import { createAuthStateChangedHandler } from "./authSyncHandlers";
 
 export type UseAuthSyncParams = {
@@ -43,7 +45,13 @@ export const useAuthStateChangedHandler = ({
   }, []);
 
   return useCallback(
-    (user: User | null) =>
+    (user: User | null) => {
+      const functionsUrl = process.env.NEXT_PUBLIC_FUNCTIONS_URL;
+      const routines =
+        user && functionsUrl
+          ? getNotificationBootstrapRoutines(user.uid)
+          : null;
+
       createAuthStateChangedHandler({
         setUser,
         setIsAdmin,
@@ -56,7 +64,12 @@ export const useAuthStateChangedHandler = ({
         ensureAccountRecord,
         checkIsAdmin,
         isMounted,
-      })(user),
+      })(user);
+
+      if (user && routines) {
+        void syncRoutinesToFirebase(routines, functionsUrl, user.uid);
+      }
+    },
     [isMounted, setIsAdmin, setIsAdminLoading, setLoading, setUser],
   );
 };

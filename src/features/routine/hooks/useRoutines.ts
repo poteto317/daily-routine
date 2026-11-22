@@ -24,7 +24,7 @@ import {
   getSettings,
   SETTINGS_UPDATED_EVENT,
 } from "@/features/settings/storage";
-import { setLocalDataUpdatedAt } from "@/lib/storage/core";
+import { getCurrentUserId, setLocalDataUpdatedAt } from "@/lib/storage/core";
 
 const BG_REFRESH_MIN_MS = 0;
 const BG_REFRESH_MAX_MS = 60 * 60 * 1000; // 60分
@@ -61,6 +61,7 @@ export const useRoutines = (): UseRoutinesResult => {
     () => initRoutines,
   );
   const [isLoaded] = useState(true);
+  const [ownerUid] = useState(getCurrentUserId);
   const [backgroundRefreshIntervalMs, setBackgroundRefreshIntervalMs] =
     useState(readBackgroundRefreshIntervalMs);
 
@@ -110,9 +111,16 @@ export const useRoutines = (): UseRoutinesResult => {
   /**
    * ルーティンを保存してFirebaseに同期する共通処理
    */
-  const saveAndSync = useCallback((updated: Routine[]) => {
-    saveAndSyncRoutines(updated, process.env.NEXT_PUBLIC_FUNCTIONS_URL);
-  }, []);
+  const saveAndSync = useCallback(
+    (updated: Routine[]) => {
+      saveAndSyncRoutines(
+        updated,
+        process.env.NEXT_PUBLIC_FUNCTIONS_URL,
+        ownerUid,
+      );
+    },
+    [ownerUid],
+  );
 
   const mutations = useRoutineMutations(setRoutines, saveAndSync, routinesRef);
   const queries = useRoutineQueries(routinesState);

@@ -1,4 +1,5 @@
 import type { Routine } from "@/types/routine";
+import { setCurrentUserId } from "@/lib/storage/core";
 import { saveRoutines } from "@/features/routine/storage";
 import {
   createNotificationSchedules,
@@ -42,6 +43,7 @@ describe("routinePersistenceSync", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    setCurrentUserId("routine-owner");
   });
 
   it("syncRoutinesはFirebase同期ヘルパーを呼ぶ", async () => {
@@ -50,6 +52,7 @@ describe("routinePersistenceSync", () => {
     expect(syncRoutinesToFirebase).toHaveBeenCalledWith(
       routines,
       "https://functions.example.com",
+      "routine-owner",
     );
   });
 
@@ -63,6 +66,7 @@ describe("routinePersistenceSync", () => {
     expect(syncRoutinesToFirebase).toHaveBeenCalledWith(
       routines,
       "https://functions.example.com",
+      "routine-owner",
     );
   });
 
@@ -84,6 +88,16 @@ describe("routinePersistenceSync", () => {
 
     expect(() => saveAndSyncRoutines(routines)).not.toThrow();
     await Promise.resolve();
+  });
+
+  it("旧画面のコールバックは別ユーザーのローカルに保存しない", () => {
+    saveAndSyncRoutines(
+      routines,
+      "https://functions.example.com",
+      "previous-owner",
+    );
+    expect(saveRoutines).not.toHaveBeenCalled();
+    expect(syncRoutinesToFirebase).not.toHaveBeenCalled();
   });
 
   it("updateNotificationSchedulesは通知スケジュール作成と送信を行う", async () => {
