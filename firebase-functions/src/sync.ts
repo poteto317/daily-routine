@@ -3,7 +3,7 @@ import { onRequest } from "firebase-functions/https";
 import { handleSyncRoutinesRequest } from "./sync-helpers";
 
 /**
- * ルーティンと FCM トークンを Firestore に保存
+ * 本人確認したルーティンの通知設定を Firestore に保存
  * エンドポイント: POST /syncRoutines
  */
 export const syncRoutines = (db: Firestore) =>

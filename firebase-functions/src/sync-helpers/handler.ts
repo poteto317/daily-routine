@@ -1,61 +1,59 @@
 import type { Firestore } from "../adminSdk";
-import { type Request } from "firebase-functions/https";
-import { type Response } from "express";
+import type { Request } from "firebase-functions/https";
+import type { Response } from "express";
 import * as logger from "firebase-functions/logger";
+import { verifySyncUser } from "./authenticate";
 import { applyCorsHeaders, handlePreflightRequest } from "./cors";
-import {
-  isPostMethod,
-  isValidSyncRequest,
-  parseSyncRequestBody,
-} from "./request";
+import { isPostMethod, parseSyncRequestBody } from "./request";
 import {
   sendInternalServerError,
   sendInvalidSyncRequest,
   sendMethodNotAllowed,
+  sendSubscriptionOwnerMismatch,
   sendSyncSuccess,
+  sendUnauthorizedSyncRequest,
 } from "./response";
-import { saveUserData } from "./storage";
-import { abbreviateTokenForLog } from "../token-log";
+import { saveNotificationSubscription } from "./storage";
 
-/**
- * POST /syncRoutines の処理本体。
- * CORS → メソッド確認 → ボディ検証 → users/{FCM トークン} への保存、の順に処理する。
- */
+/** Firebase Auth で確認した本人の端末登録だけを更新する。 */
 export const handleSyncRoutinesRequest = async (
   req: Request,
   res: Response,
   db: Firestore,
 ): Promise<void> => {
   applyCorsHeaders(res);
-
-  if (handlePreflightRequest(req, res)) {
-    return;
-  }
+  if (handlePreflightRequest(req, res)) return;
 
   if (!isPostMethod(req.method)) {
     sendMethodNotAllowed(res);
     return;
   }
 
-  const requestBody = parseSyncRequestBody(req);
+  const ownerUid = await verifySyncUser(req.headers.authorization);
+  if (!ownerUid) {
+    sendUnauthorizedSyncRequest(res);
+    return;
+  }
 
-  if (!isValidSyncRequest(requestBody)) {
+  const parsed = parseSyncRequestBody(req);
+  if (!parsed.success) {
     sendInvalidSyncRequest(res);
     return;
   }
 
-  const { token, routines } = requestBody;
-
+  const { token, routines } = parsed.data;
   try {
-    await saveUserData(db, token, routines);
+    if (!(await saveNotificationSubscription(db, ownerUid, token, routines))) {
+      sendSubscriptionOwnerMismatch(res);
+      return;
+    }
 
-    logger.info(
-      `Synced ${routines.length} routines for token: ${abbreviateTokenForLog(token)}`,
-    );
-
+    logger.info("Notification routines synced", {
+      routinesCount: routines.length,
+    });
     sendSyncSuccess(res, routines.length);
-  } catch (error) {
-    logger.error("Sync error:", error);
+  } catch {
+    logger.error("Notification subscription sync failed");
     sendInternalServerError(res);
   }
 };

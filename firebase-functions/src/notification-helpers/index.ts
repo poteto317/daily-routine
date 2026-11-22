@@ -5,5 +5,5 @@ export { sendRoutineNotification } from "./notification-delivery";
 export { calculateNotificationTime } from "./notification-time";
 export { extractUserNotificationData } from "./user-data-extractor";
 export { processUserNotifications } from "./process-user-notifications";
-export { processAllUsersNotifications } from "./users-processor";
+export { processNotificationSubscriptions } from "./subscriptions-processor";
 export type { UserNotificationData } from "./types";

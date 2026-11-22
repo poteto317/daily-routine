@@ -21,7 +21,7 @@ jest.mock("../date-utils", () => ({
   getCurrentNotificationContext: jest.fn(),
 }));
 jest.mock("../notification-helpers", () => ({
-  processAllUsersNotifications: jest.fn().mockResolvedValue(undefined),
+  processNotificationSubscriptions: jest.fn().mockResolvedValue(undefined),
 }));
 jest.mock("../cleanup-helpers", () => ({
   getCleanupThresholdDate: jest.fn(),
@@ -38,7 +38,7 @@ import {
 } from "../cleanup-helpers";
 import { getCurrentNotificationContext } from "../date-utils";
 import type { NotificationContext } from "../date-utils";
-import { processAllUsersNotifications } from "../notification-helpers";
+import { processNotificationSubscriptions } from "../notification-helpers";
 import { checkNotifications } from "../notifications";
 import { cleanupNotifications } from "../notificationCleanup";
 import { syncRoutines } from "../sync";
@@ -82,12 +82,15 @@ describe("Cloud Functions のエントリーポイント", () => {
 
       await fn.handler();
 
-      expect(processAllUsersNotifications).toHaveBeenCalledWith(db, context);
+      expect(processNotificationSubscriptions).toHaveBeenCalledWith(
+        db,
+        context,
+      );
     });
 
     it("全ユーザーの処理の失敗はそのまま投げる（スケジューラーに失敗として残す）", async () => {
       jest
-        .mocked(processAllUsersNotifications)
+        .mocked(processNotificationSubscriptions)
         .mockRejectedValueOnce(new Error("users read failed"));
 
       await expect(fn.handler()).rejects.toThrow("users read failed");

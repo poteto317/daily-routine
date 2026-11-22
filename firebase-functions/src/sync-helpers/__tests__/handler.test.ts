@@ -1,114 +1,147 @@
-import type { Firestore } from "../../adminSdk";
 /** @jest-environment node */
+import type { Request } from "firebase-functions/https";
+import type { Response } from "express";
+import { getAuth } from "firebase-admin/auth";
+import * as logger from "firebase-functions/logger";
+import type { Firestore } from "../../adminSdk";
+import { handleSyncRoutinesRequest } from "../handler";
+import { saveNotificationSubscription } from "../storage";
+
+jest.mock("firebase-admin/auth", () => ({ getAuth: jest.fn() }));
 jest.mock("firebase-functions/logger", () => ({
   info: jest.fn(),
   error: jest.fn(),
 }));
-jest.mock("../storage", () => ({
-  saveUserData: jest.fn().mockResolvedValue(undefined),
-}));
+jest.mock("../storage", () => ({ saveNotificationSubscription: jest.fn() }));
 
-import type { Request } from "firebase-functions/https";
-import type { Response } from "express";
-import * as logger from "firebase-functions/logger";
-import { handleSyncRoutinesRequest } from "../handler";
-import { saveUserData } from "../storage";
-
-const mockedSaveUserData = jest.mocked(saveUserData);
+const verifyIdToken = jest.fn();
+const save = jest.mocked(saveNotificationSubscription);
 const db = {} as Firestore;
-const TOKEN = "fcm-token-0123456789-abcdef";
-
-const makeRes = () => {
-  const res = { set: jest.fn(), status: jest.fn(), send: jest.fn() };
-  res.status.mockReturnValue(res);
-  return res;
+const token = "device-registration";
+const routine = {
+  id: "r1",
+  title: "Routine",
+  startTime: "09:00",
+  daysOfWeek: [1],
+};
+const payload = {
+  token,
+  routines: [{ ...routine, description: "local-only" }],
 };
 
-const makeReq = (overrides: Partial<{ method: string; body: unknown }> = {}) =>
-  ({
+const run = async (
+  overrides: Partial<{
+    method: string;
+    body: unknown;
+    headers: Record<string, string>;
+  }> = {},
+) => {
+  const req = {
     method: "POST",
-    body: { token: TOKEN, routines: [{ id: "r1" }, { id: "r2" }] },
+    headers: { authorization: "Bearer test-id-token" },
+    body: payload,
     ...overrides,
-  }) as unknown as Request;
-
-const run = async (req: Request) => {
-  const res = makeRes();
+  } as Request;
+  const res = { set: jest.fn(), status: jest.fn(), send: jest.fn() };
+  res.status.mockReturnValue(res);
   await handleSyncRoutinesRequest(req, res as unknown as Response, db);
   return res;
 };
 
-describe("handleSyncRoutinesRequest", () => {
-  afterEach(() => {
-    jest.clearAllMocks();
+beforeEach(() => {
+  jest.resetAllMocks();
+  jest.mocked(getAuth).mockReturnValue({ verifyIdToken } as never);
+  verifyIdToken.mockResolvedValue({ uid: "verified-user" });
+  save.mockResolvedValue(true);
+});
+
+it("検証した UID と通知用項目だけを保存に渡す", async () => {
+  const res = await run();
+
+  expect(verifyIdToken).toHaveBeenCalledWith("test-id-token");
+  expect(save).toHaveBeenCalledWith(db, "verified-user", token, [routine]);
+  expect(res.status).toHaveBeenCalledWith(200);
+  expect(res.send).toHaveBeenCalledWith({ success: true, routinesCount: 1 });
+  expect(JSON.stringify(jest.mocked(logger.info).mock.calls)).not.toContain(
+    token,
+  );
+});
+
+it.each([{}, { authorization: "Basic unused" }, { authorization: "Bearer " }])(
+  "認証ヘッダーが無効な場合は保存しない",
+  async (headers) => {
+    const res = await run({ headers: headers as Record<string, string> });
+    expect(res.status).toHaveBeenCalledWith(401);
+    expect(verifyIdToken).not.toHaveBeenCalled();
+    expect(save).not.toHaveBeenCalled();
+  },
+);
+
+it("ID トークンを検証できなければ保存しない", async () => {
+  verifyIdToken.mockRejectedValue(new Error("token rejected"));
+  const res = await run();
+  expect(res.status).toHaveBeenCalledWith(401);
+  expect(save).not.toHaveBeenCalled();
+});
+
+it("別の所有者の登録を拒否する", async () => {
+  save.mockResolvedValue(false);
+  const res = await run();
+  expect(res.status).toHaveBeenCalledWith(403);
+  expect(res.send).toHaveBeenCalledWith({
+    error: "Forbidden",
+    code: "subscription-owner-mismatch",
   });
+});
 
-  it("正しいリクエストならユーザーデータを保存し、件数を返す", async () => {
-    const res = await run(makeReq());
+it("本文で所有者を指定したリクエストは拒否する", async () => {
+  const res = await run({ body: { ...payload, uid: "unverified-user" } });
+  expect(res.status).toHaveBeenCalledWith(400);
+  expect(save).not.toHaveBeenCalled();
+});
 
-    expect(mockedSaveUserData).toHaveBeenCalledWith(db, TOKEN, [
-      { id: "r1" },
-      { id: "r2" },
-    ]);
-    expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.send).toHaveBeenCalledWith({ success: true, routinesCount: 2 });
-  });
+it("認証なしの OPTIONS で Authorization を許可する", async () => {
+  const res = await run({ method: "OPTIONS", headers: {} });
+  expect(res.status).toHaveBeenCalledWith(204);
+  expect(res.set).toHaveBeenCalledWith(
+    "Access-Control-Allow-Headers",
+    "Content-Type, Authorization",
+  );
+  expect(verifyIdToken).not.toHaveBeenCalled();
+  expect(save).not.toHaveBeenCalled();
+});
 
-  it("ログにはトークンの先頭 20 文字だけを出す", async () => {
-    await run(makeReq());
+it("POST 以外は認証せずに 405 を返す", async () => {
+  const res = await run({ method: "GET", headers: {} });
+  expect(res.status).toHaveBeenCalledWith(405);
+  expect(res.set).toHaveBeenCalledWith("Access-Control-Allow-Origin", "*");
+  expect(verifyIdToken).not.toHaveBeenCalled();
+  expect(save).not.toHaveBeenCalled();
+});
 
-    const message = String(jest.mocked(logger.info).mock.calls[0][0]);
-    expect(message).toContain(TOKEN.substring(0, 20));
-    expect(message).not.toContain(TOKEN);
-  });
+it.each([
+  undefined,
+  null,
+  { token: "", routines: [] },
+  { token, routines: "invalid" },
+])("不正な本文を保存しない", async (body) => {
+  const res = await run({ body });
+  expect(res.status).toHaveBeenCalledWith(400);
+  expect(save).not.toHaveBeenCalled();
+});
 
-  it("405 を返す場合も CORS ヘッダーを付ける", async () => {
-    const res = await run(makeReq({ method: "GET" }));
-    expect(res.set).toHaveBeenCalledWith("Access-Control-Allow-Origin", "*");
-  });
+it("空配列を本人の登録に保存する", async () => {
+  const res = await run({ body: { token, routines: [] } });
+  expect(save).toHaveBeenCalledWith(db, "verified-user", token, []);
+  expect(res.send).toHaveBeenCalledWith({ success: true, routinesCount: 0 });
+});
 
-  it("OPTIONS は 204 を返し、保存しない", async () => {
-    const res = await run(makeReq({ method: "OPTIONS" }));
-
-    expect(res.status).toHaveBeenCalledWith(204);
-    expect(mockedSaveUserData).not.toHaveBeenCalled();
-  });
-
-  it("POST 以外は 405 を返し、保存しない", async () => {
-    const res = await run(makeReq({ method: "GET" }));
-
-    expect(res.status).toHaveBeenCalledWith(405);
-    expect(mockedSaveUserData).not.toHaveBeenCalled();
-  });
-
-  it.each([
-    ["ボディが無い", undefined],
-    ["token が空文字", { token: "", routines: [] }],
-    ["routines が配列でない", { token: TOKEN, routines: "x" }],
-  ])("%s なら 400 を返し、保存しない", async (_label, body) => {
-    const res = await run(makeReq({ body }));
-
-    expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.send).toHaveBeenCalledWith({
-      error: "Missing token or routines",
-    });
-    expect(mockedSaveUserData).not.toHaveBeenCalled();
-  });
-
-  it("routines が空配列でも保存し、件数 0 を返す", async () => {
-    const res = await run(makeReq({ body: { token: TOKEN, routines: [] } }));
-
-    expect(mockedSaveUserData).toHaveBeenCalledWith(db, TOKEN, []);
-    expect(res.send).toHaveBeenCalledWith({ success: true, routinesCount: 0 });
-  });
-
-  it("保存に失敗したら 500 を返し、エラーをログに残す", async () => {
-    const error = new Error("firestore down");
-    mockedSaveUserData.mockRejectedValueOnce(error);
-
-    const res = await run(makeReq());
-
-    expect(res.status).toHaveBeenCalledWith(500);
-    expect(res.send).toHaveBeenCalledWith({ error: "Internal server error" });
-    expect(logger.error).toHaveBeenCalledWith("Sync error:", error);
-  });
+it("保存エラーを一般化して返し、エラーの内部情報を出さない", async () => {
+  save.mockRejectedValue(new Error("private internal data"));
+  const res = await run();
+  expect(res.status).toHaveBeenCalledWith(500);
+  expect(res.send).toHaveBeenCalledWith({ error: "Internal server error" });
+  expect(JSON.stringify(jest.mocked(logger.error).mock.calls)).not.toContain(
+    "private internal data",
+  );
 });
