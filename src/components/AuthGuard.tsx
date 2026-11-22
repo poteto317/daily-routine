@@ -1,5 +1,6 @@
 "use client";
 
+import { Fragment } from "react";
 import { useAuth } from "@/features/auth";
 import { LoginPage } from "@/features/auth";
 import { FullScreenLoading } from "./FullScreenLoading";
@@ -28,5 +29,5 @@ export const AuthGuard: React.FC<{ children: React.ReactNode }> = ({
 
   if (!user) return <LoginPage />;
 
-  return <>{children}</>;
+  return <Fragment key={user.uid}>{children}</Fragment>;
 };

@@ -1,5 +1,6 @@
 import { getToken, type Messaging } from "firebase/messaging";
 import { getFcmServiceWorkerRegistration } from "@/hooks/serviceWorkerRegistration";
+import { waitForFirebaseMessaging } from "../initialize";
 import { getFCMToken } from "../messaging";
 import { getFirebaseState } from "../state";
 
@@ -10,6 +11,10 @@ jest.mock("firebase/messaging", () => ({
 
 jest.mock("@/hooks/serviceWorkerRegistration", () => ({
   getFcmServiceWorkerRegistration: jest.fn(),
+}));
+
+jest.mock("../initialize", () => ({
+  waitForFirebaseMessaging: jest.fn().mockResolvedValue(undefined),
 }));
 
 jest.mock("../state", () => ({
@@ -99,6 +104,52 @@ describe("getFCMToken", () => {
       vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY,
       serviceWorkerRegistration: registration,
     });
+  });
+
+  it("Messaging の初期化が完了してからトークンを取得する", async () => {
+    let markReady: () => void = () => undefined;
+    jest.mocked(waitForFirebaseMessaging).mockReturnValueOnce(
+      new Promise((resolve) => {
+        markReady = resolve;
+      }),
+    );
+    const state = {
+      app: null,
+      auth: null,
+      firestore: null,
+      storage: null,
+      messaging: null as Messaging | null,
+    };
+    mockGetFirebaseState.mockImplementation(() => state);
+    mockGetRegistration.mockResolvedValue(undefined);
+    mockGetToken.mockResolvedValue("after-initialization");
+
+    const acquisition = getFCMToken();
+    const assertion = expect(acquisition).resolves.toBe("after-initialization");
+    expect(mockGetToken).not.toHaveBeenCalled();
+    state.messaging = messaging;
+    markReady();
+    await assertion;
+  });
+
+  it("初期化を待っている間に通知許可を失ったら SDK を呼ばない", async () => {
+    let markReady: () => void = () => undefined;
+    jest.mocked(waitForFirebaseMessaging).mockReturnValueOnce(
+      new Promise((resolve) => {
+        markReady = resolve;
+      }),
+    );
+    const acquisition = getFCMToken();
+    const assertion = expect(acquisition).rejects.toMatchObject({
+      code: "permission-denied",
+    });
+    Object.defineProperty(global, "Notification", {
+      configurable: true,
+      value: { permission: "denied", requestPermission: jest.fn() },
+    });
+    markReady();
+    await assertion;
+    expect(mockGetToken).not.toHaveBeenCalled();
   });
 
   it("Firebase SDKが空トークンを返したらtoken-not-generatedを投げる", async () => {

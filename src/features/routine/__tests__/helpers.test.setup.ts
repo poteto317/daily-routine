@@ -4,11 +4,15 @@ import * as firebaseLib from "@/lib/firebase";
 import * as coreStorage from "@/lib/storage/core";
 import * as settingsStorage from "@/features/settings/storage";
 
-jest.mock("@/lib/firebase", () => ({ getFCMToken: jest.fn() }));
+jest.mock("@/lib/firebase", () => ({
+  getFCMToken: jest.fn(),
+  getAuthInstance: () => mockAuth,
+}));
 jest.mock("@/features/notification", () => ({
   hasNotificationPermission: jest.fn(),
 }));
 jest.mock("@/lib/storage/core", () => ({
+  getCurrentUserId: () => "routine-owner",
   getTodayString: jest.fn(),
   toJstDay: jest.fn(),
   toJstTime: jest.fn(),
@@ -58,4 +62,11 @@ export const setupHelpersDefaults = () => {
   jest.clearAllMocks();
   mockHasNotificationPermission.mockReturnValue(true);
   mockGetTodayString.mockReturnValue("2026-02-12");
+};
+
+const mockAuth = {
+  currentUser: {
+    uid: "routine-owner",
+    getIdToken: async () => "firebase-id-token",
+  },
 };

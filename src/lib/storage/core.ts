@@ -3,6 +3,7 @@ export {
   getCurrentUserId,
   getUserScopedKey,
   migrateToUserStorage,
+  wasLegacyRoutineStorageCopied,
 } from "./core-modules/userScope";
 
 export {
