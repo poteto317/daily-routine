@@ -1,6 +1,7 @@
 export type ImageMediaType =
   "image/png" | "image/jpeg" | "image/webp" | "image/gif";
 
+export const REPORT_IMAGE_URL_TTL_MINUTES = 15;
 export const MANAGED_REPORT_IMAGES_PREFIX = "bugReportManagedImages";
 
 export const MAX_REPORT_IMAGES = 3;
