@@ -1,4 +1,4 @@
-import { MAX_IMAGE_BYTES } from "../imageFormats";
+import { MANAGED_REPORT_IMAGES_PREFIX, MAX_IMAGE_BYTES } from "../imageFormats";
 import {
   countReferencedImages,
   type ImageStore,
@@ -52,52 +52,55 @@ describe("resolveReportImages", () => {
     });
   });
 
-  it("有効な 2 件の画像参照を順に解決し、mediaType・data・url と skippedCount=0 を返す", async () => {
-    const pngBuf = makePngBuffer();
-    const jpegBuf = makeJpegBuffer();
-    const { store, download, getDownloadUrl } = createFakeStore();
-    download.mockResolvedValueOnce(pngBuf).mockResolvedValueOnce(jpegBuf);
-    getDownloadUrl
-      .mockResolvedValueOnce("https://example.test/tok1")
-      .mockResolvedValueOnce("https://example.test/tok2");
-    const logger = { warn: jest.fn() };
+  it.each(["bugReports", MANAGED_REPORT_IMAGES_PREFIX])(
+    "%s の有効な画像参照を順に解決する",
+    async (imagePrefix) => {
+      const pngBuf = makePngBuffer();
+      const jpegBuf = makeJpegBuffer();
+      const { store, download, getDownloadUrl } = createFakeStore();
+      download.mockResolvedValueOnce(pngBuf).mockResolvedValueOnce(jpegBuf);
+      getDownloadUrl
+        .mockResolvedValueOnce("https://example.test/tok1")
+        .mockResolvedValueOnce("https://example.test/tok2");
+      const logger = { warn: jest.fn() };
 
-    const result = await resolveReportImages({
-      uid: "u1",
-      reportId: "r1",
-      images: [
-        {
-          path: "bugReports/u1/r1/img1.png",
-          contentType: "image/png",
-          size: 10,
-        },
-        {
-          path: "bugReports/u1/r1/img2.jpg",
-          contentType: "image/jpeg",
-          size: 6,
-        },
-      ],
-      store,
-      logger,
-    });
+      const result = await resolveReportImages({
+        uid: "u1",
+        reportId: "r1",
+        images: [
+          {
+            path: `${imagePrefix}/u1/r1/img1.png`,
+            contentType: "image/png",
+            size: 10,
+          },
+          {
+            path: `${imagePrefix}/u1/r1/img2.jpg`,
+            contentType: "image/jpeg",
+            size: 6,
+          },
+        ],
+        store,
+        logger,
+      });
 
-    expect(result).toEqual({
-      images: [
-        {
-          mediaType: "image/png",
-          data: pngBuf,
-          url: "https://example.test/tok1",
-        },
-        {
-          mediaType: "image/jpeg",
-          data: jpegBuf,
-          url: "https://example.test/tok2",
-        },
-      ],
-      skippedCount: 0,
-    });
-    expect(logger.warn).not.toHaveBeenCalled();
-  });
+      expect(result).toEqual({
+        images: [
+          {
+            mediaType: "image/png",
+            data: pngBuf,
+            url: "https://example.test/tok1",
+          },
+          {
+            mediaType: "image/jpeg",
+            data: jpegBuf,
+            url: "https://example.test/tok2",
+          },
+        ],
+        skippedCount: 0,
+      });
+      expect(logger.warn).not.toHaveBeenCalled();
+    },
+  );
 
   it("images が配列でない場合は空の結果を返し store を呼ばない", async () => {
     const { store, getSize, download, getDownloadUrl } = createFakeStore();
@@ -146,6 +149,14 @@ describe("resolveReportImages", () => {
     it.each([
       ["別の uid のパス", { path: "bugReports/u2/r1/x.png" }],
       ["別の報告 ID のパス", { path: "bugReports/u1/r2/x.png" }],
+      [
+        "別の利用者の管理パス",
+        { path: `${MANAGED_REPORT_IMAGES_PREFIX}/u2/r1/0.png` },
+      ],
+      [
+        "別の報告の管理パス",
+        { path: `${MANAGED_REPORT_IMAGES_PREFIX}/u1/r2/0.png` },
+      ],
       [
         "親ディレクトリ参照 (..) を含むパス",
         { path: "bugReports/u1/r1/../x.png" },

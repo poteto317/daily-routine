@@ -1,8 +1,7 @@
 export type ImageMediaType =
-  | "image/png"
-  | "image/jpeg"
-  | "image/webp"
-  | "image/gif";
+  "image/png" | "image/jpeg" | "image/webp" | "image/gif";
+
+export const MANAGED_REPORT_IMAGES_PREFIX = "bugReportManagedImages";
 
 export const MAX_REPORT_IMAGES = 3;
 export const MAX_IMAGE_BYTES = 5 * 1024 * 1024;

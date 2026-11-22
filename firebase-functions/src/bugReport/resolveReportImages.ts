@@ -1,6 +1,7 @@
 import {
   IMAGE_FILE_NAME_PATTERN,
   type ImageMediaType,
+  MANAGED_REPORT_IMAGES_PREFIX,
   MAX_IMAGE_BYTES,
   MAX_REPORT_IMAGES,
   sniffImageMediaType,
@@ -62,8 +63,10 @@ function extractValidPath(
   if (typeof path !== "string" || path.includes("..")) {
     return null;
   }
-  const prefix = `bugReports/${uid}/${reportId}/`;
-  if (!path.startsWith(prefix)) {
+  const prefix = ["bugReports", MANAGED_REPORT_IMAGES_PREFIX]
+    .map((root) => `${root}/${uid}/${reportId}/`)
+    .find((candidate) => path.startsWith(candidate));
+  if (!prefix) {
     return null;
   }
   const fileName = path.slice(prefix.length);
