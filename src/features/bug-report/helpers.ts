@@ -5,7 +5,6 @@ import {
 } from "./constants";
 import type {
   BugReportInput,
-  BugReportImage,
   BugReportMeta,
   BugReportCreatePayload,
 } from "./types";
@@ -51,13 +50,11 @@ export const buildBugReportPayload = (
   input: BugReportInput,
   uid: string,
   meta: BugReportMeta,
-  images?: readonly BugReportImage[],
 ): Omit<BugReportCreatePayload, "createdAt" | "updatedAt"> => ({
   uid,
   title: (input.title ?? "").trim(),
   description: input.description.trim(),
   stepsToReproduce: (input.stepsToReproduce ?? "").trim(),
-  ...(images && images.length > 0 ? { images: [...images] } : {}),
   meta,
   status: "pending",
 });

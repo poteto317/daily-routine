@@ -25,52 +25,26 @@ describe("rulesConsistency (Storage・Firestore・クライアント・サーバ
     );
   });
 
-  it("storage.rules が上限サイズ・許可 MIME・ファイル名パターン・アクセス制御を含んでいる", () => {
-    const storageRulesPath = path.join(repoRoot, "storage.rules");
-    const storageRules = fs.readFileSync(storageRulesPath, "utf8");
+  it("Storage はクライアントの画像書き込みを拒否する", () => {
+    const rules = fs.readFileSync(path.join(repoRoot, "storage.rules"), "utf8");
+    const permissions = rules.match(/allow [^;]+;/g);
 
-    expect(MAX_BUG_REPORT_IMAGE_BYTES).toBe(5 * 1024 * 1024);
-    expect(storageRules).toContain("request.resource.size <= 5 * 1024 * 1024");
-
-    const mimeSubtypes = Object.keys(BUG_REPORT_IMAGE_EXTENSIONS)
-      .map((mime) => mime.replace(/^image\//, ""))
-      .join("|");
-    expect(storageRules).toContain(
-      `request.resource.contentType.matches('^image/(${mimeSubtypes})$')`,
-    );
-
-    const extJoined = Object.values(BUG_REPORT_IMAGE_EXTENSIONS).join("|");
-    const expectedRuleRegex = `^[A-Za-z0-9_-]{1,64}\\\\.(${extJoined})$`;
-    expect(storageRules).toContain(`fileName.matches('${expectedRuleRegex}')`);
-    expect(expectedRuleRegex.replace("\\\\.", "\\.")).toBe(
-      IMAGE_FILE_NAME_PATTERN.source,
-    );
-
-    expect(storageRules).toContain(
-      "match /bugReports/{uid}/{reportId}/{fileName}",
-    );
-    expect(storageRules).toContain("request.auth != null");
-    expect(storageRules).toContain("request.auth.uid == uid");
-    expect(storageRules).toContain("allow read, update: if false;");
-    expect(storageRules).toContain("match /{allPaths=**}");
-    expect(storageRules).toContain("allow read, write: if false;");
+    expect(permissions).toEqual(["allow read, write: if false;"]);
   });
 
-  it("firestore.rules の bugReports create に images の検証と hasOnly への追加があり update/delete 拒否が維持されている", () => {
-    const firestoreRulesPath = path.join(repoRoot, "firestore.rules");
-    const firestoreRules = fs.readFileSync(firestoreRulesPath, "utf8");
-
-    expect(firestoreRules).toContain(
-      `(!('images' in request.resource.data) || (request.resource.data.images is list && request.resource.data.images.size() <= ${MAX_BUG_REPORT_IMAGES}))`,
+  it("Firestore のクライアント報告では画像参照を受け付けない", () => {
+    const rules = fs.readFileSync(
+      path.join(repoRoot, "firestore.rules"),
+      "utf8",
     );
-
-    const bugReportsBlockMatch = firestoreRules.match(
+    const block = rules.match(
       /match \/bugReports\/\{reportId\} \{[\s\S]*?allow update, delete: if false;\s*\}/,
-    );
-    expect(bugReportsBlockMatch).not.toBeNull();
-    const bugReportsBlock = bugReportsBlockMatch![0];
-    expect(bugReportsBlock).toContain('"images"');
-    expect(bugReportsBlock).toContain("allow update, delete: if false;");
+    )?.[0];
+
+    expect(block).toBeDefined();
+    expect(block).toContain("keys().hasOnly([");
+    expect(block).toContain('"description"');
+    expect(block).not.toContain('"images"');
   });
 
   it("firebase.json に storage.rules が設定されている", () => {
