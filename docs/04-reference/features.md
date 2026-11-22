@@ -623,16 +623,16 @@ Firestoreを使用した複数端末間のデータ同期・バックアップ�
   - タイムゾーン (`timezone`)
   - クライアント時刻 (`createdAtClient`)
 - **スクラムかんばんへの自動起票**
-  - 画像が添付されている場合は、クライアントが先に Firebase Storage（`bugReports/{uid}/{reportId}/{fileName}`）へアップロードしてから、Firestore `bugReports/{reportId}` へ `status: "pending"` としてドキュメントを作成（途中失敗時はアップロード済み画像を自動削除）
-  - Firestore セキュリティルールおよび Storage セキュリティルールにより不正入力・形式外やサイズ超過の画像・serverTimestamp 改ざんを厳格に拒否
-  - Cloud Functions の Firestore トリガー（`onBugReportCreated`）が検知し、添付画像のサイズ・マジックナンバー検証およびダウンロードトークン付き URL の取得を行った上で、スクラムかんばん API で Todo にアイテムを作成（本文の `## スクリーンショット` 節に画像のリンクを追加）
+  - 画像付き報告は認証済みのサーバー関数が処理枠を確保し、Storage に保存してから Firestore に登録する
+  - Firestore と Storage のルールはクライアントからの画像付き報告作成と直接アップロードを拒否し、サーバー関数が画像を検証する
+  - Cloud Functions の Firestore トリガー（`onBugReportCreated`）が検知し、添付画像のサイズ・マジックナンバー検証および発行から 15 分で失効する読み取り専用の署名付き URL の発行を行った上で、スクラムかんばん API で Todo にアイテムを作成（本文の `## スクリーンショット` 節に画像のリンクを追加）
   - Issue のタイトルと本文は Claude（Anthropic API）で整形し、添付画像がある場合は画像も Claude に渡して状況把握に活用する（`ANTHROPIC_API_KEY` に `none` を登録すると整形しない）。画像つき整形が失敗した場合は画像なしで1回だけ再整形し、それも失敗した場合は従来の内容（報告文そのまま）で起票する
   - 起票成功時に Firestore を `status: "issued"`, `issueNumber`, `issueUrl` で更新
 
 **技術仕様**
 
 - ファイル: `src/features/bug-report/`, `firebase-functions/src/bugReport/`
-- 保存先: Firestore `bugReports/{reportId}`, Firebase Storage `bugReports/{uid}/{reportId}/{fileName}`
+- 保存先: Firestore `bugReports/{reportId}`, Firebase Storage `bugReportManagedImages/{uid}/{reportId}/{fileName}`
 - 連携: スクラムかんばん API（Secret: `SCRUM_BOARD_CREDENTIALS`）、Anthropic Claude API で Issue を整形（Secret: `ANTHROPIC_API_KEY`。失敗時は従来の内容で起票）
 
 ---

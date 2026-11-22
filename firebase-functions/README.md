@@ -55,7 +55,7 @@ firebase-functions/
     │   ├── handleBugReport.ts    # 最新の報告を読み直し、起票処理を実行して結果を記録する
     │   ├── processBugReport.ts   # 処理ロック → 画像解決 → 整形 → 起票 → 状態更新の手順
     │   ├── resolveReportImages.ts# Storage から添付画像を検証・取得し URL を発行する
-    │   ├── storageImageStore.ts  # Firebase Storage Bucket アダプタ（ダウンロードトークン URL 生成）
+    │   ├── storageImageStore.ts  # Cloud Storage アダプタ（15 分の V4 読み取り署名）
     │   ├── imageFormats.ts       # 許可画像形式とマジックナンバー判定
     │   ├── draftIssueWithClaude.ts # Claude による Issue の整形（画像入力対応）
     │   └── createScrumBoardItem.ts  # スクラムかんばん API の呼び出し
@@ -84,7 +84,7 @@ firebase-functions/
 - **トリガー**: `bugReports/{reportId}` ドキュメントの新規作成（Firestore `onCreate`）
 - **動作フロー**:
   1. クライアントが作成した報告ドキュメント（`status: "pending"`）を検知
-  2. 処理ロックを取得した後、添付画像（`images`）がある場合は Firebase Storage から取得してサイズ・マジックナンバー検証を行い、ダウンロードトークン付き URL を発行する
+  2. 処理ロックを取得した後、添付画像（`images`）がある場合は Firebase Storage から取得してサイズ・マジックナンバー検証を行い、旧ダウンロードトークンを除去してから 15 分の V4 読み取り署名付き URL を発行する
   3. Claude（`claude-opus-5-5`）で Issue のタイトルと本文を整形（下記「Claude による整形」）。添付画像がある場合は画像も Claude に渡す
   4. Secret の Basic 認証情報を使って daily-routine プロジェクトの Todo に起票（添付画像は本文の `## スクリーンショット` 節にリンクを載せる）
   5. 成功時: ドキュメントを `status: "issued"`, `issueNumber`, `issueUrl`, `updatedAt` で更新
