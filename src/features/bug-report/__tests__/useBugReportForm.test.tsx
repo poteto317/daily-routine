@@ -84,26 +84,32 @@ describe("useBugReportForm", () => {
     expect(result.current.imageAttachments.previews).toEqual([]);
   });
 
-  it("送信失敗時は status:error にしエラーメッセージを表示し、入力と画像選択を保持する", async () => {
-    const submit = jest.fn().mockRejectedValue(new Error("network"));
-    const { result } = renderHook(() => useBugReportForm({ submit }));
-    const file = createFile("1.png");
+  it.each([
+    [new Error("network"), texts.status.submitError],
+    [{ code: "functions/resource-exhausted" }, texts.status.imageQuotaExceeded],
+  ])(
+    "送信失敗時は対応する案内を表示し、入力と画像選択を保持する",
+    async (error, message) => {
+      const submit = jest.fn().mockRejectedValue(error);
+      const { result } = renderHook(() => useBugReportForm({ submit }));
+      const file = createFile("1.png");
 
-    act(() => {
-      result.current.setDescription("不具合の内容");
-      result.current.imageAttachments.addImages([file]);
-    });
+      act(() => {
+        result.current.setDescription("不具合の内容");
+        result.current.imageAttachments.addImages([file]);
+      });
 
-    await act(async () => {
-      await result.current.handleSubmit();
-    });
+      await act(async () => {
+        await result.current.handleSubmit();
+      });
 
-    expect(result.current.status).toBe("error");
-    expect(result.current.errorMessage).toBe(texts.status.submitError);
-    // 入力と画像は保持される
-    expect(result.current.description).toBe("不具合の内容");
-    expect(result.current.imageAttachments.images).toEqual([file]);
-  });
+      expect(result.current.status).toBe("error");
+      expect(result.current.errorMessage).toBe(message);
+      // 入力と画像は保持される
+      expect(result.current.description).toBe("不具合の内容");
+      expect(result.current.imageAttachments.images).toEqual([file]);
+    },
+  );
 
   it("送信中は status が submitting になる", async () => {
     let resolveSubmit!: (id: string) => void;

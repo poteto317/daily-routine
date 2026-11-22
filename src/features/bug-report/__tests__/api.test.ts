@@ -1,5 +1,5 @@
 import * as firestore from "firebase/firestore";
-import * as storage from "firebase/storage";
+import * as functions from "firebase/functions";
 import * as firebaseLib from "@/lib/firebase";
 import { submitBugReport } from "../api";
 import { BUG_REPORTS_COLLECTION } from "../constants";
@@ -11,23 +11,18 @@ jest.mock("firebase/firestore", () => ({
   serverTimestamp: jest.fn(() => "server-timestamp"),
 }));
 
-jest.mock("firebase/storage", () => ({
-  ref: jest.fn((_storage, path: string) => ({ fullPath: path })),
-  uploadBytes: jest.fn(),
-  deleteObject: jest.fn(),
+jest.mock("firebase/functions", () => ({
+  getFunctions: jest.fn(),
+  httpsCallable: jest.fn(),
 }));
+
+const mockCallable = jest.fn();
 
 jest.mock("@/lib/firebase", () => ({
   getFirestoreInstance: jest.fn(),
-  getStorageInstance: jest.fn(),
+  getAuthInstance: jest.fn(),
   getOrCreateUser: jest.fn(),
 }));
-
-function makeFile(name: string, type: string, sizeBytes = 256): File {
-  const file = new File([new Uint8Array(1)], name, { type });
-  Object.defineProperty(file, "size", { value: sizeBytes });
-  return file;
-}
 
 describe("submitBugReport", () => {
   const docRef = { id: "report-123" };
@@ -40,14 +35,15 @@ describe("submitBugReport", () => {
     (firebaseLib.getFirestoreInstance as jest.Mock).mockReturnValue(
       "firestore-instance",
     );
-    (firebaseLib.getStorageInstance as jest.Mock).mockReturnValue(
-      "storage-instance",
-    );
+    (firebaseLib.getAuthInstance as jest.Mock).mockReturnValue({
+      app: "firebase-app",
+    });
+    (functions.getFunctions as jest.Mock).mockReturnValue("functions-instance");
+    (functions.httpsCallable as jest.Mock).mockReturnValue(mockCallable);
+    mockCallable.mockResolvedValue({ data: { reportId: "server-report" } });
     (firestore.collection as jest.Mock).mockReturnValue("collection-ref");
     (firestore.doc as jest.Mock).mockReturnValue(docRef);
     (firestore.setDoc as jest.Mock).mockResolvedValue(undefined);
-    (storage.uploadBytes as jest.Mock).mockResolvedValue({});
-    (storage.deleteObject as jest.Mock).mockResolvedValue(undefined);
   });
 
   it("bugReports コレクションへ採番した docRef に対して setDoc で uid・status:pending を付与して保存する", async () => {
@@ -75,8 +71,6 @@ describe("submitBugReport", () => {
     expect(payload.createdAt).toBe("server-timestamp");
     expect(payload.updatedAt).toBe("server-timestamp");
     expect(payload).not.toHaveProperty("images");
-    expect(firebaseLib.getStorageInstance).not.toHaveBeenCalled();
-    expect(storage.uploadBytes).not.toHaveBeenCalled();
 
     expect(id).toBe("report-123");
   });
@@ -118,55 +112,42 @@ describe("submitBugReport", () => {
     );
   });
 
-  it("画像がある場合は先に uploadBytes でアップロードし、その後に setDoc で images を保存する", async () => {
-    const file = makeFile("shot.png", "image/png", 500);
-
-    const id = await submitBugReport({ description: "画像つき報告" }, [file]);
-
-    expect(id).toBe("report-123");
-    expect(storage.uploadBytes).toHaveBeenCalledTimes(1);
-    expect(firestore.setDoc).toHaveBeenCalledTimes(1);
-    expect(
-      (storage.uploadBytes as jest.Mock).mock.invocationCallOrder[0],
-    ).toBeLessThan((firestore.setDoc as jest.Mock).mock.invocationCallOrder[0]);
-
-    const payload = (firestore.setDoc as jest.Mock).mock.calls[0][1];
-    expect(payload.images).toHaveLength(1);
-    expect(payload.images[0].path).toMatch(
-      /^bugReports\/user-1\/report-123\/[A-Za-z0-9_-]{16,64}\.png$/,
-    );
-    expect(payload.images[0].contentType).toBe("image/png");
-    expect(payload.images[0].size).toBe(500);
-  });
-
-  it("画像のアップロードが失敗した場合は setDoc を呼ばずエラーを伝播する", async () => {
-    (storage.uploadBytes as jest.Mock).mockRejectedValueOnce(
-      new Error("storage upload failed"),
-    );
-    const file = makeFile("shot.png", "image/png");
+  it("画像をサーバーに送り、サーバーで確定した報告 ID を返す", async () => {
+    const file = new File([new Uint8Array([137, 80, 78, 71])], "shot.png", {
+      type: "image/png",
+    });
 
     await expect(
-      submitBugReport({ description: "画像つき報告" }, [file]),
-    ).rejects.toThrow("storage upload failed");
+      submitBugReport({ description: "  画像つき報告  " }, [file]),
+    ).resolves.toBe("server-report");
+
+    expect(functions.getFunctions).toHaveBeenCalledWith(
+      "firebase-app",
+      "asia-northeast1",
+    );
+    expect(functions.httpsCallable).toHaveBeenCalledWith(
+      "functions-instance",
+      "submitBugReportWithImages",
+      { timeout: 180_000 },
+    );
+    expect(mockCallable).toHaveBeenCalledWith({
+      description: "画像つき報告",
+      title: "",
+      stepsToReproduce: "",
+      meta: expect.any(Object),
+      images: [{ contentType: "image/png", base64: "iVBORw==" }],
+    });
     expect(firestore.setDoc).not.toHaveBeenCalled();
   });
 
-  it("setDoc が失敗した場合はアップロード済みの画像を deleteObject で削除し、元のエラーを伝播する", async () => {
-    const writeErr = new Error("setDoc failed");
-    (firestore.setDoc as jest.Mock).mockRejectedValueOnce(writeErr);
-    (storage.deleteObject as jest.Mock).mockRejectedValueOnce(
-      new Error("cleanup failed"),
-    );
-    const file = makeFile("shot.png", "image/png");
+  it("枠が不足した場合はエラーを伝播し、本文だけでは送信しない", async () => {
+    const file = new File(["image"], "shot.png", { type: "image/png" });
+    const error = { code: "functions/resource-exhausted" };
+    mockCallable.mockRejectedValueOnce(error);
 
-    await expect(
-      submitBugReport({ description: "画像つき報告" }, [file]),
-    ).rejects.toBe(writeErr);
-
-    expect(storage.deleteObject).toHaveBeenCalledTimes(1);
-    const deletedRef = (storage.deleteObject as jest.Mock).mock.calls[0][0];
-    expect(deletedRef.fullPath).toMatch(
-      /^bugReports\/user-1\/report-123\/[A-Za-z0-9_-]{16,64}\.png$/,
+    await expect(submitBugReport({ description: "本文" }, [file])).rejects.toBe(
+      error,
     );
+    expect(firestore.setDoc).not.toHaveBeenCalled();
   });
 });

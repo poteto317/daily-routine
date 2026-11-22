@@ -60,9 +60,14 @@ export const useBugReportForm = ({
       submitStatus.setStatus("success");
       input.resetInput();
       imageAttachments.clearImages();
-    } catch {
+    } catch (error) {
       submitStatus.setStatus("error");
-      submitStatus.setErrorMessage(texts.status.submitError);
+      const code = (error as { code?: unknown } | null)?.code;
+      submitStatus.setErrorMessage(
+        code === "functions/resource-exhausted"
+          ? texts.status.imageQuotaExceeded
+          : texts.status.submitError,
+      );
     } finally {
       isSubmittingRef.current = false;
     }
