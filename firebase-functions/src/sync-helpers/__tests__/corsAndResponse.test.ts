@@ -19,7 +19,7 @@ const asResponse = (res: ReturnType<typeof makeRes>) =>
   res as unknown as Response;
 
 describe("applyCorsHeaders", () => {
-  it("全オリジンからの POST と Content-Type ヘッダーを許可する", () => {
+  it("全オリジンからの POST と認証・JSON ヘッダーを許可する", () => {
     const res = makeRes();
     applyCorsHeaders(asResponse(res));
     expect(res.set).toHaveBeenCalledWith("Access-Control-Allow-Origin", "*");
@@ -29,7 +29,7 @@ describe("applyCorsHeaders", () => {
     );
     expect(res.set).toHaveBeenCalledWith(
       "Access-Control-Allow-Headers",
-      "Content-Type",
+      "Content-Type, Authorization",
     );
   });
 });

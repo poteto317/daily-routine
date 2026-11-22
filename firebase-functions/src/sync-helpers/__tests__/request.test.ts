@@ -1,71 +1,49 @@
 /** @jest-environment node */
 import type { Request } from "firebase-functions/https";
-import {
-  isPostMethod,
-  isValidSyncRequest,
-  parseSyncRequestBody,
-} from "../request";
-import type { SyncRequestBody } from "../types";
+import { isPostMethod, parseSyncRequestBody } from "../request";
 
-const makeReq = (body: unknown): Request => ({ body }) as unknown as Request;
+const parse = (body: unknown) => parseSyncRequestBody({ body } as Request);
+const token = "notification-token";
+const routine = {
+  id: "r1",
+  title: "Title",
+  startTime: "08:30",
+  daysOfWeek: [0, 7],
+};
 
-/** 型上はあり得ないが実行時に届きうるボディを検証用に作る */
-const unsafeBody = (body: Record<string, unknown>): SyncRequestBody =>
-  body as unknown as SyncRequestBody;
-
-describe("parseSyncRequestBody", () => {
-  it("リクエストボディをそのまま返す", () => {
-    const body = { token: "t", routines: [] };
-    expect(parseSyncRequestBody(makeReq(body))).toBe(body);
+it("通知に必要な項目だけを残す", () => {
+  expect(
+    parse({
+      token,
+      routines: [{ ...routine, weeklyGoal: { targetPerWeek: 3 } }],
+    }),
+  ).toMatchObject({ success: true, data: { token, routines: [routine] } });
+  const parsed = parse({
+    token,
+    routines: [{ ...routine, isCompleted: false }],
   });
-
-  it.each([undefined, null])("ボディが %s なら空オブジェクトを返す", (body) => {
-    expect(parseSyncRequestBody(makeReq(body))).toEqual({});
-  });
+  expect(parsed.success && parsed.data.routines[0]).toEqual(routine);
 });
 
-describe("isPostMethod", () => {
-  it("POST のみ true", () => {
-    expect(isPostMethod("POST")).toBe(true);
-  });
-
-  it.each(["GET", "PUT", "DELETE", "OPTIONS", "post"])(
-    "%s は false（大文字小文字も区別する）",
-    (method) => {
-      expect(isPostMethod(method)).toBe(false);
-    },
-  );
+it("空の通知設定を許可する", () => {
+  expect(parse({ token, routines: [] }).success).toBe(true);
 });
 
-describe("isValidSyncRequest", () => {
-  it("token が空でない文字列で routines が配列なら true", () => {
-    expect(isValidSyncRequest({ token: "abc", routines: [] })).toBe(true);
-    expect(isValidSyncRequest({ token: "abc", routines: [{ id: "r1" }] })).toBe(
-      true,
-    );
-  });
-
-  it("token が空文字なら false", () => {
-    expect(isValidSyncRequest({ token: "", routines: [] })).toBe(false);
-  });
-
-  it("token が無ければ false", () => {
-    expect(isValidSyncRequest({ routines: [] })).toBe(false);
-  });
-
-  it("token が文字列でなければ false", () => {
-    expect(isValidSyncRequest(unsafeBody({ token: 123, routines: [] }))).toBe(
-      false,
-    );
-  });
-
-  it("routines が無ければ false", () => {
-    expect(isValidSyncRequest({ token: "abc" })).toBe(false);
-  });
-
-  it("routines が配列でなければ false", () => {
-    expect(isValidSyncRequest(unsafeBody({ token: "abc", routines: {} }))).toBe(
-      false,
-    );
-  });
+it.each([
+  undefined,
+  { token: "", routines: [] },
+  { token, routines: [null] },
+  { token, routines: [{ ...routine, id: "" }] },
+  { token, routines: [{ ...routine, startTime: "25:01" }] },
+  { token, routines: [{ ...routine, daysOfWeek: [9] }] },
+  { token, routines: [{ ...routine, notificationMinutes: "10" }] },
+])("不正な設定を拒否する", (body) => {
+  expect(parse(body).success).toBe(false);
 });
+
+it.each(["POST", "GET", "OPTIONS", "post"])(
+  "POST だけを受付対象にする",
+  (method) => {
+    expect(isPostMethod(method)).toBe(method === "POST");
+  },
+);

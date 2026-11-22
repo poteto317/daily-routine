@@ -2,7 +2,7 @@ import type { Firestore } from "./adminSdk";
 import { onSchedule } from "firebase-functions/v2/scheduler";
 import * as logger from "firebase-functions/logger";
 import { getCurrentNotificationContext } from "./date-utils";
-import { processAllUsersNotifications } from "./notification-helpers";
+import { processNotificationSubscriptions } from "./notification-helpers";
 
 /**
  * 毎分実行：ルーティンの時刻をチェックして通知を送信
@@ -22,6 +22,6 @@ export const checkNotifications = (db: Firestore) =>
           `day=${context.currentDayOfWeek}, isHoliday=${context.isHoliday}`,
       );
 
-      await processAllUsersNotifications(db, context);
+      await processNotificationSubscriptions(db, context);
     },
   );

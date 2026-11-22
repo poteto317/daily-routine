@@ -3,12 +3,12 @@
  */
 export const HOLIDAY_DAY_VALUE = 7;
 
-/**
- * ユーザーデータのコレクション名。
- * 通知用の syncRoutines は FCM トークンを、同期データ（agentApi）は uid をドキュメント ID に使うため、
- * 2 種類のドキュメントが同じコレクションに混在する。
- */
+/** 個人のクラウド同期データの保存先。 */
 export const USERS_COLLECTION = "users";
+
+/** Cloud Functions が管理する端末ごとの通知設定。 */
+export const NOTIFICATION_SUBSCRIPTIONS_COLLECTION =
+  "notificationSubscriptions";
 
 /** 通知の重複送信を防ぐための送信履歴コレクション名 */
 export const NOTIFICATIONS_SENT_COLLECTION = "notifications_sent";

@@ -9,7 +9,7 @@ import type { NotificationContext } from "../../date-utils";
 import type { Routine } from "../../types";
 import { sendRoutineNotification } from "../notification-delivery";
 import { processUserNotifications } from "../process-user-notifications";
-import { processAllUsersNotifications } from "../users-processor";
+import { processNotificationSubscriptions } from "../subscriptions-processor";
 
 const mockedSend = jest.mocked(sendRoutineNotification);
 const db = {} as Firestore;
@@ -128,7 +128,7 @@ describe("processUserNotifications", () => {
   });
 });
 
-describe("processAllUsersNotifications", () => {
+describe("processNotificationSubscriptions", () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
@@ -145,15 +145,15 @@ describe("processAllUsersNotifications", () => {
     };
   };
 
-  it("users の全ドキュメントについて通知処理を行う", async () => {
+  it("通知専用コレクションの全ドキュメントについて通知処理を行う", async () => {
     const { db: usersDb, collection } = makeDb([
       { fcmToken: "tok-a", routines: [makeRoutine({ id: "a" })] },
       { fcmToken: "tok-b", routines: [makeRoutine({ id: "b" })] },
     ]);
 
-    await processAllUsersNotifications(usersDb, CONTEXT);
+    await processNotificationSubscriptions(usersDb, CONTEXT);
 
-    expect(collection).toHaveBeenCalledWith("users");
+    expect(collection.mock.calls).toEqual([["notificationSubscriptions"]]);
     expect(mockedSend.mock.calls.map(([token]) => token)).toEqual([
       "tok-a",
       "tok-b",
@@ -163,7 +163,7 @@ describe("processAllUsersNotifications", () => {
   it("ユーザーがいなければ送信しない", async () => {
     const { db: usersDb } = makeDb([]);
 
-    await processAllUsersNotifications(usersDb, CONTEXT);
+    await processNotificationSubscriptions(usersDb, CONTEXT);
 
     expect(mockedSend).not.toHaveBeenCalled();
   });
