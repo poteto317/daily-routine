@@ -6,7 +6,7 @@ import type { BugReportContentSource } from "./buildIssueContent";
  * - pending: クライアント作成直後（未処理）
  * - processing: Cloud Functions が処理中
  * - issued: かんばんアイテム作成済み
- * - error: Issue 化に失敗
+ * - error: 処理上限に達した、または Issue 化に失敗
  */
 export type BugReportStatus = "pending" | "processing" | "issued" | "error";
 
@@ -47,6 +47,7 @@ export interface BugReport {
   issueNumber?: number;
   issueUrl?: string;
   aiLabels?: string[];
+  errorCode?: "quota_exceeded";
   errorMessage?: string;
   createdAt: Timestamp | FieldValue;
   updatedAt: Timestamp | FieldValue;
@@ -62,7 +63,7 @@ export interface BugReport {
  *
  * 注意: ロック判定で使う processingAt は Firestore 上 Timestamp 型のため、
  * この構造体には含めない。期限付きロックの取得可否判定は claimProcessing dep
- * （onBugReportCreated 側で Timestamp → ms 変換して canClaimProcessing に渡す）
+ * （claimBugReportProcessing 側で Timestamp → ms 変換して canClaimProcessing に渡す）
  * に委譲する。これにより firebase 依存をコアロジックから排除している。
  */
 export interface ProcessableBugReport extends BugReportContentSource {

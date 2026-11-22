@@ -2,17 +2,18 @@ import type { Firestore } from "../adminSdk";
 import { FieldValue } from "../adminSdk";
 import { onDocumentCreated } from "firebase-functions/v2/firestore";
 import * as logger from "firebase-functions/logger";
-import type { Timestamp } from "firebase-admin/firestore";
 import { getStorage } from "firebase-admin/storage";
 import { BUG_REPORTS_COLLECTION } from "./constants";
 import {
   anthropicApiKey,
+  bugReportProjectDailyLimit,
+  bugReportUserDailyLimit,
   scrumBoardCredentials,
   scrumBoardOrigin,
   scrumBoardProjectId,
 } from "./config";
 import { handleBugReport } from "./handleBugReport";
-import { canClaimProcessing } from "./canClaimProcessing";
+import { claimBugReportProcessing } from "./claimBugReportProcessing";
 import { createStorageImageStore } from "./storageImageStore";
 
 /**
@@ -34,45 +35,24 @@ export const onBugReportCreated = (db: Firestore) =>
         return;
       }
       const reportId = event.params.reportId;
-      const docRef = db.collection(BUG_REPORTS_COLLECTION).doc(reportId);
-
-      // pending → processing へトランザクション的にアトミック更新（期限付きロック）。
-      // canClaimProcessing が取得条件を一元判定（pending / stale processing で許可）。
-      const claimProcessing = async (): Promise<boolean> => {
-        let claimed = false;
-        await db.runTransaction(async (t) => {
-          claimed = false; // トランザクション再試行時にリセット
-          const snap = await t.get(docRef);
-          const data = snap.data() as
-            { status?: string; processingAt?: Timestamp } | undefined;
-          if (!data) return;
-
-          const processingAtMs = data.processingAt
-            ? data.processingAt.toMillis()
-            : undefined;
-          if (!canClaimProcessing(data.status, processingAtMs, Date.now())) {
-            return;
-          }
-
-          t.update(docRef, {
-            status: "processing",
-            processingAt: FieldValue.serverTimestamp(),
-            updatedAt: FieldValue.serverTimestamp(),
-          });
-          claimed = true;
-        });
-        return claimed;
-      };
+      const projectId = scrumBoardProjectId.value();
 
       await handleBugReport(reportId, db, {
         origin: scrumBoardOrigin.value(),
-        projectId: scrumBoardProjectId.value(),
+        projectId,
         credentials: scrumBoardCredentials.value(),
         anthropicApiKey: anthropicApiKey.value(),
         createImageStore: () => createStorageImageStore(getStorage().bucket()),
         logger,
         now: () => FieldValue.serverTimestamp(),
-        claimProcessing,
+        claimProcessing: () =>
+          claimBugReportProcessing(db, {
+            reportId,
+            projectId,
+            userLimit: bugReportUserDailyLimit.value(),
+            projectLimit: bugReportProjectDailyLimit.value(),
+            nowMs: Date.now(),
+          }),
       });
     },
   );
