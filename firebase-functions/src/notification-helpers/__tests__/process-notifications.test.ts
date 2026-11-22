@@ -160,6 +160,21 @@ describe("processNotificationSubscriptions", () => {
     ]);
   });
 
+  it("不正な登録を飛ばし、後続の正常な登録まで通知する", async () => {
+    const { db: usersDb } = makeDb([
+      { fcmToken: "tok-a", routines: [makeRoutine({ id: "a" })] },
+      { fcmToken: "tok-invalid", routines: [makeRoutine(), null] },
+      {
+        fcmToken: "tok-b",
+        routines: [makeRoutine({ id: "b", holidayMode: "include" })],
+      },
+    ]);
+
+    await processNotificationSubscriptions(usersDb, CONTEXT);
+
+    expect(sentRoutineIds()).toEqual(["a", "b"]);
+  });
+
   it("ユーザーがいなければ送信しない", async () => {
     const { db: usersDb } = makeDb([]);
 

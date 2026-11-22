@@ -1,20 +1,22 @@
-import type { DocumentData } from "../adminSdk";
-import { type Routine } from "../types";
+import * as z from "zod";
+import { notificationRoutine, notificationToken } from "../notification-schema";
 import type { UserNotificationData } from "./types";
 
 export type { UserNotificationData };
 
-/**
- * Firestore のユーザードキュメントから通知処理に必要なデータを抽出する
- * データが存在しない場合は null を返す
- */
+const storedRegistration = z.object({
+  fcmToken: notificationToken,
+  routines: z
+    .array(
+      notificationRoutine.extend({ isActive: z.boolean().optional() }).loose(),
+    )
+    .min(1),
+});
+
+/** 通知登録の保存値を検証し、無効な登録はスキップする。 */
 export const extractUserNotificationData = (
-  userData: DocumentData,
+  userData: unknown,
 ): UserNotificationData | null => {
-  const fcmToken = userData.fcmToken;
-  const routines: Routine[] = userData.routines || [];
-
-  if (!fcmToken || routines.length === 0) return null;
-
-  return { fcmToken, routines };
+  const result = storedRegistration.safeParse(userData);
+  return result.success ? result.data : null;
 };

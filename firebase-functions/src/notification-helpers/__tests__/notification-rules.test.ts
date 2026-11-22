@@ -143,6 +143,16 @@ describe("extractUserNotificationData", () => {
     });
   });
 
+  it.each([
+    { fcmToken: 123, routines: [makeRoutine()] },
+    { fcmToken: "tok", routines: { item: makeRoutine() } },
+    { fcmToken: "tok", routines: [{ ...makeRoutine(), daysOfWeek: "5" }] },
+    { fcmToken: "tok", routines: [{ ...makeRoutine(), startTime: 900 }] },
+    { fcmToken: "tok", routines: [{ ...makeRoutine(), id: "a/b" }] },
+  ])("不正な登録を拒否する", (input) => {
+    expect(extractUserNotificationData(input)).toBeNull();
+  });
+
   it("トークンが無ければ null", () => {
     expect(
       extractUserNotificationData({ routines: [makeRoutine()] }),
