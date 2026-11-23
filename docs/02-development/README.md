@@ -40,7 +40,7 @@
   - `touchAction: "pan-y"` とブラウザスクロールの競合が根本原因
   - dnd-kit TouchSensor の仕組みと制約
 - **[sync-indicator-investigation.md](./sync-indicator-investigation.md)** - 同期インジケーター・状態表示の挙動調査と改善
-- **[bug-report-feature-plan.md](./bug-report-feature-plan.md)** - 不具合報告機能の設計と GitHub Issue 自動起票のアーキテクチャ
+- **[bug-report-feature-plan.md](./bug-report-feature-plan.md)** - 不具合報告の段階導入プラン（履歴）。現行の起票先はスクラムかんばんで、運用は [bug-report-secrets-config.md](./bug-report-secrets-config.md)
 - **[bug-report-secrets-config.md](./bug-report-secrets-config.md)** - Cloud Functions の GitHub Token / Secret 設定手順ガイド
 - **[github-actions-guide.md](./github-actions-guide.md)** - GitHub Actions CI/CD パイプラインの構成と運用ガイド
 - **[storybook-guide.md](./storybook-guide.md)** - Storybook コンポーネントカタログガイド（起動・100以上のStory運用）

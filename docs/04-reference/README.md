@@ -68,7 +68,7 @@
 
 ### フロントエンド
 
-- Next.js 16.3.0（App Router）
+- Next.js 16.4.6（App Router）
 - React 19.2.3
 - TypeScript 5（strict mode）
 - Tailwind CSS 4
@@ -121,8 +121,9 @@
 ```
 users/{userId}                         # 同期データ本体ドキュメント
   └─ syncSnapshots/{snapshotId}        # スナップショット履歴（最大5件）
-routines/{userId}/...                  # 通知用データ
+notificationSubscriptions/{tokenHash}  # 確認済み UID の端末別通知設定
 accounts/{accountId}                   # アカウント管理用データ
+accountAdminGrants/{accountId}         # 管理者権限の正本
 bugReports/{reportId}                  # 報告・問い合わせデータ（スクラムかんばん連携）
 apiKeys/{keyHash}                      # AI エージェント API キー
 ```

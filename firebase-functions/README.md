@@ -4,15 +4,18 @@
 
 ## 概要
 
-本ディレクトリの Cloud Functions は Node.js 24 環境で動作し、以下の 5 つの関数を提供します。
+本ディレクトリの Cloud Functions は Node.js 24 環境で動作します。常にエクスポートするのは次の 5 関数です。既定の Storage バケット（`getApp().options.storageBucket`）があるときは、画像付き報告用の 3 関数もエクスポートします。バケットが無い環境ではその 3 つは `undefined` となり、既存関数だけをデプロイできます。
 
-| 関数名                 | 種別           | トリガー / エンドポイント      | 主な役割                                          |
-| ---------------------- | -------------- | ------------------------------ | ------------------------------------------------- |
-| `agentApi`             | HTTPS          | （パス詳細は非公開）           | AI エージェント・外部ツール向け CRUD REST API     |
-| `onBugReportCreated`   | Firestore      | `bugReports/{reportId}` 作成時 | 報告・問い合わせをスクラムかんばんに自動起票    |
-| `syncRoutines`         | HTTPS          | `/syncRoutines`                | クライアントの通知用ルーティンデータ同期受付      |
-| `checkNotifications`   | スケジューラー | 毎分 (`every 1 minutes`)       | 通知時刻になったルーティンの FCM プッシュ通知配信 |
-| `cleanupNotifications` | スケジューラー | 毎日 00:00 JST (`0 0 * * *`)   | 古い通知送信履歴のクリーンアップ                  |
+| 関数名                          | 種別           | トリガー / エンドポイント        | 主な役割                                          |
+| ------------------------------- | -------------- | -------------------------------- | ------------------------------------------------- |
+| `agentApi`                      | HTTPS          | （パス詳細は非公開）             | AI エージェント・外部ツール向け CRUD REST API     |
+| `onBugReportCreated`            | Firestore      | `bugReports/{reportId}` 作成時   | 報告・問い合わせをスクラムかんばんに自動起票      |
+| `syncRoutines`                  | HTTPS          | `/syncRoutines`                  | クライアントの通知用ルーティンデータ同期受付      |
+| `checkNotifications`            | スケジューラー | 毎分 (`every 1 minutes`)         | 通知時刻になったルーティンの FCM プッシュ通知配信 |
+| `cleanupNotifications`          | スケジューラー | 毎日 00:00 JST (`0 0 * * *`)     | 古い通知送信履歴のクリーンアップ                  |
+| `submitBugReportWithImages`     | Callable       | Storage バケットがあるとき       | 画像付き報告の検証・予約・保存・Firestore 登録    |
+| `cleanupExpiredBugReportImages` | スケジューラー | 15 分ごと（Storage 有効時）      | 期限切れの画像予約を最大 100 件回収               |
+| `cleanupLateBugReportImage`     | Storage        | オブジェクト確定時（同バケット） | 回収開始後に確定した画像を世代指定で削除          |
 
 ---
 
@@ -25,7 +28,7 @@ firebase-functions/
 └── src/
     ├── index.ts               # Cloud Functions エクスポートのエントリーポイント
     ├── firebase-init.ts       # Firebase Admin SDK の初期化
-    ├── constants.ts           # 共通定数（祝日の曜日値、users / notifications_sent のコレクション名）
+    ├── constants.ts           # 共通定数（祝日の曜日値、users / notificationSubscriptions / notifications_sent）
     ├── types.ts               # 共通型定義（通知で使う Routine）
     ├── agentApi/              # AI エージェント向け REST API
     │   ├── agentApi.ts        # HTTPS エンドポイント定義
@@ -58,7 +61,12 @@ firebase-functions/
     │   ├── storageImageStore.ts  # Cloud Storage アダプタ（15 分の V4 読み取り署名）
     │   ├── imageFormats.ts       # 許可画像形式とマジックナンバー判定
     │   ├── draftIssueWithClaude.ts # Claude による Issue の整形（画像入力対応）
-    │   └── createScrumBoardItem.ts  # スクラムかんばん API の呼び出し
+    │   ├── createScrumBoardItem.ts  # スクラムかんばん API の呼び出し
+    │   └── imageIntake/          # 画像付き報告の受付・予約・回収（Storage 有効時の 3 関数）
+    │       ├── imageReportFunctions.ts # Callable / 定期回収 / 遅延削除の定義
+    │       ├── imageReservations.ts    # 保存枠の予約と提出
+    │       ├── imageCleanup.ts         # 期限切れ・遅延確定画像の回収
+    │       └── validateImageReport.ts  # 画像付き報告の入力検証
     ├── notifications.ts       # 通知チェックスケジューラー (毎分)
     ├── notificationCleanup.ts # 通知送信履歴の定期クリーンアップ (毎日 00:00 JST)
     ├── notification-helpers/  # 通知対象の判定と FCM 送信・送信履歴の記録
@@ -98,12 +106,20 @@ firebase-functions/
   - 説明・再現手順・入力タイトル・画面の URL（および有効な添付画像）を Claude に渡し、要約したタイトル（`[アプリからの報告] ` を前置）と Markdown の本文を作る。uid や User-Agent は渡さない。環境情報と報告者 uid は今までどおり本文の末尾に付き、注記は「Claude で整形されました」になる
   - 画像つきの整形が失敗した場合は、画像なしで 1 回だけ再整形を試みる。それでも失敗した場合（または画像なしで失敗した場合）は、従来の内容（入力タイトル、無ければ説明の先頭から作るタイトルと、報告文そのままの本文）で起票する（Claude 最大 45 秒 × 最大 2 回、かんばん API 最大 30 秒、関数のタイムアウトは 180 秒、メモリは 512MiB）
   - 関数ログの info `Bug report <id> processed: ... (projectId=..., content=<値>)` で結果が分かる。`content=claude` は整形できた、`content=fallback` は従来の内容で起票した（失敗、`none`、または説明が空白だけ）、`content=none` はスキップ・ロック取得失敗で整形を試みなかったことを表す（`content` は整形の結果だけを表す。起票の成否は `processed:` の値 `issued` / `error` / `skipped` で判断する）。失敗時は warn `Claude による整形に失敗したため従来の内容で起票します (<理由>)`（画像つき失敗時は `画像つきの整形に失敗したため画像なしで再整形します (<理由>)`）に理由が出る（API キー・報告本文・エラーメッセージ本文は出さない）。理由は API 呼び出しの失敗（`api_error(status=<HTTP ステータス>)`・`timeout`・`connection_error`）か、応答を採用できなかったこと（`refusal`: 拒否応答、`max_tokens`: 出力が上限で打ち切られた、`no_text_output`: テキストの出力が無い、`invalid_output`: JSON でない・形式が合わない、`empty_output`: タイトル（先頭の `[アプリからの報告]` を除く）か本文が空）のどれか。それ以外の例外は `unknown(<クラス名>)`（SDK の想定外のエラーは `parse_failed`）。理由ごとの対処は「6. Claude による整形の停止・再開とトラブル対応」を参照
-  - 注意: ログインユーザーが連投すると、Anthropic 側の月の利用上限を使い切りうる（その後は従来の内容で起票される）。報告のレート制限は未実装
+  - 注意: 起票処理には日次上限がある（既定はプロジェクトごとに 1 日 50 回、同じ利用者はそのうち 5 回まで。処理開始時点の UTC 日付で集計し、日本時間の 09:00 に次の日の枠へ切り替わる）。上限超過は `status: "error"` と `errorCode: "quota_exceeded"` を残し、画像取得・整形・起票を省略する。超過した報告は翌日以降も自動では再処理されない。上限と画像の保存枠は `docs/02-development/bug-report-secrets-config.md` を参照。日次上限内でも、連投で Anthropic 側の月の利用上限を使い切ると、その後は従来の内容で起票される
 
-### 3. 通知系関数 (`syncRoutines`, `checkNotifications`, `cleanupNotifications`)
+### 3. 画像付き報告 (`submitBugReportWithImages`, `cleanupExpiredBugReportImages`, `cleanupLateBugReportImage`)
+
+既定の Storage バケットがあるときだけエクスポートします。受付・保存枠・回収時刻の詳細は `docs/02-development/bug-report-secrets-config.md` を参照してください。
+
+- **`submitBugReportWithImages`**: ログイン済みの Callable。本人の UID と画像の実サイズを確認し、保存枠を予約してから `bugReportManagedImages/{uid}/{reportId}/` に保存し、Firestore に報告を登録する。
+- **`cleanupExpiredBugReportImages`**: 15 分ごとに、回収期限を過ぎた予約を最大 100 件処理する。未提出は予約から 1 時間、提出済みは提出から 30 日が経過すると回収対象になる。
+- **`cleanupLateBugReportImage`**: 回収開始後などに Storage で確定した画像を、世代を指定して削除する。
+
+### 4. 通知系関数 (`syncRoutines`, `checkNotifications`, `cleanupNotifications`)
 
 - **`syncRoutines`**: `Authorization: Bearer <Firebase ID トークン>` を検証し、確認した UID の端末登録だけを更新する。FCM トークンのハッシュをキーに、`notificationSubscriptions` に所有者と配信設定を保存する。保存済みの所有者が異なるときは 403 を返す。
-- **`checkNotifications`**: 毎分起動し、通知専用コレクションを読んで時刻・曜日が合うルーティンを通知する。個人同期を管理する `users/{uid}` は読まない。
+- **`checkNotifications`**: 毎分起動し、`notificationSubscriptions` を読んで時刻・曜日が合うルーティンを通知する。個人同期を管理する `users/{uid}` は読まない。トークンやルーティンの必要項目が不正な登録、またはルーティンが空の登録はスキップし、後続の登録は続ける。読み取り値や検証エラーはログに残さない。通知本文は `"ルーティン名" の時間です`。関数ログにはルーティン名を出さず、診断用の `deliveryId` だけを残す。
 - **`cleanupNotifications`**: 毎日午前0時 (JST) に実行され、`sentAt` が現在から 1 日より前の `notifications_sent` ドキュメントを 1 つのバッチでまとめて削除する
 
 ---

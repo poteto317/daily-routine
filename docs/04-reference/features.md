@@ -613,7 +613,7 @@ Firestoreを使用した複数端末間のデータ同期・バックアップ�
     - 報告・問い合わせの内容（必須、1〜2000文字）
     - タイトル（任意、最大100文字。UI省略時はAIが生成）
     - 再現手順（任意、最大2000文字）
-    - スクリーンショット画像（任意、PNG・JPEG・WebP・GIF、1枚5MB以下、最大3枚、サムネイルプレビュー・個別削除対応）
+    - スクリーンショット画像（任意、PNG・JPEG・WebP・GIF、1枚5MiB以下、最大3枚、サムネイルプレビュー・個別削除対応）
 - **環境情報の自動収集**
   - 端末情報・再現に必要なコンテキストを自動付与（個人情報は収集しない）
   - アプリバージョン (`appVersion`)
@@ -628,11 +628,14 @@ Firestoreを使用した複数端末間のデータ同期・バックアップ�
   - Cloud Functions の Firestore トリガー（`onBugReportCreated`）が検知し、添付画像のサイズ・マジックナンバー検証および発行から 15 分で失効する読み取り専用の署名付き URL の発行を行った上で、スクラムかんばん API で Todo にアイテムを作成（本文の `## スクリーンショット` 節に画像のリンクを追加）
   - Issue のタイトルと本文は Claude（Anthropic API）で整形し、添付画像がある場合は画像も Claude に渡して状況把握に活用する（`ANTHROPIC_API_KEY` に `none` を登録すると整形しない）。画像つき整形が失敗した場合は画像なしで1回だけ再整形し、それも失敗した場合は従来の内容（報告文そのまま）で起票する
   - 起票成功時に Firestore を `status: "issued"`, `issueNumber`, `issueUrl` で更新
+  - 起票処理は既定でプロジェクトごとに 1 日 50 回、同じ利用者はそのうち 5 回まで。上限超過は `status: "error"` と `errorCode: "quota_exceeded"` を残し、翌日以降も自動では再処理しない
+  - 画像の保存枠は、予約中と保管中を合わせて利用者ごとに 20 枚・50 MiB、プロジェクト全体で 1,000 枚・2 GiB。未提出は予約から 1 時間、提出済みは提出から 30 日で回収対象になる
 
 **技術仕様**
 
-- ファイル: `src/features/bug-report/`, `firebase-functions/src/bugReport/`
-- 保存先: Firestore `bugReports/{reportId}`, Firebase Storage `bugReportManagedImages/{uid}/{reportId}/{fileName}`
+- ファイル: `src/features/bug-report/`, `firebase-functions/src/bugReport/`（画像付き受付は `imageIntake/`）
+- 保存先: Firestore `bugReports/{reportId}`, Firebase Storage `bugReportManagedImages/{uid}/{reportId}/{index}.{ext}`
+- 画像付き報告の関数（既定の Storage バケットがあるときだけエクスポート）: `submitBugReportWithImages`（Callable）、`cleanupExpiredBugReportImages`（15 分ごと）、`cleanupLateBugReportImage`（Storage の確定イベント）
 - 連携: スクラムかんばん API（Secret: `SCRUM_BOARD_CREDENTIALS`）、Anthropic Claude API で Issue を整形（Secret: `ANTHROPIC_API_KEY`。失敗時は従来の内容で起票）
 
 ---
@@ -668,8 +671,9 @@ AI エージェントや外部スクリプトからアプリデータを安全�
 **主な機能**
 
 - ルーティン通知（BETA版・不安定）
-  - 設定した時間に自動通知
-  - 通知内容: 「{ルーティンタイトル} の時間が過ぎています」
+  - 開始時刻に合わせたプッシュ通知。本文は `"ルーティンタイトル" の時間です`（タイトルは「ルーティンのリマインダー」）
+  - 開始時刻を過ぎた未完了ルーティン向けのブラウザ通知。本文は `"ルーティンタイトル" の時間が過ぎています`
+  - サーバーは `notificationSubscriptions` の各登録を読み、トークンやルーティンの必要項目が不正な登録、またはルーティンが空の登録はスキップする。不正な 1 件で後続の登録は止めない
 - データ変更通知
   - 他の端末でデータ更新時に通知
   - 「他の端末でデータが更新されました。設定画面から同期してください。」
@@ -717,7 +721,7 @@ AI エージェントや外部スクリプトからアプリデータを安全�
     - ファイル命名規則: `daily-routine-<types>-<YYYY-MM-DD>.json`（インデント 2 スペースの整形 JSON）
   - **JSON ファイルからのインポート・復元**:
     - ファイル内のグループを自動判別し、含まれているデータのみを安全に復元
-    - データ検証: ルーティンの必須フィールド（`title`, `time`, `duration` 等）の形状検証を実施し、壊れたデータの取り込みを拒否
+    - データ検証: ルーティンは `id`・`title`・`startTime` が文字列で、`daysOfWeek` が配列であることを確認し、壊れたデータの取り込みを拒否する。`duration` など省略できる項目は見ない（古い書き出しを残すため）
     - 下位互換性: 旧バージョンのバックアップファイルも読み込み可能（ファイルに含まれないグループの手元の既存データは消去せず保持）
     - 進捗保護: `progress` が null の場合はローカルの当日完了状況を保護（当日完了が消えるのを防止）
 - **🍅 デフォルト・ポモドーロ設定** (`DefaultAndPomodoroSection`)
@@ -859,7 +863,7 @@ Progressive Web App (PWA) 技術と Workbox による Service Worker を活用�
 
 - ファイル: `src/features/account-admin/`
 - サービス: Firebase Authentication, Firestore
-- アクセス制御: カスタムクレーム（isAdmin）
+- アクセス制御: `accountAdminGrants/{uid}` の有無（`accounts` の `isAdmin` は表示用。認可の正本ではない）
 
 ---
 
@@ -889,7 +893,7 @@ Progressive Web App (PWA) 技術と Workbox による Service Worker を活用�
 
 ### フロントエンド
 
-- **フレームワーク**: Next.js 16.3.0（App Router, React Compiler 有効）
+- **フレームワーク**: Next.js 16.4.6（App Router, React Compiler 有効）
 - **言語**: TypeScript 5（strict mode）
 - **UIライブラリ**: React 19.2.3
 - **スタイリング**: Tailwind CSS 4
@@ -900,12 +904,12 @@ Progressive Web App (PWA) 技術と Workbox による Service Worker を活用�
 
 ### バックエンド
 
-- **認証**: Firebase Authentication（メール/パスワード、匿名認証、カスタムクレーム）
+- **認証**: Firebase Authentication（メール/パスワード、匿名認証）。管理者認可は `accountAdminGrants` ドキュメント
 - **データベース**: Firebase Firestore
 - **ファイルストレージ**: Firebase Storage（不具合報告のスクリーンショット画像保存）
 - **通知**: Firebase Cloud Messaging (FCM)
 - **サーバーレス関数**: Firebase Cloud Functions（Node.js 24）
-- **外部連携**: GitHub REST API（不具合報告の Issue 自動起票）、Anthropic Claude API（不具合報告 Issue の整形。失敗時は従来の内容で起票）
+- **外部連携**: スクラムかんばん API（報告・問い合わせの Todo 起票）、Anthropic Claude API（起票前の整形。失敗時は従来の内容で起票）
 
 ### アーキテクチャ
 
@@ -963,7 +967,7 @@ Progressive Web App (PWA) 技術と Workbox による Service Worker を活用�
 | `todo-category-management`   | Todoカテゴリ管理                     | 📝       | `TodoCategoryManagementPage`   | タスク管理           |
 | `sync-management`            | 同期履歴管理                         | ☁️       | `SyncManagementPage`           | 開発・管理           |
 | `settings`                   | 設定                                 | ⚙️       | `SettingsPage`                 | システム             |
-| `bug-report`                 | 報告・問い合わせ                         | 📣       | `BugReportPage`                | システム             |
+| `bug-report`                 | 報告・問い合わせ                     | 📣       | `BugReportPage`                | システム             |
 | `test-matrix`                | 機能テストマトリクス                 | 📋       | `TestMatrixPage`               | 開発・管理           |
 | `account-admin`              | アカウント管理                       | 👥       | `AccountAdminPage`             | 開発・管理（管理者） |
 
@@ -1000,12 +1004,17 @@ Progressive Web App (PWA) 技術と Workbox による Service Worker を活用�
 | `work-templates`                | 作業名テンプレートマスター                           | 作業記録         |
 | `todo-lists`                    | Todoリストおよびアイテム一覧データ                   | Todoリスト       |
 | `todo-categories`               | Todoカテゴリ設定一覧                                 | Todoリスト       |
+| `selected-todo-list-id`         | 選択中の Todo リスト ID                              | Todoリスト       |
 | `app-settings`                  | アプリ共通設定（表示機能、テーマ、ポモドーロ時間等） | 設定             |
 | `weather_cache`                 | 天気予報 API レスポンスキャッシュ（有効期限30分）    | 天気予報         |
 | `weather_preferred_location`    | 天気予報のユーザー選択位置情報                       | 天気予報         |
 | `test-matrix-data`              | テストマトリクス動作確認結果                         | テストマトリクス |
 | `test-matrix-detail-data`       | 詳細テストケース結果データ                           | テストマトリクス |
 | `local-dev-auth-user`           | ローカル開発用の擬似ログインユーザー情報             | 認証             |
+| `device-id`                     | 端末 ID（ユーザースコープなし）                      | クラウド同期     |
+| `sync-status`                   | 同期状態の表示用キャッシュ（ユーザースコープなし）   | クラウド同期     |
+| `synced-content-hash`           | 同期済み内容のハッシュ                               | クラウド同期     |
+| `local-data-updated-at`         | ローカルデータの最終更新時刻                         | ストレージ基盤   |
 | `user:<uid>:_migrated`          | ユーザースコープストレージ移行完了マーカー           | ストレージ基盤   |
 | `user:<uid>:_date-key-migrated` | JST 日付キー補正移行完了マーカー                     | ストレージ基盤   |
 
@@ -1061,7 +1070,8 @@ apiKeys/{keyHash}                      # AI エージェント用 API キー（�
   └─ createdAt: Timestamp
 
 # Firebase Storage
-bugReports/{uid}/{reportId}/{fileName} # 不具合報告の添付スクリーンショット（最大3枚、各5MB以下、PNG/JPEG/WebP/GIF）
+bugReportManagedImages/{uid}/{reportId}/{index}.{ext} # 現在の添付画像（最大3枚、各5MiB以下、PNG/JPEG/WebP/GIF）
+bugReports/{uid}/{reportId}/{fileName}                # 旧パス。新規の保存先ではない。オブジェクトが残ることがある
 ```
 
 ---
@@ -1078,7 +1088,7 @@ daily-routine/
 ├── firebase-functions/               # Firebase Cloud Functions (Node.js 24)
 │   └── src/
 │       ├── agentApi/                 # AI エージェント用 REST API (CRUD)
-│       ├── bugReport/                # 報告・問い合わせのかんばん起票トリガー
+│       ├── bugReport/                # 報告・問い合わせのかんばん起票と画像受付（imageIntake/）
 │       ├── notifications.ts          # 通知チェックスケジューラー
 │       ├── notificationCleanup.ts    # 通知データ定期クリーンアップ
 │       ├── notification-helpers/     # 通知・FCM 配信ユーティリティ

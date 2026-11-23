@@ -79,7 +79,7 @@ Firebase Console で匿名認証を有効化：
 概要（詳細・条件はファイルを参照）:
 
 - `users/{userId}` と配下の `syncSnapshots` — 本人のみ読み書き
-- `routines/{userId}` — 本人のみ読み書き
+- `routines/{userId}` — ルール上は本人のみ読み書き。現行の通知登録は `notificationSubscriptions` で、クライアントからは書かず Cloud Functions が管理する（このコレクションはルールの「その他は拒否」に含まれる）
 - `accounts/{accountId}` — 本人の読み取りと一般権限での作成、確認済み管理者による一覧・編集・削除
 - `accountAdminGrants/{accountId}` — 権限の正本。確認済み管理者が他人の権限を付与・剥奪でき、本人は自分の権限を確認できる
 - `bugReports/{reportId}` — 本人の作成・読み取りのみ（`status: pending` 固定）。更新・削除は Cloud Functions のみ
@@ -124,13 +124,16 @@ npm run dev
 
 ### Cloud Functions のデプロイ
 
-Cloud Functions は Node.js 24 環境で以下の 5 つの関数をエクスポートします：
+Cloud Functions は Node.js 24 環境で、常に次の 5 関数をエクスポートします。既定の Storage バケットがあるときは、画像付き報告用の 3 関数もエクスポートします（バケットが無い環境では `undefined` となり、既存関数だけをデプロイできます）。
 
 - `syncRoutines`: ルーティン通知用同期 (HTTP)
-- `checkNotifications`: 通知チェックスケジューラー (Pub/Sub)
+- `checkNotifications`: 通知チェックスケジューラー (Pub/Sub)。不正な端末登録は読み飛ばす
 - `cleanupNotifications`: 通知クリーンアップスケジューラー (Pub/Sub)
 - `onBugReportCreated`: 報告・問い合わせのかんばん自動起票 (Firestore トリガー)
 - `agentApi`: AI エージェント向け CRUD REST API (HTTP)
+- `submitBugReportWithImages`: 画像付き報告の受付 (Callable。Storage バケットがあるとき)
+- `cleanupExpiredBugReportImages`: 期限切れ画像の回収 (15 分ごと。Storage バケットがあるとき)
+- `cleanupLateBugReportImage`: 回収開始後に確定した画像の削除 (Storage イベント。Storage バケットがあるとき)
 
 Cloud Functions をデプロイする場合は、事前に Secret の設定が必須です。`onBugReportCreated` も一緒にデプロイされるため、不具合報告機能を使うかどうかに関わらず必要になります。Claude を使わない場合は `ANTHROPIC_API_KEY` に `none` を登録します（詳細は `docs/02-development/bug-report-secrets-config.md` 参照）：
 
@@ -180,21 +183,21 @@ Vercel で本番運用する場合は、`.env.local` に設定した Firebase �
 - **ローカル認証のみ:** `NEXT_PUBLIC_ENABLE_LOCAL_AUTH=true` とし、`NEXT_PUBLIC_FIREBASE_API_KEY` / `PROJECT_ID` / `APP_ID` は空のまま（他の Firebase キーも不要）
 - **Firebase あり:** 下表の Firebase クライアントキーを設定。ローカル認証フラグは無視される
 
-| 環境変数名                                 | 必須/任意                                                                 | 説明                                                                                                      | 設定例・既定値                                            |
-| :----------------------------------------- | :------------------------------------------------------------------------ | :-------------------------------------------------------------------------------------------------------- | :-------------------------------------------------------- |
-| `NEXT_PUBLIC_ENABLE_LOCAL_AUTH`            | ローカル認証経路では必須（`true`）。Firebase 経路では任意（無視される） | Firebase 未設定かつ `localhost` / `127.0.0.1` / `::1` でのみ有効なローカル擬似認証フラグ                  | `false`（最短セットアップ時のみ `true`）                  |
-| `NEXT_PUBLIC_FIREBASE_API_KEY`             | Firebase 経路で必須。ローカル認証経路では空                               | Firebase Web API キー                                                                                     | 実キー（example の `your-api-key` を残さない）            |
-| `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN`         | Firebase 経路で必須                                                       | Firebase Authentication ドメイン                                                                          | `<project-id>.firebaseapp.com`                            |
-| `NEXT_PUBLIC_FIREBASE_PROJECT_ID`          | Firebase 経路で必須。ローカル認証経路では空                               | Firebase プロジェクト ID                                                                                  | `daily-routine-xxxx`                                      |
-| `NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET`      | 任意                                                                      | Cloud Storage バケット名                                                                                  | `<project-id>.appspot.com`                                |
-| `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID` | 任意（通知を使う場合。Firebase Console の設定値として一緒に入れてよい）   | FCM 送信者 ID（プロジェクト番号）                                                                         | `123456789012`                                            |
-| `NEXT_PUBLIC_FIREBASE_APP_ID`              | Firebase 経路で必須。ローカル認証経路では空                               | Firebase Web アプリ ID                                                                                    | `1:123456:web:abcdef`                                     |
-| `NEXT_PUBLIC_FIREBASE_VAPID_KEY`           | 任意（通知を使う場合）                                                    | Web Push (FCM) 通知用 VAPID 公開鍵                                                                        | `BEl62v...`                                               |
-| `NEXT_PUBLIC_FUNCTIONS_URL`                | 任意                                                                      | Cloud Functions のベース URL（通知同期用）                                                                | `https://asia-northeast1-<project-id>.cloudfunctions.net` |
-| `NEXT_PUBLIC_APP_VERSION`                  | 自動                                                                      | アプリケーションのバージョン（`next.config.ts` で `package.json` から自動注入）                           | `0.1.0`                                                   |
-| `SCRUM_BOARD_CREDENTIALS`                             | Functions Secret                                                          | かんばんの Basic 認証情報（ユーザー名:パスワード）                                                              | Secret Manager に登録                                     |
-| `ANTHROPIC_API_KEY`                        | Functions Secret                                                          | 不具合報告の Issue を Claude で整形するための Anthropic API キー（使わない場合は `none`）                 | Secret Manager に登録                                     |
-| `SCRUM_BOARD_ORIGIN` / `SCRUM_BOARD_PROJECT_ID` | Functions パラメータ | かんばんの HTTPS オリジンとプロジェクト ID | 起票先を変更する場合に設定 |
+| 環境変数名                                      | 必須/任意                                                               | 説明                                                                                      | 設定例・既定値                                            |
+| :---------------------------------------------- | :---------------------------------------------------------------------- | :---------------------------------------------------------------------------------------- | :-------------------------------------------------------- |
+| `NEXT_PUBLIC_ENABLE_LOCAL_AUTH`                 | ローカル認証経路では必須（`true`）。Firebase 経路では任意（無視される） | Firebase 未設定かつ `localhost` / `127.0.0.1` / `::1` でのみ有効なローカル擬似認証フラグ  | `false`（最短セットアップ時のみ `true`）                  |
+| `NEXT_PUBLIC_FIREBASE_API_KEY`                  | Firebase 経路で必須。ローカル認証経路では空                             | Firebase Web API キー                                                                     | 実キー（example の `your-api-key` を残さない）            |
+| `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN`              | Firebase 経路で必須                                                     | Firebase Authentication ドメイン                                                          | `<project-id>.firebaseapp.com`                            |
+| `NEXT_PUBLIC_FIREBASE_PROJECT_ID`               | Firebase 経路で必須。ローカル認証経路では空                             | Firebase プロジェクト ID                                                                  | `daily-routine-xxxx`                                      |
+| `NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET`           | 任意                                                                    | Cloud Storage バケット名                                                                  | `<project-id>.appspot.com`                                |
+| `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID`      | 任意（通知を使う場合。Firebase Console の設定値として一緒に入れてよい） | FCM 送信者 ID（プロジェクト番号）                                                         | `123456789012`                                            |
+| `NEXT_PUBLIC_FIREBASE_APP_ID`                   | Firebase 経路で必須。ローカル認証経路では空                             | Firebase Web アプリ ID                                                                    | `1:123456:web:abcdef`                                     |
+| `NEXT_PUBLIC_FIREBASE_VAPID_KEY`                | 任意（通知を使う場合）                                                  | Web Push (FCM) 通知用 VAPID 公開鍵                                                        | `BEl62v...`                                               |
+| `NEXT_PUBLIC_FUNCTIONS_URL`                     | 任意                                                                    | Cloud Functions のベース URL（通知同期用）                                                | `https://asia-northeast1-<project-id>.cloudfunctions.net` |
+| `NEXT_PUBLIC_APP_VERSION`                       | 自動                                                                    | アプリケーションのバージョン（`next.config.ts` で `package.json` から自動注入）           | `0.1.0`                                                   |
+| `SCRUM_BOARD_CREDENTIALS`                       | Functions Secret                                                        | かんばんの Basic 認証情報（ユーザー名:パスワード）                                        | Secret Manager に登録                                     |
+| `ANTHROPIC_API_KEY`                             | Functions Secret                                                        | 不具合報告の Issue を Claude で整形するための Anthropic API キー（使わない場合は `none`） | Secret Manager に登録                                     |
+| `SCRUM_BOARD_ORIGIN` / `SCRUM_BOARD_PROJECT_ID` | Functions パラメータ                                                    | かんばんの HTTPS オリジンとプロジェクト ID                                                | 起票先を変更する場合に設定                                |
 
 設定方法:
 

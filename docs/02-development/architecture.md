@@ -22,8 +22,8 @@ graph TD
 
   subgraph Firebase ["Firebase クラウドバックエンド"]
     Auth["Firebase Authentication<br/>（匿名 / メール / モック）"]
-    Firestore[("Cloud Firestore<br/>users/{uid}<br/>syncSnapshots<br/>apiKeys<br/>bugReports")]
-    Functions["Cloud Functions (Node 24)<br/>agentApi<br/>onBugReportCreated<br/>reminders / cleanup"]
+    Firestore[("Cloud Firestore<br/>users/{uid} / syncSnapshots<br/>notificationSubscriptions<br/>apiKeys / bugReports<br/>accountAdminGrants")]
+    Functions["Cloud Functions (Node 24)<br/>agentApi / syncRoutines<br/>onBugReportCreated<br/>checkNotifications / cleanup<br/>画像受付・回収（Storage 有効時）"]
   end
 
   subgraph External ["外部システム"]
@@ -92,7 +92,7 @@ API や旧バージョンのアプリ、新機能追加時のデータ衝突を�
 3. **当日進捗の保護 (`dailyProgress`)**:
    当日のチェック状況は null で上書きされないよう保護し、チェック状態の意図しないリセットを防ぎます。
 4. **自動スナップショット保持**:
-   アップロードおよび API による変更が行われるたびに、`syncSnapshots` コレクションに直近最大 5 件の履歴が自動保持され、設定画面からいつでも過去の状態へワンクリック復元できます。
+   アップロードおよび API による変更が行われるたびに、`syncSnapshots` コレクションに直近最大 5 件の履歴が自動保持され、ヘッダーメニューの「同期履歴管理」画面から過去の状態へワンクリック復元できます。
 
 ### 2-4. クライアント耐障害性（ストレージ書き込み失敗の検知と復旧）
 
