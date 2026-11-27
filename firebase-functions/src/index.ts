@@ -2,7 +2,6 @@ import { getApp } from "firebase-admin/app";
 import { setGlobalOptions } from "firebase-functions";
 import { initializeFirebase } from "./firebase-init";
 import { syncRoutines as createSyncRoutines } from "./sync";
-import { checkNotifications as createCheckNotifications } from "./notifications";
 import { cleanupNotifications as createCleanupNotifications } from "./notificationCleanup";
 import { onBugReportCreated as createOnBugReportCreated } from "./bugReport/onBugReportCreated";
 import {
@@ -18,7 +17,7 @@ setGlobalOptions({ maxInstances: 10 });
 
 // 各関数をエクスポート
 export const syncRoutines = createSyncRoutines(db);
-export const checkNotifications = createCheckNotifications(db);
+// checkNotifications はプッシュ通知未使用のため未エクスポート（Scheduler 停止済み）
 export const cleanupNotifications = createCleanupNotifications(db);
 export const onBugReportCreated = createOnBugReportCreated(db);
 export const agentApi = createAgentApi(db);
