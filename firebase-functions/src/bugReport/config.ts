@@ -6,7 +6,7 @@ import {
 
 export const scrumBoardCredentials = defineSecret("SCRUM_BOARD_CREDENTIALS");
 export const scrumBoardOrigin = defineString("SCRUM_BOARD_ORIGIN", {
-  default: "https://scrum-board-jkcejsb6ka-an.a.run.app",
+  default: "https://scrum-board-ajs5phscdq-an.a.run.app",
 });
 export const scrumBoardProjectId = defineInt("SCRUM_BOARD_PROJECT_ID", {
   default: 8,
